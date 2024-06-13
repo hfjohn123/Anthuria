@@ -47,6 +47,8 @@ const NHQI: React.FC = () => {
   const [accordionData, setAccordionData] = useState(null);
   const locationsOptions = locations.map((d) => d['name']);
 
+
+
   function handleSelectLocation(option: string) {
     setLocation(option);
   }

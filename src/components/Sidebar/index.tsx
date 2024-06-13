@@ -65,7 +65,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
     >
       {/* <!-- SIDEBAR HEADER --> */}
       <div className="flex items-center justify-between px-8 py-5.5 lg:py-6.5">
-        <NavLink to="/" className={'flex items-center'}>
+        <NavLink to="/" className={'flex items-center'} reloadDocument={true}>
           <img src={Logo} alt="Logo" className="w-20" />
           <span className="text-3xl font-bold text-white">NOAH</span>
         </NavLink>
@@ -106,6 +106,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
             <ul className="mb-6 flex flex-col gap-1.5">
               {/* <!-- Menu Item Dashboard --> */}
               <NavLink
+                reloadDocument={true}
                 to="/dashboard"
                 className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
                   pathname.includes('dashboard') && 'bg-graydark dark:bg-meta-4'
@@ -142,6 +143,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
               {/* <!-- Menu Item Calendar --> */}
               <li>
                 <NavLink
+                  reloadDocument={true}
                   to="/trigger-words"
                   className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
                     pathname.includes('trigger-words') &&
@@ -168,6 +170,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
               {/* <!-- Menu Item Profile --> */}
               <li>
                 <NavLink
+                  reloadDocument={true}
                   to="/cashflow-forecast"
                   className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
                     pathname.includes('cashflow-forecast') &&
@@ -533,6 +536,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
               {/* <!-- Menu Item Auth Pages --> */}
               <NavLink
+                reloadDocument={true}
                 to="/"
                 className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4`}
               >

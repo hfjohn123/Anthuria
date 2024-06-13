@@ -18,7 +18,7 @@ export function getRoute() {
     return 'http://localhost:3009';
     // return 'https://dataservice.noahexample.com';
   } else {
-    return 'https://dataservice.noahexample.com';
+    return 'https://dataservice.triedgesandbox.com';
   }
 }
 
