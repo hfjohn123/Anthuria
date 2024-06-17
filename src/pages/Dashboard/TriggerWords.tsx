@@ -19,6 +19,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import {AuthContext} from '../../components/AuthWrapper.tsx';
+import NumberCards from "../../components/Cards/NumberCards.tsx";
 
 type TriggerFinal = {
   facility_id: string;
@@ -185,6 +186,7 @@ export default function TriggerWords() {
             className = " w-full py-1 rounded-lg border border-stroke pl-7 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
           />
         </div>
+        {/*<NumberCards className = "col-span-2 h-50 mt-5"/>*/}
         <table className = "border-collapse mt-5 col-span-12 bg-white dark:bg-boxdark shadow-default ">
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (

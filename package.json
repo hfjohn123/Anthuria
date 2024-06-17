@@ -23,6 +23,7 @@
     "billboard.js": "^3.11.3",
     "c3": "^0.7.20",
     "d3": "^7.9.0",
+    "echarts": "^5.5.0",
     "flatpickr": "^4.6.13",
     "headlessui": "^0.0.0",
     "jsvectormap": "^1.5.3",
