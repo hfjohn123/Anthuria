@@ -15,6 +15,7 @@ import Session, {SessionAuth} from 'supertokens-auth-react/recipe/session';
 import AuthWrapper, {getRoute} from './components/AuthWrapper.tsx';
 import SignIn from './pages/Authentication/SignIn.tsx';
 import SignUp from './pages/Authentication/SignUp.tsx';
+import Settings from './pages/Settings.tsx';
 
 SuperTokens.init({
   appInfo: {
@@ -78,6 +79,15 @@ function App() {
                 <SessionAuth>
                   <PageTitle title = "Cashflow Forecast" recenctable/>
                   <CashflowForecast/>
+                </SessionAuth>
+              }
+            />
+            <Route
+              path = "/settings"
+              element = {
+                <SessionAuth>
+                  <PageTitle title = "Settings" recenctable/>
+                  <Settings/>
                 </SessionAuth>
               }
             />

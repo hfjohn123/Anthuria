@@ -330,7 +330,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                 </NavLink>
               </li>
               {/* <!-- Menu Item Tables --> */}
-              {/* <!-- Menu Item Settings --> */}
+              {/* <!-- Menu Item Settings_Temp --> */}
               <li>
                 <NavLink
                   to="#"
@@ -371,7 +371,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                   Dummy
                 </NavLink>
               </li>
-              {/* <!-- Menu Item Settings --> */}
+              {/* <!-- Menu Item Settings_Temp --> */}
             </ul>
           </div>
 
