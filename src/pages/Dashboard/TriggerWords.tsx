@@ -1,8 +1,10 @@
 import DefaultLayout from '../../layout/DefaultLayout';
 import axios from 'axios';
-import { useQuery } from '@tanstack/react-query';
-import { ChevronDownIcon, ChevronRightIcon, MagnifyingGlassIcon } from '@heroicons/react/24/solid';
-import { useContext, useMemo, useState } from 'react';
+import {useQuery} from '@tanstack/react-query';
+import {ChevronDownIcon, ChevronRightIcon, MagnifyingGlassIcon} from '@heroicons/react/24/solid';
+import SortDownIcon from '../../images/icon/sort-down.svg';
+import SortUpIcon from '../../images/icon/sort-up.svg';
+import {useContext, useMemo, useState} from 'react';
 import Loader from '../../common/Loader';
 import SelectGroupOne from '../../components/Forms/SelectGroup/SelectGroupOne.tsx';
 import {
@@ -16,10 +18,10 @@ import {
   getSortedRowModel,
   GroupingState,
   Row,
-  useReactTable,
-  SortingState
+  SortingState,
+  useReactTable
 } from '@tanstack/react-table';
-import { AuthContext } from '../../components/AuthWrapper.tsx';
+import {AuthContext} from '../../components/AuthWrapper.tsx';
 // import NumberCards from "../../components/Cards/NumberCards.tsx";
 
 type TriggerFinal = {
@@ -36,24 +38,24 @@ type TriggerFinal = {
   created_by: string;
 };
 
-const renderSubComponent = ({ row }: { row: Row<TriggerFinal> }) => {
+const renderSubComponent = ({row}: { row: Row<TriggerFinal> }) => {
   return (
-    <div className="flex bg-slate-100 dark:bg-slate-900 px-4 justify-evenly py-4">
+    <div className = "flex bg-slate-100 dark:bg-slate-900 px-4 justify-evenly py-4">
       {/*<div>{row.getValue('revision_date')}</div>*/}
-      <div className="basis-2/5">
-        <div className="font-bold"> Progress Note:</div>
+      <div className = "basis-2/5">
+        <div className = "font-bold"> Progress Note:</div>
         {row.getValue('progress_note')}
-        <div className="font-bold mt-2.5"> Progress Note ID:</div>
+        <div className = "font-bold mt-2.5"> Progress Note ID:</div>
         {row.getValue('progress_note_id')}
-        <div className="font-bold mt-2.5"> Created By:</div>
+        <div className = "font-bold mt-2.5"> Created By:</div>
         {row.getValue('created_by')}
       </div>
-      <div className="basis-2/5">
-        <div className="font-bold">Summary:</div>
+      <div className = "basis-2/5">
+        <div className = "font-bold">Summary:</div>
         {row.getValue('summary')}
-        <div className="font-bold mt-2.5">Trigger:</div>
+        <div className = "font-bold mt-2.5">Trigger:</div>
         Fall
-        <div className="font-bold mt-2.5">Generated Date: </div>
+        <div className = "font-bold mt-2.5">Generated Date: </div>
         {row.getValue('report_date')}
       </div>
     </div>
@@ -61,11 +63,11 @@ const renderSubComponent = ({ row }: { row: Row<TriggerFinal> }) => {
 };
 export default function TriggerWords() {
 
-  const { route } = useContext(AuthContext);
+  const {route} = useContext(AuthContext);
   const [sorting, setSorting] = useState<SortingState>([]);
 
 
-  const { isPending, isError, data, error } = useQuery({
+  const {isPending, isError, data, error} = useQuery({
     queryKey: ['trigger-words', route],
     queryFn: () => axios.get(`${route}/trigger_final`).then((res) => res.data)
   });
@@ -168,45 +170,45 @@ export default function TriggerWords() {
 
   });
   if (isPending) {
-    return <Loader />;
+    return <Loader/>;
   }
   if (isError) {
     return <div>Error: {error.message}</div>;
   }
   return (
-    <DefaultLayout title={'Clinical Pulse'}>
-      <div className="grid grid-cols-12">
+    <DefaultLayout title = {'Clinical Pulse'}>
+      <div className = "grid grid-cols-12">
         <SelectGroupOne
-          className="col-span-9"
-          options={['Fall']}
-          label="Trigger Word / "
-          labelLeft={true}
+          className = "col-span-9"
+          options = {['Fall']}
+          label = "Trigger Word / "
+          labelLeft = {true}
         />
-        <div className="col-span-3">
+        <div className = "col-span-3">
           <MagnifyingGlassIcon
-            className="size-5 text-body dark:text-bodydark absolute translate-y-1/3 translate-x-1.5" />
+            className = "size-5 text-body dark:text-bodydark absolute translate-y-1/3 translate-x-1.5"/>
           <input
-            onChange={(e) => {
-              setColumnFilters([{ id: 'patient_id', value: e.target.value }]);
+            onChange = {(e) => {
+              setColumnFilters([{id: 'patient_id', value: e.target.value}]);
             }}
-            placeholder="Search Patient's name or ID"
-            className=" w-full py-1 rounded-lg border border-stroke pl-7 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+            placeholder = "Search Patient's name or ID"
+            className = " w-full py-1 rounded-lg border border-stroke pl-7 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
           />
         </div>
         {/*<NumberCards className = "col-span-2 h-50 mt-5"/>*/}
-        <table className="border-collapse mt-5 col-span-12 bg-white dark:bg-boxdark shadow-default ">
+        <table className = "border-collapse mt-5 col-span-12 bg-white dark:bg-boxdark shadow-default ">
           <thead>
           {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
+            <tr key = {headerGroup.id}>
               {headerGroup.headers.map((header) => {
                 return (
                   <th
-                    key={header.id}
-                    colSpan={header.colSpan}
-                    className="py-3 pl-3 border-b-2 border-stroke dark:border-strokedark text-left "
-                    onClick={header.column.getToggleSortingHandler()}
-                    role= "button"
-                    style={{
+                    key = {header.id}
+                    colSpan = {header.colSpan}
+                    className = "py-3 pl-3 border-b-2 border-stroke dark:border-strokedark text-left select-none"
+                    onClick = {header.column.getToggleSortingHandler()}
+                    role = "button"
+                    style = {{
                       width: header.column.columnDef.meta?.size || 'auto'
                     }}
                   >
@@ -215,7 +217,10 @@ export default function TriggerWords() {
                           {flexRender(
                             header.column.columnDef.header,
                             header.getContext()
-                          )}
+                          )}{{
+                        asc: <img src = {SortUpIcon} alt = "Sort Up Icon" className = "inline size-5"/>,
+                        desc: <img src = {SortDownIcon} alt = "Sort Down Icon" className = "inline size-5"/>
+                      }[header.column.getIsSorted() as string] ?? null}
                         </span>
                     )}
                   </th>
@@ -228,20 +233,20 @@ export default function TriggerWords() {
           {table.getRowModel().rows.map((row) => {
             return (
               <>
-                <tr key={row.id} className="border-t-stroke border-t">
+                <tr key = {row.id} className = "border-t-stroke border-t">
                   {row.getVisibleCells().map((cell) => {
                     if (cell.getIsGrouped()) {
                       return (
                         <td
-                          key={cell.id}
-                          className="py-2"
-                          role="button"
-                          onClick={row.getToggleExpandedHandler()}
+                          key = {cell.id}
+                          className = "py-2"
+                          role = "button"
+                          onClick = {row.getToggleExpandedHandler()}
                         >
                           {row.getIsExpanded() ? (
-                            <ChevronDownIcon className="text-body dark:text-bodydark size-6 inline pb-1" />
+                            <ChevronDownIcon className = "text-body dark:text-bodydark size-6 inline pb-1"/>
                           ) : (
-                            <ChevronRightIcon className="text-body dark:text-bodydark size-6 inline pb-1" />
+                            <ChevronRightIcon className = "text-body dark:text-bodydark size-6 inline pb-1"/>
                           )}{' '}
                           {flexRender(
                             cell.column.columnDef.cell,
@@ -253,20 +258,20 @@ export default function TriggerWords() {
                     if (cell.getIsAggregated()) {
                       return (
                         <td
-                          key={cell.id}
-                          className="py-2"
-                          onClick={row.getToggleExpandedHandler()}
-                          role="button"
+                          key = {cell.id}
+                          className = "py-2"
+                          onClick = {row.getToggleExpandedHandler()}
+                          role = "button"
                         ></td>
                       );
                     }
                     if (cell.getIsPlaceholder()) {
-                      return <td key={cell.id} className="py-2"></td>;
+                      return <td key = {cell.id} className = "py-2"></td>;
                     }
                     if (cell.column.id === 'status') {
                       return (
-                        <td key={cell.id} className="py-2">
-                          <button className="text-red-500 border p-1 ">
+                        <td key = {cell.id} className = "py-2">
+                          <button className = "text-red-500 border p-1 ">
                             {flexRender(
                               cell.column.columnDef.cell,
                               cell.getContext()
@@ -277,16 +282,16 @@ export default function TriggerWords() {
                     }
                     return (
                       <td
-                        key={cell.id}
-                        className="py-2"
-                        role="button"
-                        onClick={row.getToggleExpandedHandler()}
+                        key = {cell.id}
+                        className = "py-2"
+                        role = "button"
+                        onClick = {row.getToggleExpandedHandler()}
                       >
                         {cell.column.id === 'patient_id' ? (
                           row.getIsExpanded() ? (
-                            <ChevronDownIcon className="text-body dark:text-bodydark size-6 inline pb-1" />
+                            <ChevronDownIcon className = "text-body dark:text-bodydark size-6 inline pb-1"/>
                           ) : (
-                            <ChevronRightIcon className="text-body dark:text-bodydark size-6 inline pb-1" />
+                            <ChevronRightIcon className = "text-body dark:text-bodydark size-6 inline pb-1"/>
                           )
                         ) : (
                           ''
@@ -301,8 +306,8 @@ export default function TriggerWords() {
                 </tr>
                 {row.getIsExpanded() && row.depth === 1 && (
                   <tr>
-                    <td colSpan={row.getVisibleCells().length}>
-                      {renderSubComponent({ row })}
+                    <td colSpan = {row.getVisibleCells().length}>
+                      {renderSubComponent({row})}
                     </td>
                   </tr>
                 )}
