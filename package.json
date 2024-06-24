@@ -29,6 +29,7 @@
     "jsvectormap": "^1.5.3",
     "match-sorter": "^6.3.1",
     "react": "^18.2.0",
+    "react-18-input-autosize": "^3.0.0",
     "react-apexcharts": "^1.4.1",
     "react-datepicker": "^6.9.0",
     "react-dom": "^18.2.0",
