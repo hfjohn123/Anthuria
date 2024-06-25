@@ -376,14 +376,13 @@ export default function TriggerWords() {
                   // @ts-expect-error Error already handled
                 /> : columns.find((c) => c.accessorKey === filter.id)?.meta.type === 'text' ?
                   <div
-                    className = "flex flex-nowrap items-center gap-1 px-2 py-0.5 rounded-lg border outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                    className = "has-[:focus]:!shadow-sm has-[:focus]:!shadow-blue-500 flex flex-nowrap items-center gap-1 px-2 rounded-lg border dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                   >
                     <span
                       // @ts-expect-error Error already handled
                       className = "text-nowrap">{columns.find((c) => c.accessorKey === filter.id)?.header} includes</span>
                     <AutosizeInput
-                      inputStyle = {{ outline: "none" }}
-                      className = "text-wrap"
+                      inputStyle = {{ outline: "none", background: "transparent" }}
                       onChange = {(e: { target: { value: string; }; }) => {
                         setColumnFilters([...columnFilters.filter((f) => f.id !== filter.id), {
                           id: filter.id,
@@ -408,13 +407,13 @@ export default function TriggerWords() {
                   </div> :
                   // @ts-expect-error Error already handled
                   columns.find((c) => c.accessorKey === filter.id)?.meta.type === 'daterange' ? <div
-                    className = "flex flex-nowrap items-center gap-1 px-2 py-0.5 rounded-lg border outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                    className = "has-[:focus]:!shadow-sm has-[:focus]:!shadow-blue-500 flex flex-nowrap items-center gap-1 px-2 py-0.5 rounded-lg border outline-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                   >
                     <span
                       // @ts-expect-error Error already handled
                       className = "text-nowrap">{columns.find((c) => c.accessorKey === filter.id)?.header}</span>
                     <DatePicker
-                      className = "outline-0 w-47.5"
+                      className = "outline-0 w-47.5 bg-transparent"
                       autoFocus = {true}
                       selectsRange
 
