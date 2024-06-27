@@ -165,18 +165,11 @@ export default function TriggerWords() {
         header: 'Patient ID',
         filterFn: 'includesString',
         meta: {
-          size: '200px',
+          size: '130px',
           type: 'text'
         }
       },
-      {
-        accessorKey: 'progress_note',
-        header: 'Progress Note',
-        filterFn: 'includesString',
-        meta: {
-          type: 'text'
-        }
-      },
+
       {
         accessorKey: 'progress_note_id',
         header: 'Progress Note ID',
@@ -200,16 +193,7 @@ export default function TriggerWords() {
         },
         filterFn: dateRangeFilterFn
       },
-      {
-        accessorKey: 'summary',
-        header: 'Summary',
-        filterFn: 'includesString',
-        meta: {
-          type: 'text'
-        }
 
-
-      },
       {
         accessorKey: 'trigger_id',
         header: 'Trigger ID',
@@ -220,8 +204,6 @@ export default function TriggerWords() {
         meta: {
           type: 'categorical'
         }
-
-
       },
       {
         accessorKey: 'report_date',
@@ -249,6 +231,22 @@ export default function TriggerWords() {
         filterFn: 'arrIncludesSome',
         meta: {
           type: 'categorical'
+        }
+      },
+      {
+        accessorKey: 'progress_note',
+        header: 'Progress Note',
+        filterFn: 'includesString',
+        meta: {
+          type: 'text'
+        }
+      },
+      {
+        accessorKey: 'summary',
+        header: 'Summary',
+        filterFn: 'includesString',
+        meta: {
+          type: 'text'
         }
       },
       {
