@@ -5,7 +5,7 @@ import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import { Cog6ToothIcon } from '@heroicons/react/24/outline';
 import SortDownIcon from '../../images/icon/sort-down.svg';
 import SortUpIcon from '../../images/icon/sort-up.svg';
-import { ReactElement, useContext, useMemo, useState } from 'react';
+import { ReactElement, useContext, useEffect, useMemo, useState } from 'react';
 import Loader from '../../common/Loader';
 import ReactSelectButton from '../../components/Dropdowns/ReactSelectButton.tsx';
 import AutosizeInput from 'react-18-input-autosize';
@@ -40,17 +40,20 @@ import { Field, Input, Label } from '@headlessui/react';
 // import NumberCards from "../../components/Cards/NumberCards.tsx";
 
 type TriggerFinal = {
-  facility_id: string;
-  created_date: Date;
-  report_date: Date;
+  progress_note_id: number;
+  internal_facility_id: string;
+  facility_name: string;
+  patient_name: string;
   patient_id: string;
-  progress_note: string;
-  progress_note_id: string;
-  revision_date: Date;
-  summary: string;
-  trigger_id: string;
-  status: string;
   created_by: string;
+  created_date: Date;
+  revision_by: string;
+  revision_date: Date;
+  progress_note: string;
+  summary: string;
+  trigger_words: string[];
+  updated_time: Date;
+  status: string;
 };
 
 const selectStyles: ClassNamesConfig<{
@@ -144,17 +147,22 @@ const renderSubComponent = ({ row }: { row: Row<TriggerFinal> }) => {
         <div className="font-bold">Summary:</div>
         {row.getValue('summary')}
         <div className="font-bold mt-2.5">Trigger:</div>
-        Fall
-        <div className="font-bold mt-2.5">Generated Date: </div>
-        {row.getValue('report_date')}
+        {(row.getValue('trigger_words') as string[])
+          .join(', ')
+          .replaceAll('_', ' ')}
+        <div className="font-bold mt-2.5">Created Date: </div>
+        {row.getValue('created_date')}
       </div>
     </div>
   );
 };
-const permenentColumnFilters = ['facility_id', 'created_by'];
+const permenentColumnFilters = ['facility_name', 'created_by'];
 
 export default function TriggerWords() {
-  const { route } = useContext(AuthContext);
+  const { route, user_applications_locations } = useContext(AuthContext);
+  const { locations } = user_applications_locations.find(
+    (d) => d['id'] === 'trigger_words',
+  ) || { locations: [] };
   const [additionalFilters, setAdditionalFilters] = useState<{
     label: string;
     value: string;
@@ -165,55 +173,45 @@ export default function TriggerWords() {
     queryKey: ['trigger-words', route],
     queryFn: () => axios.get(`${route}/trigger_final`).then((res) => res.data),
   });
-  const [newTriggerWord, setNewTriggerWord] = useState({
+  // const { isPending: isPendingTemp, data: data2 } = useQuery({
+  //   queryKey: ['temp', route],
+  //   queryFn: () => axios.get(`${route}/trigger_temp`).then((res) => res.data),
+  // });
+  const [newTriggerWord, setNewTriggerWord] = useState<{
+    trigger_word: string;
+    internal_facility_id: string[];
+    date_range: [Date, Date];
+  }>({
     trigger_word: '',
-    facility_id: [],
+    internal_facility_id: [],
     date_range: [new Date(), new Date()],
   });
-  const {
-    isPending: isUserSettingPending,
-    isError: isUserSettingError,
-    data: userSettingData,
-    error: userSettingError,
-  } = useQuery({
-    queryKey: ['user-settings', route],
-    queryFn: () =>
-      axios.get(`${route}/trigger_user_settings`).then((res) => res.data),
-  });
-  // const {
-  //   isPending: isTemporayPending,
-  //   isError: isTemporayError,
-  //   data: temporaryData,
-  //   error: temporaryError
-  // } = useQuery(
-  //
-  // );
+
   const columns = useMemo<ColumnDef<TriggerFinal>[]>(
     () => [
       {
-        accessorKey: 'facility_id',
+        accessorKey: 'facility_name',
         header: 'Facility',
         meta: {
-          size: '120px',
+          // size: '120px',
           type: 'categorical',
         },
         filterFn: 'arrIncludesSome',
       },
       {
-        accessorKey: 'patient_id',
-        header: 'Patient ID',
+        accessorKey: 'patient_name',
+        header: 'Patient',
         filterFn: 'includesString',
         meta: {
-          size: '130px',
+          // size: '130px',
           type: 'text',
         },
       },
-
       {
         accessorKey: 'progress_note_id',
         header: 'Progress Note ID',
         meta: {
-          size: '200px',
+          size: '150px',
           type: 'categorical',
         },
         sortingFn: 'text',
@@ -221,34 +219,6 @@ export default function TriggerWords() {
         filterFn: (row, columnId, filterValue) => {
           const value = row.getValue(columnId) as string;
           return filterValue.includes(value);
-        },
-      },
-      {
-        accessorKey: 'revision_date',
-        header: 'Revision Date',
-        meta: {
-          type: 'daterange',
-        },
-        filterFn: dateRangeFilterFn,
-      },
-
-      {
-        accessorKey: 'trigger_id',
-        header: 'Trigger ID',
-        filterFn: (row, columnId, filterValue) => {
-          const value = row.getValue(columnId) as string;
-          return filterValue.includes(value);
-        },
-        meta: {
-          type: 'categorical',
-        },
-      },
-      {
-        accessorKey: 'report_date',
-        header: 'Report Date',
-        filterFn: dateRangeFilterFn,
-        meta: {
-          type: 'daterange',
         },
       },
       {
@@ -272,6 +242,40 @@ export default function TriggerWords() {
         },
       },
       {
+        accessorKey: 'revision_date',
+        header: 'Revision Date',
+        meta: {
+          type: 'daterange',
+        },
+        filterFn: dateRangeFilterFn,
+      },
+      {
+        accessorKey: 'revision_by',
+        header: 'Revision By',
+        meta: {
+          type: 'categorical',
+        },
+        filterFn: 'arrIncludesSome',
+      },
+      {
+        accessorKey: 'trigger_words',
+        accessorFn: (d) => d.trigger_words,
+        header: 'Trigger Words',
+        cell: (info) => {
+          return (info.getValue() as string[]).join(', ').replaceAll('_', ' ');
+        },
+        filterFn: (row, columnId, filterValue) => {
+          const value = row.getValue(columnId) as string[];
+          return value.some((d) =>
+            d.includes(filterValue.replaceAll(' ', '_')),
+          );
+        },
+        meta: {
+          type: 'text',
+          size: '200px',
+        },
+      },
+      {
         accessorKey: 'progress_note',
         header: 'Progress Note',
         filterFn: 'includesString',
@@ -291,7 +295,7 @@ export default function TriggerWords() {
         accessorKey: 'status',
         header: 'Status',
         meta: {
-          size: '200px',
+          size: '150px',
           type: 'categorical',
         },
         filterFn: 'arrIncludesSome',
@@ -369,16 +373,16 @@ export default function TriggerWords() {
     },
     columnOrder: [],
     columnVisibility: {
-      facility_id: true,
-      patient_id: true,
-      progress_note: false,
+      facility_name: true,
+      patient_name: true,
       progress_note_id: true,
       created_date: true,
-      summary: false,
-      trigger_id: false,
       created_by: false,
-      report_date: false,
+      revision_by: false,
       revision_date: false,
+      trigger_words: true,
+      progress_note: false,
+      summary: false,
       status: true,
     },
     pagination: {
@@ -391,20 +395,23 @@ export default function TriggerWords() {
     state: tableState,
     onStateChange: setTableState,
   }));
-  // const saveUserSettings = useMutation({
-  //   mutationFn: () => {
-  //     return axios.post('/user_settings', {
-  //       settings: columnVisibility
-  //     });
-  //   }
-  // })
-  if (isPending || isUserSettingPending) {
+  useEffect(() => {
+    const usersettings = localStorage.getItem('usersettings');
+    if (usersettings) {
+      setTableState(JSON.parse(usersettings));
+    }
+  }, []);
+  useEffect(() => {
+    localStorage.setItem('usersettings', JSON.stringify(tableState));
+  }, [tableState]);
+
+  if (isPending) {
     return <Loader />;
   }
   if (isError) {
     return <div>Error: {error.message}</div>;
   }
-  console.log(tableState.columnFilters);
+  console.log(table.getColumn('trigger_words')?.getFacetedUniqueValues());
 
   return (
     <DefaultLayout title={'Clinical Pulse'}>
@@ -417,7 +424,7 @@ export default function TriggerWords() {
             isMulti={false}
             options={[
               { label: 'Predefined', value: 'Predefined' },
-              { label: 'Temperary', value: 'Temperary' },
+              { label: 'Temporary', value: 'Temporary' },
             ]}
             value={{ label: triggerType, value: triggerType }}
             onChange={(e) => setTriggerType(e?.value ?? 'Predefined')}
@@ -459,13 +466,37 @@ export default function TriggerWords() {
                 <Label className="text-sm dark:text-bodydark2">Facility</Label>
                 <Select
                   required
-                  // options={}
-                  value={[
-                    newTriggerWord.facility_id.map(({ facility_id }) => ({
-                      label: facility_id,
-                      value: facility_id,
-                    })),
-                  ]}
+                  isMulti
+                  closeMenuOnSelect={false}
+                  hideSelectedOptions={false}
+                  components={{ Option }}
+                  value={newTriggerWord.internal_facility_id
+                    .filter((value) =>
+                      locations.some(
+                        ({ internal_facility_id }) =>
+                          internal_facility_id === value,
+                      ),
+                    )
+                    .map((value) => ({
+                      label:
+                        locations.find(
+                          ({ internal_facility_id }) =>
+                            internal_facility_id === value,
+                        )?.facility_name || '',
+                      value,
+                    }))}
+                  onChange={(e) => {
+                    setNewTriggerWord((prev) => ({
+                      ...prev,
+                      internal_facility_id: e.map(({ value }) => value),
+                    }));
+                  }}
+                  options={locations.map(
+                    ({ internal_facility_id, facility_name }) => ({
+                      label: facility_name,
+                      value: internal_facility_id,
+                    }),
+                  )}
                   classNames={{
                     control: () =>
                       '!border-stroke dark:bg-boxdark dark:text-bodydark1',
@@ -515,7 +546,7 @@ export default function TriggerWords() {
                 }));
               }}
               value={tableState.globalFilter}
-              placeholder="Search Patient's name or ID"
+              placeholder="Global Search"
               className=" w-full py-2 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
             />
             {/* @ts-expect-error Error Unspecific API */}

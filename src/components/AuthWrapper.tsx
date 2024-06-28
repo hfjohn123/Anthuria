@@ -9,7 +9,16 @@ import Intercom from '@intercom/messenger-js-sdk';
 
 export const AuthContext = createContext({
   user_data: { name: '', email: '', picture: '' },
-  user_applications_locations: [],
+  user_applications_locations: [
+    {
+      id: '',
+      display_name: '',
+      icon: '',
+      default_order: 0,
+      url: '',
+      locations: [{ internal_facility_id: '', facility_name: '' }],
+    },
+  ],
   route: '',
 });
 

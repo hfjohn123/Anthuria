@@ -36,16 +36,16 @@ const NHQI: React.FC = () => {
   const noahdata = user_applications_locations.filter(
     (d) => d['id'] === 'nhqi',
   )[0];
-  const locations: { name: string }[] = noahdata['locations'];
+  const locations: { facility_name: string }[] = noahdata['locations'];
   const [selectedOption, setSelectedOption] = useState(options[0]);
   const [data, setData] = useState(null);
   const [tabledata, setTabledata] = useState(null);
   const [loading, setLoading] = useState(true);
   const [mapData, setMapData] = useState(null);
-  const [location, setLocation] = useState(locations[0]['name']);
+  const [location, setLocation] = useState(locations[0]['facility_name']);
   const [cardData, setCardData] = useState(null);
   const [accordionData, setAccordionData] = useState(null);
-  const locationsOptions = locations.map((d) => d['name']);
+  const locationsOptions = locations.map((d) => d['facility_name']);
 
 
 
