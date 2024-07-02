@@ -32,6 +32,7 @@ import {
 import { AuthContext } from '../../components/AuthWrapper.tsx';
 import DatePicker from 'react-datepicker';
 import { Field, Input, Label } from '@headlessui/react';
+import { createToast } from '../../hooks/fireToast.tsx';
 
 type TriggerFinal = {
   progress_note_id: number;
@@ -114,9 +115,14 @@ const renderSubComponent = ({ row }: { row: Row<TriggerFinal> }) => {
   );
 };
 const permenentColumnFilters = ['facility_name', 'created_by'];
-
+const initialNewTrigger = {
+  trigger_word: '',
+  internal_facility_id: [],
+  date_range: [new Date(), new Date()],
+};
 export default function TriggerWords() {
-  const { route, user_applications_locations } = useContext(AuthContext);
+  const { route, user_applications_locations, user_data } =
+    useContext(AuthContext);
   const queryClient = useQueryClient();
   const { locations } = user_applications_locations.find(
     (d) => d['id'] === 'trigger_words',
@@ -191,6 +197,36 @@ export default function TriggerWords() {
       queryClient.invalidateQueries({ queryKey: ['trigger-words', route] });
     },
   });
+  const addTemporary = useMutation({
+    mutationFn: ({
+      trigger_word,
+      user_id,
+      facilities,
+      from_to,
+    }: {
+      trigger_word: string;
+      user_id: string;
+      facilities: string[];
+      from_to: [Date | null, Date | null];
+    }) =>
+      axios.post(
+        `https://triggerword_temporary_api.triedgesandbox.com/create_trigger`,
+        {
+          trigger_word,
+          facilities,
+          user_id,
+          from_to,
+        },
+      ),
+    onSuccess: () => {
+      createToast(
+        'Success',
+        'Trigger Word Creation in Progress',
+        0,
+        'new trigger',
+      );
+    },
+  });
   const { data: temporaryData } = useQuery({
     queryKey: ['temporary-data', route],
     queryFn: () =>
@@ -200,12 +236,8 @@ export default function TriggerWords() {
   const [newTriggerWord, setNewTriggerWord] = useState<{
     trigger_word: string;
     internal_facility_id: string[];
-    date_range: [Date, Date];
-  }>({
-    trigger_word: '',
-    internal_facility_id: [],
-    date_range: [new Date(), new Date()],
-  });
+    date_range: [Date | null, Date | null];
+  }>(initialNewTrigger);
 
   const columns = useMemo<ColumnDef<TriggerFinal>[]>(
     () => [
@@ -221,6 +253,7 @@ export default function TriggerWords() {
       {
         accessorKey: 'patient_name',
         header: 'Patient',
+        cell: () => 'John Doe',
         filterFn: 'includesString',
         meta: {
           // size: '130px',
@@ -423,12 +456,25 @@ export default function TriggerWords() {
   useEffect(() => {
     const usersettings = localStorage.getItem('usersettings');
     if (usersettings) {
-      setTableState(JSON.parse(usersettings));
+      setTableState({
+        ...tableState,
+        columnVisibility: JSON.parse(usersettings),
+      });
     }
   }, []);
   useEffect(() => {
-    localStorage.setItem('usersettings', JSON.stringify(tableState));
-  }, [tableState]);
+    localStorage.setItem(
+      'usersettings',
+      JSON.stringify(tableState.columnVisibility),
+    );
+  }, [tableState.columnVisibility]);
+  useEffect(() => {
+    setTableState({
+      ...tableState,
+      columnFilters: [],
+      globalFilter: '',
+    });
+  }, [triggerType]);
   const parentRef = useRef<HTMLDivElement>(null);
   const { rows } =
     data && table.getRowModel() ? table.getRowModel() : { rows: [] };
@@ -483,7 +529,19 @@ export default function TriggerWords() {
               'text-primary dark:text-secondary col-span-12 lg:col-span-3 lg:justify-self-end justify-self-start self-center',
           }}
         >
-          <form>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              addTemporary.mutate({
+                trigger_word: newTriggerWord.trigger_word,
+                facilities: newTriggerWord.internal_facility_id,
+                user_id: user_data.email,
+                from_to: newTriggerWord.date_range,
+              });
+              setIsOpen(false);
+              setNewTriggerWord(initialNewTrigger);
+            }}
+          >
             <div className="flex flex-col gap-4">
               <Field>
                 <Label className="text-sm dark:text-bodydark2">
@@ -548,8 +606,15 @@ export default function TriggerWords() {
                   Date Range
                 </Label>
                 <DatePicker
-                  startDate={new Date()}
-                  endDate={new Date()}
+                  startDate={newTriggerWord.date_range[0]}
+                  endDate={newTriggerWord.date_range[1]}
+                  onChange={(e) => {
+                    setNewTriggerWord((prev) => ({
+                      ...prev,
+                      date_range: e,
+                    }));
+                  }}
+                  selectsRange
                   required
                   wrapperClassName="w-full"
                   className="dark:bg-boxdark indent-2.5 py-1.5 border border-stroke rounded w-full outline-none focus:shadow-filter focus:shadow-blue-400 dark:text-bodydark1"
@@ -559,14 +624,16 @@ export default function TriggerWords() {
                 <button
                   type="reset"
                   className="dark:text-bodydark1"
-                  onClick={() => setIsOpen(false)}
+                  onClick={() => {
+                    setIsOpen(false);
+                    setNewTriggerWord(initialNewTrigger);
+                  }}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   className="bg-primary text-white dark:text-bodydark1 rounded p-2"
-                  onClick={() => setIsOpen(false)}
                 >
                   Submit
                 </button>
