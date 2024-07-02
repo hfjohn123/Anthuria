@@ -1,25 +1,20 @@
 import DefaultLayout from '../../layout/DefaultLayout';
 import axios from 'axios';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import { Cog6ToothIcon } from '@heroicons/react/24/outline';
 import SortDownIcon from '../../images/icon/sort-down.svg';
 import SortUpIcon from '../../images/icon/sort-up.svg';
-import { ReactElement, useContext, useEffect, useMemo, useState } from 'react';
+import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import Loader from '../../common/Loader';
 import ReactSelectButton from '../../components/Dropdowns/ReactSelectButton.tsx';
 import AutosizeInput from 'react-18-input-autosize';
 import 'react-datepicker/dist/react-datepicker.css';
 import Modal from '../../components/Modal.tsx';
-import Select, {
-  ActionMeta,
-  ClassNamesConfig,
-  components,
-  MultiValue,
-  OptionProps,
-  ValueContainerProps,
-} from 'react-select';
-
+import CheckboxOption from '../../components/Select/CheckboxOption.tsx';
+import Select, { ActionMeta, ClassNamesConfig, MultiValue } from 'react-select';
+import FilterValueContainer from '../../components/Select/FilterValueContainer.tsx';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import {
   ColumnDef,
   flexRender,
@@ -37,7 +32,6 @@ import {
 import { AuthContext } from '../../components/AuthWrapper.tsx';
 import DatePicker from 'react-datepicker';
 import { Field, Input, Label } from '@headlessui/react';
-// import NumberCards from "../../components/Cards/NumberCards.tsx";
 
 type TriggerFinal = {
   progress_note_id: number;
@@ -52,7 +46,7 @@ type TriggerFinal = {
   progress_note: string;
   summary: string;
   trigger_words: string[];
-  updated_time: Date;
+  update_time: Date;
   status: string;
 };
 
@@ -79,43 +73,6 @@ const selectStyles: ClassNamesConfig<{
   menu: () => 'dark:bg-form-input min-w-max max-w-max',
   option: () => '!bg-transparent !text-body dark:!text-bodydark',
 };
-
-const ValueContainer = ({
-  children,
-  ...props
-}: ValueContainerProps<{
-  label: string;
-  value: string;
-}>): ReactElement => {
-  const [, input] = children as ReactElement[];
-  const currentValues = props.getValue();
-  return (
-    <components.ValueContainer {...props}>
-      <div>
-        <span>
-          {props.selectProps.placeholder}
-          {currentValues.length > 0 || props.selectProps.menuIsOpen
-            ? ' is'
-            : ''}{' '}
-          {currentValues.map((val) => val.label).join(', ')}{' '}
-          {currentValues.length > 0 && props.selectProps.menuIsOpen ? ',' : ''}
-        </span>
-        {input}
-      </div>
-    </components.ValueContainer>
-  );
-};
-const Option = (
-  props: OptionProps<{
-    label: string;
-    value: string;
-  }>,
-) => (
-  <components.Option {...props}>
-    <input type="checkbox" checked={props.isSelected} onChange={() => null} />{' '}
-    <label>{props.label}</label>
-  </components.Option>
-);
 
 const dateRangeFilterFn = (
   row: Row<TriggerFinal>,
@@ -160,6 +117,7 @@ const permenentColumnFilters = ['facility_name', 'created_by'];
 
 export default function TriggerWords() {
   const { route, user_applications_locations } = useContext(AuthContext);
+  const queryClient = useQueryClient();
   const { locations } = user_applications_locations.find(
     (d) => d['id'] === 'trigger_words',
   ) || { locations: [] };
@@ -173,10 +131,72 @@ export default function TriggerWords() {
     queryKey: ['trigger-words', route],
     queryFn: () => axios.get(`${route}/trigger_final`).then((res) => res.data),
   });
-  // const { isPending: isPendingTemp, data: data2 } = useQuery({
-  //   queryKey: ['temp', route],
-  //   queryFn: () => axios.get(`${route}/trigger_temp`).then((res) => res.data),
-  // });
+  const updateStatus = useMutation({
+    mutationFn: ({
+      progress_note_id,
+      update_time,
+      status,
+    }: {
+      progress_note_id: number;
+      update_time: Date;
+      status: string;
+    }) =>
+      axios.put(`${route}/trigger_final_status`, {
+        progress_note_id,
+        update_time,
+        status,
+      }),
+    onMutate: async ({
+      progress_note_id,
+      update_time,
+      status,
+    }: {
+      progress_note_id: number;
+      update_time: Date;
+      status: string;
+    }) => {
+      await queryClient.cancelQueries({ queryKey: ['trigger-words', route] });
+      const previousData = queryClient.getQueryData<TriggerFinal[]>([
+        'trigger-words',
+        route,
+      ]);
+      if (previousData) {
+        const newData = [];
+        for (let i = 0; i < previousData.length; i++) {
+          if (
+            previousData[i].progress_note_id === progress_note_id &&
+            previousData[i].update_time === update_time
+          ) {
+            newData.push({
+              ...previousData[i],
+              status: status,
+            });
+          } else {
+            newData.push(previousData[i]);
+          }
+        }
+        queryClient.setQueryData(['trigger-words', route], newData);
+      }
+      return { previousData };
+    },
+    onError: (_error, _id, context) => {
+      if (context?.previousData) {
+        queryClient.setQueryData(
+          ['trigger-words', route],
+          context.previousData,
+        );
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['trigger-words', route] });
+    },
+  });
+  const { data: temporaryData } = useQuery({
+    queryKey: ['temporary-data', route],
+    queryFn: () =>
+      axios.get(`${route}/trigger_temporary_final`).then((res) => res.data),
+  });
+
   const [newTriggerWord, setNewTriggerWord] = useState<{
     trigger_word: string;
     internal_facility_id: string[];
@@ -211,7 +231,7 @@ export default function TriggerWords() {
         accessorKey: 'progress_note_id',
         header: 'Progress Note ID',
         meta: {
-          size: '150px',
+          // size: '160px',
           type: 'categorical',
         },
         sortingFn: 'text',
@@ -272,7 +292,6 @@ export default function TriggerWords() {
         },
         meta: {
           type: 'text',
-          size: '200px',
         },
       },
       {
@@ -292,10 +311,16 @@ export default function TriggerWords() {
         },
       },
       {
+        accessorKey: 'update_time',
+        header: 'Update Time',
+        meta: { type: 'daterange' },
+        filterFn: dateRangeFilterFn,
+      },
+      {
         accessorKey: 'status',
         header: 'Status',
         meta: {
-          size: '150px',
+          size: '200px',
           type: 'categorical',
         },
         filterFn: 'arrIncludesSome',
@@ -315,7 +340,6 @@ export default function TriggerWords() {
       value: string;
     }>,
   ) => {
-    console.log(selected.map((f) => f.value));
     if (selected.length === 0) {
       setTableState((prev) => ({
         ...prev,
@@ -335,7 +359,7 @@ export default function TriggerWords() {
   };
 
   const table = useReactTable({
-    data,
+    data: triggerType === 'Predefined' ? data : temporaryData,
     columns,
     getRowCanExpand: () => true,
     // onColumnFiltersChange: setColumnFilters,
@@ -383,6 +407,7 @@ export default function TriggerWords() {
       trigger_words: true,
       progress_note: false,
       summary: false,
+      update_time: false,
       status: true,
     },
     pagination: {
@@ -404,6 +429,16 @@ export default function TriggerWords() {
   useEffect(() => {
     localStorage.setItem('usersettings', JSON.stringify(tableState));
   }, [tableState]);
+  const parentRef = useRef<HTMLDivElement>(null);
+  const { rows } =
+    data && table.getRowModel() ? table.getRowModel() : { rows: [] };
+  // console.log(table.getRowModel().rows.length);
+  const virtualizer = useVirtualizer({
+    count: rows.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 55.33,
+    overscan: 20,
+  });
 
   if (isPending) {
     return <Loader />;
@@ -411,13 +446,14 @@ export default function TriggerWords() {
   if (isError) {
     return <div>Error: {error.message}</div>;
   }
-  console.log(table.getColumn('trigger_words')?.getFacetedUniqueValues());
 
   return (
     <DefaultLayout title={'Clinical Pulse'}>
       <div className="grid grid-cols-12 ">
         <div className="col-span-12 sm:col-span-9 flex items-center">
-          <span className="text-2xl font-bold gap-1 ">Trigger Word Type:</span>
+          <span className="text-xl lg:text-2xl font-bold gap-1 ">
+            Trigger Word Type:
+          </span>
           <Select
             components={{ IndicatorSeparator: () => null }}
             isSearchable={false}
@@ -430,7 +466,7 @@ export default function TriggerWords() {
             onChange={(e) => setTriggerType(e?.value ?? 'Predefined')}
             classNames={{
               control: () =>
-                '!bg-transparent !border-0 text-2xl font-bold !shadow-none',
+                '!bg-transparent !border-0 text-xl lg:text-2xl font-bold !shadow-none',
               valueContainer: () => '!pr-0',
               dropdownIndicator: () => '!pl-0',
               singleValue: () => '!text-body dark:!text-bodydark',
@@ -441,7 +477,11 @@ export default function TriggerWords() {
           isOpen={isOpen}
           setIsOpen={setIsOpen}
           title="Create a New Trigger Word"
-          classNameses={{ title: 'dark:text-bodydark1' }}
+          classNameses={{
+            title: 'dark:text-bodydark1',
+            button:
+              'text-primary dark:text-secondary col-span-12 lg:col-span-3 lg:justify-self-end justify-self-start self-center',
+          }}
         >
           <form>
             <div className="flex flex-col gap-4">
@@ -469,7 +509,7 @@ export default function TriggerWords() {
                   isMulti
                   closeMenuOnSelect={false}
                   hideSelectedOptions={false}
-                  components={{ Option }}
+                  components={{ Option: CheckboxOption }}
                   value={newTriggerWord.internal_facility_id
                     .filter((value) =>
                       locations.some(
@@ -535,7 +575,7 @@ export default function TriggerWords() {
           </form>
         </Modal>
 
-        <div className=" mt-5 col-span-12 bg-white dark:bg-boxdark shadow-default ">
+        <div className=" mt-5 col-span-12 bg-white dark:bg-boxdark shadow-default  ">
           <div className="flex items-center border-b border-stroke">
             <MagnifyingGlassIcon className="size-5 text-body dark:text-bodydark mx-1" />
             <input
@@ -601,8 +641,8 @@ export default function TriggerWords() {
                 hideSelectedOptions={false}
                 components={{
                   IndicatorSeparator: () => null,
-                  ValueContainer,
-                  Option,
+                  ValueContainer: FilterValueContainer,
+                  Option: CheckboxOption,
                 }}
                 isClearable={true}
                 isMulti={true}
@@ -655,8 +695,8 @@ export default function TriggerWords() {
                     autoFocus={true}
                     components={{
                       IndicatorSeparator: () => null,
-                      ValueContainer,
-                      Option,
+                      ValueContainer: FilterValueContainer,
+                      Option: CheckboxOption,
                     }}
                     isClearable={true}
                     isMulti={true}
@@ -942,124 +982,235 @@ export default function TriggerWords() {
               </button>
             )}
           </div>
-
-          <table className="border-collapse w-full">
-            <thead className="bg-slate-50 dark:bg-graydark">
-              {table.getHeaderGroups().map((headerGroup) => (
-                <tr key={headerGroup.id}>
-                  {/*<th className="w-3">*/}
-                  {/*</th>*/}
-                  {headerGroup.headers.map((header) => {
-                    return (
-                      <th
-                        key={header.id}
-                        colSpan={header.colSpan}
-                        className="py-3 border-b-2 border-stroke dark:border-strokedark text-left select-none group first:pl-3"
-                        onClick={header.column.getToggleSortingHandler()}
-                        role="button"
-                        style={{
-                          width: header.column.columnDef.meta?.size || 'auto',
-                        }}
-                      >
-                        {header.isPlaceholder ? null : (
-                          <span>
-                            {flexRender(
-                              header.column.columnDef.header,
-                              header.getContext(),
-                            )}
-                            {{
-                              asc: (
-                                <img
-                                  src={SortUpIcon}
-                                  alt="Sort Up Icon"
-                                  className="inline size-5"
-                                />
-                              ),
-                              desc: (
-                                <img
-                                  src={SortDownIcon}
-                                  alt="Sort Down Icon"
-                                  className="inline size-5"
-                                />
-                              ),
-                            }[header.column.getIsSorted() as string] ??
-                              null ??
-                              {
+          <div
+            ref={parentRef}
+            className="overflow-x-auto max-w-full overflow-y-hidden "
+          >
+            <table className="border-collapse w-full ">
+              <thead className="bg-slate-50 dark:bg-graydark">
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <tr key={headerGroup.id}>
+                    {/*<th className="w-3">*/}
+                    {/*</th>*/}
+                    {headerGroup.headers.map((header) => {
+                      return (
+                        <th
+                          key={header.id}
+                          colSpan={header.colSpan}
+                          className="py-3 px-3 border-b-2 border-stroke dark:border-strokedark text-left select-none group"
+                          onClick={header.column.getToggleSortingHandler()}
+                          role="button"
+                          style={{
+                            width: header.column.columnDef.meta?.size || 'auto',
+                          }}
+                        >
+                          {header.isPlaceholder ? null : (
+                            <span>
+                              {flexRender(
+                                header.column.columnDef.header,
+                                header.getContext(),
+                              )}
+                              {{
                                 asc: (
                                   <img
                                     src={SortUpIcon}
                                     alt="Sort Up Icon"
-                                    className=" size-5 hidden group-hover:inline "
+                                    className="inline size-5"
                                   />
                                 ),
                                 desc: (
                                   <img
                                     src={SortDownIcon}
                                     alt="Sort Down Icon"
-                                    className=" size-5 hidden group-hover:inline"
+                                    className="inline size-5"
                                   />
                                 ),
-                              }[
-                                header.column.getNextSortingOrder() as string
-                              ] ??
-                              null}
-                          </span>
-                        )}
-                      </th>
-                    );
-                  })}
-                </tr>
-              ))}
-            </thead>
-            <tbody>
-              {table.getRowModel().rows.map((row) => {
-                return (
-                  <>
-                    <tr key={row.id} className="border-t-stroke border-t ">
-                      {row.getVisibleCells().map((cell, idx) => {
-                        if (cell.column.id === 'status') {
+                              }[header.column.getIsSorted() as string] ??
+                                null ??
+                                {
+                                  asc: (
+                                    <img
+                                      src={SortUpIcon}
+                                      alt="Sort Up Icon"
+                                      className=" size-5 hidden group-hover:inline "
+                                    />
+                                  ),
+                                  desc: (
+                                    <img
+                                      src={SortDownIcon}
+                                      alt="Sort Down Icon"
+                                      className=" size-5 hidden group-hover:inline"
+                                    />
+                                  ),
+                                }[
+                                  header.column.getNextSortingOrder() as string
+                                ] ??
+                                null}
+                            </span>
+                          )}
+                        </th>
+                      );
+                    })}
+                  </tr>
+                ))}
+              </thead>
+              <tbody>
+                {virtualizer.getVirtualItems().map((virtualRow, index) => {
+                  const row = rows[virtualRow.index] as Row<TriggerFinal>;
+                  return (
+                    <>
+                      <tr key={row.id} className="border-t-stroke border-t ">
+                        {row.getVisibleCells().map((cell) => {
+                          if (cell.column.id === 'status') {
+                            if (row.getIsExpanded()) {
+                              return (
+                                <td
+                                  key={cell.id}
+                                  className={`py-2 bg-slate-100 px-3 `}
+                                >
+                                  <div className=" flex items-center flex-nowrap">
+                                    {cell.getValue() === 'Needs review' && (
+                                      <div className="size-3 rounded bg-primary"></div>
+                                    )}
+                                    {cell.getValue() === 'Pending' && (
+                                      <div className="size-3 rounded bg-warning"></div>
+                                    )}
+                                    {cell.getValue() === 'Done' && (
+                                      <div className="size-3 rounded bg-success"></div>
+                                    )}
+                                    {cell.getValue() === 'Rejected' && (
+                                      <div className="size-3 rounded bg-danger"></div>
+                                    )}
+                                    <Select
+                                      classNames={{
+                                        control: () =>
+                                          '!border-0 !bg-transparent min-w-max',
+                                        valueContainer: () => 'min-w-max',
+                                      }}
+                                      components={{
+                                        IndicatorSeparator: () => null,
+                                      }}
+                                      value={{
+                                        label: cell.getValue(),
+                                        value: cell.getValue(),
+                                      }}
+                                      options={[
+                                        {
+                                          label: 'Needs review',
+                                          value: 'Needs review',
+                                        },
+                                        {
+                                          label: 'Pending',
+                                          value: 'Pending',
+                                        },
+                                        {
+                                          label: 'Done',
+                                          value: 'Done',
+                                        },
+                                        {
+                                          label: 'Rejected',
+                                          value: 'Rejected',
+                                        },
+                                      ]}
+                                      isDisabled={
+                                        cell.getValue() === 'Temporary'
+                                      }
+                                      onChange={(e) => {
+                                        updateStatus.mutate({
+                                          progress_note_id:
+                                            row.getValue('progress_note_id'),
+                                          update_time:
+                                            row.getValue('update_time'),
+                                          status: e?.value as string,
+                                        });
+                                      }}
+                                    />
+                                  </div>
+                                </td>
+                              );
+                            }
+                            return (
+                              <td key={cell.id} className={`py-2 px-3 `}>
+                                <div className=" flex items-center flex-nowrap ">
+                                  {cell.getValue() === 'Needs review' && (
+                                    <div className="size-3 rounded bg-primary"></div>
+                                  )}
+                                  {cell.getValue() === 'Pending' && (
+                                    <div className="size-3 rounded bg-warning"></div>
+                                  )}
+                                  {cell.getValue() === 'Done' && (
+                                    <div className="size-3 rounded bg-success"></div>
+                                  )}
+                                  {cell.getValue() === 'Rejected' && (
+                                    <div className="size-3 rounded bg-danger"></div>
+                                  )}
+                                  <Select
+                                    classNames={{
+                                      control: () =>
+                                        '!border-0 !bg-transparent min-w-max',
+                                      valueContainer: () => 'min-w-max',
+                                    }}
+                                    isDisabled={cell.getValue() === 'Temporary'}
+                                    components={{
+                                      IndicatorSeparator: () => null,
+                                    }}
+                                    value={{
+                                      label: cell.getValue(),
+                                      value: cell.getValue(),
+                                    }}
+                                    options={[
+                                      {
+                                        label: 'Needs review',
+                                        value: 'Needs review',
+                                      },
+                                      {
+                                        label: 'Pending',
+                                        value: 'Pending',
+                                      },
+                                      {
+                                        label: 'Done',
+                                        value: 'Done',
+                                      },
+                                      {
+                                        label: 'Rejected',
+                                        value: 'Rejected',
+                                      },
+                                    ]}
+                                    onChange={(e) => {
+                                      updateStatus.mutate({
+                                        progress_note_id:
+                                          row.getValue('progress_note_id'),
+                                        update_time:
+                                          row.getValue('update_time'),
+                                        status: e?.value as string,
+                                      });
+                                    }}
+                                  />
+                                </div>
+                              </td>
+                            );
+                          }
                           if (row.getIsExpanded()) {
                             return (
                               <td
                                 key={cell.id}
-                                className={`py-2 bg-slate-100${idx === 0 ? 'pl-3' : ''} `}
+                                className={`py-2 bg-slate-100 px-3 `}
+                                onClick={row.getToggleExpandedHandler()}
+                                role="button"
                               >
-                                <div className=" flex items-center gap-2 flex-nowrap ">
-                                  <div
-                                    className={`bg-red-500 rounded size-3`}
-                                  ></div>
-                                  {flexRender(
-                                    cell.column.columnDef.cell,
-                                    cell.getContext(),
-                                  )}
-                                </div>
+                                {flexRender(
+                                  cell.column.columnDef.cell,
+                                  cell.getContext(),
+                                )}
                               </td>
                             );
                           }
                           return (
                             <td
                               key={cell.id}
-                              className={`py-2 ${idx === 0 ? 'pl-3' : ''} `}
-                            >
-                              <div className="flex items-center gap-2 flex-nowrap">
-                                <div
-                                  className={`bg-red-500 rounded size-3`}
-                                ></div>
-                                {flexRender(
-                                  cell.column.columnDef.cell,
-                                  cell.getContext(),
-                                )}
-                              </div>
-                            </td>
-                          );
-                        }
-                        if (row.getIsExpanded()) {
-                          return (
-                            <td
-                              key={cell.id}
-                              className={`py-2 bg-slate-100 ${idx === 0 ? 'pl-3' : ''} `}
-                              onClick={row.getToggleExpandedHandler()}
+                              className={`py-2 px-3`}
                               role="button"
+                              onClick={row.getToggleExpandedHandler()}
                             >
                               {flexRender(
                                 cell.column.columnDef.cell,
@@ -1067,35 +1218,21 @@ export default function TriggerWords() {
                               )}
                             </td>
                           );
-                        }
-
-                        return (
-                          <td
-                            key={cell.id}
-                            className={`py-2 ${idx === 0 ? 'pl-3' : ''} `}
-                            role="button"
-                            onClick={row.getToggleExpandedHandler()}
-                          >
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext(),
-                            )}
-                          </td>
-                        );
-                      })}
-                    </tr>
-                    {row.getIsExpanded() && (
-                      <tr>
-                        <td colSpan={row.getVisibleCells().length}>
-                          {renderSubComponent({ row })}
-                        </td>
+                        })}
                       </tr>
-                    )}
-                  </>
-                );
-              })}
-            </tbody>
-          </table>
+                      {row.getIsExpanded() && (
+                        <tr>
+                          <td colSpan={row.getVisibleCells().length}>
+                            {renderSubComponent({ row })}
+                          </td>
+                        </tr>
+                      )}
+                    </>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </DefaultLayout>

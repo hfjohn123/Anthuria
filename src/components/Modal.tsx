@@ -5,6 +5,7 @@ import {
   DialogTitle,
 } from '@headlessui/react';
 import classNames from 'classnames';
+
 export default function Modal({
   children,
   isOpen,
@@ -16,14 +17,14 @@ export default function Modal({
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
   title: string;
-  classNameses?: { title: string };
+  classNameses?: {
+    title?: string;
+    button?: string;
+  };
 }) {
   return (
     <>
-      <button
-        className="text-primary dark:text-secondary col-span-3 justify-self-end self-center"
-        onClick={() => setIsOpen(true)}
-      >
+      <button className={classNameses?.button} onClick={() => setIsOpen(true)}>
         + Add a New Trigger Word
       </button>
       <Dialog
