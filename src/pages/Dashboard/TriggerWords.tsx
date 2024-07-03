@@ -14,7 +14,6 @@ import Modal from '../../components/Modal.tsx';
 import CheckboxOption from '../../components/Select/CheckboxOption.tsx';
 import Select, { ActionMeta, ClassNamesConfig, MultiValue } from 'react-select';
 import FilterValueContainer from '../../components/Select/FilterValueContainer.tsx';
-import { useVirtualizer } from '@tanstack/react-virtual';
 import {
   ColumnDef,
   flexRender,
@@ -24,6 +23,7 @@ import {
   getFacetedRowModel,
   getFacetedUniqueValues,
   getFilteredRowModel,
+  getPaginationRowModel,
   getSortedRowModel,
   Row,
   TableState,
@@ -422,7 +422,9 @@ export default function TriggerWords() {
     getFacetedUniqueValues: getFacetedUniqueValues(), // generate unique values for select filter/autocomplete
     getFacetedMinMaxValues: getFacetedMinMaxValues(), // generate min/max values for numeric range filter
     getSortedRowModel: getSortedRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
   });
+  const userVisibilitySettings = localStorage.getItem('userVisibilitySettings');
   const [tableState, setTableState] = useState<TableState>({
     globalFilter: '',
     columnSizing: {},
@@ -448,20 +450,22 @@ export default function TriggerWords() {
       right: [],
     },
     columnOrder: [],
-    columnVisibility: {
-      facility_name: true,
-      patient_name: true,
-      progress_note_id: true,
-      created_date: true,
-      created_by: false,
-      revision_by: false,
-      revision_date: false,
-      trigger_words: true,
-      progress_note: false,
-      summary: false,
-      update_time: false,
-      status: true,
-    },
+    columnVisibility: userVisibilitySettings
+      ? JSON.parse(userVisibilitySettings)
+      : {
+          facility_name: true,
+          patient_name: true,
+          progress_note_id: true,
+          created_date: true,
+          created_by: false,
+          revision_by: false,
+          revision_date: false,
+          trigger_words: true,
+          progress_note: false,
+          summary: false,
+          update_time: false,
+          status: true,
+        },
     pagination: {
       pageIndex: 0,
       pageSize: 10,
@@ -473,17 +477,8 @@ export default function TriggerWords() {
     onStateChange: setTableState,
   }));
   useEffect(() => {
-    const usersettings = localStorage.getItem('usersettings');
-    if (usersettings) {
-      setTableState({
-        ...tableState,
-        columnVisibility: JSON.parse(usersettings),
-      });
-    }
-  }, []);
-  useEffect(() => {
     localStorage.setItem(
-      'usersettings',
+      'userVisibilitySettings',
       JSON.stringify(tableState.columnVisibility),
     );
   }, [tableState.columnVisibility]);
@@ -495,15 +490,6 @@ export default function TriggerWords() {
     });
   }, [triggerType]);
   const parentRef = useRef<HTMLDivElement>(null);
-  const { rows } =
-    data && table.getRowModel() ? table.getRowModel() : { rows: [] };
-  // console.log(table.getRowModel().rows.length);
-  const virtualizer = useVirtualizer({
-    count: rows.length,
-    getScrollElement: () => parentRef.current,
-    estimateSize: () => 54,
-    overscan: 20,
-  });
 
   if (isPending) {
     return <Loader />;
@@ -640,6 +626,22 @@ export default function TriggerWords() {
                 <DatePicker
                   startDate={newTriggerWord.date_range[0]}
                   endDate={newTriggerWord.date_range[1]}
+                  maxDate={
+                    newTriggerWord.date_range[1]
+                      ? new Date()
+                      : new Date(
+                          Math.min(
+                            new Date().getTime(),
+                            newTriggerWord.date_range[0]
+                              ? new Date(newTriggerWord.date_range[0]).setDate(
+                                  new Date(
+                                    newTriggerWord.date_range[0],
+                                  ).getDate() + 7,
+                                )
+                              : new Date().getTime(),
+                          ),
+                        )
+                  }
                   onChange={(e) => {
                     setNewTriggerWord((prev) => ({
                       ...prev,
@@ -1154,8 +1156,7 @@ export default function TriggerWords() {
                 ))}
               </thead>
               <tbody>
-                {virtualizer.getVirtualItems().map((virtualRow, index) => {
-                  const row = rows[virtualRow.index] as Row<TriggerFinal>;
+                {table.getRowModel().rows.map((row) => {
                   return (
                     <>
                       <tr key={row.id} className="border-t-stroke border-t ">
@@ -1257,6 +1258,70 @@ export default function TriggerWords() {
                 })}
               </tbody>
             </table>
+            <div className="flex items-center gap-2 px-2 py-2 border-t-2 border-t-stroke">
+              <button
+                className="border rounded p-1"
+                onClick={() => table.firstPage()}
+                disabled={!table.getCanPreviousPage()}
+              >
+                {'<<'}
+              </button>
+              <button
+                className="border rounded p-1"
+                onClick={() => table.previousPage()}
+                disabled={!table.getCanPreviousPage()}
+              >
+                {'<'}
+              </button>
+              <button
+                className="border rounded p-1"
+                onClick={() => table.nextPage()}
+                disabled={!table.getCanNextPage()}
+              >
+                {'>'}
+              </button>
+              <button
+                className="border rounded p-1"
+                onClick={() => table.lastPage()}
+                disabled={!table.getCanNextPage()}
+              >
+                {'>>'}
+              </button>
+              <span className="flex items-center gap-1">
+                <div>Page</div>
+                <strong>
+                  {tableState.pagination.pageIndex + 1} of{' '}
+                  {table.getPageCount().toLocaleString()}
+                </strong>
+              </span>
+              <span className="flex items-center gap-1">
+                | Go to page:
+                <input
+                  type="number"
+                  defaultValue={table.getState().pagination.pageIndex + 1}
+                  onChange={(e) => {
+                    const page = e.target.value
+                      ? Number(e.target.value) - 1
+                      : 0;
+                    table.setPageIndex(page);
+                  }}
+                  value={tableState.pagination.pageIndex + 1}
+                  className="border p-1 rounded w-16"
+                />
+              </span>
+              <select
+                value={tableState.pagination.pageSize}
+                onChange={(e) => {
+                  table.setPageSize(Number(e.target.value));
+                }}
+              >
+                {[10, 20, 30, 50, 100, 200].map((pageSize) => (
+                  <option key={pageSize} value={pageSize}>
+                    Show {pageSize}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
         </div>
       </div>
