@@ -115,7 +115,11 @@ const renderSubComponent = ({ row }: { row: Row<TriggerFinal> }) => {
   );
 };
 const permenentColumnFilters = ['facility_name', 'created_by'];
-const initialNewTrigger = {
+const initialNewTrigger: {
+  trigger_word: string;
+  internal_facility_id: string[];
+  date_range: [Date, Date];
+} = {
   trigger_word: '',
   internal_facility_id: [],
   date_range: [new Date(), new Date()],
@@ -245,7 +249,7 @@ export default function TriggerWords() {
         accessorKey: 'facility_name',
         header: 'Facility',
         meta: {
-          // size: '120px',
+          wrap: true,
           type: 'categorical',
         },
         filterFn: 'arrIncludesSome',
@@ -256,7 +260,7 @@ export default function TriggerWords() {
         cell: () => 'John Doe',
         filterFn: 'includesString',
         meta: {
-          // size: '130px',
+          wrap: false,
           type: 'text',
         },
       },
@@ -264,7 +268,7 @@ export default function TriggerWords() {
         accessorKey: 'progress_note_id',
         header: 'Progress Note ID',
         meta: {
-          // size: '160px',
+          wrap: false,
           type: 'categorical',
         },
         sortingFn: 'text',
@@ -283,6 +287,7 @@ export default function TriggerWords() {
         },
         filterFn: dateRangeFilterFn,
         meta: {
+          wrap: false,
           type: 'daterange',
         },
       },
@@ -291,13 +296,19 @@ export default function TriggerWords() {
         header: 'Created By',
         filterFn: 'arrIncludesSome',
         meta: {
+          wrap: false,
           type: 'categorical',
         },
       },
       {
         accessorKey: 'revision_date',
         header: 'Revision Date',
+        cell: (info) => {
+          const date = new Date(info.getValue() as string | number | Date);
+          return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+        },
         meta: {
+          wrap: false,
           type: 'daterange',
         },
         filterFn: dateRangeFilterFn,
@@ -306,6 +317,7 @@ export default function TriggerWords() {
         accessorKey: 'revision_by',
         header: 'Revision By',
         meta: {
+          wrap: false,
           type: 'categorical',
         },
         filterFn: 'arrIncludesSome',
@@ -324,6 +336,7 @@ export default function TriggerWords() {
           );
         },
         meta: {
+          wrap: true,
           type: 'text',
         },
       },
@@ -332,6 +345,7 @@ export default function TriggerWords() {
         header: 'Progress Note',
         filterFn: 'includesString',
         meta: {
+          wrap: true,
           type: 'text',
         },
       },
@@ -340,20 +354,25 @@ export default function TriggerWords() {
         header: 'Summary',
         filterFn: 'includesString',
         meta: {
+          wrap: true,
           type: 'text',
         },
       },
       {
         accessorKey: 'update_time',
         header: 'Update Time',
-        meta: { type: 'daterange' },
+        meta: { type: 'daterange', wrap: false },
+        cell: (info) => {
+          const date = new Date(info.getValue() as string | number | Date);
+          return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+        },
         filterFn: dateRangeFilterFn,
       },
       {
         accessorKey: 'status',
         header: 'Status',
         meta: {
-          size: '200px',
+          wrap: false,
           type: 'categorical',
         },
         filterFn: 'arrIncludesSome',
@@ -482,7 +501,7 @@ export default function TriggerWords() {
   const virtualizer = useVirtualizer({
     count: rows.length,
     getScrollElement: () => parentRef.current,
-    estimateSize: () => 55.33,
+    estimateSize: () => 54,
     overscan: 20,
   });
 
@@ -509,13 +528,24 @@ export default function TriggerWords() {
               { label: 'Temporary', value: 'Temporary' },
             ]}
             value={{ label: triggerType, value: triggerType }}
-            onChange={(e) => setTriggerType(e?.value ?? 'Predefined')}
+            onChange={(e) => {
+              setTriggerType(e?.value ?? 'Predefined');
+              e?.value === 'Temporary'
+                ? queryClient.invalidateQueries({
+                    queryKey: ['temporary-data', route],
+                  })
+                : queryClient.invalidateQueries({
+                    queryKey: ['trigger-words', route],
+                  });
+            }}
             classNames={{
               control: () =>
                 '!bg-transparent !border-0 text-xl lg:text-2xl font-bold !shadow-none',
               valueContainer: () => '!pr-0',
               dropdownIndicator: () => '!pl-0',
               singleValue: () => '!text-body dark:!text-bodydark',
+              menu: () => 'dark:bg-form-input min-w-max',
+              option: () => 'text-body dark:!text-bodydark',
             }}
           />
         </div>
@@ -598,6 +628,8 @@ export default function TriggerWords() {
                   classNames={{
                     control: () =>
                       '!border-stroke dark:bg-boxdark dark:text-bodydark1',
+                    menu: () => 'dark:bg-form-input min-w-max',
+                    option: () => 'text-body dark:!text-bodydark',
                   }}
                 />
               </Field>
@@ -1128,77 +1160,18 @@ export default function TriggerWords() {
                     <>
                       <tr key={row.id} className="border-t-stroke border-t ">
                         {row.getVisibleCells().map((cell) => {
-                          if (cell.column.id === 'status') {
-                            if (row.getIsExpanded()) {
-                              return (
-                                <td
-                                  key={cell.id}
-                                  className={`py-2 bg-slate-100 px-3 `}
+                          return (
+                            <td
+                              key={cell.id}
+                              className={`py-2 px-3 ${!cell.column.columnDef.meta?.wrap && 'whitespace-nowrap'} ${row.getIsExpanded() && 'bg-slate-100 dark:bg-slate-700'}`}
+                              role="button"
+                              onClick={row.getToggleExpandedHandler()}
+                            >
+                              {cell.column.id === 'status' ? (
+                                <div
+                                  className=" flex items-center flex-nowrap"
+                                  onClick={(e) => e.stopPropagation()}
                                 >
-                                  <div className=" flex items-center flex-nowrap">
-                                    {cell.getValue() === 'Needs review' && (
-                                      <div className="size-3 rounded bg-primary"></div>
-                                    )}
-                                    {cell.getValue() === 'Pending' && (
-                                      <div className="size-3 rounded bg-warning"></div>
-                                    )}
-                                    {cell.getValue() === 'Done' && (
-                                      <div className="size-3 rounded bg-success"></div>
-                                    )}
-                                    {cell.getValue() === 'Rejected' && (
-                                      <div className="size-3 rounded bg-danger"></div>
-                                    )}
-                                    <Select
-                                      classNames={{
-                                        control: () =>
-                                          '!border-0 !bg-transparent min-w-max',
-                                        valueContainer: () => 'min-w-max',
-                                      }}
-                                      components={{
-                                        IndicatorSeparator: () => null,
-                                      }}
-                                      value={{
-                                        label: cell.getValue(),
-                                        value: cell.getValue(),
-                                      }}
-                                      options={[
-                                        {
-                                          label: 'Needs review',
-                                          value: 'Needs review',
-                                        },
-                                        {
-                                          label: 'Pending',
-                                          value: 'Pending',
-                                        },
-                                        {
-                                          label: 'Done',
-                                          value: 'Done',
-                                        },
-                                        {
-                                          label: 'Rejected',
-                                          value: 'Rejected',
-                                        },
-                                      ]}
-                                      isDisabled={
-                                        cell.getValue() === 'Temporary'
-                                      }
-                                      onChange={(e) => {
-                                        updateStatus.mutate({
-                                          progress_note_id:
-                                            row.getValue('progress_note_id'),
-                                          update_time:
-                                            row.getValue('update_time'),
-                                          status: e?.value as string,
-                                        });
-                                      }}
-                                    />
-                                  </div>
-                                </td>
-                              );
-                            }
-                            return (
-                              <td key={cell.id} className={`py-2 px-3 `}>
-                                <div className=" flex items-center flex-nowrap ">
                                   {cell.getValue() === 'Needs review' && (
                                     <div className="size-3 rounded bg-primary"></div>
                                   )}
@@ -1214,10 +1187,14 @@ export default function TriggerWords() {
                                   <Select
                                     classNames={{
                                       control: () =>
-                                        '!border-0 !bg-transparent min-w-max',
+                                        '!border-0 !bg-transparent min-w-max !shadow-none',
                                       valueContainer: () => 'min-w-max',
+                                      singleValue: () => 'dark:!text-bodydark',
+                                      menu: () =>
+                                        'dark:bg-form-input min-w-max',
+                                      option: () =>
+                                        'text-body dark:!text-bodydark',
                                     }}
-                                    isDisabled={cell.getValue() === 'Temporary'}
                                     components={{
                                       IndicatorSeparator: () => null,
                                     }}
@@ -1225,6 +1202,8 @@ export default function TriggerWords() {
                                       label: cell.getValue(),
                                       value: cell.getValue(),
                                     }}
+                                    menuPortalTarget={document.body}
+                                    isSearchable={false}
                                     options={[
                                       {
                                         label: 'Needs review',
@@ -1243,6 +1222,8 @@ export default function TriggerWords() {
                                         value: 'Rejected',
                                       },
                                     ]}
+                                    isDisabled={cell.getValue() === 'Temporary'}
+                                    menuPlacement="auto"
                                     onChange={(e) => {
                                       updateStatus.mutate({
                                         progress_note_id:
@@ -1254,34 +1235,11 @@ export default function TriggerWords() {
                                     }}
                                   />
                                 </div>
-                              </td>
-                            );
-                          }
-                          if (row.getIsExpanded()) {
-                            return (
-                              <td
-                                key={cell.id}
-                                className={`py-2 bg-slate-100 px-3 `}
-                                onClick={row.getToggleExpandedHandler()}
-                                role="button"
-                              >
-                                {flexRender(
+                              ) : (
+                                flexRender(
                                   cell.column.columnDef.cell,
                                   cell.getContext(),
-                                )}
-                              </td>
-                            );
-                          }
-                          return (
-                            <td
-                              key={cell.id}
-                              className={`py-2 px-3`}
-                              role="button"
-                              onClick={row.getToggleExpandedHandler()}
-                            >
-                              {flexRender(
-                                cell.column.columnDef.cell,
-                                cell.getContext(),
+                                )
                               )}
                             </td>
                           );
