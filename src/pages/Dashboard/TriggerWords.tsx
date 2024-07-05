@@ -109,7 +109,15 @@ const renderSubComponent = ({ row }: { row: Row<TriggerFinal> }) => {
           .join(', ')
           .replaceAll('_', ' ')}
         <div className="font-bold mt-2.5">Created Date: </div>
-        {row.getValue('created_date')}
+        {new Date(row.getValue('created_date')).toLocaleDateString()}{' '}
+        {new Date(row.getValue('created_date')).toLocaleTimeString(
+          navigator.language,
+          {
+            hour: '2-digit',
+            minute: '2-digit',
+          },
+        )}
+        {/*{}*/}
       </div>
     </div>
   );
@@ -257,7 +265,6 @@ export default function TriggerWords() {
       {
         accessorKey: 'patient_name',
         header: 'Patient',
-        cell: () => 'John Doe',
         filterFn: 'includesString',
         meta: {
           wrap: false,
@@ -283,7 +290,7 @@ export default function TriggerWords() {
         header: 'Created Date',
         cell: (info) => {
           const date = new Date(info.getValue() as string | number | Date);
-          return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+          return `${date.toLocaleDateString()} ${date.toLocaleTimeString(navigator.language, { hour: '2-digit', minute: '2-digit' })}`;
         },
         filterFn: dateRangeFilterFn,
         meta: {
@@ -305,7 +312,7 @@ export default function TriggerWords() {
         header: 'Revision Date',
         cell: (info) => {
           const date = new Date(info.getValue() as string | number | Date);
-          return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+          return `${date.toLocaleDateString()} ${date.toLocaleTimeString(navigator.language, { hour: '2-digit', minute: '2-digit' })}`;
         },
         meta: {
           wrap: false,
@@ -364,7 +371,7 @@ export default function TriggerWords() {
         meta: { type: 'daterange', wrap: false },
         cell: (info) => {
           const date = new Date(info.getValue() as string | number | Date);
-          return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+          return `${date.toLocaleDateString()} ${date.toLocaleTimeString(navigator.language, { hour: '2-digit', minute: '2-digit' })}`;
         },
         filterFn: dateRangeFilterFn,
       },
@@ -1189,12 +1196,14 @@ export default function TriggerWords() {
                                     classNames={{
                                       control: () =>
                                         '!border-0 !bg-transparent min-w-max !shadow-none',
-                                      valueContainer: () => 'min-w-max',
+                                      valueContainer: () => 'min-w-max !pr-0',
                                       singleValue: () => 'dark:!text-bodydark',
                                       menu: () =>
                                         'dark:bg-form-input min-w-max',
                                       option: () =>
                                         'text-body dark:!text-bodydark',
+                                      indicatorsContainer: () => '!pl-0',
+                                      dropdownIndicator: () => '!pl-0',
                                     }}
                                     components={{
                                       IndicatorSeparator: () => null,
@@ -1260,28 +1269,28 @@ export default function TriggerWords() {
             </table>
             <div className="flex items-center gap-2 px-2 py-2 border-t-2 border-t-stroke">
               <button
-                className="border rounded p-1"
+                className="border rounded p-1 disabled:opacity-30"
                 onClick={() => table.firstPage()}
                 disabled={!table.getCanPreviousPage()}
               >
                 {'<<'}
               </button>
               <button
-                className="border rounded p-1"
+                className="border rounded p-1 disabled:opacity-30"
                 onClick={() => table.previousPage()}
                 disabled={!table.getCanPreviousPage()}
               >
                 {'<'}
               </button>
               <button
-                className="border rounded p-1"
+                className="border rounded p-1 disabled:opacity-30"
                 onClick={() => table.nextPage()}
                 disabled={!table.getCanNextPage()}
               >
                 {'>'}
               </button>
               <button
-                className="border rounded p-1"
+                className="border rounded p-1 disabled:opacity-30"
                 onClick={() => table.lastPage()}
                 disabled={!table.getCanNextPage()}
               >
@@ -1301,12 +1310,15 @@ export default function TriggerWords() {
                   defaultValue={table.getState().pagination.pageIndex + 1}
                   onChange={(e) => {
                     const page = e.target.value
-                      ? Number(e.target.value) - 1
+                      ? Math.min(
+                          Number(e.target.value) - 1,
+                          table.getPageCount() - 1,
+                        )
                       : 0;
                     table.setPageIndex(page);
                   }}
                   value={tableState.pagination.pageIndex + 1}
-                  className="border p-1 rounded w-16"
+                  className="border border-stroke p-1 rounded w-16"
                 />
               </span>
               <select
