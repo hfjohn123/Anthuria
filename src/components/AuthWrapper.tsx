@@ -1,6 +1,6 @@
 import Loader from '../common/Loader';
-import { useQuery } from '@tanstack/react-query';
-import { createContext } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { createContext, useEffect } from 'react';
 import ErrorPage from '../common/ErrorPage.tsx';
 import axios from 'axios';
 import Session from 'supertokens-auth-react/recipe/session';
@@ -32,6 +32,7 @@ export function getRoute() {
 }
 
 export default function AuthWrapper({ children }: { children: JSX.Element }) {
+  const queryClient = useQueryClient();
   const sessionContext = Session.useSessionContext();
   const route = getRoute();
 
@@ -62,17 +63,6 @@ export default function AuthWrapper({ children }: { children: JSX.Element }) {
     enabled: !sessionContext.loading && sessionContext.doesSessionExist,
   });
 
-  // user_data &&
-  //   pendo.initialize({
-  //     visitor: {
-  //       id: user_data.email,
-  //       email: user_data.email,
-  //     },
-  //
-  //     account: {
-  //       id: user_data.email,
-  //     },
-  //   });
   user_data &&
     Intercom({
       app_id: 'x02d82le',
@@ -80,6 +70,14 @@ export default function AuthWrapper({ children }: { children: JSX.Element }) {
       name: user_data.name, // IMPORTANT: Replace "user.name" with the variable you use to capture the user's name
       email: user_data.email, // IMPORTANT: Replace "user.email" with the variable you use to capture the user's email
     });
+
+  useEffect(() => {
+    const websocket = new WebSocket(`${route}/ws`);
+    websocket.onopen = () => {
+      console.log('connected');
+    };
+  }, [queryClient, user_applications_locations]);
+
   if (sessionContext.loading) {
     return <Loader />;
   }
