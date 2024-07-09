@@ -1307,7 +1307,6 @@ export default function TriggerWords() {
                 | Go to page:
                 <input
                   type="number"
-                  defaultValue={table.getState().pagination.pageIndex + 1}
                   onChange={(e) => {
                     const page = e.target.value
                       ? Math.min(
