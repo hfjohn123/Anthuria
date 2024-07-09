@@ -1,5 +1,6 @@
 import DropdownUser from './DropdownUser';
 import DarkModeSwitcher from './DarkModeSwitcher';
+import DropdownNotification from './DropdownNotification';
 
 const Header = (props: {
   sidebarOpen: string | boolean | undefined;
@@ -61,6 +62,9 @@ const Header = (props: {
             {/* <!-- Dark Mode Toggler --> */}
             <DarkModeSwitcher />
             {/* <!-- Dark Mode Toggler --> */}
+            {/* <!-- Notification Menu Area --> */}
+            <DropdownNotification />
+            {/* <!-- Notification Menu Area --> */}
           </ul>
 
           {/* <!-- User Area --> */}

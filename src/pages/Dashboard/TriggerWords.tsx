@@ -264,6 +264,9 @@ export default function TriggerWords() {
       },
       {
         accessorKey: 'patient_name',
+        cell: () => {
+          return 'John Doe';
+        },
         header: 'Patient',
         filterFn: 'includesString',
         meta: {
