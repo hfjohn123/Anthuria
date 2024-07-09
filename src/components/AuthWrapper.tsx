@@ -72,10 +72,15 @@ export default function AuthWrapper({ children }: { children: JSX.Element }) {
     });
 
   useEffect(() => {
-    const websocket = new WebSocket(`${route}/ws`);
-    websocket.onopen = () => {
-      console.log('connected');
-    };
+    if (queryClient && user_applications_locations) {
+      const websocket = new WebSocket(`${route}/ws`);
+      websocket.onopen = () => {
+        console.log('connected');
+      };
+      return () => {
+        websocket.close();
+      };
+    }
   }, [queryClient, user_applications_locations]);
 
   if (sessionContext.loading) {
