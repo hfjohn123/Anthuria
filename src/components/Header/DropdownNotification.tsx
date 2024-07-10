@@ -14,26 +14,27 @@ type Notification = {
   is_read: boolean;
 };
 const DropdownNotification = () => {
-  // const queryClient = useQueryClient();
+  const queryClient = useQueryClient();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [notifying, setNotifying] = useState(false);
-  const trigger = useRef<any>(null);
-  const dropdown = useRef<any>(null);
+  const trigger = useRef<HTMLAnchorElement>(null);
+  const dropdown = useRef<HTMLDivElement>(null);
   const { route } = useContext(AuthContext);
   useEffect(() => {
     const clickHandler = ({ target }: MouseEvent) => {
-      if (!dropdown.current) return;
+      const clickedElement = target as Node;
+      if (!trigger.current || !dropdown.current) return;
       if (
         !dropdownOpen ||
-        dropdown.current.contains(target) ||
-        trigger.current.contains(target)
+        dropdown.current.contains(clickedElement) ||
+        trigger.current.contains(clickedElement)
       )
         return;
       setDropdownOpen(false);
     };
     document.addEventListener('click', clickHandler);
     return () => document.removeEventListener('click', clickHandler);
-  });
+  }, [dropdownOpen]);
   // close if the esc key is pressed
   useEffect(() => {
     const keyHandler = ({ keyCode }: KeyboardEvent) => {
@@ -49,7 +50,6 @@ const DropdownNotification = () => {
     queryFn: () =>
       axios.get(`${route}/notifications`).then((res) => {
         if (res.data.some((d: Notification) => !d.is_read)) {
-          console.log('yes');
           setNotifying(true);
         }
         return res.data;
@@ -58,6 +58,31 @@ const DropdownNotification = () => {
 
   const readNotification = useMutation({
     mutationFn: () => axios.put(`${route}/notifications_read`),
+  });
+
+  const deleteNotification = useMutation({
+    mutationFn: (notification_type_id: string[]) =>
+      axios.put(`${route}/notifications_delete`, { notification_type_id }),
+    onMutate: async (notification_type_id) => {
+      await queryClient.cancelQueries({ queryKey: ['notification', route] });
+      const previousNotifications = queryClient.getQueryData<Notification[]>([
+        'notification',
+        route,
+      ]);
+      if (previousNotifications) {
+        queryClient.setQueryData(
+          ['notification', route],
+          previousNotifications.filter(
+            (notification) =>
+              !notification_type_id.includes(notification.notification_type_id),
+          ),
+        );
+      }
+      return { previousNotifications };
+    },
+    onError: () => {
+      queryClient.invalidateQueries({ queryKey: ['notification', route] });
+    },
   });
 
   if (isError) {
@@ -115,7 +140,16 @@ const DropdownNotification = () => {
       >
         <div className="px-4.5 py-3 flex justify-between">
           <h5 className="text-sm font-medium text-bodydark2">Notification</h5>
-          <span className="text-xs font-medium text-bodydark2">Clear All</span>
+          <span
+            className="text-xs font-medium text-bodydark2"
+            onClick={() =>
+              deleteNotification.mutate([
+                ...data.map((item: Notification) => item.notification_type_id),
+              ])
+            }
+          >
+            Clear All
+          </span>
         </div>
 
         <ul className="flex h-auto flex-col overflow-y-auto">
@@ -146,7 +180,15 @@ const DropdownNotification = () => {
                         )}
                       </p>
                     </div>
-                    <span className="text-xs">X</span>
+                    <span
+                      className="text-xs"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        deleteNotification.mutate([item.notification_type_id]);
+                      }}
+                    >
+                      X
+                    </span>
                   </div>
                 </Link>
               </li>
