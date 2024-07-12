@@ -62,7 +62,7 @@ const DropdownNotification = () => {
 
   const deleteNotification = useMutation({
     mutationFn: (notification_type_id: string[]) =>
-      axios.put(`${route}/notifications_delete`, { notification_type_id }),
+      axios.put(`${route}/notifications_delete`, notification_type_id),
     onMutate: async (notification_type_id) => {
       await queryClient.cancelQueries({ queryKey: ['notification', route] });
       const previousNotifications = queryClient.getQueryData<Notification[]>([
@@ -80,7 +80,7 @@ const DropdownNotification = () => {
       }
       return { previousNotifications };
     },
-    onError: () => {
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['notification', route] });
     },
   });
@@ -109,7 +109,7 @@ const DropdownNotification = () => {
       >
         <span
           className={`absolute -top-0.5 right-0 z-1 h-2 w-2 rounded-full bg-meta-1 ${
-            notifying === false ? 'hidden' : 'inline'
+            !notifying ? 'hidden' : 'inline'
           }`}
         >
           <span className="absolute -z-1 inline-flex h-full w-full animate-ping rounded-full bg-meta-1 opacity-75"></span>
@@ -138,18 +138,23 @@ const DropdownNotification = () => {
           dropdownOpen ? 'block' : 'hidden'
         }`}
       >
-        <div className="px-4.5 py-3 flex justify-between">
+        <div className="px-4.5 py-3 flex justify-between items-center">
           <h5 className="text-sm font-medium text-bodydark2">Notification</h5>
-          <span
-            className="text-xs font-medium text-bodydark2"
-            onClick={() =>
-              deleteNotification.mutate([
-                ...data.map((item: Notification) => item.notification_type_id),
-              ])
-            }
-          >
-            Clear All
-          </span>
+          {data && data.length > 0 && (
+            <span
+              className="text-xs font-medium text-bodydark2"
+              role="button"
+              onClick={() =>
+                deleteNotification.mutate([
+                  ...data.map(
+                    (item: Notification) => item.notification_type_id,
+                  ),
+                ])
+              }
+            >
+              Clear All
+            </span>
+          )}
         </div>
 
         <ul className="flex h-auto flex-col overflow-y-auto">
@@ -157,17 +162,13 @@ const DropdownNotification = () => {
             data.map((item: Notification) => (
               <li key={item.user_id + item.notification_type_id}>
                 <Link
+                  reloadDocument={!!item.corresponding_url}
                   className="flex flex-col gap-2.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4"
                   to={item.corresponding_url || '#'}
                 >
                   <div className="flex gap-1.5 justify-between">
                     <div className="flex flex-col gap-1.5">
-                      <p className="text-sm">
-                        {/*<span className="text-black dark:text-white">*/}
-                        {/*  Edit your information in a swipe*/}
-                        {/*</span>{' '}*/}
-                        {item.notification_note}
-                      </p>
+                      <p className="text-sm">{item.notification_note}</p>
 
                       <p className="text-xs">
                         {new Date(item.created_time).toLocaleDateString()}{' '}
@@ -184,6 +185,7 @@ const DropdownNotification = () => {
                       className="text-xs"
                       onClick={(e) => {
                         e.stopPropagation();
+                        e.preventDefault();
                         deleteNotification.mutate([item.notification_type_id]);
                       }}
                     >

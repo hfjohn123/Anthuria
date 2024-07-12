@@ -5,7 +5,14 @@ import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import { Cog6ToothIcon } from '@heroicons/react/24/outline';
 import SortDownIcon from '../../images/icon/sort-down.svg';
 import SortUpIcon from '../../images/icon/sort-up.svg';
-import { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  Fragment,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import Loader from '../../common/Loader';
 import ReactSelectButton from '../../components/Dropdowns/ReactSelectButton.tsx';
 import AutosizeInput from 'react-18-input-autosize';
@@ -91,9 +98,8 @@ const dateRangeFilterFn = (
 
 const renderSubComponent = ({ row }: { row: Row<TriggerFinal> }) => {
   return (
-    <div className="flex bg-slate-50 dark:bg-slate-900 px-4 justify-evenly py-4">
-      {/*<div>{row.getValue('revision_date')}</div>*/}
-      <div className="basis-2/5">
+    <div className="bg-slate-50 dark:bg-slate-900 px-4 text-sm py-4 flex gap-20">
+      <div className="basis-1/2">
         <div className="font-bold"> Progress Note:</div>
         {row.getValue('progress_note')}
         <div className="font-bold mt-2.5"> Progress Note ID:</div>
@@ -101,7 +107,7 @@ const renderSubComponent = ({ row }: { row: Row<TriggerFinal> }) => {
         <div className="font-bold mt-2.5"> Created By:</div>
         {row.getValue('created_by')}
       </div>
-      <div className="basis-2/5">
+      <div className="basis-1/2">
         <div className="font-bold">Summary:</div>
         {row.getValue('summary')}
         <div className="font-bold mt-2.5">Trigger:</div>
@@ -117,7 +123,6 @@ const renderSubComponent = ({ row }: { row: Row<TriggerFinal> }) => {
             minute: '2-digit',
           },
         )}
-        {/*{}*/}
       </div>
     </div>
   );
@@ -257,7 +262,7 @@ export default function TriggerWords() {
         accessorKey: 'facility_name',
         header: 'Facility',
         meta: {
-          wrap: true,
+          wrap: false,
           type: 'categorical',
         },
         filterFn: 'arrIncludesSome',
@@ -424,6 +429,7 @@ export default function TriggerWords() {
     data: triggerType === 'Predefined' ? data : temporaryData,
     columns,
     getRowCanExpand: () => true,
+    autoResetExpanded: false,
     // onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
     getExpandedRowModel: getExpandedRowModel(),
@@ -1095,14 +1101,12 @@ export default function TriggerWords() {
           </div>
           <div
             ref={parentRef}
-            className="overflow-x-auto max-w-full overflow-y-hidden "
+            className="block overflow-x-auto max-w-full overflow-y-hidden "
           >
-            <table className="border-collapse w-full ">
+            <table className="w-full ">
               <thead className="bg-slate-50 dark:bg-graydark">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <tr key={headerGroup.id}>
-                    {/*<th className="w-3">*/}
-                    {/*</th>*/}
                     {headerGroup.headers.map((header) => {
                       return (
                         <th
@@ -1111,9 +1115,6 @@ export default function TriggerWords() {
                           className="py-3 px-3 border-b-2 border-stroke dark:border-strokedark text-left select-none group"
                           onClick={header.column.getToggleSortingHandler()}
                           role="button"
-                          style={{
-                            width: header.column.columnDef.meta?.size || 'auto',
-                          }}
                         >
                           {header.isPlaceholder ? null : (
                             <span>
@@ -1168,13 +1169,13 @@ export default function TriggerWords() {
               <tbody>
                 {table.getRowModel().rows.map((row) => {
                   return (
-                    <>
-                      <tr key={row.id} className="border-t-stroke border-t ">
+                    <Fragment key={row.id}>
+                      <tr className="border-t-stroke border-t ">
                         {row.getVisibleCells().map((cell) => {
                           return (
                             <td
                               key={cell.id}
-                              className={`py-2 px-3 ${!cell.column.columnDef.meta?.wrap && 'whitespace-nowrap'} ${row.getIsExpanded() && 'bg-slate-100 dark:bg-slate-700'}`}
+                              className={`py-2 px-3 w-[${cell.column.getSize() || 'auto'}] text-sm ${!cell.column.columnDef.meta?.wrap && 'whitespace-nowrap'} ${row.getIsExpanded() && 'bg-slate-100 dark:bg-slate-700'}`}
                               role="button"
                               onClick={row.getToggleExpandedHandler()}
                             >
@@ -1260,12 +1261,13 @@ export default function TriggerWords() {
                       </tr>
                       {row.getIsExpanded() && (
                         <tr>
+                          {/* 2nd row is a custom 1 cell row */}
                           <td colSpan={row.getVisibleCells().length}>
                             {renderSubComponent({ row })}
                           </td>
                         </tr>
                       )}
-                    </>
+                    </Fragment>
                   );
                 })}
               </tbody>

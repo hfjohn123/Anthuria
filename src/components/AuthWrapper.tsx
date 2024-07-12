@@ -6,6 +6,7 @@ import axios from 'axios';
 import Session from 'supertokens-auth-react/recipe/session';
 import { signOut } from 'supertokens-auth-react/recipe/passwordless';
 import Intercom from '@intercom/messenger-js-sdk';
+import { setFrontendCookie } from 'supertokens-auth-react/lib/build/utils';
 
 export const AuthContext = createContext({
   user_data: { name: '', email: '', picture: '' },
@@ -72,16 +73,21 @@ export default function AuthWrapper({ children }: { children: JSX.Element }) {
     });
 
   useEffect(() => {
-    if (queryClient && user_applications_locations) {
-      const websocket = new WebSocket(`${route}/ws`);
+    if (queryClient && user_applications_locations && user_data) {
+      // setFrontendCookie('email', user_data?.email || '', '\\');
+      const websocket = new WebSocket(`${route}/ws/${user_data?.email}`);
       websocket.onopen = () => {
         console.log('connected');
+      };
+      websocket.onmessage = (event) => {
+        console.log('message');
+        console.log(event.data);
       };
       return () => {
         websocket.close();
       };
     }
-  }, [queryClient, user_applications_locations]);
+  }, [queryClient, user_applications_locations, user_data]);
 
   if (sessionContext.loading) {
     return <Loader />;
