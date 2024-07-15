@@ -400,13 +400,14 @@ export default function TriggerWords() {
         accessorFn: (d) => d.trigger_words,
         header: 'Trigger Words',
         cell: (info) => {
-          return (info.getValue() as string[]).join(', ').replaceAll('_', ' ');
+          return (info.getValue() as string[]).join(', ');
         },
         filterFn: (row, columnId, filterValue) => {
+          const filterValueList = filterValue
+            .split(',')
+            .map((d: string) => d.trim());
           const value = row.getValue(columnId) as string[];
-          return value.some((d) =>
-            d.includes(filterValue.replaceAll(' ', '_')),
-          );
+          return value.some((d) => filterValueList.includes(d));
         },
         meta: {
           wrap: true,
