@@ -3,9 +3,9 @@ import React, { ReactNode, useState } from 'react';
 interface CardDataStatsProps {
   data?: any;
   title: string;
-  currentCenter: any;
+  currentCenter?: any;
   children: ReactNode;
-  lowerBetter: boolean;
+  lowerBetter?: boolean;
 }
 
 const CardDataStats: React.FC<CardDataStatsProps> = ({

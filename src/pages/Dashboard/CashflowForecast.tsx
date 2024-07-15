@@ -1,6 +1,7 @@
 import DefaultLayout from '../../layout/DefaultLayout';
 import axios from 'axios';
 import { useQuery } from '@tanstack/react-query';
+import number_formate from '../../common/number_formate.ts';
 // import tableview from 'billboard.js/dist/plugin/billboardjs-plugin-tableview';
 
 import {
@@ -9,7 +10,7 @@ import {
   useEffect,
   useMemo,
   useRef,
-  useState
+  useState,
 } from 'react';
 import Loader from '../../common/Loader';
 import Select, {
@@ -18,7 +19,7 @@ import Select, {
   MultiValue,
   OptionProps,
   SingleValue,
-  ValueContainerProps
+  ValueContainerProps,
 } from 'react-select';
 import { AuthContext } from '../../components/AuthWrapper.tsx';
 import bb, { Chart, line, zoom } from 'billboard.js';
@@ -43,15 +44,15 @@ const selectStyles: ClassNamesConfig<{
   option: (state) =>
     state.isFocused && !state.isSelected
       ? '!bg-transparent hover:!bg-blue-100'
-      : ''
+      : '',
 };
 const today = new Date();
 today.setHours(0, 0, 0, 0);
 
 const ValueContainer = ({
-                          children,
-                          ...props
-                        }: ValueContainerProps<{
+  children,
+  ...props
+}: ValueContainerProps<{
   label: string;
   value: string;
 }>): ReactElement => {
@@ -82,7 +83,7 @@ const Option = (
   props: OptionProps<{
     label: string;
     value: string;
-  }>
+  }>,
 ) => (
   <div>
     <components.Option {...props}>
@@ -113,7 +114,7 @@ export default function CashflowForecast() {
   const period_options = [
     { value: 'monthly', label: 'Monthly' },
     { value: 'weekly', label: 'Weekly' },
-    { value: 'daily', label: 'Daily' }
+    { value: 'daily', label: 'Daily' },
   ];
   const period = selectedPeriod ? selectedPeriod.value : null;
   const [zoomDomain, setZoomDomain] = useState<[Date, Date]>();
@@ -132,34 +133,34 @@ export default function CashflowForecast() {
         Math.min(
           new Date(
             chartInterface?.categories()[
-            chartInterface?.categories().length - 1
-              ]
+              chartInterface?.categories().length - 1
+            ],
           ).getTime(),
-          new Date(new Date(date1).setMonth(date1.getMonth() + 5)).getTime()
-        )
+          new Date(new Date(date1).setMonth(date1.getMonth() + 5)).getTime(),
+        ),
       );
     } else if (period === 'weekly') {
       minDate = new Date(
         Math.min(
           new Date(
             chartInterface?.categories()[
-            chartInterface?.categories().length - 1
-              ]
+              chartInterface?.categories().length - 1
+            ],
           ).getTime(),
-          new Date(new Date(date1).setMonth(date1.getMonth() + 2)).getTime()
-        )
+          new Date(new Date(date1).setMonth(date1.getMonth() + 2)).getTime(),
+        ),
       );
     }
   }
   const filterOption = (
     {
       label,
-      value
+      value,
     }: {
       label: string;
       value: string;
     },
-    string: string
+    string: string,
   ) => {
     // default search
     if (label.toLocaleLowerCase().includes(string.toLocaleLowerCase()))
@@ -174,14 +175,14 @@ export default function CashflowForecast() {
           value: string;
         }[];
       }) =>
-        group.label.toLocaleLowerCase().includes(string.toLocaleLowerCase())
+        group.label.toLocaleLowerCase().includes(string.toLocaleLowerCase()),
     );
 
     if (groupOptions) {
       for (const groupOption of groupOptions) {
         // Check if current option is in group
         const option = groupOption.options.find(
-          (opt: { value: string }) => opt.value === value
+          (opt: { value: string }) => opt.value === value,
         );
         if (option) {
           return true;
@@ -195,82 +196,82 @@ export default function CashflowForecast() {
     isPending,
     isError,
     data: facilty_options,
-    error
+    error,
   } = useQuery({
     queryKey: ['dim_facility', route],
-    queryFn: () => axios.get(`${route}/dim_facility`).then((res) => res.data)
+    queryFn: () => axios.get(`${route}/dim_facility`).then((res) => res.data),
   });
 
   const {
     isPending: dataIsPending,
     isError: dataIsError,
     data: data,
-    error: dataError
+    error: dataError,
   } = useQuery({
     queryKey: ['ar_predict_result', route, period, facilities],
     queryFn: () =>
       axios
         .post(`${route}/ar_predict_result/${period}`, facilities)
         .then((res) => res.data),
-    enabled: !!period && facilities.length > 0
+    enabled: !!period && facilities.length > 0,
   });
 
   const handleChange = ([start, end]: [Date, Date]) => {
     setZoomDomain([
       start && chartInterface
         ? new Date(
-          Math.max(
-            start.getTime(),
-            new Date(chartInterface?.categories()[0]).getTime()
+            Math.max(
+              start.getTime(),
+              new Date(chartInterface?.categories()[0]).getTime(),
+            ),
           )
-        )
         : start,
       end && chartInterface
         ? new Date(
-          Math.min(
-            new Date(end.getFullYear(), end.getMonth() + 1, 0).getTime(),
-            new Date(
-              chartInterface?.categories()[
-              chartInterface?.categories().length - 1
-                ]
-            ).getTime()
+            Math.min(
+              new Date(end.getFullYear(), end.getMonth() + 1, 0).getTime(),
+              new Date(
+                chartInterface?.categories()[
+                  chartInterface?.categories().length - 1
+                ],
+              ).getTime(),
+            ),
           )
-        )
-        : end
+        : end,
     ]);
     chartInterface?.zoom([
       start && chartInterface
         ? new Date(
-          Math.max(
-            start.getTime(),
-            new Date(chartInterface?.categories()[0]).getTime()
+            Math.max(
+              start.getTime(),
+              new Date(chartInterface?.categories()[0]).getTime(),
+            ),
           )
-        )
         : start,
       end && chartInterface
         ? new Date(
-          Math.min(
-            new Date(end.getFullYear(), end.getMonth() + 1, 0).getTime(),
-            new Date(
-              chartInterface?.categories()[
-              chartInterface?.categories().length - 1
-                ]
-            ).getTime()
+            Math.min(
+              new Date(end.getFullYear(), end.getMonth() + 1, 0).getTime(),
+              new Date(
+                chartInterface?.categories()[
+                  chartInterface?.categories().length - 1
+                ],
+              ).getTime(),
+            ),
           )
-        )
-        : start
+        : start,
     ]);
   };
   const all_options = useMemo(() => {
     return facilty_options && facilty_options.length > 0
       ? facilty_options.flatMap(
-        (entry: {
-          options: {
-            label: string;
-            value: string;
-          }[];
-        }) => entry.options
-      )
+          (entry: {
+            options: {
+              label: string;
+              value: string;
+            }[];
+          }) => entry.options,
+        )
       : facilty_options;
   }, [facilty_options]);
 
@@ -279,8 +280,8 @@ export default function CashflowForecast() {
       type: line(),
       keys: {
         x: 'ar_date',
-        value: ['predict', 'actual']
-      }
+        value: ['predict', 'actual'],
+      },
     },
     axis: {
       x: {
@@ -291,37 +292,32 @@ export default function CashflowForecast() {
           outer: false,
           text: {
             // @ts-expect-error: Unreachable code error
-            inner: true
-          }
+            inner: true,
+          },
         },
-        padding: { left: 100, right: 100 }
+        padding: { left: 100, right: 100 },
       },
       y: {
         tick: {
-          format: function(d: number) {
-            if (d < 1000) return '$' + d.toFixed(2);
-            if (d < 1000000) return '$' + (d / 1000).toFixed(2) + 'K';
-            if (d < 1000000000) return '$' + (d / 1000000).toFixed(2) + 'M';
-            return '$' + (d / 1000000000).toFixed(2) + 'B';
-          }
+          format: number_formate,
         },
         min: 0,
-        padding: { bottom: 0 }
-      }
+        padding: { bottom: 0 },
+      },
     },
     transition: {
-      duration: 0
+      duration: 0,
     },
     zoom: {
       enabled: zoom(),
       onzoom(domain) {
         setZoomDomain(domain);
-      }
+      },
     },
     point: {
       focus: {
-        only: true
-      }
+        only: true,
+      },
     },
     grid: {
       x: {
@@ -329,11 +325,11 @@ export default function CashflowForecast() {
           {
             value: today,
             text: 'Today',
-            class: 'text-gray-500 [writing-mode:vertical-lr]'
-          }
-        ]
-      }
-    }
+            class: 'text-gray-500 [writing-mode:vertical-lr]',
+          },
+        ],
+      },
+    },
     // plugins: [
     //   new tableview({
     //     selector: '#my-table-view',
@@ -348,68 +344,68 @@ export default function CashflowForecast() {
     const chart =
       data && period === 'daily'
         ? bb.generate({
-          bindto: chartRef.current,
-          data: {
-            json: data.data
-          }
-        })
-        : data && period === 'weekly'
-          ? bb.generate({
             bindto: chartRef.current,
             data: {
               json: data.data,
-              xFormat: '%Y-%U'
             },
-            axis: {
-              x: {
-                tick: {
-                  format: '%Y\'s %U week - (%Y-%m-%d)'
-                }
-              }
-            },
-            grid: {
-              x: {
-                lines: [
-                  {
-                    value: new Date(today).setDate(
-                      today.getDate() - today.getDay()
-                    ),
-                    text: 'This Week',
-                    class: 'text-gray-500 [writing-mode:vertical-lr]'
-                  }
-                ]
-              }
-            }
           })
-          : data && period === 'monthly'
-            ? bb.generate({
+        : data && period === 'weekly'
+          ? bb.generate({
               bindto: chartRef.current,
               data: {
                 json: data.data,
-                xFormat: '%Y-%m'
+                xFormat: '%Y-%U',
               },
               axis: {
                 x: {
                   tick: {
-                    format: '%Y-%m'
-                  }
-                }
+                    format: "%Y's %U week - (%Y-%m-%d)",
+                  },
+                },
               },
               grid: {
                 x: {
                   lines: [
                     {
-                      value: new Date(today).setDate(1),
-                      text: 'This Month',
-                      class: 'text-gray-500 [writing-mode:vertical-lr]'
-                    }
-                  ]
-                }
+                      value: new Date(today).setDate(
+                        today.getDate() - today.getDay(),
+                      ),
+                      text: 'This Week',
+                      class: 'text-gray-500 [writing-mode:vertical-lr]',
+                    },
+                  ],
+                },
               },
-              zoom: {
-                extent: [1, 4.9]
-              }
             })
+          : data && period === 'monthly'
+            ? bb.generate({
+                bindto: chartRef.current,
+                data: {
+                  json: data.data,
+                  xFormat: '%Y-%m',
+                },
+                axis: {
+                  x: {
+                    tick: {
+                      format: '%Y-%m',
+                    },
+                  },
+                },
+                grid: {
+                  x: {
+                    lines: [
+                      {
+                        value: new Date(today).setDate(1),
+                        text: 'This Month',
+                        class: 'text-gray-500 [writing-mode:vertical-lr]',
+                      },
+                    ],
+                  },
+                },
+                zoom: {
+                  extent: [1, 4.9],
+                },
+              })
             : null;
     if (chart && chart.categories() && chart.categories().length > 0) {
       if (period === 'daily' || period === 'weekly') {
@@ -417,19 +413,19 @@ export default function CashflowForecast() {
           Math.max(
             new Date(chart.categories()[0]).getTime(),
             new Date(
-              new Date(today).setMonth(new Date(today).getMonth() - 1)
-            ).getTime()
-          )
+              new Date(today).setMonth(new Date(today).getMonth() - 1),
+            ).getTime(),
+          ),
         );
         const lastDate = new Date(
           Math.min(
             new Date(
-              chart.categories()[chart.categories().length - 1]
+              chart.categories()[chart.categories().length - 1],
             ).getTime(),
             new Date(
-              new Date(today).setMonth(new Date(today).getMonth() + 1)
-            ).getTime()
-          )
+              new Date(today).setMonth(new Date(today).getMonth() + 1),
+            ).getTime(),
+          ),
         );
         chart.zoom([firstDate, lastDate]);
       } else {
@@ -437,19 +433,19 @@ export default function CashflowForecast() {
           Math.max(
             new Date(chart.categories()[0]).getTime(),
             new Date(
-              new Date(today).setMonth(new Date(today).getMonth() - 3)
-            ).getTime()
-          )
+              new Date(today).setMonth(new Date(today).getMonth() - 3),
+            ).getTime(),
+          ),
         );
         const lastDate = new Date(
           Math.min(
             new Date(
-              chart.categories()[chart.categories().length - 1]
+              chart.categories()[chart.categories().length - 1],
             ).getTime(),
             new Date(
-              new Date(today).setMonth(new Date(today).getMonth() + 3)
-            ).getTime()
-          )
+              new Date(today).setMonth(new Date(today).getMonth() + 3),
+            ).getTime(),
+          ),
         );
         chart.zoom([firstDate, lastDate]);
       }
@@ -467,8 +463,7 @@ export default function CashflowForecast() {
     if (error)
       return (
         <DefaultLayout title={'Cashflow Forecast'}>
-          <div>Error: {error.message}</div>
-          {' '}
+          <div>Error: {error.message}</div>{' '}
         </DefaultLayout>
       );
     if (dataError)
@@ -482,14 +477,13 @@ export default function CashflowForecast() {
   return (
     <DefaultLayout title={'Cashflow Forecast'}>
       <div className="grid grid-cols-12 gap-1">
-        <label
-          className="font-medium text-nowrap col-span-12 lg:col-span-3 xl:col-span-2 self-center lg:justify-self-center ">
+        <label className="font-medium text-nowrap col-span-12 lg:col-span-3 xl:col-span-2 self-center lg:justify-self-center ">
           Loan Group and Facility:
         </label>
         <Select
           classNames={{
             ...selectStyles,
-            container: () => 'col-span-12 lg:col-span-6 xl:col-span-7'
+            container: () => 'col-span-12 lg:col-span-6 xl:col-span-7',
           }}
           options={[selectAllOption, ...facilty_options]}
           hideSelectedOptions={false}
@@ -503,8 +497,8 @@ export default function CashflowForecast() {
           formatGroupLabel={(group) => {
             const hasGroupSelected = group.options.every((option) =>
               selectedValues.some(
-                (selected) => selected.value === option.value
-              )
+                (selected) => selected.value === option.value,
+              ),
             );
             return (
               <div
@@ -512,29 +506,29 @@ export default function CashflowForecast() {
                 onClick={() =>
                   hasGroupSelected
                     ? setSelectedValues((prev) =>
-                      prev.filter(
-                        (selected) =>
-                          !group.options.some(
-                            (option) => option.value === selected.value
-                          ) && selected.value !== '*'
-                      )
-                    )
-                    : setSelectedValues((prev) => {
-                      let newOptions = [
-                        ...group.options.filter(
-                          (opt) =>
-                            !prev.some(
-                              (selected) => selected.value === opt.value
-                            )
+                        prev.filter(
+                          (selected) =>
+                            !group.options.some(
+                              (option) => option.value === selected.value,
+                            ) && selected.value !== '*',
                         ),
-                        ...prev
-                      ];
-                      newOptions.length === all_options.length
-                        ? (newOptions = [...newOptions, selectAllOption])
-                        : null;
+                      )
+                    : setSelectedValues((prev) => {
+                        let newOptions = [
+                          ...group.options.filter(
+                            (opt) =>
+                              !prev.some(
+                                (selected) => selected.value === opt.value,
+                              ),
+                          ),
+                          ...prev,
+                        ];
+                        newOptions.length === all_options.length
+                          ? (newOptions = [...newOptions, selectAllOption])
+                          : null;
 
-                      return newOptions;
-                    })
+                        return newOptions;
+                      })
                 }
               >
                 <div className="flex justify-between flex-row w-full">
@@ -543,8 +537,8 @@ export default function CashflowForecast() {
                       type="checkbox"
                       onChange={() => null}
                       checked={hasGroupSelected}
-                    />
-                    {' '}{group.label}
+                    />{' '}
+                    {group.label}
                   </div>
                   <div className="rounded-full bg-gray size-5 flex justify-center items-center ">
                     {group.options.length}
@@ -577,18 +571,17 @@ export default function CashflowForecast() {
             setFacilities(
               selectedValues
                 .filter((val) => val.value !== selectAllOption.value)
-                .map((val) => val.value)
+                .map((val) => val.value),
             )
           }
         />
-        <label
-          className="font-medium text-nowrap col-span-12 lg:col-span-1 self-center justify-self-start  lg:justify-self-center">
+        <label className="font-medium text-nowrap col-span-12 lg:col-span-1 self-center justify-self-start  lg:justify-self-center">
           Period:
         </label>
         <Select
           classNames={{
             ...selectStyles,
-            container: () => 'col-span-12 lg:col-span-2 '
+            container: () => 'col-span-12 lg:col-span-2 ',
           }}
           options={period_options}
           value={selectedPeriod}
@@ -615,10 +608,10 @@ export default function CashflowForecast() {
                           new Date(chartInterface.categories()[0]).getTime(),
                           new Date(
                             new Date(today).setMonth(
-                              new Date(today).getMonth() - 1
-                            )
-                          ).getTime()
-                        )
+                              new Date(today).getMonth() - 1,
+                            ),
+                          ).getTime(),
+                        ),
                       );
                     const lastDate =
                       chartInterface &&
@@ -626,20 +619,20 @@ export default function CashflowForecast() {
                         Math.min(
                           new Date(
                             chartInterface.categories()[
-                            chartInterface.categories().length - 1
-                              ]
+                              chartInterface.categories().length - 1
+                            ],
                           ).getTime(),
                           new Date(
                             new Date(today).setMonth(
-                              new Date(today).getMonth() + 1
-                            )
-                          ).getTime()
-                        )
+                              new Date(today).getMonth() + 1,
+                            ),
+                          ).getTime(),
+                        ),
                       );
                     firstDate &&
-                    lastDate &&
-                    chartInterface &&
-                    chartInterface.zoom([firstDate, lastDate]);
+                      lastDate &&
+                      chartInterface &&
+                      chartInterface.zoom([firstDate, lastDate]);
                   }}
                 >
                   1 Month
@@ -655,10 +648,10 @@ export default function CashflowForecast() {
                           new Date(chartInterface.categories()[0]).getTime(),
                           new Date(
                             new Date(today).setMonth(
-                              new Date(today).getMonth() - 3
-                            )
-                          ).getTime()
-                        )
+                              new Date(today).getMonth() - 3,
+                            ),
+                          ).getTime(),
+                        ),
                       );
                     const lastDate =
                       chartInterface &&
@@ -666,20 +659,20 @@ export default function CashflowForecast() {
                         Math.min(
                           new Date(
                             chartInterface.categories()[
-                            chartInterface.categories().length - 1
-                              ]
+                              chartInterface.categories().length - 1
+                            ],
                           ).getTime(),
                           new Date(
                             new Date(today).setMonth(
-                              new Date(today).getMonth() + 3
-                            )
-                          ).getTime()
-                        )
+                              new Date(today).getMonth() + 3,
+                            ),
+                          ).getTime(),
+                        ),
                       );
                     firstDate &&
-                    lastDate &&
-                    chartInterface &&
-                    chartInterface.zoom([firstDate, lastDate]);
+                      lastDate &&
+                      chartInterface &&
+                      chartInterface.zoom([firstDate, lastDate]);
                   }}
                 >
                   3 Months
@@ -689,14 +682,14 @@ export default function CashflowForecast() {
                   className="px-2 py-2 text-sm font-medium text-gray-900 bg-transparent border border-gray-200 rounded-e-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-white  dark:focus:ring-blue-500 dark:focus:text-white"
                   onClick={() => {
                     chartInterface &&
-                    setZoomDomain([
-                      new Date(chartInterface.categories()[0]),
-                      new Date(
-                        chartInterface.categories()[
-                        chartInterface.categories().length - 1
-                          ]
-                      )
-                    ]);
+                      setZoomDomain([
+                        new Date(chartInterface.categories()[0]),
+                        new Date(
+                          chartInterface.categories()[
+                            chartInterface.categories().length - 1
+                          ],
+                        ),
+                      ]);
                     chartInterface && chartInterface.unzoom();
                   }}
                 >
@@ -716,8 +709,8 @@ export default function CashflowForecast() {
                     chartInterface &&
                     new Date(
                       chartInterface.categories()[
-                      chartInterface.categories().length - 1
-                        ]
+                        chartInterface.categories().length - 1
+                      ],
                     )
                   }
                   showMonthYearPicker
@@ -739,10 +732,10 @@ export default function CashflowForecast() {
                           new Date(chartInterface.categories()[0]).getTime(),
                           new Date(
                             new Date(today).setMonth(
-                              new Date(today).getMonth() - 3
-                            )
-                          ).getTime()
-                        )
+                              new Date(today).getMonth() - 3,
+                            ),
+                          ).getTime(),
+                        ),
                       );
                     const lastDate =
                       chartInterface &&
@@ -750,20 +743,20 @@ export default function CashflowForecast() {
                         Math.min(
                           new Date(
                             chartInterface.categories()[
-                            chartInterface.categories().length - 1
-                              ]
+                              chartInterface.categories().length - 1
+                            ],
                           ).getTime(),
                           new Date(
                             new Date(today).setMonth(
-                              new Date(today).getMonth() + 3
-                            )
-                          ).getTime()
-                        )
+                              new Date(today).getMonth() + 3,
+                            ),
+                          ).getTime(),
+                        ),
                       );
                     firstDate &&
-                    lastDate &&
-                    chartInterface &&
-                    chartInterface.zoom([firstDate, lastDate]);
+                      lastDate &&
+                      chartInterface &&
+                      chartInterface.zoom([firstDate, lastDate]);
                   }}
                 >
                   3 Months
@@ -779,10 +772,10 @@ export default function CashflowForecast() {
                           new Date(chartInterface.categories()[0]).getTime(),
                           new Date(
                             new Date(today).setMonth(
-                              new Date(today).getMonth() - 6
-                            )
-                          ).getTime()
-                        )
+                              new Date(today).getMonth() - 6,
+                            ),
+                          ).getTime(),
+                        ),
                       );
                     const lastDate =
                       chartInterface &&
@@ -790,20 +783,20 @@ export default function CashflowForecast() {
                         Math.min(
                           new Date(
                             chartInterface.categories()[
-                            chartInterface.categories().length - 1
-                              ]
+                              chartInterface.categories().length - 1
+                            ],
                           ).getTime(),
                           new Date(
                             new Date(today).setMonth(
-                              new Date(today).getMonth() + 6
-                            )
-                          ).getTime()
-                        )
+                              new Date(today).getMonth() + 6,
+                            ),
+                          ).getTime(),
+                        ),
                       );
                     firstDate &&
-                    lastDate &&
-                    chartInterface &&
-                    chartInterface.zoom([firstDate, lastDate]);
+                      lastDate &&
+                      chartInterface &&
+                      chartInterface.zoom([firstDate, lastDate]);
                   }}
                 >
                   6 Months
@@ -813,14 +806,14 @@ export default function CashflowForecast() {
                   className="px-2 py-2 text-sm font-medium text-gray-900 bg-transparent border border-gray-200 rounded-e-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-white  dark:focus:ring-blue-500 dark:focus:text-white"
                   onClick={() => {
                     chartInterface &&
-                    setZoomDomain([
-                      new Date(chartInterface.categories()[0]),
-                      new Date(
-                        chartInterface.categories()[
-                        chartInterface.categories().length - 1
-                          ]
-                      )
-                    ]);
+                      setZoomDomain([
+                        new Date(chartInterface.categories()[0]),
+                        new Date(
+                          chartInterface.categories()[
+                            chartInterface.categories().length - 1
+                          ],
+                        ),
+                      ]);
                     chartInterface && chartInterface.unzoom();
                   }}
                 >
@@ -840,8 +833,8 @@ export default function CashflowForecast() {
                     chartInterface &&
                     new Date(
                       chartInterface.categories()[
-                      chartInterface.categories().length - 1
-                        ]
+                        chartInterface.categories().length - 1
+                      ],
                     )
                   }
                   showMonthYearPicker

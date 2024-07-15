@@ -5,6 +5,8 @@ import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import { Cog6ToothIcon } from '@heroicons/react/24/outline';
 import SortDownIcon from '../../images/icon/sort-down.svg';
 import SortUpIcon from '../../images/icon/sort-up.svg';
+import { Bot } from 'lucide-react';
+import { Tooltip } from 'react-tooltip';
 import {
   Fragment,
   useContext,
@@ -41,6 +43,7 @@ import DatePicker from 'react-datepicker';
 import { Field, Input, Label } from '@headlessui/react';
 import { createToast } from '../../hooks/fireToast.tsx';
 import ShowMoreText from 'react-show-more-text';
+import NumberCards from '../../components/Cards/NumberCards.tsx';
 
 type TriggerFinal = {
   progress_note_id: number;
@@ -58,7 +61,13 @@ type TriggerFinal = {
   update_time: Date;
   status: string;
 };
-
+const predefinedTriggerWords = [
+  'Fall',
+  'Unwanted Behavior',
+  'Condition Change',
+  'Abuse',
+  'Allegation',
+];
 const selectStyles: ClassNamesConfig<{
   label: string;
   value: string;
@@ -99,38 +108,66 @@ const dateRangeFilterFn = (
 
 const renderSubComponent = ({ row }: { row: Row<TriggerFinal> }) => {
   return (
-    <div className="bg-slate-50 dark:bg-slate-900 px-4 text-sm py-4 flex gap-20">
-      <div className="basis-1/2">
-        <div className="font-bold"> Progress Note:</div>
-        <ShowMoreText anchorClass="text-primary cursor-pointer block">
-          {row.getValue('progress_note')}
-        </ShowMoreText>
-        <div className="font-bold mt-2.5"> Progress Note ID:</div>
-        <p>{row.getValue('progress_note_id')}</p>
-        <div className="font-bold mt-2.5"> Created By:</div>
-        <p>{row.getValue('created_by')}</p>
-      </div>
-      <div className="basis-1/2">
-        <div className="font-bold">Summary:</div>
-        <ShowMoreText anchorClass="text-primary cursor-pointer block">
-          {row.getValue('summary')}
-        </ShowMoreText>
-        <div className="font-bold mt-2.5">Trigger:</div>
+    <div className="bg-slate-50 dark:bg-slate-900 px-4 text-sm py-4 flex">
+      <div className="basis-1/2 border-r border-stroke pr-10">
         <p>
-          {(row.getValue('trigger_words') as string[])
-            .join(', ')
-            .replaceAll('_', ' ')}
+          <span className="font-bold">Progress Note:</span>
+          <ShowMoreText anchorClass="text-primary cursor-pointer block">
+            <p>{row.getValue('progress_note')}</p>
+          </ShowMoreText>
         </p>
-        <div className="font-bold mt-2.5">Created Date: </div>
+        <p className="mt-2.5">
+          <span className="font-bold"> Progress Note ID:</span>
+          <p>{row.getValue('progress_note_id')}</p>
+        </p>
+        <p className="mt-2.5">
+          <span className="font-bold"> Created By:</span>
+          <p>{row.getValue('created_by')}</p>
+        </p>
+      </div>
+      <div className="basis-1/2 pl-10">
         <p>
-          {new Date(row.getValue('created_date')).toLocaleDateString()}{' '}
-          {new Date(row.getValue('created_date')).toLocaleTimeString(
-            navigator.language,
-            {
-              hour: '2-digit',
-              minute: '2-digit',
-            },
-          )}
+          <div className="flex gap-1.5">
+            <p className="font-bold">Summary:</p>
+            <Bot
+              data-tooltip-id="bot-tooltip"
+              data-tooltip-content="Generate by AI"
+              className="size-5 block focus:outline-none"
+            />
+            <Tooltip id="bot-tooltip" />
+          </div>
+          <ShowMoreText anchorClass="text-primary cursor-pointer block">
+            <p> {row.getValue('summary')}</p>
+          </ShowMoreText>
+        </p>
+        <p className="mt-2.5">
+          <div className="flex gap-1.5">
+            <p className="font-bold">Trigger:</p>
+            <Bot
+              data-tooltip-id="bot-tooltip"
+              data-tooltip-content="Generate by AI"
+              className="size-5 block focus:outline-none"
+            />
+            <Tooltip id="bot-tooltip" />
+          </div>
+          <p>
+            {(row.getValue('trigger_words') as string[])
+              .join(', ')
+              .replaceAll('_', ' ')}
+          </p>
+        </p>
+        <p className="mt-2.5">
+          <span className="font-bold">Created Date: </span>
+          <p>
+            {new Date(row.getValue('created_date')).toLocaleDateString()}{' '}
+            {new Date(row.getValue('created_date')).toLocaleTimeString(
+              navigator.language,
+              {
+                hour: '2-digit',
+                minute: '2-digit',
+              },
+            )}
+          </p>
         </p>
       </div>
     </div>
@@ -307,7 +344,13 @@ export default function TriggerWords() {
         header: 'Created Date',
         cell: (info) => {
           const date = new Date(info.getValue() as string | number | Date);
-          return `${date.toLocaleDateString()} ${date.toLocaleTimeString(navigator.language, { hour: '2-digit', minute: '2-digit' })}`;
+          return `${date.toLocaleDateString()} ${date.toLocaleTimeString(
+            navigator.language,
+            {
+              hour: '2-digit',
+              minute: '2-digit',
+            },
+          )}`;
         },
         filterFn: dateRangeFilterFn,
         meta: {
@@ -329,7 +372,13 @@ export default function TriggerWords() {
         header: 'Revision Date',
         cell: (info) => {
           const date = new Date(info.getValue() as string | number | Date);
-          return `${date.toLocaleDateString()} ${date.toLocaleTimeString(navigator.language, { hour: '2-digit', minute: '2-digit' })}`;
+          return `${date.toLocaleDateString()} ${date.toLocaleTimeString(
+            navigator.language,
+            {
+              hour: '2-digit',
+              minute: '2-digit',
+            },
+          )}`;
         },
         meta: {
           wrap: false,
@@ -388,7 +437,13 @@ export default function TriggerWords() {
         meta: { type: 'daterange', wrap: false },
         cell: (info) => {
           const date = new Date(info.getValue() as string | number | Date);
-          return `${date.toLocaleDateString()} ${date.toLocaleTimeString(navigator.language, { hour: '2-digit', minute: '2-digit' })}`;
+          return `${date.toLocaleDateString()} ${date.toLocaleTimeString(
+            navigator.language,
+            {
+              hour: '2-digit',
+              minute: '2-digit',
+            },
+          )}`;
         },
         filterFn: dateRangeFilterFn,
       },
@@ -525,7 +580,24 @@ export default function TriggerWords() {
 
   return (
     <DefaultLayout title={'Clinical Pulse'}>
-      <div className="grid grid-cols-12 ">
+      <div className="grid grid-cols-5 gap-10">
+        {triggerType === 'Predefined' &&
+          predefinedTriggerWords.map((word) => (
+            <NumberCards
+              key={word}
+              className="col-span-1"
+              value={
+                data
+                  ? data.filter((w: TriggerFinal) =>
+                      w.trigger_words.includes(word),
+                    ).length
+                  : 0
+              }
+              title={word}
+            />
+          ))}
+      </div>
+      <div className="grid grid-cols-12 mt-5">
         <div className="col-span-12 sm:col-span-9 flex items-center">
           <span className="text-xl lg:text-2xl font-bold gap-1 ">
             Trigger Word Type:
@@ -715,7 +787,6 @@ export default function TriggerWords() {
               placeholder="Global Search"
               className=" w-full py-2 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
             />
-            {/* @ts-expect-error Error Unspecific API */}
             <ReactSelectButton
               options={table
                 ._getColumnDefs()
