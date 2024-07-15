@@ -40,6 +40,7 @@ import { AuthContext } from '../../components/AuthWrapper.tsx';
 import DatePicker from 'react-datepicker';
 import { Field, Input, Label } from '@headlessui/react';
 import { createToast } from '../../hooks/fireToast.tsx';
+import ShowMoreText from 'react-show-more-text';
 
 type TriggerFinal = {
   progress_note_id: number;
@@ -101,28 +102,36 @@ const renderSubComponent = ({ row }: { row: Row<TriggerFinal> }) => {
     <div className="bg-slate-50 dark:bg-slate-900 px-4 text-sm py-4 flex gap-20">
       <div className="basis-1/2">
         <div className="font-bold"> Progress Note:</div>
-        {row.getValue('progress_note')}
+        <ShowMoreText anchorClass="text-primary cursor-pointer block">
+          {row.getValue('progress_note')}
+        </ShowMoreText>
         <div className="font-bold mt-2.5"> Progress Note ID:</div>
-        {row.getValue('progress_note_id')}
+        <p>{row.getValue('progress_note_id')}</p>
         <div className="font-bold mt-2.5"> Created By:</div>
-        {row.getValue('created_by')}
+        <p>{row.getValue('created_by')}</p>
       </div>
       <div className="basis-1/2">
         <div className="font-bold">Summary:</div>
-        {row.getValue('summary')}
+        <ShowMoreText anchorClass="text-primary cursor-pointer block">
+          {row.getValue('summary')}
+        </ShowMoreText>
         <div className="font-bold mt-2.5">Trigger:</div>
-        {(row.getValue('trigger_words') as string[])
-          .join(', ')
-          .replaceAll('_', ' ')}
+        <p>
+          {(row.getValue('trigger_words') as string[])
+            .join(', ')
+            .replaceAll('_', ' ')}
+        </p>
         <div className="font-bold mt-2.5">Created Date: </div>
-        {new Date(row.getValue('created_date')).toLocaleDateString()}{' '}
-        {new Date(row.getValue('created_date')).toLocaleTimeString(
-          navigator.language,
-          {
-            hour: '2-digit',
-            minute: '2-digit',
-          },
-        )}
+        <p>
+          {new Date(row.getValue('created_date')).toLocaleDateString()}{' '}
+          {new Date(row.getValue('created_date')).toLocaleTimeString(
+            navigator.language,
+            {
+              hour: '2-digit',
+              minute: '2-digit',
+            },
+          )}
+        </p>
       </div>
     </div>
   );

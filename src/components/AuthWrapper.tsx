@@ -6,7 +6,6 @@ import axios from 'axios';
 import Session from 'supertokens-auth-react/recipe/session';
 import { signOut } from 'supertokens-auth-react/recipe/passwordless';
 import Intercom from '@intercom/messenger-js-sdk';
-import { setFrontendCookie } from 'supertokens-auth-react/lib/build/utils';
 
 export const AuthContext = createContext({
   user_data: { name: '', email: '', picture: '' },
@@ -80,8 +79,7 @@ export default function AuthWrapper({ children }: { children: JSX.Element }) {
         console.log('connected');
       };
       websocket.onmessage = (event) => {
-        console.log('message');
-        console.log(event.data);
+        queryClient.invalidateQueries({ queryKey: [event.data, route] });
       };
       return () => {
         websocket.close();

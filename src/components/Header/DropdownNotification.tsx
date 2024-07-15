@@ -57,7 +57,28 @@ const DropdownNotification = () => {
   });
 
   const readNotification = useMutation({
-    mutationFn: () => axios.put(`${route}/notifications_read`),
+    mutationFn: (notification_type_id: string) =>
+      axios.put(`${route}/notifications_read`, {
+        notification_type_id: notification_type_id,
+      }),
+    onMutate: async (notification_type_id) => {
+      await queryClient.cancelQueries({ queryKey: ['notification', route] });
+      const previousNotifications = queryClient.getQueryData<Notification[]>([
+        'notification',
+        route,
+      ]);
+      if (previousNotifications) {
+        queryClient.setQueryData(
+          ['notification', route],
+          previousNotifications.map((notification) =>
+            notification_type_id.includes(notification.notification_type_id)
+              ? { ...notification, is_read: true }
+              : notification,
+          ),
+        );
+      }
+      return { previousNotifications };
+    },
   });
 
   const deleteNotification = useMutation({
@@ -102,7 +123,6 @@ const DropdownNotification = () => {
         onClick={() => {
           setNotifying(false);
           setDropdownOpen(!dropdownOpen);
-          readNotification.mutate();
         }}
         to="#"
         className="relative flex h-8.5 w-8.5 items-center justify-center rounded-full border-[0.5px] border-stroke bg-gray hover:text-primary dark:border-strokedark dark:bg-meta-4 dark:text-white"
@@ -162,10 +182,20 @@ const DropdownNotification = () => {
             data.map((item: Notification) => (
               <li key={item.user_id + item.notification_type_id}>
                 <Link
+                  onClick={() => {
+                    readNotification.mutate(item.notification_type_id);
+                  }}
                   reloadDocument={!!item.corresponding_url}
                   className="flex flex-col gap-2.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4"
                   to={item.corresponding_url || '#'}
                 >
+                  <span
+                    className={`absolute left-0.5 -translate-y-1.5  z-1 h-2 w-2 rounded-full bg-meta-1 ${
+                      item.is_read ? 'hidden' : 'inline'
+                    }`}
+                  >
+                    <span className="absolute -z-1 inline-flex h-full w-full animate-ping rounded-full bg-meta-1 opacity-75"></span>
+                  </span>
                   <div className="flex gap-1.5 justify-between">
                     <div className="flex flex-col gap-1.5">
                       <p className="text-sm">{item.notification_note}</p>
