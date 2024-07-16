@@ -30,7 +30,6 @@ import {
   getExpandedRowModel,
   getFacetedMinMaxValues,
   getFacetedRowModel,
-  getFacetedUniqueValues,
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
@@ -38,6 +37,7 @@ import {
   TableState,
   useReactTable,
 } from '@tanstack/react-table';
+import getFacetedUniqueValues from '../../common/getFacetedUniqueValues.ts';
 import { AuthContext } from '../../components/AuthWrapper.tsx';
 import DatePicker from 'react-datepicker';
 import { Field, Input, Label } from '@headlessui/react';
@@ -106,7 +106,7 @@ const dateRangeFilterFn = (
 
 const renderSubComponent = ({ row }: { row: Row<TriggerFinal> }) => {
   return (
-    <div className="bg-slate-50 dark:bg-slate-900 px-4 text-sm py-4 flex">
+    <div className="bg-slate-50 dark:bg-slate-900 px-4 text-sm py-4 flex flex-wrap">
       <div className="basis-1/2 border-r border-stroke pr-10">
         <p>
           <span className="font-bold">Progress Note:</span>
@@ -164,6 +164,9 @@ const renderSubComponent = ({ row }: { row: Row<TriggerFinal> }) => {
           </p>
         </p>
       </div>
+      <div className="basis-1/3">Test</div>
+      <div className="basis-1/3">TEst</div>
+      <div className="basis-1/3">Test</div>
     </div>
   );
 };
@@ -390,21 +393,14 @@ export default function TriggerWords() {
         filterFn: 'arrIncludesSome',
       },
       {
-        accessorKey: 'trigger_words',
+        accessorKey: 'trigger_word',
         header: 'Trigger Words',
         accessorFn: (row) => row.trigger_words.map((d) => d.trigger_word),
         cell: (info) => {
           const value = info.getValue() as string[];
           return value.join(', ');
         },
-        // filterFn: 'arrIncludesSome',
-        filterFn: (row, columnId, filterValue) => {
-          const filterValueList = filterValue.map((d: string) =>
-            d.trim().toLowerCase(),
-          );
-          const value = row.getValue(columnId) as string[];
-          return value.some((d) => filterValueList.includes(d.toLowerCase()));
-        },
+        filterFn: 'arrIncludesSome',
         meta: {
           wrap: true,
           type: 'categorical',
@@ -492,6 +488,7 @@ export default function TriggerWords() {
     data: triggerType === 'Predefined' ? data : temporaryData,
     columns,
     getRowCanExpand: () => true,
+    getFacetedUniqueValues: getFacetedUniqueValues(),
     autoResetExpanded: false,
     getCoreRowModel: getCoreRowModel(),
     getExpandedRowModel: getExpandedRowModel(),
@@ -528,7 +525,7 @@ export default function TriggerWords() {
     },
     columnOrder: [],
     columnVisibility: userVisibilitySettings
-      ? JSON.parse(userVisibilitySettings)
+      ? { ...JSON.parse(userVisibilitySettings), status: false }
       : {
           facility_name: true,
           patient_name: true,
@@ -541,7 +538,7 @@ export default function TriggerWords() {
           progress_note: false,
           summary: false,
           update_time: false,
-          status: true,
+          status: false,
         },
     pagination: {
       pageIndex: 0,
@@ -553,27 +550,27 @@ export default function TriggerWords() {
     onStateChange: setTableState,
     state: tableState,
   }));
-  useEffect(() => {
-    if (!isPending && data) {
-      table.setOptions((prev) => ({
-        ...prev,
-        getFacetedUniqueValues: (table, columnId) => {
-          const facetedDict = new Map<any, number>();
-          for (const row of table.getRowModel().rows) {
-            const value = row.getValue(columnId);
-            if (Array.isArray(value)) {
-              for (const v of value) {
-                facetedDict.set(v, (facetedDict.get(v) || 0) + 1);
-              }
-            } else if (value) {
-              facetedDict.set(value, (facetedDict.get(value) || 0) + 1);
-            }
-          }
-          return () => facetedDict;
-        },
-      }));
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (!isPending && data) {
+  //     table.setOptions((prev) => ({
+  //       ...prev,
+  //       getFacetedUniqueValues: (table, columnId) => {
+  //         const facetedDict = new Map<any, number>();
+  //         for (const row of table.getRowModel().rows) {
+  //           const value = row.getValue(columnId);
+  //           if (Array.isArray(value)) {
+  //             for (const v of value) {
+  //               facetedDict.set(v, (facetedDict.get(v) || 0) + 1);
+  //             }
+  //           } else if (value) {
+  //             facetedDict.set(value, (facetedDict.get(value) || 0) + 1);
+  //           }
+  //         }
+  //         return () => facetedDict;
+  //       },
+  //     }));
+  //   }
+  // }, []);
   useEffect(() => {
     localStorage.setItem(
       'userVisibilitySettings',
@@ -807,8 +804,14 @@ export default function TriggerWords() {
             />
             <ReactSelectButton
               options={table
-                ._getColumnDefs()
-                .map((c) => ({ value: c.accessorKey, label: c.header }))}
+                .getAllColumns()
+                .map((c) => {
+                  return {
+                    value: c.id,
+                    label: c.columnDef.header,
+                  };
+                })
+                .filter(({ value }) => value !== 'status')}
               isMulti
               hideSelectedOptions={false}
               isClearable={false}
@@ -1277,82 +1280,82 @@ export default function TriggerWords() {
                               role="button"
                               onClick={row.getToggleExpandedHandler()}
                             >
-                              {cell.column.id === 'status' ? (
-                                <div
-                                  className=" flex items-center flex-nowrap"
-                                  onClick={(e) => e.stopPropagation()}
-                                >
-                                  {cell.getValue() === 'Needs review' && (
-                                    <div className="size-3 rounded bg-primary"></div>
-                                  )}
-                                  {cell.getValue() === 'Pending' && (
-                                    <div className="size-3 rounded bg-warning"></div>
-                                  )}
-                                  {cell.getValue() === 'Done' && (
-                                    <div className="size-3 rounded bg-success"></div>
-                                  )}
-                                  {cell.getValue() === 'Rejected' && (
-                                    <div className="size-3 rounded bg-danger"></div>
-                                  )}
-                                  <Select
-                                    classNames={{
-                                      control: () =>
-                                        '!border-0 !bg-transparent min-w-max !shadow-none',
-                                      valueContainer: () => 'min-w-max !pr-0',
-                                      singleValue: () => 'dark:!text-bodydark',
-                                      menu: () =>
-                                        'dark:bg-form-input min-w-max',
-                                      option: () =>
-                                        'text-body dark:!text-bodydark',
-                                      indicatorsContainer: () => '!pl-0',
-                                      dropdownIndicator: () => '!pl-0',
-                                    }}
-                                    components={{
-                                      IndicatorSeparator: () => null,
-                                    }}
-                                    value={{
-                                      label: cell.getValue(),
-                                      value: cell.getValue(),
-                                    }}
-                                    menuPortalTarget={document.body}
-                                    isSearchable={false}
-                                    options={[
-                                      {
-                                        label: 'Needs review',
-                                        value: 'Needs review',
-                                      },
-                                      {
-                                        label: 'Pending',
-                                        value: 'Pending',
-                                      },
-                                      {
-                                        label: 'Done',
-                                        value: 'Done',
-                                      },
-                                      {
-                                        label: 'Rejected',
-                                        value: 'Rejected',
-                                      },
-                                    ]}
-                                    isDisabled={cell.getValue() === 'Temporary'}
-                                    menuPlacement="auto"
-                                    onChange={(e) => {
-                                      updateStatus.mutate({
-                                        progress_note_id:
-                                          row.getValue('progress_note_id'),
-                                        update_time:
-                                          row.getValue('update_time'),
-                                        status: e?.value as string,
-                                      });
-                                    }}
-                                  />
-                                </div>
-                              ) : (
-                                flexRender(
-                                  cell.column.columnDef.cell,
-                                  cell.getContext(),
-                                )
+                              {/*{cell.column.id === 'status' ? (*/}
+                              {/*  <div*/}
+                              {/*    className=" flex items-center flex-nowrap"*/}
+                              {/*    onClick={(e) => e.stopPropagation()}*/}
+                              {/*  >*/}
+                              {/*    {cell.getValue() === 'Needs review' && (*/}
+                              {/*      <div className="size-3 rounded bg-primary"></div>*/}
+                              {/*    )}*/}
+                              {/*    {cell.getValue() === 'Pending' && (*/}
+                              {/*      <div className="size-3 rounded bg-warning"></div>*/}
+                              {/*    )}*/}
+                              {/*    {cell.getValue() === 'Done' && (*/}
+                              {/*      <div className="size-3 rounded bg-success"></div>*/}
+                              {/*    )}*/}
+                              {/*    {cell.getValue() === 'Rejected' && (*/}
+                              {/*      <div className="size-3 rounded bg-danger"></div>*/}
+                              {/*    )}*/}
+                              {/*    <Select*/}
+                              {/*      classNames={{*/}
+                              {/*        control: () =>*/}
+                              {/*          '!border-0 !bg-transparent min-w-max !shadow-none',*/}
+                              {/*        valueContainer: () => 'min-w-max !pr-0',*/}
+                              {/*        singleValue: () => 'dark:!text-bodydark',*/}
+                              {/*        menu: () =>*/}
+                              {/*          'dark:bg-form-input min-w-max',*/}
+                              {/*        option: () =>*/}
+                              {/*          'text-body dark:!text-bodydark',*/}
+                              {/*        indicatorsContainer: () => '!pl-0',*/}
+                              {/*        dropdownIndicator: () => '!pl-0',*/}
+                              {/*      }}*/}
+                              {/*      components={{*/}
+                              {/*        IndicatorSeparator: () => null,*/}
+                              {/*      }}*/}
+                              {/*      value={{*/}
+                              {/*        label: cell.getValue(),*/}
+                              {/*        value: cell.getValue(),*/}
+                              {/*      }}*/}
+                              {/*      menuPortalTarget={document.body}*/}
+                              {/*      isSearchable={false}*/}
+                              {/*      options={[*/}
+                              {/*        {*/}
+                              {/*          label: 'Needs review',*/}
+                              {/*          value: 'Needs review',*/}
+                              {/*        },*/}
+                              {/*        {*/}
+                              {/*          label: 'Pending',*/}
+                              {/*          value: 'Pending',*/}
+                              {/*        },*/}
+                              {/*        {*/}
+                              {/*          label: 'Done',*/}
+                              {/*          value: 'Done',*/}
+                              {/*        },*/}
+                              {/*        {*/}
+                              {/*          label: 'Rejected',*/}
+                              {/*          value: 'Rejected',*/}
+                              {/*        },*/}
+                              {/*      ]}*/}
+                              {/*      isDisabled={cell.getValue() === 'Temporary'}*/}
+                              {/*      menuPlacement="auto"*/}
+                              {/*      onChange={(e) => {*/}
+                              {/*        updateStatus.mutate({*/}
+                              {/*          progress_note_id:*/}
+                              {/*            row.getValue('progress_note_id'),*/}
+                              {/*          update_time:*/}
+                              {/*            row.getValue('update_time'),*/}
+                              {/*          status: e?.value as string,*/}
+                              {/*        });*/}
+                              {/*      }}*/}
+                              {/*    />*/}
+                              {/*  </div>*/}
+                              {/*) : (*/}
+                              {flexRender(
+                                cell.column.columnDef.cell,
+                                cell.getContext(),
                               )}
+                              {/*)}*/}
                             </td>
                           );
                         })}
