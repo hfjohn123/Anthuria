@@ -79,6 +79,7 @@ export default function AuthWrapper({ children }: { children: JSX.Element }) {
         console.log('connected');
       };
       websocket.onmessage = (event) => {
+        console.log(event.data);
         queryClient.invalidateQueries({ queryKey: [event.data, route] });
       };
       return () => {

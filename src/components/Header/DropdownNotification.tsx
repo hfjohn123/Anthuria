@@ -1,5 +1,5 @@
 import { useContext, useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { AuthContext } from '../AuthWrapper.tsx';
@@ -46,9 +46,9 @@ const DropdownNotification = () => {
   });
 
   const { isError, data } = useQuery({
-    queryKey: ['notification', route],
+    queryKey: ['access_notification_final', route],
     queryFn: () =>
-      axios.get(`${route}/notifications`).then((res) => {
+      axios.get(`${route}/access_notification_final`).then((res) => {
         if (res.data.some((d: Notification) => !d.is_read)) {
           setNotifying(true);
         }
@@ -62,14 +62,16 @@ const DropdownNotification = () => {
         notification_type_id: notification_type_id,
       }),
     onMutate: async (notification_type_id) => {
-      await queryClient.cancelQueries({ queryKey: ['notification', route] });
+      await queryClient.cancelQueries({
+        queryKey: ['access_notification_final', route],
+      });
       const previousNotifications = queryClient.getQueryData<Notification[]>([
-        'notification',
+        'access_notification_final',
         route,
       ]);
       if (previousNotifications) {
         queryClient.setQueryData(
-          ['notification', route],
+          ['access_notification_final', route],
           previousNotifications.map((notification) =>
             notification_type_id.includes(notification.notification_type_id)
               ? { ...notification, is_read: true }
@@ -84,15 +86,17 @@ const DropdownNotification = () => {
   const deleteNotification = useMutation({
     mutationFn: (notification_type_id: string[]) =>
       axios.put(`${route}/notifications_delete`, notification_type_id),
-    onMutate: async (notification_type_id) => {
-      await queryClient.cancelQueries({ queryKey: ['notification', route] });
+    onMutate: async (notification_type_id): Promise<any> => {
+      await queryClient.cancelQueries({
+        queryKey: ['access_notification_final', route],
+      });
       const previousNotifications = queryClient.getQueryData<Notification[]>([
-        'notification',
+        'access_notification_final',
         route,
       ]);
       if (previousNotifications) {
         queryClient.setQueryData(
-          ['notification', route],
+          ['access_notification_final', route],
           previousNotifications.filter(
             (notification) =>
               !notification_type_id.includes(notification.notification_type_id),
@@ -102,9 +106,12 @@ const DropdownNotification = () => {
       return { previousNotifications };
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['notification', route] });
+      queryClient.invalidateQueries({
+        queryKey: ['access_notification_final', route],
+      });
     },
   });
+  const navigate = useNavigate();
 
   if (isError) {
     createToast(
@@ -113,7 +120,6 @@ const DropdownNotification = () => {
       2,
       'notification',
     );
-    setNotifying(false);
   }
 
   return (
@@ -184,10 +190,11 @@ const DropdownNotification = () => {
                 <Link
                   onClick={() => {
                     readNotification.mutate(item.notification_type_id);
+                    navigate(item.corresponding_url || '#');
                   }}
                   reloadDocument={!!item.corresponding_url}
                   className="flex flex-col gap-2.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4"
-                  to={item.corresponding_url || '#'}
+                  to="#"
                 >
                   <span
                     className={`absolute left-0.5 -translate-y-1.5  z-1 h-2 w-2 rounded-full bg-meta-1 ${

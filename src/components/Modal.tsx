@@ -11,12 +11,14 @@ export default function Modal({
   isOpen,
   setIsOpen,
   title,
+  buttonText,
   classNameses,
 }: {
   children: JSX.Element;
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
   title: string;
+  buttonText: string;
   classNameses?: {
     title?: string;
     button?: string;
@@ -25,7 +27,7 @@ export default function Modal({
   return (
     <>
       <button className={classNameses?.button} onClick={() => setIsOpen(true)}>
-        + Add a New Trigger Word
+        {buttonText}
       </button>
       <Dialog
         open={isOpen}
