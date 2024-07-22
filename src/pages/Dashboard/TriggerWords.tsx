@@ -57,8 +57,12 @@ type TriggerFinal = {
   revision_by: string;
   revision_date: Date;
   progress_note: string;
-  trigger_words: { trigger_word: string; summary: string; status: string }[];
-  update_time: Date;
+  trigger_words: {
+    trigger_word: string;
+    summary: string;
+    status: string;
+    update_time: Date;
+  }[];
 };
 const predefinedTriggerWords = [
   'Fall',
@@ -283,7 +287,7 @@ const renderSubComponent = ({ row }: { row: Row<TriggerFinal> }) => {
     </div>
   );
 };
-const permenentColumnFilters = ['facility_name', 'created_by'];
+const permenentColumnFilters = ['facility_name', 'trigger_word'];
 const initialNewTrigger: {
   trigger_word: string;
   internal_facility_id: string[];
@@ -540,6 +544,14 @@ export default function TriggerWords() {
       },
       {
         accessorKey: 'update_time',
+        accessorFn: (row) =>
+          new Date(
+            Math.max(
+              ...row.trigger_words.map((d) =>
+                new Date(d.update_time).getTime(),
+              ),
+            ),
+          ),
         header: 'Update Time',
         meta: { type: 'daterange', wrap: false },
         cell: (info) => {
@@ -1321,7 +1333,7 @@ export default function TriggerWords() {
             ref={parentRef}
             className="block overflow-x-auto max-w-full overflow-y-hidden "
           >
-            <table className="w-full ">
+            <table className="w-full border-b-2 border-b-stroke">
               <thead className="bg-slate-50 dark:bg-graydark">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <tr key={headerGroup.id}>
@@ -1418,73 +1430,73 @@ export default function TriggerWords() {
                 })}
               </tbody>
             </table>
-            <div className="flex items-center gap-2 px-2 py-2 border-t-2 border-t-stroke">
-              <button
-                className="border rounded p-1 disabled:opacity-30"
-                onClick={() => table.firstPage()}
-                disabled={!table.getCanPreviousPage()}
-              >
-                {'<<'}
-              </button>
-              <button
-                className="border rounded p-1 disabled:opacity-30"
-                onClick={() => table.previousPage()}
-                disabled={!table.getCanPreviousPage()}
-              >
-                {'<'}
-              </button>
-              <button
-                className="border rounded p-1 disabled:opacity-30"
-                onClick={() => table.nextPage()}
-                disabled={!table.getCanNextPage()}
-              >
-                {'>'}
-              </button>
-              <button
-                className="border rounded p-1 disabled:opacity-30"
-                onClick={() => table.lastPage()}
-                disabled={!table.getCanNextPage()}
-              >
-                {'>>'}
-              </button>
-              <span className="flex items-center gap-1">
-                <div>Page</div>
-                <strong>
-                  {tableState.pagination.pageIndex + 1} of{' '}
-                  {table.getPageCount().toLocaleString()}
-                </strong>
-              </span>
-              <span className="flex items-center gap-1">
-                | Go to page:
-                <input
-                  type="number"
-                  onChange={(e) => {
-                    const page = e.target.value
-                      ? Math.min(
-                          Number(e.target.value) - 1,
-                          table.getPageCount() - 1,
-                        )
-                      : 0;
-                    table.setPageIndex(page);
-                  }}
-                  value={tableState.pagination.pageIndex + 1}
-                  className="border border-stroke p-1 rounded w-16 bg-transparent"
-                />
-              </span>
-              <select
-                value={tableState.pagination.pageSize}
+          </div>
+          <div className="flex items-center gap-2 px-2 py-2  w-full text-sm sm:text-base ">
+            <button
+              className="border rounded p-1 disabled:opacity-30 hidden sm:block"
+              onClick={() => table.firstPage()}
+              disabled={!table.getCanPreviousPage()}
+            >
+              {'<<'}
+            </button>
+            <button
+              className="border rounded p-1 disabled:opacity-30"
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}
+            >
+              {'<'}
+            </button>
+            <button
+              className="border rounded p-1 disabled:opacity-30"
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}
+            >
+              {'>'}
+            </button>
+            <button
+              className="border rounded p-1 disabled:opacity-30 hidden sm:block"
+              onClick={() => table.lastPage()}
+              disabled={!table.getCanNextPage()}
+            >
+              {'>>'}
+            </button>
+            <span className="flex items-center gap-1 whitespace-nowrap">
+              <div>Page</div>
+              <strong>
+                {tableState.pagination.pageIndex + 1} of{' '}
+                {table.getPageCount().toLocaleString()}
+              </strong>
+            </span>
+            <span className="flex items-center gap-1 whitespace-nowrap text-sm sm:text-base">
+              | Go to page:
+              <input
+                type="number"
                 onChange={(e) => {
-                  table.setPageSize(Number(e.target.value));
+                  const page = e.target.value
+                    ? Math.min(
+                        Number(e.target.value) - 1,
+                        table.getPageCount() - 1,
+                      )
+                    : 0;
+                  table.setPageIndex(page);
                 }}
-                className="bg-transparent"
-              >
-                {[10, 20, 30, 50, 100, 200].map((pageSize) => (
-                  <option key={pageSize} value={pageSize}>
-                    Show {pageSize}
-                  </option>
-                ))}
-              </select>
-            </div>
+                value={tableState.pagination.pageIndex + 1}
+                className="border border-stroke p-1 rounded w-6 sm:w-16 bg-transparent"
+              />
+            </span>
+            <select
+              value={tableState.pagination.pageSize}
+              onChange={(e) => {
+                table.setPageSize(Number(e.target.value));
+              }}
+              className="bg-transparent"
+            >
+              {[10, 20, 30, 50, 100, 200].map((pageSize) => (
+                <option key={pageSize} value={pageSize}>
+                  Show {pageSize}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
       </div>
