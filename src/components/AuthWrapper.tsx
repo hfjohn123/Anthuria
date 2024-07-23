@@ -15,7 +15,7 @@ export const AuthContext = createContext({
       display_name: '',
       icon: '',
       default_order: 0,
-      url: '',
+      uri: '',
       locations: [{ internal_facility_id: '', facility_name: '' }],
     },
   ],

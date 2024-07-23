@@ -551,7 +551,7 @@ export default function TriggerWords() {
                 new Date(d.update_time).getTime(),
               ),
             ),
-          ),
+          ).toISOString(),
         header: 'Update Time',
         meta: { type: 'daterange', wrap: false },
         cell: (info) => {
@@ -564,6 +564,7 @@ export default function TriggerWords() {
             },
           )}`;
         },
+        sortingFn: 'datetime',
         filterFn: dateRangeFilterFn,
       },
       {

@@ -1,5 +1,5 @@
 import { useContext, useEffect, useRef, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { AuthContext } from '../AuthWrapper.tsx';
@@ -57,10 +57,11 @@ const DropdownNotification = () => {
   });
 
   const readNotification = useMutation({
-    mutationFn: (notification_type_id: string) =>
-      axios.put(`${route}/notifications_read`, {
+    mutationFn: (notification_type_id: string) => {
+      return axios.put(`${route}/notifications_read`, {
         notification_type_id: notification_type_id,
-      }),
+      });
+    },
     onMutate: async (notification_type_id) => {
       await queryClient.cancelQueries({
         queryKey: ['access_notification_final', route],
@@ -187,7 +188,7 @@ const DropdownNotification = () => {
           {data &&
             data.map((item: Notification) => (
               <li key={item.user_id + item.notification_type_id}>
-                <Link
+                <NavLink
                   onClick={() => {
                     readNotification.mutate(item.notification_type_id);
                     navigate(item.corresponding_url || '#');
@@ -229,7 +230,7 @@ const DropdownNotification = () => {
                       X
                     </span>
                   </div>
-                </Link>
+                </NavLink>
               </li>
             ))}
         </ul>
