@@ -16,7 +16,7 @@ import AuthWrapper, { getRoute } from './components/AuthWrapper.tsx';
 import SignIn from './pages/Authentication/SignIn.tsx';
 import SignUp from './pages/Authentication/SignUp.tsx';
 import AccountSetting from './pages/Authentication/AccountSetting.tsx';
-import EmailPassword from 'supertokens-auth-react/lib/build/recipe/emailpassword/recipe';
+import EmailPassword from 'supertokens-auth-react/recipe/emailpassword';
 
 SuperTokens.init({
   appInfo: {
