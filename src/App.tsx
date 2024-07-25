@@ -17,6 +17,7 @@ import SignIn from './pages/Authentication/SignIn/index.tsx';
 import SignUp from './pages/Authentication/SignUp.tsx';
 import AccountSetting from './pages/Authentication/AccountSetting.tsx';
 import EmailPassword from 'supertokens-auth-react/recipe/emailpassword';
+import ResetPassword from './pages/Authentication/SignIn/ResetPassword.tsx';
 
 SuperTokens.init({
   appInfo: {
@@ -95,7 +96,7 @@ function App() {
             />
             <Route path="/auth" element={<SignIn />} />
             <Route path="/signup" element={<SignUp />} />
-
+            <Route path="/auth/reset-password" element={<ResetPassword />} />
             <Route
               path="*"
               element={

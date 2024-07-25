@@ -26,7 +26,11 @@ export default function Modal({
 }) {
   return (
     <>
-      <button className={classNameses?.button} onClick={() => setIsOpen(true)}>
+      <button
+        className={classNameses?.button}
+        onClick={() => setIsOpen(true)}
+        type="button"
+      >
         {buttonText}
       </button>
       <Dialog
