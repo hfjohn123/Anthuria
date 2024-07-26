@@ -19,7 +19,7 @@ import Loader from '../../common/Loader';
 import ReactSelectButton from '../../components/Dropdowns/ReactSelectButton.tsx';
 import AutosizeInput from 'react-18-input-autosize';
 import 'react-datepicker/dist/react-datepicker.css';
-import Modal from '../../components/Modal.tsx';
+// import Modal from '../../components/Modal.tsx';
 import CheckboxOption from '../../components/Select/CheckboxOption.tsx';
 import Select, { ActionMeta, ClassNamesConfig, MultiValue } from 'react-select';
 import FilterValueContainer from '../../components/Select/FilterValueContainer.tsx';
@@ -40,8 +40,8 @@ import {
 import getFacetedUniqueValues from '../../common/getFacetedUniqueValues.ts';
 import { AuthContext } from '../../components/AuthWrapper.tsx';
 import DatePicker from 'react-datepicker';
-import { Field, Input, Label } from '@headlessui/react';
-import { createToast } from '../../hooks/fireToast.tsx';
+// import { Field, Input, Label } from '@headlessui/react';
+// import { createToast } from '../../hooks/fireToast.tsx';
 import ShowMoreText from 'react-show-more-text';
 import NumberCards from '../../components/Cards/NumberCards.tsx';
 import classNames from 'classnames';
@@ -228,54 +228,6 @@ const renderSubComponent = ({ row }: { row: Row<TriggerFinal> }) => {
                     {status === 'Rejected' && (
                       <div className="size-3 rounded bg-danger"></div>
                     )}
-                    {/*  <Select*/}
-                    {/*    classNames={{*/}
-                    {/*      control: () =>*/}
-                    {/*        '!border-0 !bg-transparent min-w-max !shadow-none !h-2',*/}
-                    {/*      valueContainer: () => 'min-w-max !p-0',*/}
-                    {/*      singleValue: () => 'dark:!text-bodydark',*/}
-                    {/*      menu: () => 'dark:bg-form-input min-w-max',*/}
-                    {/*      option: () => 'text-body dark:!text-bodydark',*/}
-                    {/*      indicatorsContainer: () => '!p-0',*/}
-                    {/*      dropdownIndicator: () => '!p-0',*/}
-                    {/*    }}*/}
-                    {/*    components={{*/}
-                    {/*      IndicatorSeparator: () => null,*/}
-                    {/*    }}*/}
-                    {/*    value={{*/}
-                    {/*      label: status,*/}
-                    {/*      value: status,*/}
-                    {/*    }}*/}
-                    {/*    menuPortalTarget={document.body}*/}
-                    {/*    isSearchable={false}*/}
-                    {/*    options={[*/}
-                    {/*      {*/}
-                    {/*        label: 'Needs review',*/}
-                    {/*        value: 'Needs review',*/}
-                    {/*      },*/}
-                    {/*      {*/}
-                    {/*        label: 'Pending',*/}
-                    {/*        value: 'Pending',*/}
-                    {/*      },*/}
-                    {/*      {*/}
-                    {/*        label: 'Done',*/}
-                    {/*        value: 'Done',*/}
-                    {/*      },*/}
-                    {/*      {*/}
-                    {/*        label: 'Rejected',*/}
-                    {/*        value: 'Rejected',*/}
-                    {/*      },*/}
-                    {/*    ]}*/}
-                    {/*    isDisabled={status === 'Temporary'}*/}
-                    {/*    menuPlacement="auto"*/}
-                    {/*    // onChange={(e) => {*/}
-                    {/*    //   updateStatus.mutate({*/}
-                    {/*    //     progress_note_id: row.getValue('progress_note_id'),*/}
-                    {/*    //     update_time: row.getValue('update_time'),*/}
-                    {/*    //     status: e?.value as string,*/}
-                    {/*    //   });*/}
-                    {/*    // }}*/}
-                    {/*  />*/}
                     {status}
                   </div>
                 </td>
@@ -288,15 +240,15 @@ const renderSubComponent = ({ row }: { row: Row<TriggerFinal> }) => {
   );
 };
 const permenentColumnFilters = ['facility_name', 'trigger_word'];
-const initialNewTrigger: {
-  trigger_word: string;
-  internal_facility_id: string[];
-  date_range: [Date, Date];
-} = {
-  trigger_word: '',
-  internal_facility_id: [],
-  date_range: [new Date(), new Date()],
-};
+// const initialNewTrigger: {
+//   trigger_word: string;
+//   internal_facility_id: string[];
+//   date_range: [Date, Date];
+// } = {
+//   trigger_word: '',
+//   internal_facility_id: [],
+//   date_range: [new Date(), new Date()],
+// };
 export default function TriggerWords() {
   const { route, user_applications_locations, user_data } =
     useContext(AuthContext);
@@ -374,47 +326,47 @@ export default function TriggerWords() {
   //     queryClient.invalidateQueries({ queryKey: ['trigger-words', route] });
   //   },
   // });
-  const addTemporary = useMutation({
-    mutationFn: ({
-      trigger_word,
-      user_id,
-      facilities,
-      from_to,
-    }: {
-      trigger_word: string;
-      user_id: string;
-      facilities: string[];
-      from_to: [Date | null, Date | null];
-    }) =>
-      axios.post(
-        `https://triggerword_temporary_api.triedgesandbox.com/create_trigger`,
-        {
-          trigger_word,
-          facilities,
-          user_id,
-          from_to,
-        },
-      ),
-    onSuccess: () => {
-      createToast(
-        'Success',
-        'Trigger Word Creation in Progress',
-        0,
-        'new trigger',
-      );
-    },
-  });
+  // const addTemporary = useMutation({
+  //   mutationFn: ({
+  //     trigger_word,
+  //     user_id,
+  //     facilities,
+  //     from_to,
+  //   }: {
+  //     trigger_word: string;
+  //     user_id: string;
+  //     facilities: string[];
+  //     from_to: [Date | null, Date | null];
+  //   }) =>
+  //     axios.post(
+  //       `https://triggerword_temporary_api.triedgesandbox.com/create_trigger`,
+  //       {
+  //         trigger_word,
+  //         facilities,
+  //         user_id,
+  //         from_to,
+  //       },
+  //     ),
+  //   onSuccess: () => {
+  //     createToast(
+  //       'Success',
+  //       'Trigger Word Creation in Progress',
+  //       0,
+  //       'new trigger',
+  //     );
+  //   },
+  // });
   const { data: temporaryData } = useQuery({
     queryKey: ['temporary-data', route],
     queryFn: () =>
       axios.get(`${route}/trigger_temporary_final`).then((res) => res.data),
   });
 
-  const [newTriggerWord, setNewTriggerWord] = useState<{
-    trigger_word: string;
-    internal_facility_id: string[];
-    date_range: [Date | null, Date | null];
-  }>(initialNewTrigger);
+  // const [newTriggerWord, setNewTriggerWord] = useState<{
+  //   trigger_word: string;
+  //   internal_facility_id: string[];
+  //   date_range: [Date | null, Date | null];
+  // }>(initialNewTrigger);
 
   const columns = useMemo<ColumnDef<TriggerFinal>[]>(
     () => [
@@ -767,180 +719,180 @@ export default function TriggerWords() {
       </div>
       <div className="grid grid-cols-12 mt-5">
         <div className="col-span-12 sm:col-span-9 flex items-center">
-          <span className="text-xl lg:text-2xl font-bold gap-1 ">
-            Trigger Word Type:
-          </span>
-          <Select
-            components={{ IndicatorSeparator: () => null }}
-            isSearchable={false}
-            isMulti={false}
-            options={[
-              { label: 'Predefined', value: 'Predefined' },
-              { label: 'Temporary', value: 'Temporary' },
-            ]}
-            value={{ label: triggerType, value: triggerType }}
-            onChange={(e) => {
-              setTriggerType(e?.value ?? 'Predefined');
-              e?.value === 'Temporary'
-                ? queryClient.invalidateQueries({
-                    queryKey: ['temporary-data', route],
-                  })
-                : queryClient.invalidateQueries({
-                    queryKey: ['trigger-words', route],
-                  });
-            }}
-            classNames={{
-              control: () =>
-                '!bg-transparent !border-0 text-xl lg:text-2xl font-bold !shadow-none',
-              valueContainer: () => '!pr-0',
-              dropdownIndicator: () => '!pl-0',
-              singleValue: () => '!text-body dark:!text-bodydark',
-              menu: () => 'dark:bg-form-input min-w-max',
-              option: () => 'text-body dark:!text-bodydark',
-            }}
-          />
+          {/*<span className="text-xl lg:text-2xl font-bold gap-1 ">*/}
+          {/*  Trigger Word Type:*/}
+          {/*</span>*/}
+          {/*<Select*/}
+          {/*  components={{ IndicatorSeparator: () => null }}*/}
+          {/*  isSearchable={false}*/}
+          {/*  isMulti={false}*/}
+          {/*  options={[*/}
+          {/*    { label: 'Predefined', value: 'Predefined' },*/}
+          {/*    { label: 'Temporary', value: 'Temporary' },*/}
+          {/*  ]}*/}
+          {/*  value={{ label: triggerType, value: triggerType }}*/}
+          {/*  onChange={(e) => {*/}
+          {/*    setTriggerType(e?.value ?? 'Predefined');*/}
+          {/*    e?.value === 'Temporary'*/}
+          {/*      ? queryClient.invalidateQueries({*/}
+          {/*          queryKey: ['temporary-data', route],*/}
+          {/*        })*/}
+          {/*      : queryClient.invalidateQueries({*/}
+          {/*          queryKey: ['trigger-words', route],*/}
+          {/*        });*/}
+          {/*  }}*/}
+          {/*  classNames={{*/}
+          {/*    control: () =>*/}
+          {/*      '!bg-transparent !border-0 text-xl lg:text-2xl font-bold !shadow-none',*/}
+          {/*    valueContainer: () => '!pr-0',*/}
+          {/*    dropdownIndicator: () => '!pl-0',*/}
+          {/*    singleValue: () => '!text-body dark:!text-bodydark',*/}
+          {/*    menu: () => 'dark:bg-form-input min-w-max',*/}
+          {/*    option: () => 'text-body dark:!text-bodydark',*/}
+          {/*  }}*/}
+          {/*/>*/}
         </div>
-        <Modal
-          isOpen={isOpen}
-          setIsOpen={setIsOpen}
-          title="Create a New Trigger Word"
-          buttonText="+ Add a New Trigger Word"
-          classNameses={{
-            title: 'dark:text-bodydark1',
-            button:
-              'text-primary dark:text-secondary col-span-12 lg:col-span-3 lg:justify-self-end justify-self-start self-center',
-          }}
-        >
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              addTemporary.mutate({
-                trigger_word: newTriggerWord.trigger_word,
-                facilities: newTriggerWord.internal_facility_id,
-                user_id: user_data.email,
-                from_to: newTriggerWord.date_range,
-              });
-              setIsOpen(false);
-              setNewTriggerWord(initialNewTrigger);
-            }}
-          >
-            <div className="flex flex-col gap-4">
-              <Field>
-                <Label className="text-sm dark:text-bodydark2">
-                  New Trigger Word
-                </Label>
-                <Input
-                  required
-                  value={newTriggerWord.trigger_word}
-                  onChange={(e) => {
-                    setNewTriggerWord((prev) => ({
-                      ...prev,
-                      trigger_word: e.target.value,
-                    }));
-                  }}
-                  className="block py-1.5 border border-stroke rounded outline-none indent-2.5 w-full focus:shadow-filter focus:shadow-blue-400 dark:bg-boxdark dark:text-bodydark1"
-                  type="text"
-                />
-              </Field>
-              <Field>
-                <Label className="text-sm dark:text-bodydark2">Facility</Label>
-                <Select
-                  required
-                  isMulti
-                  closeMenuOnSelect={false}
-                  hideSelectedOptions={false}
-                  components={{ Option: CheckboxOption }}
-                  value={newTriggerWord.internal_facility_id
-                    .filter((value) =>
-                      locations.some(
-                        ({ internal_facility_id }) =>
-                          internal_facility_id === value,
-                      ),
-                    )
-                    .map((value) => ({
-                      label:
-                        locations.find(
-                          ({ internal_facility_id }) =>
-                            internal_facility_id === value,
-                        )?.facility_name || '',
-                      value,
-                    }))}
-                  onChange={(e) => {
-                    setNewTriggerWord((prev) => ({
-                      ...prev,
-                      internal_facility_id: e.map(({ value }) => value),
-                    }));
-                  }}
-                  options={locations.map(
-                    ({ internal_facility_id, facility_name }) => ({
-                      label: facility_name,
-                      value: internal_facility_id,
-                    }),
-                  )}
-                  classNames={{
-                    control: () =>
-                      '!border-stroke dark:bg-boxdark dark:text-bodydark1',
-                    menu: () => 'dark:bg-form-input min-w-max',
-                    option: () => 'text-body dark:!text-bodydark',
-                  }}
-                />
-              </Field>
-              <Field>
-                <Label className="block text-sm dark:text-bodydark2">
-                  Date Range
-                </Label>
-                <DatePicker
-                  startDate={newTriggerWord.date_range[0]}
-                  endDate={newTriggerWord.date_range[1]}
-                  maxDate={
-                    newTriggerWord.date_range[1]
-                      ? new Date()
-                      : new Date(
-                          Math.min(
-                            new Date().getTime(),
-                            newTriggerWord.date_range[0]
-                              ? new Date(newTriggerWord.date_range[0]).setDate(
-                                  new Date(
-                                    newTriggerWord.date_range[0],
-                                  ).getDate() + 7,
-                                )
-                              : new Date().getTime(),
-                          ),
-                        )
-                  }
-                  onChange={(e) => {
-                    setNewTriggerWord((prev) => ({
-                      ...prev,
-                      date_range: e,
-                    }));
-                  }}
-                  selectsRange
-                  required
-                  wrapperClassName="w-full"
-                  className="dark:bg-boxdark indent-2.5 py-1.5 border border-stroke rounded w-full outline-none focus:shadow-filter focus:shadow-blue-400 dark:text-bodydark1"
-                />
-              </Field>
-              <div className="flex gap-4">
-                <button
-                  type="reset"
-                  className="dark:text-bodydark1"
-                  onClick={() => {
-                    setIsOpen(false);
-                    setNewTriggerWord(initialNewTrigger);
-                  }}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="bg-primary text-white dark:text-bodydark1 rounded p-2"
-                >
-                  Submit
-                </button>
-              </div>
-            </div>
-          </form>
-        </Modal>
+        {/*<Modal*/}
+        {/*  isOpen={isOpen}*/}
+        {/*  setIsOpen={setIsOpen}*/}
+        {/*  title="Create a New Trigger Word"*/}
+        {/*  buttonText="+ Add a New Trigger Word"*/}
+        {/*  classNameses={{*/}
+        {/*    title: 'dark:text-bodydark1',*/}
+        {/*    button:*/}
+        {/*      'text-primary dark:text-secondary col-span-12 lg:col-span-3 lg:justify-self-end justify-self-start self-center',*/}
+        {/*  }}*/}
+        {/*>*/}
+        {/*  <form*/}
+        {/*    onSubmit={(e) => {*/}
+        {/*      e.preventDefault();*/}
+        {/*      addTemporary.mutate({*/}
+        {/*        trigger_word: newTriggerWord.trigger_word,*/}
+        {/*        facilities: newTriggerWord.internal_facility_id,*/}
+        {/*        user_id: user_data.email,*/}
+        {/*        from_to: newTriggerWord.date_range,*/}
+        {/*      });*/}
+        {/*      setIsOpen(false);*/}
+        {/*      setNewTriggerWord(initialNewTrigger);*/}
+        {/*    }}*/}
+        {/*  >*/}
+        {/*    <div className="flex flex-col gap-4">*/}
+        {/*      <Field>*/}
+        {/*        <Label className="text-sm dark:text-bodydark2">*/}
+        {/*          New Trigger Word*/}
+        {/*        </Label>*/}
+        {/*        <Input*/}
+        {/*          required*/}
+        {/*          value={newTriggerWord.trigger_word}*/}
+        {/*          onChange={(e) => {*/}
+        {/*            setNewTriggerWord((prev) => ({*/}
+        {/*              ...prev,*/}
+        {/*              trigger_word: e.target.value,*/}
+        {/*            }));*/}
+        {/*          }}*/}
+        {/*          className="block py-1.5 border border-stroke rounded outline-none indent-2.5 w-full focus:shadow-filter focus:shadow-blue-400 dark:bg-boxdark dark:text-bodydark1"*/}
+        {/*          type="text"*/}
+        {/*        />*/}
+        {/*      </Field>*/}
+        {/*      <Field>*/}
+        {/*        <Label className="text-sm dark:text-bodydark2">Facility</Label>*/}
+        {/*        <Select*/}
+        {/*          required*/}
+        {/*          isMulti*/}
+        {/*          closeMenuOnSelect={false}*/}
+        {/*          hideSelectedOptions={false}*/}
+        {/*          components={{ Option: CheckboxOption }}*/}
+        {/*          value={newTriggerWord.internal_facility_id*/}
+        {/*            .filter((value) =>*/}
+        {/*              locations.some(*/}
+        {/*                ({ internal_facility_id }) =>*/}
+        {/*                  internal_facility_id === value,*/}
+        {/*              ),*/}
+        {/*            )*/}
+        {/*            .map((value) => ({*/}
+        {/*              label:*/}
+        {/*                locations.find(*/}
+        {/*                  ({ internal_facility_id }) =>*/}
+        {/*                    internal_facility_id === value,*/}
+        {/*                )?.facility_name || '',*/}
+        {/*              value,*/}
+        {/*            }))}*/}
+        {/*          onChange={(e) => {*/}
+        {/*            setNewTriggerWord((prev) => ({*/}
+        {/*              ...prev,*/}
+        {/*              internal_facility_id: e.map(({ value }) => value),*/}
+        {/*            }));*/}
+        {/*          }}*/}
+        {/*          options={locations.map(*/}
+        {/*            ({ internal_facility_id, facility_name }) => ({*/}
+        {/*              label: facility_name,*/}
+        {/*              value: internal_facility_id,*/}
+        {/*            }),*/}
+        {/*          )}*/}
+        {/*          classNames={{*/}
+        {/*            control: () =>*/}
+        {/*              '!border-stroke dark:bg-boxdark dark:text-bodydark1',*/}
+        {/*            menu: () => 'dark:bg-form-input min-w-max',*/}
+        {/*            option: () => 'text-body dark:!text-bodydark',*/}
+        {/*          }}*/}
+        {/*        />*/}
+        {/*      </Field>*/}
+        {/*      <Field>*/}
+        {/*        <Label className="block text-sm dark:text-bodydark2">*/}
+        {/*          Date Range*/}
+        {/*        </Label>*/}
+        {/*        <DatePicker*/}
+        {/*          startDate={newTriggerWord.date_range[0]}*/}
+        {/*          endDate={newTriggerWord.date_range[1]}*/}
+        {/*          maxDate={*/}
+        {/*            newTriggerWord.date_range[1]*/}
+        {/*              ? new Date()*/}
+        {/*              : new Date(*/}
+        {/*                  Math.min(*/}
+        {/*                    new Date().getTime(),*/}
+        {/*                    newTriggerWord.date_range[0]*/}
+        {/*                      ? new Date(newTriggerWord.date_range[0]).setDate(*/}
+        {/*                          new Date(*/}
+        {/*                            newTriggerWord.date_range[0],*/}
+        {/*                          ).getDate() + 7,*/}
+        {/*                        )*/}
+        {/*                      : new Date().getTime(),*/}
+        {/*                  ),*/}
+        {/*                )*/}
+        {/*          }*/}
+        {/*          onChange={(e) => {*/}
+        {/*            setNewTriggerWord((prev) => ({*/}
+        {/*              ...prev,*/}
+        {/*              date_range: e,*/}
+        {/*            }));*/}
+        {/*          }}*/}
+        {/*          selectsRange*/}
+        {/*          required*/}
+        {/*          wrapperClassName="w-full"*/}
+        {/*          className="dark:bg-boxdark indent-2.5 py-1.5 border border-stroke rounded w-full outline-none focus:shadow-filter focus:shadow-blue-400 dark:text-bodydark1"*/}
+        {/*        />*/}
+        {/*      </Field>*/}
+        {/*      <div className="flex gap-4">*/}
+        {/*        <button*/}
+        {/*          type="reset"*/}
+        {/*          className="dark:text-bodydark1"*/}
+        {/*          onClick={() => {*/}
+        {/*            setIsOpen(false);*/}
+        {/*            setNewTriggerWord(initialNewTrigger);*/}
+        {/*          }}*/}
+        {/*        >*/}
+        {/*          Cancel*/}
+        {/*        </button>*/}
+        {/*        <button*/}
+        {/*          type="submit"*/}
+        {/*          className="bg-primary text-white dark:text-bodydark1 rounded p-2"*/}
+        {/*        >*/}
+        {/*          Submit*/}
+        {/*        </button>*/}
+        {/*      </div>*/}
+        {/*    </div>*/}
+        {/*  </form>*/}
+        {/*</Modal>*/}
 
         <div className=" mt-5 col-span-12 bg-white dark:bg-boxdark shadow-default  ">
           <div className="flex items-center border-b border-stroke">

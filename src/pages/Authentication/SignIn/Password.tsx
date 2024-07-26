@@ -4,7 +4,7 @@ import {
   signIn,
   sendPasswordResetEmail,
 } from 'supertokens-web-js/recipe/emailpassword';
-
+import { createToast } from '../../../hooks/fireToast.tsx';
 import Modal from '../../../components/Modal.tsx';
 import { Button, Field, Input, Label } from '@headlessui/react';
 async function signInClicked(
@@ -17,7 +17,7 @@ async function signInClicked(
     email === '' ||
     password === ''
   ) {
-    window.alert('Please enter email and password.');
+    createToast('Login Failed', 'Missing Email or Password', 3, 'Login Failed');
     return;
   }
   try {
@@ -38,16 +38,16 @@ async function signInClicked(
       response.formFields.forEach((formField) => {
         if (formField.id === 'email') {
           // Email validation failed (for example incorrect email syntax).
-          window.alert(formField.error);
+          createToast('Login Failed', formField.error, 3, 'Login Failed');
         }
       });
     } else if (response.status === 'WRONG_CREDENTIALS_ERROR') {
-      window.alert('Email password combination is incorrect.');
+      createToast('Login Failed', 'Wrong Credentials', 3, 'Login Failed');
     } else if (response.status === 'SIGN_IN_NOT_ALLOWED') {
       // the reason string is a user friendly message
       // about what went wrong. It can also contain a support code which users
       // can tell you so you know why their sign in was not allowed.
-      window.alert(response.reason);
+      createToast('Login Failed', response.reason, 3, 'Login Failed');
     } else {
       // sign in successful. The session tokens are automatically handled by
       // the frontend SDK.
@@ -56,16 +56,21 @@ async function signInClicked(
   } catch (err: any) {
     if (err.isSuperTokensGeneralError === true) {
       // this may be a custom error message sent from the API by you.
-      window.alert(err.message);
+      createToast('Login Failed', err.message, 3, 'Login Failed');
     } else {
-      window.alert('Oops! Something went wrong.');
+      createToast(
+        'Login Failed',
+        'Oops! Something went wrong.',
+        3,
+        'Login Failed',
+      );
     }
   }
 }
 
-async function sendEmailClicked(email: string | undefined) {
+async function sendEmailClicked(email: string | undefined, setIsSent: any) {
   if (email === undefined || email === '') {
-    window.alert('Please enter email.');
+    createToast('Login Failed', 'Missing Email', 3, 'Login Failed');
     return;
   }
   try {
@@ -83,21 +88,26 @@ async function sendEmailClicked(email: string | undefined) {
       response.formFields.forEach((formField) => {
         if (formField.id === 'email') {
           // Email validation failed (for example incorrect email syntax).
-          window.alert(formField.error);
+          createToast('Login Failed', formField.error, 3, 'Login Failed');
         }
       });
     } else if (response.status === 'PASSWORD_RESET_NOT_ALLOWED') {
       // this can happen due to automatic account linking. Please read our account linking docs
     } else {
       // reset password email sent.
-      window.alert('Please check your email for the password reset link');
+      setIsSent(true);
     }
   } catch (err: any) {
     if (err.isSuperTokensGeneralError === true) {
       // this may be a custom error message sent from the API by you.
-      window.alert(err.message);
+      createToast('Login Failed', err.message, 3, 'Login Failed');
     } else {
-      window.alert('Oops! Something went wrong.');
+      createToast(
+        'Login Failed',
+        'Oops! Something went wrong.',
+        3,
+        'Login Failed',
+      );
     }
   }
 }
@@ -113,6 +123,14 @@ function Password({ setIsPasswordless }: any) {
   const [email, setEmail] = useState<string | undefined>();
   const [password, setPassword] = useState<string | undefined>();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSent, setIsSent] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  if (isLoading) {
+    return <h3>Loading...</h3>;
+  }
+  if (isSent) {
+    return <h3>Please check your email for the password reset link!</h3>;
+  }
   return (
     <>
       <h2 className="mb-9 text-2xl font-bold text-black dark:text-white sm:text-title-xl2">
@@ -165,7 +183,8 @@ function Password({ setIsPasswordless }: any) {
             <Input
               value={password}
               onChange={(event) => setPassword(event.target.value)}
-              type="text"
+              type="password"
+              autoComplete="current-password"
               placeholder="Please enter your password"
               className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
             />
@@ -207,7 +226,11 @@ function Password({ setIsPasswordless }: any) {
               onSubmit={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                sendEmailClicked(email);
+                setIsLoading(true);
+                sendEmailClicked(email, setIsSent).then(() => {
+                  setIsModalOpen(false);
+                  setIsLoading(false);
+                });
               }}
             >
               <Field>
@@ -219,7 +242,7 @@ function Password({ setIsPasswordless }: any) {
                     onChange={(event) => setEmail(event.target.value.trim())}
                     type="email"
                     placeholder="Enter your email"
-                    className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                    className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none"
                   />
 
                   <span className="absolute right-4 top-4">

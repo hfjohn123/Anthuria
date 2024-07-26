@@ -14,8 +14,8 @@ export const createToast = (
         type == '0'
           ? 'bg-[#04b20c]'
           : type == '1'
-          ? 'bg-[#eab90f]'
-          : 'bg-[#e13f32]'
+            ? 'bg-[#eab90f]'
+            : 'bg-[#e13f32]'
       } shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5`}
       >
         <div className="flex-1 w-0 p-4 ">
@@ -89,10 +89,10 @@ const fireToast = () => {
             alertSetting.criterion == '0'
               ? value <= -1 * dataJSON[id][para]
               : alertSetting.criterion == '1' || alertSetting.criterion == '3'
-              ? value >= dataJSON[id][para]
-              : alertSetting.criterion == '2'
-              ? value <= dataJSON[id][para]
-              : value == dataJSON[id][para];
+                ? value >= dataJSON[id][para]
+                : alertSetting.criterion == '2'
+                  ? value <= dataJSON[id][para]
+                  : value == dataJSON[id][para];
           const realValue =
             alertSetting.criterion == '0'
               ? dataJSON[id][para] * -1
@@ -102,12 +102,12 @@ const fireToast = () => {
               alertSetting.criterion == 0
                 ? 'goes down by'
                 : alertSetting.criterion == 1
-                ? 'goes up by'
-                : alertSetting.criterion == 2
-                ? 'is smaller than'
-                : alertSetting.criterion == 3
-                ? 'is greater than'
-                : 'is equal to'
+                  ? 'goes up by'
+                  : alertSetting.criterion == 2
+                    ? 'is smaller than'
+                    : alertSetting.criterion == 3
+                      ? 'is greater than'
+                      : 'is equal to'
             } ${realValue}`;
             createToast(id, msg, alertSetting.type);
           }
@@ -119,10 +119,10 @@ const fireToast = () => {
           alertSetting.criterion == '0'
             ? value >= -1 * dataJSON[id][para]
             : alertSetting.criterion == '1' || alertSetting.criterion == '3'
-            ? value >= dataJSON[id][para]
-            : alertSetting.criterion == '2'
-            ? value <= dataJSON[id][para]
-            : value == dataJSON[id][para];
+              ? value >= dataJSON[id][para]
+              : alertSetting.criterion == '2'
+                ? value <= dataJSON[id][para]
+                : value == dataJSON[id][para];
         const realValue =
           alertSetting.criterion == '0'
             ? dataJSON[id][para] * -1
@@ -133,12 +133,12 @@ const fireToast = () => {
             alertSetting.criterion == 0
               ? 'goes down by'
               : alertSetting.criterion == 1
-              ? 'goes up by'
-              : alertSetting.criterion == 2
-              ? 'is smaller than'
-              : alertSetting.criterion == 3
-              ? 'is greater than'
-              : 'is equal to'
+                ? 'goes up by'
+                : alertSetting.criterion == 2
+                  ? 'is smaller than'
+                  : alertSetting.criterion == 3
+                    ? 'is greater than'
+                    : 'is equal to'
           } ${realValue}`;
           createToast(id, msg, alertSetting.type);
         }

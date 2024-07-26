@@ -36,11 +36,11 @@ export default function Modal({
       <Dialog
         open={isOpen}
         onClose={() => setIsOpen(false)}
-        className="relative z-999999"
+        className="relative"
       >
-        <DialogBackdrop className="fixed inset-0 bg-black/30 " />
-        <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
-          <DialogPanel className="max-w-lg space-y-4 rounded-md bg-white dark:bg-slate-700 p-12">
+        <DialogBackdrop className="fixed inset-0 bg-black/30 z-999" />
+        <div className="fixed inset-0 flex w-screen items-center justify-center p-4 z-999">
+          <DialogPanel className="max-w-lg space-y-4 rounded-md bg-white dark:bg-slate-700 p-12 ">
             <DialogTitle
               className={classNames('text-2xl font-bold', classNameses?.title)}
             >

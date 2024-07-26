@@ -12,7 +12,7 @@ import Passwordless from './Passwordless.tsx';
 import Password from './Password.tsx';
 function SignIn() {
   const [isLoading, setIsLoading] = useState(false);
-  const [isPasswordless, setIsPasswordless] = useState(false);
+  const [isPasswordless, setIsPasswordless] = useState(true);
   const [searchParams] = useSearchParams();
   const companyId = searchParams.get('companyID');
   const redirect = searchParams.get('redirect');

@@ -8,7 +8,13 @@ import { signOut } from 'supertokens-auth-react/recipe/passwordless';
 import Intercom from '@intercom/messenger-js-sdk';
 
 export const AuthContext = createContext({
-  user_data: { name: '', email: '', picture: '', phone: '' },
+  user_data: {
+    name: '',
+    email: '',
+    picture: '',
+    phone: '',
+    hasPassword: false,
+  },
   user_applications_locations: [
     {
       id: '',
