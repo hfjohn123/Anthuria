@@ -665,15 +665,14 @@ export default function TriggerWords() {
               key={word}
               className={classNames(
                 'col-span-1',
+                'cursor-pointer',
                 (
                   (tableState.columnFilters.find(
                     ({ id }) => id === 'trigger_word',
                   )?.value as string[]) || []
                 ).includes(word)
-                  ? 'bg-slate-200 dark:bg-slate-600'
-                  : 'bg-white dark:bg-boxdark',
-                'cursor-pointer',
-                'hover:bg-slate-100 hover:dark:bg-slate-700',
+                  ? 'bg-slate-200 dark:bg-slate-600 '
+                  : 'bg-white dark:bg-boxdark hover:bg-slate-100 hover:dark:bg-slate-700',
               )}
               value={
                 table

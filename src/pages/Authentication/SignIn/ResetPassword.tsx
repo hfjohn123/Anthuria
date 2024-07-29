@@ -1,12 +1,74 @@
 import { Button, Field, Input, Label } from '@headlessui/react';
 import { useState } from 'react';
+import { submitNewPassword } from 'supertokens-web-js/recipe/emailpassword';
+import { createToast } from '../../../hooks/fireToast.tsx';
+import { useNavigate } from 'react-router-dom';
+
+async function newPasswordEntered(newPassword: string, navigate: any) {
+  try {
+    const response = await submitNewPassword({
+      formFields: [
+        {
+          id: 'password',
+          value: newPassword,
+        },
+      ],
+    });
+
+    if (response.status === 'FIELD_ERROR') {
+      response.formFields.forEach((formField) => {
+        if (formField.id === 'password') {
+          // New password did not meet password criteria on the backend.
+          createToast(
+            'Password Set Failed',
+            formField.error,
+            3,
+            'Password Set Failed',
+          );
+        }
+      });
+    } else if (response.status === 'RESET_PASSWORD_INVALID_TOKEN_ERROR') {
+      // the password reset token in the URL is invalid, expired, or already consumed
+      createToast(
+        'Password Set Failed',
+        'Password reset token is invalid, expired, or already consumed',
+        3,
+        'Password Set Failed',
+      );
+      navigate('/auth');
+    } else {
+      createToast('Password Set Successful', '', 0, 'Password Set Successful');
+      navigate('/auth');
+    }
+  } catch (err: any) {
+    if (err.isSuperTokensGeneralError === true) {
+      // this may be a custom error message sent from the API by you.
+      createToast('Password Set Failed', err.message, 3, 'Password Set Failed');
+    } else {
+      createToast(
+        'Password Set Failed',
+        'Oops! Something went wrong.',
+        3,
+        'Password Set Failed',
+      );
+    }
+  }
+}
 
 export default function ResetPassword() {
+  const navigate = useNavigate();
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   return (
     <div className="flex justify-center items-center h-screen">
-      <form className="flex flex-col gap-5 bg-white rounded-sm border border-stroke shadow-default p-10 ">
+      <form
+        className="flex flex-col gap-5 bg-white rounded-sm border border-stroke shadow-default p-10 "
+        onSubmit={(event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          newPasswordEntered(password, navigate);
+        }}
+      >
         <h2 className="mb-3 text-title-lg font-bold text-black dark:text-white sm:text-title-xl2 text-center">
           Reset Password
         </h2>
@@ -20,7 +82,7 @@ export default function ResetPassword() {
               onChange={(event) => setPassword(event.target.value)}
               type="password"
               placeholder="New password"
-              className="lg:min-w-100 rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+              className="lg:min-w-100 rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-stroke dark dark:bg-form-input dark:text-white dark:focus:border-primary"
             />
 
             <span className="absolute right-4 top-4">
@@ -56,7 +118,7 @@ export default function ResetPassword() {
               onChange={(event) => setConfirmPassword(event.target.value)}
               type="password"
               placeholder="Re-enter new password"
-              className="lg:min-w-100 rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+              className="lg:min-w-100 rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-stroke dark dark:bg-form-input dark:text-white dark:focus:border-primary"
             />
 
             <span className="absolute right-4 top-4">

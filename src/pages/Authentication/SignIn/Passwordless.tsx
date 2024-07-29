@@ -2,7 +2,7 @@ import { FormEvent, Fragment, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { createToast } from '../../../hooks/fireToast';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
-
+import { useNavigate } from 'react-router-dom';
 import {
   clearLoginAttemptInfo,
   consumeCode,
@@ -51,7 +51,7 @@ async function hasInitialOTPBeenSent() {
   return (await getLoginAttemptInfo()) !== undefined;
 }
 
-async function resendOTP() {
+async function resendOTP(navigate: any) {
   try {
     const response = await resendCode();
 
@@ -63,7 +63,7 @@ async function resendOTP() {
         3,
         'Login Failed',
       );
-      window.location.assign('/auth');
+      navigate('/auth');
     } else {
       // OTP resent successfully.
       createToast(
@@ -90,7 +90,7 @@ function Passwordless({ setIsLoading, isSession, setIsPasswordless }: any) {
   const [otp, setOtp] = useState<string | undefined>();
   const [hasOTPBeenSent, setHasOTPBeenSent] = useState(false);
   const [timer, setTimer] = useState(30);
-
+  const navigate = useNavigate();
   useEffect(() => {
     const interval = setInterval(() => {
       if (timer > 0) {
@@ -187,7 +187,7 @@ function Passwordless({ setIsLoading, isSession, setIsPasswordless }: any) {
   }
 
   function handleResendOTP() {
-    resendOTP();
+    resendOTP(navigate);
     setTimer(30);
   }
 
