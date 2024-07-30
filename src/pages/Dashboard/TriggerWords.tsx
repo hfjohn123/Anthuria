@@ -25,6 +25,7 @@ import Select, { ActionMeta, ClassNamesConfig, MultiValue } from 'react-select';
 import FilterValueContainer from '../../components/Select/FilterValueContainer.tsx';
 import {
   ColumnDef,
+  ColumnDefTemplate,
   flexRender,
   getCoreRowModel,
   getExpandedRowModel,
@@ -33,6 +34,7 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
+  HeaderContext,
   Row,
   TableState,
   useReactTable,
@@ -45,6 +47,8 @@ import DatePicker from 'react-datepicker';
 import ShowMoreText from 'react-show-more-text';
 import NumberCards from '../../components/Cards/NumberCards.tsx';
 import classNames from 'classnames';
+import Modal from '../../components/Modal.tsx';
+import { Button } from '@headlessui/react';
 
 type TriggerFinal = {
   progress_note_id: number;
@@ -262,6 +266,7 @@ export default function TriggerWords() {
   } | null>(null);
   const [triggerType, setTriggerType] = useState('Predefined');
   const [isOpen, setIsOpen] = useState(false);
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
   const { isPending, isError, data, error } = useQuery({
     queryKey: ['trigger-words', route],
     queryFn: () => axios.get(`${route}/trigger_final`).then((res) => res.data),
@@ -907,46 +912,68 @@ export default function TriggerWords() {
               placeholder="Global Search"
               className=" w-full py-2 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
             />
-            <ReactSelectButton
-              options={table
-                .getAllColumns()
-                .map((c) => {
-                  return {
-                    value: c.id,
-                    label: c.columnDef.header,
-                  };
-                })
-                .filter(({ value }) => value !== 'status')}
-              isMulti
-              hideSelectedOptions={false}
-              isClearable={false}
-              isSearchable={false}
-              closeMenuOnSelect={false}
-              value={Object.entries(tableState.columnVisibility)
-                .filter(([, v]) => v)
-                .map(([k]) => {
-                  return {
-                    label: table.getColumn(k)?.columnDef.header,
-                    value: k,
-                  };
-                })}
-              onChange={(selected: { label: string; value: string }[]) => {
-                setTableState((prev) => ({
-                  ...prev,
-                  columnVisibility: {
-                    ...table
-                      .getAllColumns()
-                      .reduce((acc, c) => ({ ...acc, [c.id]: false }), {}),
-                    ...selected.reduce(
-                      (acc, c) => ({ ...acc, [c.value]: true }),
-                      {},
-                    ),
-                  },
-                }));
+
+            <Modal
+              isOpen={showSettingsModal}
+              setIsOpen={setShowSettingsModal}
+              title={'Clinical Pulse Settings'}
+              buttonText={<Cog6ToothIcon />}
+              classNameses={{
+                button: 'size-6 mr-2 text-gray-900 hover:text-primary',
               }}
             >
-              <Cog6ToothIcon className="size-6" />
-            </ReactSelectButton>
+              <div>
+                <label>Column Visibility</label>
+                <Select
+                  options={table
+                    .getAllColumns()
+                    .map((c) => {
+                      return {
+                        value: c.id,
+                        label: c.columnDef.header,
+                      };
+                    })
+                    .filter(({ value }) => value !== 'status')}
+                  isMulti
+                  hideSelectedOptions={false}
+                  isClearable={false}
+                  isSearchable={false}
+                  closeMenuOnSelect={false}
+                  classNames={{ control: () => 'w-90' }}
+                  value={Object.entries(tableState.columnVisibility)
+                    .filter(([, v]) => v)
+                    .map(([k]) => {
+                      return {
+                        label: table.getColumn(k)?.columnDef.header,
+                        value: k,
+                      };
+                    })}
+                  onChange={(
+                    selected: MultiValue<{
+                      label:
+                        | ColumnDefTemplate<
+                            HeaderContext<TriggerFinal, unknown>
+                          >
+                        | undefined;
+                      value: string;
+                    }>,
+                  ) => {
+                    setTableState((prev) => ({
+                      ...prev,
+                      columnVisibility: {
+                        ...table
+                          .getAllColumns()
+                          .reduce((acc, c) => ({ ...acc, [c.id]: false }), {}),
+                        ...selected.reduce(
+                          (acc, c) => ({ ...acc, [c.value]: true }),
+                          {},
+                        ),
+                      },
+                    }));
+                  }}
+                />
+              </div>
+            </Modal>
           </div>
           <div className="flex p-1 gap-1.5 flex-wrap">
             {permenentColumnFilters.map((filter) => (

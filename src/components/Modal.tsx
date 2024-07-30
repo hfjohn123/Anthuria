@@ -18,7 +18,7 @@ export default function Modal({
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
   title: string;
-  buttonText: string;
+  buttonText: JSX.Element;
   classNameses?: {
     title?: string;
     button?: string;
