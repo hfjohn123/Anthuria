@@ -19,6 +19,7 @@ const WHITE_LIST_DOMAINS = [
   'axgsolutions.com',
   '980investments.com',
   'clearviewhcmgmt.com',
+  'azrielassetmgmt.com',
 ];
 
 class MyError {

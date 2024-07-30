@@ -5,7 +5,7 @@ import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import { Cog6ToothIcon } from '@heroicons/react/24/outline';
 import SortDownIcon from '../../images/icon/sort-down.svg';
 import SortUpIcon from '../../images/icon/sort-up.svg';
-import { Bot } from 'lucide-react';
+import { Bot, MessageSquareText } from 'lucide-react';
 import { Tooltip } from 'react-tooltip';
 import {
   Fragment,
@@ -48,7 +48,7 @@ import ShowMoreText from 'react-show-more-text';
 import NumberCards from '../../components/Cards/NumberCards.tsx';
 import classNames from 'classnames';
 import Modal from '../../components/Modal.tsx';
-import { Button } from '@headlessui/react';
+import { Button, Field, Label, Textarea } from '@headlessui/react';
 
 type TriggerFinal = {
   progress_note_id: number;
@@ -113,7 +113,15 @@ const dateRangeFilterFn = (
   );
 };
 
-const renderSubComponent = ({ row }: { row: Row<TriggerFinal> }) => {
+const renderSubComponent = ({
+  row,
+  isOpen,
+  setIsOpen,
+}: {
+  row: Row<TriggerFinal>;
+  isOpen: boolean;
+  setIsOpen: any;
+}) => {
   return (
     <div className="bg-slate-50 dark:bg-slate-900 px-4 text-sm py-4 flex flex-wrap">
       <div className="basis-1/2 border-r border-stroke pr-10">
@@ -210,8 +218,46 @@ const renderSubComponent = ({ row }: { row: Row<TriggerFinal> }) => {
           {row.original.trigger_words.map(
             ({ trigger_word, status, summary }) => (
               <tr key={row.id + trigger_word}>
-                <td className="whitespace-nowrap pt-2.5  align-top">
+                <td className="whitespace-nowrap pt-2.5 align-top flex gap-1 items-center">
                   {trigger_word}
+
+                  <Modal
+                    isOpen={isOpen}
+                    setIsOpen={setIsOpen}
+                    title={'What is Going Wrong?'}
+                    buttonText={
+                      <div className="rounded-full hover:bg-blue-100 cursor-pointer dark:hover:bg-slate-700 p-1 ">
+                        <MessageSquareText className="size-5" />
+                      </div>
+                    }
+                  >
+                    <form className="flex flex-col gap-5 justify-center">
+                      <Field>
+                        <Label className="mb-1">Comment</Label>
+                        <Textarea
+                          className="min-w-100 border border-stroke rounded-md focus:outline-primary p-2 dark:bg-boxdark dark:border-strokedark dark:outline-secondary"
+                          placeholder="Please Enter Your Comment Here"
+                        />
+                      </Field>
+                      <div className="flex gap-4 justify-end pr-3">
+                        <button
+                          type="reset"
+                          className="dark:text-bodydark1"
+                          onClick={() => {
+                            setIsOpen(false);
+                          }}
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="submit"
+                          className="bg-primary text-white dark:text-bodydark1 rounded p-2 dark:bg-secondary"
+                        >
+                          Submit
+                        </button>
+                      </div>
+                    </form>
+                  </Modal>
                 </td>
                 <td className="pr-30 pt-2.5">
                   <ShowMoreText anchorClass="text-primary cursor-pointer block dark:text-secondary">
@@ -267,6 +313,7 @@ export default function TriggerWords() {
   const [triggerType, setTriggerType] = useState('Predefined');
   const [isOpen, setIsOpen] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [showCommentModal, setShowCommentModal] = useState(false);
   const { isPending, isError, data, error } = useQuery({
     queryKey: ['trigger-words', route],
     queryFn: () => axios.get(`${route}/trigger_final`).then((res) => res.data),
@@ -1400,7 +1447,11 @@ export default function TriggerWords() {
                         <tr>
                           {/* 2nd row is a custom 1 cell row */}
                           <td colSpan={row.getVisibleCells().length}>
-                            {renderSubComponent({ row })}
+                            {renderSubComponent({
+                              row,
+                              isOpen: showCommentModal,
+                              setIsOpen: setShowCommentModal,
+                            })}
                           </td>
                         </tr>
                       )}
