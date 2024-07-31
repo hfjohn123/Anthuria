@@ -13,6 +13,7 @@ export default function Modal({
   title,
   buttonText,
   classNameses,
+  onOpenCallback,
 }: {
   children: JSX.Element;
   isOpen: boolean;
@@ -23,12 +24,16 @@ export default function Modal({
     title?: string;
     button?: string;
   };
+  onOpenCallback?: () => void;
 }) {
   return (
     <>
       <button
         className={classNameses?.button}
-        onClick={() => setIsOpen(true)}
+        onClick={() => {
+          setIsOpen(true);
+          onOpenCallback && onOpenCallback();
+        }}
         type="button"
       >
         {buttonText}

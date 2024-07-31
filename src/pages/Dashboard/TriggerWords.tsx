@@ -1,6 +1,6 @@
 import DefaultLayout from '../../layout/DefaultLayout';
 import axios from 'axios';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import { Cog6ToothIcon } from '@heroicons/react/24/outline';
 import SortDownIcon from '../../images/icon/sort-down.svg';
@@ -16,10 +16,8 @@ import {
   useState,
 } from 'react';
 import Loader from '../../common/Loader';
-import ReactSelectButton from '../../components/Dropdowns/ReactSelectButton.tsx';
 import AutosizeInput from 'react-18-input-autosize';
 import 'react-datepicker/dist/react-datepicker.css';
-// import Modal from '../../components/Modal.tsx';
 import CheckboxOption from '../../components/Select/CheckboxOption.tsx';
 import Select, { ActionMeta, ClassNamesConfig, MultiValue } from 'react-select';
 import FilterValueContainer from '../../components/Select/FilterValueContainer.tsx';
@@ -42,13 +40,11 @@ import {
 import getFacetedUniqueValues from '../../common/getFacetedUniqueValues.ts';
 import { AuthContext } from '../../components/AuthWrapper.tsx';
 import DatePicker from 'react-datepicker';
-// import { Field, Input, Label } from '@headlessui/react';
-// import { createToast } from '../../hooks/fireToast.tsx';
 import ShowMoreText from 'react-show-more-text';
 import NumberCards from '../../components/Cards/NumberCards.tsx';
 import classNames from 'classnames';
 import Modal from '../../components/Modal.tsx';
-import { Button, Field, Label, Textarea } from '@headlessui/react';
+import CommentForm from '../../components/Forms/CommentForm.tsx';
 
 type TriggerFinal = {
   progress_note_id: number;
@@ -66,6 +62,7 @@ type TriggerFinal = {
     summary: string;
     status: string;
     update_time: Date;
+    comment: string;
   }[];
 };
 const predefinedTriggerWords = [
@@ -117,10 +114,14 @@ const renderSubComponent = ({
   row,
   isOpen,
   setIsOpen,
+  commentState,
+  setCommentState,
 }: {
   row: Row<TriggerFinal>;
   isOpen: boolean;
   setIsOpen: any;
+  commentState: any;
+  setCommentState: any;
 }) => {
   return (
     <div className="bg-slate-50 dark:bg-slate-900 px-4 text-sm py-4 flex flex-wrap">
@@ -216,47 +217,33 @@ const renderSubComponent = ({
         </thead>
         <tbody>
           {row.original.trigger_words.map(
-            ({ trigger_word, status, summary }) => (
+            ({ trigger_word, status, summary, comment }) => (
               <tr key={row.id + trigger_word}>
                 <td className="whitespace-nowrap pt-2.5 align-top flex gap-1 items-center">
                   {trigger_word}
-
                   <Modal
                     isOpen={isOpen}
                     setIsOpen={setIsOpen}
+                    classNameses={{ title: 'text-xl sm:text-2xl' }}
                     title={'What is Going Wrong?'}
                     buttonText={
                       <div className="rounded-full hover:bg-blue-100 cursor-pointer dark:hover:bg-slate-700 p-1 ">
-                        <MessageSquareText className="size-5" />
+                        <MessageSquareText className="size-4.5 sm:size-5" />
                       </div>
                     }
+                    onOpenCallback={() =>
+                      setCommentState({
+                        comment,
+                        trigger_word,
+                        progress_note_id: row.original.progress_note_id,
+                      })
+                    }
                   >
-                    <form className="flex flex-col gap-5 justify-center">
-                      <Field>
-                        <Label className="mb-1">Comment</Label>
-                        <Textarea
-                          className="min-w-100 border border-stroke rounded-md focus:outline-primary p-2 dark:bg-boxdark dark:border-strokedark dark:outline-secondary"
-                          placeholder="Please Enter Your Comment Here"
-                        />
-                      </Field>
-                      <div className="flex gap-4 justify-end pr-3">
-                        <button
-                          type="reset"
-                          className="dark:text-bodydark1"
-                          onClick={() => {
-                            setIsOpen(false);
-                          }}
-                        >
-                          Cancel
-                        </button>
-                        <button
-                          type="submit"
-                          className="bg-primary text-white dark:text-bodydark1 rounded p-2 dark:bg-secondary"
-                        >
-                          Submit
-                        </button>
-                      </div>
-                    </form>
+                    <CommentForm
+                      commentState={commentState}
+                      setCommentState={setCommentState}
+                      setIsOpen={setIsOpen}
+                    />
                   </Modal>
                 </td>
                 <td className="pr-30 pt-2.5">
@@ -314,6 +301,7 @@ export default function TriggerWords() {
   const [isOpen, setIsOpen] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [showCommentModal, setShowCommentModal] = useState(false);
+  const [commentState, setCommentState] = useState({});
   const { isPending, isError, data, error } = useQuery({
     queryKey: ['trigger-words', route],
     queryFn: () => axios.get(`${route}/trigger_final`).then((res) => res.data),
@@ -408,6 +396,7 @@ export default function TriggerWords() {
   //     );
   //   },
   // });
+
   const { data: temporaryData } = useQuery({
     queryKey: ['temporary-data', route],
     queryFn: () =>
@@ -448,14 +437,11 @@ export default function TriggerWords() {
         header: 'Progress Note ID',
         meta: {
           wrap: false,
-          type: 'categorical',
+          type: 'text',
         },
         sortingFn: 'text',
         sortDescFirst: false,
-        filterFn: (row, columnId, filterValue) => {
-          const value = row.getValue(columnId) as string;
-          return filterValue.includes(value);
-        },
+        filterFn: 'includesString',
       },
       {
         accessorKey: 'created_date',
@@ -1451,6 +1437,8 @@ export default function TriggerWords() {
                               row,
                               isOpen: showCommentModal,
                               setIsOpen: setShowCommentModal,
+                              commentState: commentState,
+                              setCommentState: setCommentState,
                             })}
                           </td>
                         </tr>
