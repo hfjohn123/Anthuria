@@ -3,6 +3,7 @@ import { useContext } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { AuthContext } from '../AuthWrapper.tsx';
+import { createToast } from '../../hooks/fireToast.tsx';
 
 export default function CommentForm({
   commentState,
@@ -51,13 +52,12 @@ export default function CommentForm({
         route,
       ]);
       if (previousData) {
-        const newData = previousData;
+        const newData = structuredClone(previousData);
         for (let i = 0; i < newData.length; i++) {
           if (newData[i].progress_note_id === progress_note_id) {
             for (let j = 0; j < newData[i].trigger_words.length; j++) {
               if (newData[i].trigger_words[j].trigger_word === trigger_word) {
                 newData[i].trigger_words[j].comment = comment;
-                console.log(newData[i]);
               }
             }
           }
@@ -66,9 +66,25 @@ export default function CommentForm({
       }
       return { previousData };
     },
-    // onSettled: () => {
-    //   queryClient.invalidateQueries({ queryKey: ['trigger-words', route] });
-    // },
+    onSuccess: () => {
+      createToast(
+        'Comment Successfully Updated',
+        'Thanks for your feedback!',
+        0,
+        'Comment Updated',
+      );
+    },
+    onError: (err: any) => {
+      createToast(
+        'Comment Update Failed',
+        err.message,
+        3,
+        'Comment Update Failed',
+      );
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['trigger-words', route] });
+    },
   });
   return (
     <form
