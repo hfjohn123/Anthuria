@@ -212,7 +212,7 @@ function Password({ setIsPasswordless }: any) {
             </span>
           </div>
           <Modal
-            buttonText={'Forgot Password?'}
+            button={'Forgot Password?'}
             classNameses={{
               button:
                 'text-sm text-primary dark:text-secondary cursor-pointer block',

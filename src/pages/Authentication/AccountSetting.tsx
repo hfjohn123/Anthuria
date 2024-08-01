@@ -230,7 +230,7 @@ const AccountSetting = () => {
                     ) : (
                       <Modal
                         title={'Set up a Password'}
-                        buttonText={'Set up a Password'}
+                        button={'Set up a Password'}
                         classNameses={{
                           button:
                             'flex whitespace-nowrap justify-center rounded border border-stroke py-2 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white w-full',

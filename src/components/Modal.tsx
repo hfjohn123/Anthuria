@@ -11,7 +11,7 @@ export default function Modal({
   isOpen,
   setIsOpen,
   title,
-  buttonText,
+  button,
   classNameses,
   onOpenCallback,
 }: {
@@ -19,7 +19,7 @@ export default function Modal({
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
   title: string;
-  buttonText: JSX.Element;
+  button: JSX.Element;
   classNameses?: {
     title?: string;
     button?: string;
@@ -36,7 +36,7 @@ export default function Modal({
         }}
         type="button"
       >
-        {buttonText}
+        {button}
       </button>
       <Dialog
         open={isOpen}
