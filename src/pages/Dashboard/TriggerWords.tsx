@@ -221,7 +221,7 @@ const renderSubComponent = ({
         </thead>
         <tbody>
           {row.original.trigger_words.map(
-            ({ trigger_word, status, summary, comment, is_thumb_up }) => (
+            ({ trigger_word, status, summary, comment }) => (
               <tr key={row.id + trigger_word}>
                 <td className="whitespace-nowrap pt-2.5 align-top flex items-center flex-nowrap">
                   {trigger_word}
@@ -233,10 +233,7 @@ const renderSubComponent = ({
                     data-tooltip-content="Is it a good trigger?"
                   >
                     <ThumbsUp
-                      className={clsx(
-                        'size-4 sm:size-4.5',
-                        is_thumb_up && 'fill-blue-400 stroke-1',
-                      )}
+                      className={clsx('size-2 sm:size-2.5')}
                       onClick={() =>
                         putComment.mutate({
                           progress_note_id: row.original.progress_note_id,
@@ -262,12 +259,7 @@ const renderSubComponent = ({
                         data-tooltip-id="comment-tooltip"
                         data-tooltip-content="Is it a good trigger?"
                       >
-                        <ThumbsDown
-                          className={clsx(
-                            'size-4 sm:size-4.5',
-                            comment && !is_thumb_up && 'fill-blue-400 stroke-1',
-                          )}
-                        />
+                        <ThumbsDown className={clsx('size-2 sm:size-2.5')} />
                       </div>
                     }
                     onOpenCallback={() =>
