@@ -8,7 +8,8 @@ import Modal from '../../components/Modal.tsx';
 import { signUp } from 'supertokens-web-js/recipe/emailpassword';
 import { createToast } from '../../hooks/fireToast.tsx';
 import Loader from '../../common/Loader';
-
+import sendEmailClicked from '../../common/sendEmailClicked.ts';
+import ErrorPage from '../../common/ErrorPage.tsx';
 async function signUpClicked(
   email: string,
   password: string,
@@ -70,6 +71,7 @@ async function signUpClicked(
 }
 const AccountSetting = () => {
   const queryClient = useQueryClient();
+  const [isSent, setIsSent] = useState(false);
   const { user_data, route } = useContext(AuthContext);
   const [user, setUser] = useState(user_data);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
@@ -86,8 +88,16 @@ const AccountSetting = () => {
       });
     },
   });
+
   if (loading) {
     return <Loader />;
+  }
+  if (isSent) {
+    return (
+      <ErrorPage error={'Password Reset Link is been Sent'}>
+        <p>Check your email!</p>
+      </ErrorPage>
+    );
   }
   return (
     <DefaultLayout title="Account Settings">
@@ -204,9 +214,6 @@ const AccountSetting = () => {
                         type="email"
                         value={user.email}
                       />
-                      <Button className="md:absolute md:right-2 text-primary">
-                        Request to Change
-                      </Button>
                     </div>
                   </Field>
                   <Field className="mb-5.5 ">
@@ -222,7 +229,18 @@ const AccountSetting = () => {
                             disabled
                             placeholder={'**********'}
                           />
-                          <Button className="md:absolute md:right-2 text-primary">
+                          <Button
+                            className="md:absolute md:right-2 text-primary"
+                            onClick={() => {
+                              setLoading(true);
+                              sendEmailClicked(
+                                user_data.email,
+                                setIsSent,
+                              ).finally(() => {
+                                setLoading(false);
+                              });
+                            }}
+                          >
                             Request to Change
                           </Button>
                         </div>
@@ -230,7 +248,7 @@ const AccountSetting = () => {
                     ) : (
                       <Modal
                         title={'Set up a Password'}
-                        button={'Set up a Password'}
+                        button={<button>Set up a Password</button>}
                         classNameses={{
                           button:
                             'flex whitespace-nowrap justify-center rounded border border-stroke py-2 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white w-full',
