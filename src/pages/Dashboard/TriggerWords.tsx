@@ -1,7 +1,7 @@
 import DefaultLayout from '../../layout/DefaultLayout';
 import axios from 'axios';
-import { useMutation, useQuery } from '@tanstack/react-query';
-import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { MagnifyingGlassIcon, CheckIcon } from '@heroicons/react/24/solid';
 import { Cog6ToothIcon } from '@heroicons/react/24/outline';
 import SortDownIcon from '../../images/icon/sort-down.svg';
 import SortUpIcon from '../../images/icon/sort-up.svg';
@@ -47,7 +47,7 @@ import Modal from '../../components/Modal.tsx';
 import CommentForm from '../../components/Forms/CommentForm.tsx';
 import ThumbsUpAndDown from '../../images/icon/ThumbUpAndDown.tsx';
 import { createToast } from '../../hooks/fireToast.tsx';
-import { Field, Input, Label } from '@headlessui/react';
+import { Checkbox, Field, Input, Label } from '@headlessui/react';
 type TriggerFinal = {
   progress_note_id: number;
   internal_facility_id: string;
@@ -119,12 +119,14 @@ const renderSubComponent = ({
   setIsOpen,
   commentState,
   setCommentState,
+  changeStatus,
 }: {
   row: Row<TriggerFinal>;
   isOpen: boolean;
   setIsOpen: any;
   commentState: any;
   setCommentState: any;
+  changeStatus: any;
 }) => {
   return (
     <div className="bg-slate-50 dark:bg-slate-900 px-4 text-sm py-4 flex flex-wrap">
@@ -270,21 +272,35 @@ const renderSubComponent = ({
                 </td>
                 <td className="pt-2.5 align-top	">
                   <div className=" flex items-center flex-nowrap gap-1.5">
-                    {status === 'Needs review' && (
-                      <div className="size-3 rounded bg-primary"></div>
-                    )}
-                    {status === 'Pending' && (
-                      <div className="size-3 rounded bg-warning"></div>
-                    )}
-                    {status === 'Done' && (
-                      <div className="size-3 rounded bg-success"></div>
-                    )}
-                    {status === 'Rejected' && (
-                      <div className="size-3 rounded bg-danger"></div>
-                    )}
-                    {status === 'temporary' && (
-                      <div className="size-3 rounded bg-slate-500"></div>
-                    )}
+                    {/*{status === 'Needs review' && (*/}
+                    {/*  <div className="size-3 rounded bg-primary"></div>*/}
+                    {/*)}*/}
+                    {/*{status === 'Pending' && (*/}
+                    {/*  <div className="size-3 rounded bg-warning"></div>*/}
+                    {/*)}*/}
+                    {/*{status === 'Done' && (*/}
+                    {/*  <div className="size-3 rounded bg-success"></div>*/}
+                    {/*)}*/}
+                    {/*{status === 'Rejected' && (*/}
+                    {/*  <div className="size-3 rounded bg-danger"></div>*/}
+                    {/*)}*/}
+                    {/*{status === 'temporary' && (*/}
+                    {/*  <div className="size-3 rounded bg-slate-500"></div>*/}
+                    {/*)}*/}
+                    <Checkbox
+                      checked={status === 'Reviewed'}
+                      className="block size-4 bg-white rounded border"
+                      onChange={() => {
+                        changeStatus.mutate({
+                          progress_note_id: row.original.progress_note_id,
+                          trigger_word: trigger_word,
+                          status:
+                            status === 'Reviewed' ? 'Needs review' : 'Reviewed',
+                        });
+                      }}
+                    >
+                      <CheckIcon className="hidden size-4 fill-black group-data-[checked]:block" />
+                    </Checkbox>
                     {status}
                   </div>
                 </td>
@@ -312,6 +328,7 @@ export default function TriggerWords() {
   const { locations } = user_applications_locations.find(
     (d) => d['id'] === 'trigger_words',
   ) || { locations: [] };
+  const queryClient = useQueryClient();
   const [additionalFilters, setAdditionalFilters] = useState<{
     label: string;
     value: string;
@@ -323,6 +340,55 @@ export default function TriggerWords() {
   const { isPending, isError, data, error } = useQuery({
     queryKey: ['trigger-words', route],
     queryFn: () => axios.get(`${route}/trigger_final`).then((res) => res.data),
+  });
+  const changeStatus = useMutation({
+    mutationFn: ({
+      progress_note_id,
+      trigger_word,
+      status,
+    }: {
+      progress_note_id: number;
+      trigger_word: string;
+      status: string;
+    }) => {
+      return axios.patch(`${route}/trigger_final_status`, {
+        progress_note_id,
+        trigger_word,
+        status,
+      });
+    },
+    onMutate: async ({
+      progress_note_id,
+      trigger_word,
+      status,
+    }: {
+      progress_note_id: number;
+      trigger_word: string;
+      status: string;
+    }) => {
+      await queryClient.cancelQueries({ queryKey: ['trigger-words', route] });
+      const previousData = queryClient.getQueryData<any[]>([
+        'trigger-words',
+        route,
+      ]);
+      if (previousData) {
+        const newData = structuredClone(previousData);
+        for (let i = 0; i < newData.length; i++) {
+          if (newData[i].progress_note_id === progress_note_id) {
+            for (let j = 0; j < newData[i].trigger_words.length; j++) {
+              if (newData[i].trigger_words[j].trigger_word === trigger_word) {
+                newData[i].trigger_words[j].status = status;
+              }
+            }
+          }
+        }
+        queryClient.setQueryData(['trigger-words', route], newData);
+      }
+      return { previousData };
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['trigger-words', route] });
+    },
   });
 
   const addTemporary = useMutation({
@@ -1388,6 +1454,7 @@ export default function TriggerWords() {
                               setIsOpen: setShowCommentModal,
                               commentState: commentState,
                               setCommentState: setCommentState,
+                              changeStatus,
                             })}
                           </td>
                         </tr>
