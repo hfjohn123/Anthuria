@@ -289,17 +289,18 @@ const renderSubComponent = ({
                     {/*)}*/}
                     <Checkbox
                       checked={status === 'Reviewed'}
-                      className="block size-4 bg-white rounded border"
+                      className="block size-4 bg-white rounded border group"
                       onChange={() => {
                         changeStatus.mutate({
                           progress_note_id: row.original.progress_note_id,
                           trigger_word: trigger_word,
+                          revision_date: row.original.revision_date,
                           status:
                             status === 'Reviewed' ? 'Needs review' : 'Reviewed',
                         });
                       }}
                     >
-                      <CheckIcon className="hidden size-4 fill-black group-data-[checked]:block" />
+                      <CheckIcon className="hidden size-3.5 fill-black group-data-[checked]:block" />
                     </Checkbox>
                     {status}
                   </div>
@@ -345,15 +346,18 @@ export default function TriggerWords() {
     mutationFn: ({
       progress_note_id,
       trigger_word,
+      revision_date,
       status,
     }: {
       progress_note_id: number;
       trigger_word: string;
+      revision_date: Date;
       status: string;
     }) => {
       return axios.patch(`${route}/trigger_final_status`, {
         progress_note_id,
         trigger_word,
+        revision_date,
         status,
       });
     },
