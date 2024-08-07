@@ -2,7 +2,7 @@ import DefaultLayout from '../../layout/DefaultLayout.tsx';
 import { Button, Field, Input, Label } from '@headlessui/react';
 import { useContext, useState } from 'react';
 import { AuthContext } from '../../components/AuthWrapper.tsx';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import Modal from '../../components/Modal.tsx';
 import { signUp } from 'supertokens-web-js/recipe/emailpassword';
@@ -72,7 +72,8 @@ async function signUpClicked(
 const AccountSetting = () => {
   const queryClient = useQueryClient();
   const [isSent, setIsSent] = useState(false);
-  const { user_data, route } = useContext(AuthContext);
+  const { user_data, route, user_applications_locations } =
+    useContext(AuthContext);
   const [user, setUser] = useState(user_data);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [password, setPassword] = useState('');
@@ -88,8 +89,19 @@ const AccountSetting = () => {
       });
     },
   });
-
-  if (loading) {
+  const { isPending, isError, data, error } = useQuery({
+    queryKey: ['access_management', route],
+    queryFn: () =>
+      axios.get(`${route}/access_management`).then((res) => res.data),
+    enabled: user_applications_locations.some(
+      (d) => d['id'] === 'access_management',
+    ),
+  });
+  if (
+    loading ||
+    (user_applications_locations.some((d) => d['id'] === 'access_management') &&
+      isPending)
+  ) {
     return <Loader />;
   }
   if (isSent) {
@@ -499,183 +511,106 @@ const AccountSetting = () => {
                 <h3 className="font-medium text-black dark:text-white">
                   Access Management
                 </h3>
-                <p className="text-sm">2 / 3 seats allocated</p>
+
+                <p className="text-sm">
+                  {data.organization.seats === 0
+                    ? 'Unlimited seats'
+                    : `${data.members.length} / ${data.organization.seats} seats allocated`}
+                </p>
               </div>
-              <div className="px-7 xl:pt-7 pb-7">
-                <div className="flex w-full flex-wrap xl:gap-0 gap-5 ">
-                  <label className="basis-1/3  text-sm font-medium text-black dark:text-white hidden xl:block">
+              <div className="px-7 lg:pt-7 pb-7">
+                <div className="grid grid-cols-5 lg:grid-cols-12 w-full gap-x-10 ">
+                  <label className="col-span-3  text-sm font-medium text-black dark:text-white hidden lg:block">
                     Full Name
                   </label>
-                  <label className="basis-1/3  text-sm font-medium text-black dark:text-white hidden xl:block">
+                  <label className="col-span-7  text-sm font-medium text-black dark:text-white hidden lg:block">
                     Email
                   </label>
-                  <label className="basis-1/3  text-sm font-medium text-black dark:text-white hidden xl:block">
-                    Phone Number
+                  <label className="col-span-2  text-sm font-medium text-black dark:text-white hidden lg:block">
+                    Action
                   </label>
-                  <Field className="mt-3 basis-1/3 relative">
-                    <span className="absolute left-4.5 xl:top-3.5 top-9">
-                      <svg
-                        className="fill-current"
-                        width="20"
-                        height="20"
-                        viewBox="0 0 20 20"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <g opacity="0.8">
-                          <path
-                            fillRule="evenodd"
-                            clipRule="evenodd"
-                            d="M3.72039 12.887C4.50179 12.1056 5.5616 11.6666 6.66667 11.6666H13.3333C14.4384 11.6666 15.4982 12.1056 16.2796 12.887C17.061 13.6684 17.5 14.7282 17.5 15.8333V17.5C17.5 17.9602 17.1269 18.3333 16.6667 18.3333C16.2064 18.3333 15.8333 17.9602 15.8333 17.5V15.8333C15.8333 15.1703 15.5699 14.5344 15.1011 14.0655C14.6323 13.5967 13.9964 13.3333 13.3333 13.3333H6.66667C6.00363 13.3333 5.36774 13.5967 4.8989 14.0655C4.43006 14.5344 4.16667 15.1703 4.16667 15.8333V17.5C4.16667 17.9602 3.79357 18.3333 3.33333 18.3333C2.8731 18.3333 2.5 17.9602 2.5 17.5V15.8333C2.5 14.7282 2.93899 13.6684 3.72039 12.887Z"
-                            fill=""
-                          />
-                          <path
-                            fillRule="evenodd"
-                            clipRule="evenodd"
-                            d="M9.99967 3.33329C8.61896 3.33329 7.49967 4.45258 7.49967 5.83329C7.49967 7.214 8.61896 8.33329 9.99967 8.33329C11.3804 8.33329 12.4997 7.214 12.4997 5.83329C12.4997 4.45258 11.3804 3.33329 9.99967 3.33329ZM5.83301 5.83329C5.83301 3.53211 7.69849 1.66663 9.99967 1.66663C12.3009 1.66663 14.1663 3.53211 14.1663 5.83329C14.1663 8.13448 12.3009 9.99996 9.99967 9.99996C7.69849 9.99996 5.83301 8.13448 5.83301 5.83329Z"
-                            fill=""
-                          />
-                        </g>
-                      </svg>
-                    </span>
-                    <Label className="text-xs xl:hidden">Full Name</Label>
-                    <Input
-                      className="rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                      type="text"
-                      name="fullName"
-                      id="fullName"
-                      placeholder="John Doe"
-                      defaultValue="John Doe"
-                    />
-                  </Field>
-                  <Field className="mt-3 basis-1/3 relative">
-                    <span className="absolute left-4.5 top-9 xl:top-3.5">
-                      <svg
-                        className="fill-current"
-                        width="20"
-                        height="20"
-                        viewBox="0 0 20 20"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <g opacity="0.8">
-                          <path
-                            fillRule="evenodd"
-                            clipRule="evenodd"
-                            d="M3.33301 4.16667C2.87658 4.16667 2.49967 4.54357 2.49967 5V15C2.49967 15.4564 2.87658 15.8333 3.33301 15.8333H16.6663C17.1228 15.8333 17.4997 15.4564 17.4997 15V5C17.4997 4.54357 17.1228 4.16667 16.6663 4.16667H3.33301ZM0.833008 5C0.833008 3.6231 1.9561 2.5 3.33301 2.5H16.6663C18.0432 2.5 19.1663 3.6231 19.1663 5V15C19.1663 16.3769 18.0432 17.5 16.6663 17.5H3.33301C1.9561 17.5 0.833008 16.3769 0.833008 15V5Z"
-                            fill=""
-                          />
-                          <path
-                            fillRule="evenodd"
-                            clipRule="evenodd"
-                            d="M0.983719 4.52215C1.24765 4.1451 1.76726 4.05341 2.1443 4.31734L9.99975 9.81615L17.8552 4.31734C18.2322 4.05341 18.7518 4.1451 19.0158 4.52215C19.2797 4.89919 19.188 5.4188 18.811 5.68272L10.4776 11.5161C10.1907 11.7169 9.80879 11.7169 9.52186 11.5161L1.18853 5.68272C0.811486 5.4188 0.719791 4.89919 0.983719 4.52215Z"
-                            fill=""
-                          />
-                        </g>
-                      </svg>
-                    </span>
-                    <Label className="text-xs xl:hidden">Email Address</Label>
-                    <Input
-                      className="rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                      type="email"
-                      name="emailAddress"
-                      id="emailAddress"
-                      placeholder="hdasd4654@test.dev"
-                      defaultValue="hdasd4654@test.dev"
-                    />
-                  </Field>
-                  <Field className="mt-3 basis-1/3 relative">
-                    <Label className="text-xs xl:hidden">Phone Number</Label>
-                    <Input
-                      className="rounded border border-stroke bg-gray  py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                      type="text"
-                    />
-                  </Field>
-                  <hr className=" border-1 border-stroke xl:hidden block basis-full last:hidden" />{' '}
-                  <Field className="mt-3 basis-1/3 relative">
-                    <span className="absolute left-4.5 xl:top-3.5 top-9">
-                      <svg
-                        className="fill-current"
-                        width="20"
-                        height="20"
-                        viewBox="0 0 20 20"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <g opacity="0.8">
-                          <path
-                            fillRule="evenodd"
-                            clipRule="evenodd"
-                            d="M3.72039 12.887C4.50179 12.1056 5.5616 11.6666 6.66667 11.6666H13.3333C14.4384 11.6666 15.4982 12.1056 16.2796 12.887C17.061 13.6684 17.5 14.7282 17.5 15.8333V17.5C17.5 17.9602 17.1269 18.3333 16.6667 18.3333C16.2064 18.3333 15.8333 17.9602 15.8333 17.5V15.8333C15.8333 15.1703 15.5699 14.5344 15.1011 14.0655C14.6323 13.5967 13.9964 13.3333 13.3333 13.3333H6.66667C6.00363 13.3333 5.36774 13.5967 4.8989 14.0655C4.43006 14.5344 4.16667 15.1703 4.16667 15.8333V17.5C4.16667 17.9602 3.79357 18.3333 3.33333 18.3333C2.8731 18.3333 2.5 17.9602 2.5 17.5V15.8333C2.5 14.7282 2.93899 13.6684 3.72039 12.887Z"
-                            fill=""
-                          />
-                          <path
-                            fillRule="evenodd"
-                            clipRule="evenodd"
-                            d="M9.99967 3.33329C8.61896 3.33329 7.49967 4.45258 7.49967 5.83329C7.49967 7.214 8.61896 8.33329 9.99967 8.33329C11.3804 8.33329 12.4997 7.214 12.4997 5.83329C12.4997 4.45258 11.3804 3.33329 9.99967 3.33329ZM5.83301 5.83329C5.83301 3.53211 7.69849 1.66663 9.99967 1.66663C12.3009 1.66663 14.1663 3.53211 14.1663 5.83329C14.1663 8.13448 12.3009 9.99996 9.99967 9.99996C7.69849 9.99996 5.83301 8.13448 5.83301 5.83329Z"
-                            fill=""
-                          />
-                        </g>
-                      </svg>
-                    </span>
-                    <Label className="text-xs xl:hidden">Full Name</Label>
-                    <Input
-                      className="rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                      type="text"
-                      name="fullName"
-                      id="fullName"
-                      placeholder="John Doe"
-                      defaultValue="John Doe"
-                    />
-                  </Field>
-                  <Field className="mt-3 basis-1/3 relative">
-                    <span className="absolute left-4.5 top-9 xl:top-3.5">
-                      <svg
-                        className="fill-current"
-                        width="20"
-                        height="20"
-                        viewBox="0 0 20 20"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <g opacity="0.8">
-                          <path
-                            fillRule="evenodd"
-                            clipRule="evenodd"
-                            d="M3.33301 4.16667C2.87658 4.16667 2.49967 4.54357 2.49967 5V15C2.49967 15.4564 2.87658 15.8333 3.33301 15.8333H16.6663C17.1228 15.8333 17.4997 15.4564 17.4997 15V5C17.4997 4.54357 17.1228 4.16667 16.6663 4.16667H3.33301ZM0.833008 5C0.833008 3.6231 1.9561 2.5 3.33301 2.5H16.6663C18.0432 2.5 19.1663 3.6231 19.1663 5V15C19.1663 16.3769 18.0432 17.5 16.6663 17.5H3.33301C1.9561 17.5 0.833008 16.3769 0.833008 15V5Z"
-                            fill=""
-                          />
-                          <path
-                            fillRule="evenodd"
-                            clipRule="evenodd"
-                            d="M0.983719 4.52215C1.24765 4.1451 1.76726 4.05341 2.1443 4.31734L9.99975 9.81615L17.8552 4.31734C18.2322 4.05341 18.7518 4.1451 19.0158 4.52215C19.2797 4.89919 19.188 5.4188 18.811 5.68272L10.4776 11.5161C10.1907 11.7169 9.80879 11.7169 9.52186 11.5161L1.18853 5.68272C0.811486 5.4188 0.719791 4.89919 0.983719 4.52215Z"
-                            fill=""
-                          />
-                        </g>
-                      </svg>
-                    </span>
-                    <Label className="text-xs xl:hidden">Email Address</Label>
-                    <Input
-                      className="rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                      type="email"
-                      name="emailAddress"
-                      id="emailAddress"
-                      placeholder="hdasd4654@test.dev"
-                      defaultValue="hdasd4654@test.dev"
-                    />
-                  </Field>
-                  <Field className="mt-3 basis-1/3 relative">
-                    <Label className="text-xs xl:hidden">Phone Number</Label>
-                    <Input
-                      className="rounded border border-stroke bg-gray  py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                      type="text"
-                      name="phoneNumber"
-                      id="phoneNumber"
-                      placeholder="+123 312 3456"
-                      defaultValue="+123 312 3456"
-                    />
-                  </Field>
-                  <hr className=" border-1 border-stroke xl:hidden block basis-full last:hidden" />
+                  {data.members.map((member) => (
+                    <>
+                      <Field className="mt-3 col-span-full w-full lg:col-span-3 relative">
+                        <span className="absolute left-4.5 lg:top-3.5 top-9">
+                          <svg
+                            className="fill-current"
+                            width="20"
+                            height="20"
+                            viewBox="0 0 20 20"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <g opacity="0.8">
+                              <path
+                                fillRule="evenodd"
+                                clipRule="evenodd"
+                                d="M3.72039 12.887C4.50179 12.1056 5.5616 11.6666 6.66667 11.6666H13.3333C14.4384 11.6666 15.4982 12.1056 16.2796 12.887C17.061 13.6684 17.5 14.7282 17.5 15.8333V17.5C17.5 17.9602 17.1269 18.3333 16.6667 18.3333C16.2064 18.3333 15.8333 17.9602 15.8333 17.5V15.8333C15.8333 15.1703 15.5699 14.5344 15.1011 14.0655C14.6323 13.5967 13.9964 13.3333 13.3333 13.3333H6.66667C6.00363 13.3333 5.36774 13.5967 4.8989 14.0655C4.43006 14.5344 4.16667 15.1703 4.16667 15.8333V17.5C4.16667 17.9602 3.79357 18.3333 3.33333 18.3333C2.8731 18.3333 2.5 17.9602 2.5 17.5V15.8333C2.5 14.7282 2.93899 13.6684 3.72039 12.887Z"
+                                fill=""
+                              />
+                              <path
+                                fillRule="evenodd"
+                                clipRule="evenodd"
+                                d="M9.99967 3.33329C8.61896 3.33329 7.49967 4.45258 7.49967 5.83329C7.49967 7.214 8.61896 8.33329 9.99967 8.33329C11.3804 8.33329 12.4997 7.214 12.4997 5.83329C12.4997 4.45258 11.3804 3.33329 9.99967 3.33329ZM5.83301 5.83329C5.83301 3.53211 7.69849 1.66663 9.99967 1.66663C12.3009 1.66663 14.1663 3.53211 14.1663 5.83329C14.1663 8.13448 12.3009 9.99996 9.99967 9.99996C7.69849 9.99996 5.83301 8.13448 5.83301 5.83329Z"
+                                fill=""
+                              />
+                            </g>
+                          </svg>
+                        </span>
+                        <Label className="text-xs lg:hidden">Full Name</Label>
+                        <Input
+                          className="rounded w-full border border-stroke bg-gray py-3 pl-11.5  text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                          type="text"
+                          name="fullName"
+                          id="fullName"
+                          disabled
+                          value={member.name}
+                        />
+                      </Field>
+                      <Field className="mt-3 col-span-full lg:col-span-7 relative ">
+                        <span className="absolute left-4.5 top-9 lg:top-3.5">
+                          <svg
+                            className="fill-current"
+                            width="20"
+                            height="20"
+                            viewBox="0 0 20 20"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <g opacity="0.8">
+                              <path
+                                fillRule="evenodd"
+                                clipRule="evenodd"
+                                d="M3.33301 4.16667C2.87658 4.16667 2.49967 4.54357 2.49967 5V15C2.49967 15.4564 2.87658 15.8333 3.33301 15.8333H16.6663C17.1228 15.8333 17.4997 15.4564 17.4997 15V5C17.4997 4.54357 17.1228 4.16667 16.6663 4.16667H3.33301ZM0.833008 5C0.833008 3.6231 1.9561 2.5 3.33301 2.5H16.6663C18.0432 2.5 19.1663 3.6231 19.1663 5V15C19.1663 16.3769 18.0432 17.5 16.6663 17.5H3.33301C1.9561 17.5 0.833008 16.3769 0.833008 15V5Z"
+                                fill=""
+                              />
+                              <path
+                                fillRule="evenodd"
+                                clipRule="evenodd"
+                                d="M0.983719 4.52215C1.24765 4.1451 1.76726 4.05341 2.1443 4.31734L9.99975 9.81615L17.8552 4.31734C18.2322 4.05341 18.7518 4.1451 19.0158 4.52215C19.2797 4.89919 19.188 5.4188 18.811 5.68272L10.4776 11.5161C10.1907 11.7169 9.80879 11.7169 9.52186 11.5161L1.18853 5.68272C0.811486 5.4188 0.719791 4.89919 0.983719 4.52215Z"
+                                fill=""
+                              />
+                            </g>
+                          </svg>
+                        </span>
+                        <Label className="text-xs lg:hidden">
+                          Email Address
+                        </Label>
+                        <Input
+                          className="w-full rounded border border-stroke bg-gray py-3 pl-11.5  text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                          type="email"
+                          name="emailAddress"
+                          id="emailAddress"
+                          disabled
+                          value={member.email}
+                        />
+                      </Field>
+                      <Field className="mt-3 col-span-full lg:col-span-2 relative">
+                        <p className="text-xs lg:hidden">Phone Number</p>
+                      </Field>
+                      <hr className=" border-1 border-stroke lg:hidden block basis-full last:hidden" />{' '}
+                    </>
+                  ))}
                 </div>
                 <div className="flex flex-col sm:flex-row justify-end gap-4.5 mt-7">
                   <Button
