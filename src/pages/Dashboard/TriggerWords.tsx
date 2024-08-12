@@ -7,14 +7,7 @@ import SortDownIcon from '../../images/icon/sort-down.svg';
 import SortUpIcon from '../../images/icon/sort-up.svg';
 import { Bot } from 'lucide-react';
 import { Tooltip } from 'react-tooltip';
-import {
-  Fragment,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import { Fragment, useContext, useEffect, useMemo, useState } from 'react';
 import Loader from '../../common/Loader';
 import AutosizeInput from 'react-18-input-autosize';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -626,21 +619,10 @@ export default function TriggerWords() {
         }),
     }));
   };
-
-  const table = useReactTable({
-    data: data,
-    columns,
-    getRowCanExpand: () => true,
-    getFacetedUniqueValues: getFacetedUniqueValues(),
-    autoResetExpanded: false,
-    getCoreRowModel: getCoreRowModel(),
-    getExpandedRowModel: getExpandedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getFacetedRowModel: getFacetedRowModel(), // client-side faceting
-    getFacetedMinMaxValues: getFacetedMinMaxValues(), // generate min/max values for numeric range filter
-    getSortedRowModel: getSortedRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-  });
+  if (localStorage.getItem('clearStorage') !== '1') {
+    localStorage.clear();
+    localStorage.setItem('clearStorage', '1');
+  }
   const userVisibilitySettings = localStorage.getItem('userVisibilitySettings');
   const [tableState, setTableState] = useState<TableState>({
     globalFilter: '',
@@ -668,45 +650,68 @@ export default function TriggerWords() {
     },
     columnOrder: [],
     columnVisibility: userVisibilitySettings
-      ? {
-          ...Object.fromEntries(
-            Object.entries(JSON.parse(userVisibilitySettings)).filter(
-              ([k]) => k !== 'trigger_words',
-            ),
-          ),
-          status: false,
-        }
-      : {
-          facility_name: true,
-          patient_name: true,
-          progress_note_id: true,
-          created_date: true,
-          created_by: false,
-          revision_by: false,
-          revision_date: false,
-          trigger_word: true,
-          progress_note: false,
-          summary: false,
-          update_time: false,
-          status: false,
-        },
+      ? JSON.parse(userVisibilitySettings)
+      : window.screen.width < 1024
+        ? {
+            facility_name: false,
+            patient_name: true,
+            progress_note_id: false,
+            created_date: false,
+            created_by: false,
+            revision_by: false,
+            revision_date: true,
+            trigger_word: true,
+            progress_note: false,
+            summary: false,
+            update_time: false,
+            status: false,
+          }
+        : {
+            facility_name: true,
+            patient_name: true,
+            progress_note_id: true,
+            created_date: false,
+            created_by: false,
+            revision_by: false,
+            revision_date: true,
+            trigger_word: true,
+            progress_note: false,
+            summary: false,
+            update_time: false,
+            status: false,
+          },
     pagination: {
       pageIndex: 0,
       pageSize: 10,
     },
   });
-  table.setOptions((prev) => ({
-    ...prev,
-    onStateChange: setTableState,
+
+  const table = useReactTable({
+    data: data,
+    columns,
     state: tableState,
-  }));
+
+    onStateChange: setTableState,
+    getRowCanExpand: () => true,
+    autoResetPageIndex: false,
+
+    getFacetedUniqueValues: getFacetedUniqueValues(),
+    autoResetExpanded: false,
+    getCoreRowModel: getCoreRowModel(),
+    getExpandedRowModel: getExpandedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getFacetedRowModel: getFacetedRowModel(), // client-side faceting
+    getFacetedMinMaxValues: getFacetedMinMaxValues(), // generate min/max values for numeric range filter
+    getSortedRowModel: getSortedRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+  });
+
   useEffect(() => {
     localStorage.setItem(
       'userVisibilitySettings',
       JSON.stringify(tableState.columnVisibility),
     );
   }, [tableState.columnVisibility]);
-  const parentRef = useRef<HTMLDivElement>(null);
 
   if (isPending) {
     return <Loader />;
@@ -1360,10 +1365,7 @@ export default function TriggerWords() {
               </button>
             )}
           </div>
-          <div
-            ref={parentRef}
-            className="block overflow-x-auto max-w-full overflow-y-hidden "
-          >
+          <div className="block overflow-x-auto max-w-full overflow-y-hidden ">
             <table className="w-full border-b-2 border-b-stroke">
               <thead className="bg-slate-50 dark:bg-graydark">
                 {table.getHeaderGroups().map((headerGroup) => (

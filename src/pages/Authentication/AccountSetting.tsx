@@ -19,8 +19,8 @@ import { createToast } from '../../hooks/fireToast.tsx';
 import Loader from '../../common/Loader';
 import sendEmailClicked from '../../common/sendEmailClicked.ts';
 import ErrorPage from '../../common/ErrorPage.tsx';
-import { List, PenSquare, Trash } from 'lucide-react';
-import Select from 'react-select';
+import { ChevronDownIcon, PenSquare, Trash } from 'lucide-react';
+import clsx from 'clsx';
 
 async function signUpClicked(
   email: string,
@@ -92,12 +92,20 @@ const AccountSetting = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [editModal, setEditModal] = useState(false);
-  const [editModdalData, setEditModalData] = useState({
+  const [editModdalData, setEditModalData] = useState<{
+    name: string;
+    email: string;
+    phone: string;
+    applications: any[];
+  }>({
     name: '',
     email: '',
     phone: '',
     applications: [],
   });
+  const isAdmin = user_applications_locations.some(
+    (d) => d['id'] === 'access_management',
+  );
   const modifyUser = useMutation({
     mutationFn: (user: any) => {
       return axios.put(`${route}/user`, user);
@@ -112,22 +120,19 @@ const AccountSetting = () => {
     queryKey: ['access_management', route],
     queryFn: () =>
       axios.get(`${route}/access_management`).then((res) => res.data),
-    enabled: user_applications_locations.some(
-      (d) => d['id'] === 'access_management',
-    ),
+    enabled: isAdmin,
   });
-  const [application_options, setApplicationOptions] = useState(
+  const allApplications =
+    data &&
     data.all_applications.map((d: any) => ({
       value: d.id,
       label: d.display_name,
-    })),
-  );
-  console.log(application_options);
-  if (
-    loading ||
-    (user_applications_locations.some((d) => d['id'] === 'access_management') &&
-      isPending)
-  ) {
+    }));
+  const allLocations = user_applications_locations.find(
+    (d: any) => d['id'] === 'access_management',
+  )?.locations;
+  const [applicationOptions, setApplicationOptions] = useState([]);
+  if (loading || (isAdmin && isPending)) {
     return <Loader />;
   }
   if (isSent) {
@@ -136,6 +141,9 @@ const AccountSetting = () => {
         <p>Check your email!</p>
       </ErrorPage>
     );
+  }
+  if (isError) {
+    return <ErrorPage error={error.message} />;
   }
   return (
     <DefaultLayout title="Account Settings">
@@ -642,9 +650,18 @@ const AccountSetting = () => {
                               button={<PenSquare />}
                               onOpenCallback={() => {
                                 setEditModalData(member);
+                                setApplicationOptions(
+                                  allApplications.filter(
+                                    (app: any) =>
+                                      !member.applications.some(
+                                        (appID: any) => app.value === appID.id,
+                                      ),
+                                  ),
+                                );
                               }}
                             >
                               <form
+                                className="sm:w-150 w-screen"
                                 onSubmit={(e) => {
                                   e.preventDefault();
                                   e.stopPropagation();
@@ -757,35 +774,170 @@ const AccountSetting = () => {
                                   <p>Applications</p>
                                   <p>Facilities</p>
                                   {editModdalData.applications?.map(
-                                    (application: any) => (
-                                      <>
-                                        <Field className="col-span-1">
-                                          <Select
-                                            hideSelectedOptions={true}
-                                            // value={application.id}
-                                            options={data.all_applications.map(
-                                              (app: any) => ({
-                                                label: app.display_name,
-                                                value: app.id,
-                                              }),
-                                            )}
-                                          />
-                                        </Field>
-                                        <Field>
-                                          <Listbox
-                                            value={application.locations}
-                                          >
-                                            <ListboxButton>
-                                              {application.locations.length}{' '}
-                                              Facilities
-                                            </ListboxButton>
-                                          </Listbox>
-                                        </Field>
-                                      </>
-                                    ),
+                                    (application: any) => {
+                                      if (
+                                        application.id !== 'access_management'
+                                      ) {
+                                        return (
+                                          <>
+                                            <Field className="col-span-1">
+                                              <Listbox
+                                                value={application.id}
+                                                onChange={(value) => {
+                                                  const newApplications =
+                                                    editModdalData.applications.map(
+                                                      (app: any) => {
+                                                        if (
+                                                          app.id ===
+                                                          application.id
+                                                        ) {
+                                                          return {
+                                                            ...app,
+                                                            id: value,
+                                                          };
+                                                        }
+                                                        return app;
+                                                      },
+                                                    );
+                                                  setEditModalData((prev) => ({
+                                                    ...prev,
+                                                    applications:
+                                                      newApplications,
+                                                  }));
+                                                  setApplicationOptions(
+                                                    allApplications.filter(
+                                                      (app: any) =>
+                                                        !newApplications.some(
+                                                          (appID: any) =>
+                                                            app.value ===
+                                                            appID.id,
+                                                        ),
+                                                    ),
+                                                  );
+                                                }}
+                                              >
+                                                <ListboxButton
+                                                  className={clsx(
+                                                    'group relative block w-full rounded bg-slate-100 py-3 pr-8 pl-3 text-left border border-stroke ',
+                                                    'focus:border-primary data-[focus]:border-primary focus:outline-none ',
+                                                  )}
+                                                >
+                                                  <p className="text-nowrap overflow-x-hidden">
+                                                    {
+                                                      allApplications.find(
+                                                        (app: any) =>
+                                                          app.value ===
+                                                          application.id,
+                                                      )?.label
+                                                    }
+                                                  </p>
+                                                  <ChevronDownIcon
+                                                    className="pointer-events-none absolute top-4 right-2.5 size-5"
+                                                    aria-hidden="true"
+                                                  />
+                                                </ListboxButton>
+                                                <ListboxOptions
+                                                  className={clsx(
+                                                    'w-[var(--button-width)] rounded border border-stroke [--anchor-gap:var(--spacing-1)] focus:outline-none absolute bg-white overflow-y-auto z-9 max-h-50',
+                                                  )}
+                                                >
+                                                  {applicationOptions.map(
+                                                    (option: any) => (
+                                                      <ListboxOption
+                                                        key={option.value}
+                                                        value={option.value}
+                                                        className=" flex cursor-default items-center gap-2 rounded py-1 px-3 select-none data-[focus]:bg-secondary"
+                                                      >
+                                                        {option.label}
+                                                      </ListboxOption>
+                                                    ),
+                                                  )}
+                                                </ListboxOptions>
+                                              </Listbox>
+                                            </Field>
+                                            <Field>
+                                              <Listbox
+                                                value={application.locations.map(
+                                                  (loc: any) =>
+                                                    loc.internal_facility_id,
+                                                )}
+                                                multiple={true}
+                                                onChange={(value) => {
+                                                  setEditModalData((prev) => ({
+                                                    ...prev,
+                                                    applications:
+                                                      prev.applications.map(
+                                                        (app) => {
+                                                          if (
+                                                            app.id ===
+                                                            application.id
+                                                          ) {
+                                                            return {
+                                                              ...app,
+                                                              locations:
+                                                                allLocations?.filter(
+                                                                  (loc) =>
+                                                                    value.includes(
+                                                                      loc.internal_facility_id,
+                                                                    ),
+                                                                ) || [],
+                                                            };
+                                                          }
+                                                          return app;
+                                                        },
+                                                      ),
+                                                  }));
+                                                }}
+                                              >
+                                                <ListboxButton
+                                                  className={clsx(
+                                                    'relative block w-full rounded bg-slate-100 py-3 pr-8 pl-3 text-left border border-stroke ',
+                                                    'focus:border-primary  data-[focus]:border-primary',
+                                                  )}
+                                                >
+                                                  {application.locations.length}{' '}
+                                                  Facilities
+                                                  <ChevronDownIcon
+                                                    className="group pointer-events-none absolute top-4 right-2.5 size-5"
+                                                    aria-hidden="true"
+                                                  />
+                                                </ListboxButton>
+                                                <ListboxOptions
+                                                  className={clsx(
+                                                    'w-[var(--button-width)] rounded border border-stroke [--anchor-gap:var(--spacing-1)] focus:outline-none absolute bg-white overflow-y-auto z-9 max-h-50',
+                                                  )}
+                                                >
+                                                  {allLocations?.map(
+                                                    (location) => (
+                                                      <ListboxOption
+                                                        key={
+                                                          location.internal_facility_id
+                                                        }
+                                                        value={
+                                                          location.internal_facility_id
+                                                        }
+                                                        className=" flex cursor-default items-center gap-2 rounded py-1 px-3 select-none data-[focus]:bg-secondary data-[selected]:bg-slate-200"
+                                                      >
+                                                        {location.facility_name}
+                                                      </ListboxOption>
+                                                    ),
+                                                  )}
+                                                </ListboxOptions>
+                                              </Listbox>
+                                            </Field>
+                                          </>
+                                        );
+                                      }
+                                    },
                                   )}
                                 </div>
-                                <div className="flex justify-end gap-4.5">
+                                <div className="flex justify-end gap-4.5 mt-7">
+                                  <Button
+                                    className="flex mr-auto justify-center rounded border border-stroke py-2 px-6 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white"
+                                    type="reset"
+                                  >
+                                    Add an application
+                                  </Button>
                                   <Button
                                     className="flex justify-center rounded border border-stroke py-2 px-6 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white"
                                     type="reset"
