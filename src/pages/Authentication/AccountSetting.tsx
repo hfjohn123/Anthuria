@@ -12,7 +12,7 @@ import {
 import { useContext, useState } from 'react';
 import { AuthContext } from '../../components/AuthWrapper.tsx';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import Modal from '../../components/Modal.tsx';
 import { signUp } from 'supertokens-web-js/recipe/emailpassword';
 import { createToast } from '../../hooks/fireToast.tsx';
@@ -21,6 +21,8 @@ import sendEmailClicked from '../../common/sendEmailClicked.ts';
 import ErrorPage from '../../common/ErrorPage.tsx';
 import { ChevronDownIcon, PenSquare, Trash } from 'lucide-react';
 import clsx from 'clsx';
+import UserName from '../../images/icon/UserName.tsx';
+import EmailIcon from '../../images/icon/EmailIcon.tsx';
 
 async function signUpClicked(
   email: string,
@@ -103,6 +105,14 @@ const AccountSetting = () => {
     phone: '',
     applications: [],
   });
+  const [inviteModal, setInviteModal] = useState(false);
+  const [inviteModalData, setInviteModalData] = useState<{
+    email: string;
+    name: string;
+  }>({
+    email: '',
+    name: '',
+  });
   const isAdmin = user_applications_locations.some(
     (d) => d['id'] === 'access_management',
   );
@@ -122,6 +132,28 @@ const AccountSetting = () => {
       axios.get(`${route}/access_management`).then((res) => res.data),
     enabled: isAdmin,
   });
+
+  const inviteUser = useMutation({
+    mutationFn: ({ email, name }: { email: string; name: string }) => {
+      return axios.post(`${route}/create_user`, { email, name });
+    },
+    onError: (err: AxiosError) => {
+      if (err.response?.data) {
+        createToast(
+          'Invite Failed',
+          (err.response.data as { detail: string }).detail,
+          3,
+          'Invite Failed',
+        );
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['access_management', route],
+      });
+    },
+  });
+
   const allApplications =
     data &&
     data.all_applications.map((d: any) => ({
@@ -170,31 +202,7 @@ const AccountSetting = () => {
                       <Label className="mb-3 block text-sm font-medium text-black dark:text-white">
                         Full Name
                       </Label>
-                      <span className="absolute left-4.5 top-11.5">
-                        <svg
-                          className="fill-current"
-                          width="20"
-                          height="20"
-                          viewBox="0 0 20 20"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <g opacity="0.8">
-                            <path
-                              fillRule="evenodd"
-                              clipRule="evenodd"
-                              d="M3.72039 12.887C4.50179 12.1056 5.5616 11.6666 6.66667 11.6666H13.3333C14.4384 11.6666 15.4982 12.1056 16.2796 12.887C17.061 13.6684 17.5 14.7282 17.5 15.8333V17.5C17.5 17.9602 17.1269 18.3333 16.6667 18.3333C16.2064 18.3333 15.8333 17.9602 15.8333 17.5V15.8333C15.8333 15.1703 15.5699 14.5344 15.1011 14.0655C14.6323 13.5967 13.9964 13.3333 13.3333 13.3333H6.66667C6.00363 13.3333 5.36774 13.5967 4.8989 14.0655C4.43006 14.5344 4.16667 15.1703 4.16667 15.8333V17.5C4.16667 17.9602 3.79357 18.3333 3.33333 18.3333C2.8731 18.3333 2.5 17.9602 2.5 17.5V15.8333C2.5 14.7282 2.93899 13.6684 3.72039 12.887Z"
-                              fill=""
-                            />
-                            <path
-                              fillRule="evenodd"
-                              clipRule="evenodd"
-                              d="M9.99967 3.33329C8.61896 3.33329 7.49967 4.45258 7.49967 5.83329C7.49967 7.214 8.61896 8.33329 9.99967 8.33329C11.3804 8.33329 12.4997 7.214 12.4997 5.83329C12.4997 4.45258 11.3804 3.33329 9.99967 3.33329ZM5.83301 5.83329C5.83301 3.53211 7.69849 1.66663 9.99967 1.66663C12.3009 1.66663 14.1663 3.53211 14.1663 5.83329C14.1663 8.13448 12.3009 9.99996 9.99967 9.99996C7.69849 9.99996 5.83301 8.13448 5.83301 5.83329Z"
-                              fill=""
-                            />
-                          </g>
-                        </svg>
-                      </span>
+                      <UserName className="absolute left-4.5 top-11.5" />
                       <Input
                         className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                         type="text"
@@ -228,31 +236,7 @@ const AccountSetting = () => {
                     <Label className="mb-3 block text-sm font-medium text-black dark:text-white">
                       Email Address
                     </Label>
-                    <span className="absolute left-4.5 top-11.5">
-                      <svg
-                        className="fill-current"
-                        width="20"
-                        height="20"
-                        viewBox="0 0 20 20"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <g opacity="0.8">
-                          <path
-                            fillRule="evenodd"
-                            clipRule="evenodd"
-                            d="M3.33301 4.16667C2.87658 4.16667 2.49967 4.54357 2.49967 5V15C2.49967 15.4564 2.87658 15.8333 3.33301 15.8333H16.6663C17.1228 15.8333 17.4997 15.4564 17.4997 15V5C17.4997 4.54357 17.1228 4.16667 16.6663 4.16667H3.33301ZM0.833008 5C0.833008 3.6231 1.9561 2.5 3.33301 2.5H16.6663C18.0432 2.5 19.1663 3.6231 19.1663 5V15C19.1663 16.3769 18.0432 17.5 16.6663 17.5H3.33301C1.9561 17.5 0.833008 16.3769 0.833008 15V5Z"
-                            fill=""
-                          />
-                          <path
-                            fillRule="evenodd"
-                            clipRule="evenodd"
-                            d="M0.983719 4.52215C1.24765 4.1451 1.76726 4.05341 2.1443 4.31734L9.99975 9.81615L17.8552 4.31734C18.2322 4.05341 18.7518 4.1451 19.0158 4.52215C19.2797 4.89919 19.188 5.4188 18.811 5.68272L10.4776 11.5161C10.1907 11.7169 9.80879 11.7169 9.52186 11.5161L1.18853 5.68272C0.811486 5.4188 0.719791 4.89919 0.983719 4.52215Z"
-                            fill=""
-                          />
-                        </g>
-                      </svg>
-                    </span>
+                    <EmailIcon className="absolute left-4.5 top-11.5" />
                     <div className="flex items-center flex-wrap">
                       <Input
                         disabled
@@ -539,442 +523,426 @@ const AccountSetting = () => {
             </div>
           </div>
           {/* <!-- ===== Access Management ===== --> */}
-          <div className="col-span-5">
-            <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-              <div className="border-b border-stroke py-4 px-7 dark:border-strokedar flex justify-between items-center">
-                <h3 className="font-medium text-black dark:text-white">
-                  Access Management
-                </h3>
+          {isAdmin && (
+            <div className="col-span-5">
+              <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+                <div className="border-b border-stroke py-4 px-7 dark:border-strokedar flex justify-between items-center">
+                  <h3 className="font-medium text-black dark:text-white">
+                    Access Management
+                  </h3>
 
-                <p className="text-sm">
-                  {data.organization.seats === 0
-                    ? 'Unlimited seats'
-                    : `${data.members.length} / ${data.organization.seats} seats allocated`}
-                </p>
-              </div>
-              <div className="px-7 lg:pt-7 pb-7">
-                <div className="grid grid-cols-5 lg:grid-cols-12 w-full gap-x-10 ">
-                  <label className="col-span-3  text-sm font-medium text-black dark:text-white hidden lg:block">
-                    Full Name
-                  </label>
-                  <label className="col-span-7  text-sm font-medium text-black dark:text-white hidden lg:block">
-                    Email
-                  </label>
-                  <label className="col-span-2  text-sm font-medium text-black dark:text-white hidden lg:block">
-                    Action
-                  </label>
-                  {data.members.map((member: any) => (
-                    <>
-                      <Field className="mt-3 col-span-full w-full lg:col-span-3 relative">
-                        <span className="absolute left-4.5 lg:top-3.5 top-9">
-                          <svg
-                            className="fill-current"
-                            width="20"
-                            height="20"
-                            viewBox="0 0 20 20"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <g opacity="0.8">
-                              <path
-                                fillRule="evenodd"
-                                clipRule="evenodd"
-                                d="M3.72039 12.887C4.50179 12.1056 5.5616 11.6666 6.66667 11.6666H13.3333C14.4384 11.6666 15.4982 12.1056 16.2796 12.887C17.061 13.6684 17.5 14.7282 17.5 15.8333V17.5C17.5 17.9602 17.1269 18.3333 16.6667 18.3333C16.2064 18.3333 15.8333 17.9602 15.8333 17.5V15.8333C15.8333 15.1703 15.5699 14.5344 15.1011 14.0655C14.6323 13.5967 13.9964 13.3333 13.3333 13.3333H6.66667C6.00363 13.3333 5.36774 13.5967 4.8989 14.0655C4.43006 14.5344 4.16667 15.1703 4.16667 15.8333V17.5C4.16667 17.9602 3.79357 18.3333 3.33333 18.3333C2.8731 18.3333 2.5 17.9602 2.5 17.5V15.8333C2.5 14.7282 2.93899 13.6684 3.72039 12.887Z"
-                                fill=""
-                              />
-                              <path
-                                fillRule="evenodd"
-                                clipRule="evenodd"
-                                d="M9.99967 3.33329C8.61896 3.33329 7.49967 4.45258 7.49967 5.83329C7.49967 7.214 8.61896 8.33329 9.99967 8.33329C11.3804 8.33329 12.4997 7.214 12.4997 5.83329C12.4997 4.45258 11.3804 3.33329 9.99967 3.33329ZM5.83301 5.83329C5.83301 3.53211 7.69849 1.66663 9.99967 1.66663C12.3009 1.66663 14.1663 3.53211 14.1663 5.83329C14.1663 8.13448 12.3009 9.99996 9.99967 9.99996C7.69849 9.99996 5.83301 8.13448 5.83301 5.83329Z"
-                                fill=""
-                              />
-                            </g>
-                          </svg>
-                        </span>
-                        <Label className="text-xs lg:hidden">Full Name</Label>
-                        <Input
-                          className="rounded w-full border border-stroke bg-gray py-3 pl-11.5  text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                          type="text"
-                          name="fullName"
-                          id="fullName"
-                          disabled
-                          value={member.name}
-                        />
-                      </Field>
-                      <Field className="mt-3 col-span-full lg:col-span-7 relative ">
-                        <span className="absolute left-4.5 top-9 lg:top-3.5">
-                          <svg
-                            className="fill-current"
-                            width="20"
-                            height="20"
-                            viewBox="0 0 20 20"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <g opacity="0.8">
-                              <path
-                                fillRule="evenodd"
-                                clipRule="evenodd"
-                                d="M3.33301 4.16667C2.87658 4.16667 2.49967 4.54357 2.49967 5V15C2.49967 15.4564 2.87658 15.8333 3.33301 15.8333H16.6663C17.1228 15.8333 17.4997 15.4564 17.4997 15V5C17.4997 4.54357 17.1228 4.16667 16.6663 4.16667H3.33301ZM0.833008 5C0.833008 3.6231 1.9561 2.5 3.33301 2.5H16.6663C18.0432 2.5 19.1663 3.6231 19.1663 5V15C19.1663 16.3769 18.0432 17.5 16.6663 17.5H3.33301C1.9561 17.5 0.833008 16.3769 0.833008 15V5Z"
-                                fill=""
-                              />
-                              <path
-                                fillRule="evenodd"
-                                clipRule="evenodd"
-                                d="M0.983719 4.52215C1.24765 4.1451 1.76726 4.05341 2.1443 4.31734L9.99975 9.81615L17.8552 4.31734C18.2322 4.05341 18.7518 4.1451 19.0158 4.52215C19.2797 4.89919 19.188 5.4188 18.811 5.68272L10.4776 11.5161C10.1907 11.7169 9.80879 11.7169 9.52186 11.5161L1.18853 5.68272C0.811486 5.4188 0.719791 4.89919 0.983719 4.52215Z"
-                                fill=""
-                              />
-                            </g>
-                          </svg>
-                        </span>
-                        <Label className="text-xs lg:hidden">
-                          Email Address
-                        </Label>
-                        <Input
-                          className="w-full rounded border border-stroke bg-gray py-3 pl-11.5  text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                          type="email"
-                          name="emailAddress"
-                          id="emailAddress"
-                          disabled
-                          value={member.email}
-                        />
-                      </Field>
-                      <Field className="mt-3 col-span-full lg:col-span-2 flex items-center gap-1">
-                        {member.email !== user.email && (
-                          <>
-                            <p className="text-xs lg:hidden">Actions</p>
-                            <Modal
-                              isOpen={editModal}
-                              setIsOpen={setEditModal}
-                              title={'Member Information'}
-                              button={<PenSquare />}
-                              onOpenCallback={() => {
-                                setEditModalData(member);
-                                setApplicationOptions(
-                                  allApplications.filter(
-                                    (app: any) =>
-                                      !member.applications.some(
-                                        (appID: any) => app.value === appID.id,
-                                      ),
-                                  ),
-                                );
-                              }}
-                            >
-                              <form
-                                className="sm:w-150 w-screen"
-                                onSubmit={(e) => {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                  modifyUser.mutate(user);
+                  <p className="text-sm">
+                    {data.organization.seats === 0
+                      ? 'Unlimited seats'
+                      : `${data.members.length} / ${data.organization.seats} seats allocated`}
+                  </p>
+                </div>
+                <div className="px-7 lg:pt-7 pb-7">
+                  <div className="grid grid-cols-5 lg:grid-cols-12 w-full gap-x-10 ">
+                    <label className="col-span-3  text-sm font-medium text-black dark:text-white hidden lg:block">
+                      Full Name
+                    </label>
+                    <label className="col-span-7  text-sm font-medium text-black dark:text-white hidden lg:block">
+                      Email
+                    </label>
+                    <label className="col-span-2  text-sm font-medium text-black dark:text-white hidden lg:block">
+                      Action
+                    </label>
+                    {data.members.map((member: any) => (
+                      <>
+                        <Field className="mt-3 col-span-full w-full lg:col-span-3 relative">
+                          <UserName className="absolute left-4.5 lg:top-3.5 top-9" />
+                          <Label className="text-xs lg:hidden">Full Name</Label>
+                          <Input
+                            className="rounded w-full border border-stroke bg-gray py-3 pl-11.5  text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                            type="text"
+                            name="fullName"
+                            id="fullName"
+                            disabled
+                            value={member.name}
+                          />
+                        </Field>
+                        <Field className="mt-3 col-span-full lg:col-span-7 relative ">
+                          <EmailIcon className="absolute left-4.5 lg:top-3.5 top-9" />
+                          <Label className="text-xs lg:hidden">
+                            Email Address
+                          </Label>
+                          <Input
+                            className="w-full rounded border border-stroke bg-gray py-3 pl-11.5  text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                            type="email"
+                            name="emailAddress"
+                            id="emailAddress"
+                            disabled
+                            value={member.email}
+                          />
+                        </Field>
+                        <Field className="mt-3 col-span-full lg:col-span-2 flex items-center gap-1">
+                          {member.email !== user.email && (
+                            <>
+                              <p className="text-xs lg:hidden">Actions</p>
+                              <Modal
+                                isOpen={editModal}
+                                setIsOpen={setEditModal}
+                                title={'Member Information'}
+                                button={<PenSquare />}
+                                onOpenCallback={() => {
+                                  setEditModalData(member);
+                                  setApplicationOptions(
+                                    allApplications.filter(
+                                      (app: any) =>
+                                        !member.applications.some(
+                                          (appID: any) =>
+                                            app.value === appID.id,
+                                        ),
+                                    ),
+                                  );
                                 }}
                               >
-                                <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
-                                  <Field className="relative w-full sm:w-1/2">
-                                    <Label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                                      Full Name
-                                    </Label>
-                                    <span className="absolute left-4.5 top-11.5">
-                                      <svg
-                                        className="fill-current"
-                                        width="20"
-                                        height="20"
-                                        viewBox="0 0 20 20"
-                                        fill="none"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                      >
-                                        <g opacity="0.8">
-                                          <path
-                                            fillRule="evenodd"
-                                            clipRule="evenodd"
-                                            d="M3.72039 12.887C4.50179 12.1056 5.5616 11.6666 6.66667 11.6666H13.3333C14.4384 11.6666 15.4982 12.1056 16.2796 12.887C17.061 13.6684 17.5 14.7282 17.5 15.8333V17.5C17.5 17.9602 17.1269 18.3333 16.6667 18.3333C16.2064 18.3333 15.8333 17.9602 15.8333 17.5V15.8333C15.8333 15.1703 15.5699 14.5344 15.1011 14.0655C14.6323 13.5967 13.9964 13.3333 13.3333 13.3333H6.66667C6.00363 13.3333 5.36774 13.5967 4.8989 14.0655C4.43006 14.5344 4.16667 15.1703 4.16667 15.8333V17.5C4.16667 17.9602 3.79357 18.3333 3.33333 18.3333C2.8731 18.3333 2.5 17.9602 2.5 17.5V15.8333C2.5 14.7282 2.93899 13.6684 3.72039 12.887Z"
-                                            fill=""
-                                          />
-                                          <path
-                                            fillRule="evenodd"
-                                            clipRule="evenodd"
-                                            d="M9.99967 3.33329C8.61896 3.33329 7.49967 4.45258 7.49967 5.83329C7.49967 7.214 8.61896 8.33329 9.99967 8.33329C11.3804 8.33329 12.4997 7.214 12.4997 5.83329C12.4997 4.45258 11.3804 3.33329 9.99967 3.33329ZM5.83301 5.83329C5.83301 3.53211 7.69849 1.66663 9.99967 1.66663C12.3009 1.66663 14.1663 3.53211 14.1663 5.83329C14.1663 8.13448 12.3009 9.99996 9.99967 9.99996C7.69849 9.99996 5.83301 8.13448 5.83301 5.83329Z"
-                                            fill=""
-                                          />
-                                        </g>
-                                      </svg>
-                                    </span>
-                                    <Input
-                                      className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                                      type="text"
-                                      value={editModdalData.name}
-                                      onChange={(e) => {
-                                        setEditModalData((prev) => ({
-                                          ...prev,
-                                          name: e.target.value,
-                                        }));
-                                      }}
-                                    />
-                                  </Field>
-                                  <Field className="w-full sm:w-1/2">
-                                    <Label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                                      Phone Number
-                                    </Label>
-                                    <Input
-                                      className="w-full rounded border border-stroke bg-gray py-3 px-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                                      type="tel"
-                                      onChange={(e) => {
-                                        setEditModalData((prev) => ({
-                                          ...prev,
-                                          phone: e.target.value,
-                                        }));
-                                      }}
-                                      value={editModdalData.phone}
-                                    />
-                                  </Field>
-                                </div>
-                                <Field className="relative mb-5.5">
-                                  <Label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                                    Email Address
-                                  </Label>
-                                  <span className="absolute left-4.5 top-11.5">
-                                    <svg
-                                      className="fill-current"
-                                      width="20"
-                                      height="20"
-                                      viewBox="0 0 20 20"
-                                      fill="none"
-                                      xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                      <g opacity="0.8">
-                                        <path
-                                          fillRule="evenodd"
-                                          clipRule="evenodd"
-                                          d="M3.33301 4.16667C2.87658 4.16667 2.49967 4.54357 2.49967 5V15C2.49967 15.4564 2.87658 15.8333 3.33301 15.8333H16.6663C17.1228 15.8333 17.4997 15.4564 17.4997 15V5C17.4997 4.54357 17.1228 4.16667 16.6663 4.16667H3.33301ZM0.833008 5C0.833008 3.6231 1.9561 2.5 3.33301 2.5H16.6663C18.0432 2.5 19.1663 3.6231 19.1663 5V15C19.1663 16.3769 18.0432 17.5 16.6663 17.5H3.33301C1.9561 17.5 0.833008 16.3769 0.833008 15V5Z"
-                                          fill=""
-                                        />
-                                        <path
-                                          fillRule="evenodd"
-                                          clipRule="evenodd"
-                                          d="M0.983719 4.52215C1.24765 4.1451 1.76726 4.05341 2.1443 4.31734L9.99975 9.81615L17.8552 4.31734C18.2322 4.05341 18.7518 4.1451 19.0158 4.52215C19.2797 4.89919 19.188 5.4188 18.811 5.68272L10.4776 11.5161C10.1907 11.7169 9.80879 11.7169 9.52186 11.5161L1.18853 5.68272C0.811486 5.4188 0.719791 4.89919 0.983719 4.52215Z"
-                                          fill=""
-                                        />
-                                      </g>
-                                    </svg>
-                                  </span>
-                                  <div className="flex items-center flex-wrap">
-                                    <Input
-                                      className="basis-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                                      type="email"
-                                      onChange={(e) => {
-                                        setEditModalData((prev) => ({
-                                          ...prev,
-                                          email: e.target.value,
-                                        }));
-                                      }}
-                                      value={editModdalData.email}
-                                    />
+                                <form
+                                  className="sm:w-150 w-screen"
+                                  onSubmit={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    modifyUser.mutate(user);
+                                  }}
+                                >
+                                  <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
+                                    <Field className="relative w-full sm:w-1/2">
+                                      <Label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                                        Full Name
+                                      </Label>
+                                      <UserName className="absolute left-4.5 top-11.5" />
+                                      <Input
+                                        className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                                        type="text"
+                                        value={editModdalData.name}
+                                        onChange={(e) => {
+                                          setEditModalData((prev) => ({
+                                            ...prev,
+                                            name: e.target.value,
+                                          }));
+                                        }}
+                                      />
+                                    </Field>
+                                    <Field className="w-full sm:w-1/2">
+                                      <Label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                                        Phone Number
+                                      </Label>
+                                      <Input
+                                        className="w-full rounded border border-stroke bg-gray py-3 px-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                                        type="tel"
+                                        onChange={(e) => {
+                                          setEditModalData((prev) => ({
+                                            ...prev,
+                                            phone: e.target.value,
+                                          }));
+                                        }}
+                                        value={editModdalData.phone}
+                                      />
+                                    </Field>
                                   </div>
-                                </Field>
-                                <div className="grid grid-cols-2 gap-4">
-                                  <p>Applications</p>
-                                  <p>Facilities</p>
-                                  {editModdalData.applications?.map(
-                                    (application: any) => {
-                                      if (
-                                        application.id !== 'access_management'
-                                      ) {
-                                        return (
-                                          <>
-                                            <Field className="col-span-1">
-                                              <Listbox
-                                                value={application.id}
-                                                onChange={(value) => {
-                                                  const newApplications =
-                                                    editModdalData.applications.map(
-                                                      (app: any) => {
-                                                        if (
-                                                          app.id ===
-                                                          application.id
-                                                        ) {
-                                                          return {
-                                                            ...app,
-                                                            id: value,
-                                                          };
-                                                        }
-                                                        return app;
-                                                      },
-                                                    );
-                                                  setEditModalData((prev) => ({
-                                                    ...prev,
-                                                    applications:
-                                                      newApplications,
-                                                  }));
-                                                  setApplicationOptions(
-                                                    allApplications.filter(
-                                                      (app: any) =>
-                                                        !newApplications.some(
-                                                          (appID: any) =>
-                                                            app.value ===
-                                                            appID.id,
-                                                        ),
-                                                    ),
-                                                  );
-                                                }}
-                                              >
-                                                <ListboxButton
-                                                  className={clsx(
-                                                    'group relative block w-full rounded bg-slate-100 py-3 pr-8 pl-3 text-left border border-stroke ',
-                                                    'focus:border-primary data-[focus]:border-primary focus:outline-none ',
-                                                  )}
-                                                >
-                                                  <p className="text-nowrap overflow-x-hidden">
-                                                    {
-                                                      allApplications.find(
-                                                        (app: any) =>
-                                                          app.value ===
-                                                          application.id,
-                                                      )?.label
-                                                    }
-                                                  </p>
-                                                  <ChevronDownIcon
-                                                    className="pointer-events-none absolute top-4 right-2.5 size-5"
-                                                    aria-hidden="true"
-                                                  />
-                                                </ListboxButton>
-                                                <ListboxOptions
-                                                  className={clsx(
-                                                    'w-[var(--button-width)] rounded border border-stroke [--anchor-gap:var(--spacing-1)] focus:outline-none absolute bg-white overflow-y-auto z-9 max-h-50',
-                                                  )}
-                                                >
-                                                  {applicationOptions.map(
-                                                    (option: any) => (
-                                                      <ListboxOption
-                                                        key={option.value}
-                                                        value={option.value}
-                                                        className=" flex cursor-default items-center gap-2 rounded py-1 px-3 select-none data-[focus]:bg-secondary"
-                                                      >
-                                                        {option.label}
-                                                      </ListboxOption>
-                                                    ),
-                                                  )}
-                                                </ListboxOptions>
-                                              </Listbox>
-                                            </Field>
-                                            <Field>
-                                              <Listbox
-                                                value={application.locations.map(
-                                                  (loc: any) =>
-                                                    loc.internal_facility_id,
-                                                )}
-                                                multiple={true}
-                                                onChange={(value) => {
-                                                  setEditModalData((prev) => ({
-                                                    ...prev,
-                                                    applications:
-                                                      prev.applications.map(
-                                                        (app) => {
+                                  <Field className="relative mb-5.5">
+                                    <Label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                                      Email Address
+                                    </Label>
+                                    <EmailIcon className="absolute left-4.5 top-11.5" />
+                                    <div className="flex items-center flex-wrap">
+                                      <Input
+                                        className="basis-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                                        type="email"
+                                        onChange={(e) => {
+                                          setEditModalData((prev) => ({
+                                            ...prev,
+                                            email: e.target.value,
+                                          }));
+                                        }}
+                                        value={editModdalData.email}
+                                      />
+                                    </div>
+                                  </Field>
+                                  <div className="grid grid-cols-2 gap-4">
+                                    <p>Applications</p>
+                                    <p>Facilities</p>
+                                    {editModdalData.applications?.map(
+                                      (application: any) => {
+                                        if (
+                                          application.id !== 'access_management'
+                                        ) {
+                                          return (
+                                            <>
+                                              <Field className="col-span-1">
+                                                <Listbox
+                                                  value={application.id}
+                                                  onChange={(value) => {
+                                                    const newApplications =
+                                                      editModdalData.applications.map(
+                                                        (app: any) => {
                                                           if (
                                                             app.id ===
                                                             application.id
                                                           ) {
                                                             return {
                                                               ...app,
-                                                              locations:
-                                                                allLocations?.filter(
-                                                                  (loc) =>
-                                                                    value.includes(
-                                                                      loc.internal_facility_id,
-                                                                    ),
-                                                                ) || [],
+                                                              id: value,
                                                             };
                                                           }
                                                           return app;
                                                         },
+                                                      );
+                                                    setEditModalData(
+                                                      (prev) => ({
+                                                        ...prev,
+                                                        applications:
+                                                          newApplications,
+                                                      }),
+                                                    );
+                                                    setApplicationOptions(
+                                                      allApplications.filter(
+                                                        (app: any) =>
+                                                          !newApplications.some(
+                                                            (appID: any) =>
+                                                              app.value ===
+                                                              appID.id,
+                                                          ),
                                                       ),
-                                                  }));
-                                                }}
-                                              >
-                                                <ListboxButton
-                                                  className={clsx(
-                                                    'relative block w-full rounded bg-slate-100 py-3 pr-8 pl-3 text-left border border-stroke ',
-                                                    'focus:border-primary  data-[focus]:border-primary',
-                                                  )}
+                                                    );
+                                                  }}
                                                 >
-                                                  {application.locations.length}{' '}
-                                                  Facilities
-                                                  <ChevronDownIcon
-                                                    className="group pointer-events-none absolute top-4 right-2.5 size-5"
-                                                    aria-hidden="true"
-                                                  />
-                                                </ListboxButton>
-                                                <ListboxOptions
-                                                  className={clsx(
-                                                    'w-[var(--button-width)] rounded border border-stroke [--anchor-gap:var(--spacing-1)] focus:outline-none absolute bg-white overflow-y-auto z-9 max-h-50',
+                                                  <ListboxButton
+                                                    className={clsx(
+                                                      'group relative block w-full rounded bg-slate-100 py-3 pr-8 pl-3 text-left border border-stroke ',
+                                                      'focus:border-primary data-[focus]:border-primary focus:outline-none ',
+                                                    )}
+                                                  >
+                                                    <p className="text-nowrap overflow-x-hidden">
+                                                      {
+                                                        allApplications.find(
+                                                          (app: any) =>
+                                                            app.value ===
+                                                            application.id,
+                                                        )?.label
+                                                      }
+                                                    </p>
+                                                    <ChevronDownIcon
+                                                      className="pointer-events-none absolute top-4 right-2.5 size-5"
+                                                      aria-hidden="true"
+                                                    />
+                                                  </ListboxButton>
+                                                  <ListboxOptions
+                                                    className={clsx(
+                                                      'w-[var(--button-width)] rounded border border-stroke [--anchor-gap:var(--spacing-1)] focus:outline-none absolute bg-white overflow-y-auto z-9 max-h-50',
+                                                    )}
+                                                  >
+                                                    {applicationOptions.map(
+                                                      (option: any) => (
+                                                        <ListboxOption
+                                                          key={option.value}
+                                                          value={option.value}
+                                                          className=" flex cursor-default items-center gap-2 rounded py-1 px-3 select-none data-[focus]:bg-secondary"
+                                                        >
+                                                          {option.label}
+                                                        </ListboxOption>
+                                                      ),
+                                                    )}
+                                                  </ListboxOptions>
+                                                </Listbox>
+                                              </Field>
+                                              <Field>
+                                                <Listbox
+                                                  value={application.locations.map(
+                                                    (loc: any) =>
+                                                      loc.internal_facility_id,
                                                   )}
+                                                  multiple={true}
+                                                  onChange={(value) => {
+                                                    setEditModalData(
+                                                      (prev) => ({
+                                                        ...prev,
+                                                        applications:
+                                                          prev.applications.map(
+                                                            (app) => {
+                                                              if (
+                                                                app.id ===
+                                                                application.id
+                                                              ) {
+                                                                return {
+                                                                  ...app,
+                                                                  locations:
+                                                                    allLocations?.filter(
+                                                                      (loc) =>
+                                                                        value.includes(
+                                                                          loc.internal_facility_id,
+                                                                        ),
+                                                                    ) || [],
+                                                                };
+                                                              }
+                                                              return app;
+                                                            },
+                                                          ),
+                                                      }),
+                                                    );
+                                                  }}
                                                 >
-                                                  {allLocations?.map(
-                                                    (location) => (
-                                                      <ListboxOption
-                                                        key={
-                                                          location.internal_facility_id
-                                                        }
-                                                        value={
-                                                          location.internal_facility_id
-                                                        }
-                                                        className=" flex cursor-default items-center gap-2 rounded py-1 px-3 select-none data-[focus]:bg-secondary data-[selected]:bg-slate-200"
-                                                      >
-                                                        {location.facility_name}
-                                                      </ListboxOption>
-                                                    ),
-                                                  )}
-                                                </ListboxOptions>
-                                              </Listbox>
-                                            </Field>
-                                          </>
-                                        );
-                                      }
-                                    },
-                                  )}
-                                </div>
-                                <div className="flex justify-end gap-4.5 mt-7">
-                                  <Button
-                                    className="flex mr-auto justify-center rounded border border-stroke py-2 px-6 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white"
-                                    type="reset"
-                                  >
-                                    Add an application
-                                  </Button>
-                                  <Button
-                                    className="flex justify-center rounded border border-stroke py-2 px-6 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white"
-                                    type="reset"
-                                    onClick={() => setEditModal(false)}
-                                  >
-                                    Cancel
-                                  </Button>
-                                  <Button
-                                    className="flex justify-center rounded bg-primary py-2 px-6 font-medium text-gray hover:bg-opacity-90"
-                                    type="submit"
-                                  >
-                                    Save
-                                  </Button>
-                                </div>
-                              </form>
-                            </Modal>
-                            <Button>
-                              <Trash />
-                            </Button>
-                          </>
-                        )}
-                      </Field>
-                      <hr className=" border-1 border-stroke lg:hidden block basis-full last:hidden" />{' '}
-                    </>
-                  ))}
-                </div>
-                <div className="flex flex-col sm:flex-row justify-end gap-4.5 mt-7">
-                  <Button
-                    className="flex whitespace-nowrap justify-center rounded border border-stroke py-2 px-6 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white"
-                    type="submit"
-                  >
-                    Invite A New User
-                  </Button>
+                                                  <ListboxButton
+                                                    className={clsx(
+                                                      'relative block w-full rounded bg-slate-100 py-3 pr-8 pl-3 text-left border border-stroke ',
+                                                      'focus:border-primary  data-[focus]:border-primary',
+                                                    )}
+                                                  >
+                                                    {
+                                                      application.locations
+                                                        .length
+                                                    }{' '}
+                                                    Facilities
+                                                    <ChevronDownIcon
+                                                      className="group pointer-events-none absolute top-4 right-2.5 size-5"
+                                                      aria-hidden="true"
+                                                    />
+                                                  </ListboxButton>
+                                                  <ListboxOptions
+                                                    className={clsx(
+                                                      'w-[var(--button-width)] rounded border border-stroke [--anchor-gap:var(--spacing-1)] focus:outline-none absolute bg-white overflow-y-auto z-9 max-h-50',
+                                                    )}
+                                                  >
+                                                    {allLocations?.map(
+                                                      (location) => (
+                                                        <ListboxOption
+                                                          key={
+                                                            location.internal_facility_id
+                                                          }
+                                                          value={
+                                                            location.internal_facility_id
+                                                          }
+                                                          className=" flex cursor-default items-center gap-2 rounded py-1 px-3 select-none data-[focus]:bg-secondary data-[selected]:bg-slate-200"
+                                                        >
+                                                          {
+                                                            location.facility_name
+                                                          }
+                                                        </ListboxOption>
+                                                      ),
+                                                    )}
+                                                  </ListboxOptions>
+                                                </Listbox>
+                                              </Field>
+                                            </>
+                                          );
+                                        }
+                                      },
+                                    )}
+                                  </div>
+                                  <div className="flex justify-end gap-4.5 mt-7">
+                                    <Button
+                                      className="flex mr-auto justify-center rounded border border-stroke py-2 px-6 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white"
+                                      type="reset"
+                                    >
+                                      Add an application
+                                    </Button>
+                                    <Button
+                                      className="flex justify-center rounded border border-stroke py-2 px-6 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white"
+                                      type="reset"
+                                      onClick={() => setEditModal(false)}
+                                    >
+                                      Cancel
+                                    </Button>
+                                    <Button
+                                      className="flex justify-center rounded bg-primary py-2 px-6 font-medium text-gray hover:bg-opacity-90"
+                                      type="submit"
+                                    >
+                                      Save
+                                    </Button>
+                                  </div>
+                                </form>
+                              </Modal>
+                              <Button>
+                                <Trash />
+                              </Button>
+                            </>
+                          )}
+                        </Field>
+                        <hr className=" border-1 border-stroke lg:hidden block basis-full last:hidden" />{' '}
+                      </>
+                    ))}
+                  </div>
+                  <div className="flex flex-col sm:flex-row justify-end gap-4.5 mt-7">
+                    <Modal
+                      isOpen={inviteModal}
+                      setIsOpen={setInviteModal}
+                      title="Invite A New User"
+                      button={
+                        <Button
+                          className="flex whitespace-nowrap justify-center rounded border border-stroke py-2 px-6 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white"
+                          type="submit"
+                        >
+                          Invite A New User
+                        </Button>
+                      }
+                    >
+                      <form
+                        className="flex flex-col gap-3 w-100"
+                        onSubmit={(event) => {
+                          event.preventDefault();
+                          inviteUser.mutate(inviteModalData);
+                        }}
+                      >
+                        <Field className="relative">
+                          <Label className="mb-1 block text-sm font-medium text-black dark:text-white">
+                            Email
+                          </Label>
+                          <EmailIcon className="absolute left-3.5 top-9.5" />
+                          <Input
+                            type="email"
+                            required
+                            className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                            placeholder="Email"
+                            value={inviteModalData.email}
+                            onChange={(e) => {
+                              setInviteModalData((prev) => ({
+                                ...prev,
+                                email: e.target.value,
+                              }));
+                            }}
+                          />
+                        </Field>
+                        <Field className="relative">
+                          <Label className="mb-1 block text-sm font-medium text-black dark:text-white">
+                            Full Name
+                          </Label>
+                          <UserName className="absolute left-3.5 top-9.5" />
+                          <Input
+                            className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                            placeholder="Full Name"
+                            required
+                            value={inviteModalData.name}
+                            onChange={(e) => {
+                              setInviteModalData((prev) => ({
+                                ...prev,
+                                name: e.target.value,
+                              }));
+                            }}
+                          />
+                        </Field>
+                        <div className="flex justify-end gap-4.5 mt-3">
+                          <Button
+                            className="flex justify-center rounded border border-stroke py-2 px-6 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white"
+                            type="reset"
+                            onClick={() => setEditModal(false)}
+                          >
+                            Cancel
+                          </Button>
+                          <Button
+                            className="flex justify-center rounded bg-primary py-2 px-6 font-medium text-gray hover:bg-opacity-90"
+                            type="submit"
+                          >
+                            Send
+                          </Button>
+                        </div>
+                      </form>
+                    </Modal>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </DefaultLayout>

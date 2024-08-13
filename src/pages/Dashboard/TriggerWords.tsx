@@ -682,7 +682,7 @@ export default function TriggerWords() {
           },
     pagination: {
       pageIndex: 0,
-      pageSize: 10,
+      pageSize: 30,
     },
   });
 
