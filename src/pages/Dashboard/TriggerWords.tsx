@@ -20,7 +20,6 @@ import {
   flexRender,
   getCoreRowModel,
   getExpandedRowModel,
-  getFacetedMinMaxValues,
   getFacetedRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
@@ -31,6 +30,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import getFacetedUniqueValues from '../../common/getFacetedUniqueValues.ts';
+import getFacetedMinMaxValues from '../../common/getFacetedMinMaxValues.ts';
 import { AuthContext } from '../../components/AuthWrapper.tsx';
 import DatePicker from 'react-datepicker';
 import ShowMoreText from 'react-show-more-text';
@@ -903,8 +903,8 @@ export default function TriggerWords() {
                   Date Range
                 </Label>
                 <DatePicker
-                  startDate={newTriggerWord.date_range[0]}
-                  endDate={newTriggerWord.date_range[1]}
+                  startDate={newTriggerWord.date_range[0] ?? undefined}
+                  endDate={newTriggerWord.date_range[1] ?? undefined}
                   maxDate={
                     newTriggerWord.date_range[1]
                       ? new Date()
@@ -928,7 +928,6 @@ export default function TriggerWords() {
                     }));
                   }}
                   selectsRange
-                  required
                   wrapperClassName="w-full"
                   className="dark:bg-boxdark indent-2.5 py-1.5 border border-stroke rounded w-full outline-none focus:shadow-filter focus:shadow-blue-400 dark:text-bodydark1"
                 />
