@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { signIn } from 'supertokens-web-js/recipe/emailpassword';
 import { createToast } from '../../../hooks/fireToast.tsx';
-import Modal from '../../../components/Modal.tsx';
+import Modal from '../../../components/Modal/Modal.tsx';
 import sendEmailClicked from '../../../common/sendEmailClicked.ts';
 import { Button, Field, Input, Label } from '@headlessui/react';
 async function signInClicked(

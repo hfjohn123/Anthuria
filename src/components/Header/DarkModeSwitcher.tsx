@@ -1,8 +1,10 @@
-import useColorMode from '../../hooks/useColorMode';
-
-const DarkModeSwitcher = () => {
-  const [colorMode, setColorMode] = useColorMode();
-
+const DarkModeSwitcher = ({
+  colorMode,
+  setColorMode,
+}: {
+  colorMode: string;
+  setColorMode: (arg0: string) => void;
+}) => {
   return (
     <li>
       <label

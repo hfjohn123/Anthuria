@@ -14,6 +14,7 @@ export default function Modal({
   button,
   classNameses,
   onOpenCallback,
+  onCloseCallback,
 }: {
   children: JSX.Element;
   isOpen: boolean;
@@ -25,6 +26,7 @@ export default function Modal({
     button?: string;
   };
   onOpenCallback?: () => void;
+  onCloseCallback?: () => void;
 }) {
   return (
     <>
@@ -40,7 +42,10 @@ export default function Modal({
       </button>
       <Dialog
         open={isOpen}
-        onClose={() => setIsOpen(false)}
+        onClose={() => {
+          onCloseCallback && onCloseCallback();
+          setIsOpen(false);
+        }}
         className="relative"
       >
         <DialogBackdrop className="fixed inset-0 bg-black/30 z-999" />

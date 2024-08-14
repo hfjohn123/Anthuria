@@ -36,7 +36,7 @@ import DatePicker from 'react-datepicker';
 import ShowMoreText from 'react-show-more-text';
 import NumberCards from '../../components/Cards/NumberCards.tsx';
 import clsx from 'clsx';
-import Modal from '../../components/Modal.tsx';
+import Modal from '../../components/Modal/Modal.tsx';
 import CommentForm from '../../components/Forms/CommentForm.tsx';
 import ThumbsUpAndDown from '../../images/icon/ThumbUpAndDown.tsx';
 import { createToast } from '../../hooks/fireToast.tsx';
