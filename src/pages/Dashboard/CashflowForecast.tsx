@@ -291,7 +291,6 @@ export default function CashflowForecast() {
           count: window.innerWidth < 500 ? 3 : window.innerWidth < 1000 ? 4 : 5,
           outer: false,
           text: {
-            // @ts-expect-error: Unreachable code error
             inner: true,
           },
         },

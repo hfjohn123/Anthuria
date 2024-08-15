@@ -1,4 +1,5 @@
 import {
+  Button,
   Dialog,
   DialogBackdrop,
   DialogPanel,
@@ -30,7 +31,7 @@ export default function Modal({
 }) {
   return (
     <>
-      <button
+      <Button
         className={classNameses?.button}
         onClick={() => {
           setIsOpen(true);
@@ -39,7 +40,7 @@ export default function Modal({
         type="button"
       >
         {button}
-      </button>
+      </Button>
       <Dialog
         open={isOpen}
         onClose={() => {

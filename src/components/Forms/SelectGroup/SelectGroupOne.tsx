@@ -1,5 +1,5 @@
 import { useState, forwardRef } from 'react';
-import Option from '../../../interface/Option';
+import Option from '../../../types/Option.ts';
 const SelectGroupOne = forwardRef(function SelectGroupOne(
   {
     options,

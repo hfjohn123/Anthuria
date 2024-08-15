@@ -11,18 +11,6 @@ import {
   resendCode,
 } from 'supertokens-web-js/recipe/passwordless';
 
-const WHITE_LIST_DOMAINS = [
-  'oxfordvalleyhealth.com',
-  'triedgeinvestments.com',
-  'triedgelab.com',
-  'theportopiccologroup.com',
-  'axgsolutions.com',
-  '980investments.com',
-  'clearviewhcmgmt.com',
-  'azrielassetmgmt.com',
-  'gmail.com',
-];
-
 class MyError {
   constructor(
     public message: string,
@@ -121,11 +109,6 @@ function Passwordless({ setIsLoading, isSession, setIsPasswordless }: any) {
     e.preventDefault();
     if (!email) {
       createToast('Login Failed', 'Missing Email', 3, 'Missing Email');
-      return;
-    }
-    const domain = email.split('@')[1];
-    if (!WHITE_LIST_DOMAINS.includes(domain)) {
-      createToast('Invalid Email', 'Invalid Email', 3, 'Invalid Email');
       return;
     }
     sendOTP(email).catch((error) => {
@@ -267,7 +250,7 @@ function Passwordless({ setIsLoading, isSession, setIsPasswordless }: any) {
           </a>
         </div>
         <div className={`mb-4 ${hasOTPBeenSent ? '' : 'hidden'}`}>
-          <label className="mb-2.5 block font-medium text-black dark:text-white flex justify-between">
+          <label className="mb-2.5 font-medium text-black dark:text-white flex justify-between">
             <span>OTP</span>
             {timer > 0 ? (
               <span>{timer}s to resend</span>
