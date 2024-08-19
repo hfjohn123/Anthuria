@@ -6,8 +6,9 @@ import {
   DialogTitle,
 } from '@headlessui/react';
 import classNames from 'classnames';
+import { memo } from 'react';
 
-export default function Modal({
+const Modal = memo(function Modal({
   children,
   isOpen,
   setIsOpen,
@@ -63,4 +64,6 @@ export default function Modal({
       </Dialog>
     </>
   );
-}
+});
+
+export default Modal;

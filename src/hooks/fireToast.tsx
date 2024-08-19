@@ -28,7 +28,7 @@ export const createToast = (
         </div>
         <div className="flex">
           <button
-            onClick={() => toast.dismiss(t.id)}
+            onClick={() => toast.remove(t.id)}
             type="button"
             className="mr-2 box-content rounded-none border-none opacity-100 hover:no-underline hover:opacity-50 focus:opacity-50 focus:shadow-none focus:outline-none text-white"
             data-te-toast-dismiss
@@ -74,8 +74,6 @@ const fireToast = () => {
   const alertSettings = localStorage.getItem('alertSettings');
   if (alertSettings) {
     for (const alertSetting of JSON.parse(alertSettings)) {
-      console.log(alertSetting);
-
       const value = isNaN(parseFloat(alertSetting.value))
         ? alertSetting.value
         : parseFloat(alertSetting.value);

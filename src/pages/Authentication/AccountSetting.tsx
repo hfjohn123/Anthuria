@@ -74,9 +74,6 @@ const AccountSetting = () => {
                         <button className="text-sm hover:text-primary">
                           Delete
                         </button>
-                        {/*<button className="text-sm hover:text-primary">*/}
-                        {/*  Update*/}
-                        {/*</button>*/}
                       </span>
                     </div>
                   </div>
