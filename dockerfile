@@ -1,4 +1,4 @@
-FROM node:21-alpine
+FROM public.ecr.aws/docker/library/node:current-alpine
 
 WORKDIR /react-docker/
 
