@@ -41,10 +41,13 @@ import CommentForm from '../../components/Forms/CommentForm.tsx';
 import ThumbsUpAndDown from '../../images/icon/ThumbUpAndDown.tsx';
 import { createToast } from '../../hooks/fireToast.tsx';
 import { Checkbox, Field, Input, Label } from '@headlessui/react';
+
+import HyperLink from '../../components/Basic/HyerLink.tsx';
 type TriggerFinal = {
   progress_note_id: number;
   internal_facility_id: string;
   facility_name: string;
+  upstream: string;
   patient_name: string;
   patient_id: string;
   created_by: string;
@@ -155,7 +158,16 @@ const renderSubComponent = ({
       <div className="basis-1/2 pl-10">
         <div>
           <span className="font-bold">Patient Name:</span>
-          <p>{row.getValue('patient_name')}</p>
+          {row.original.upstream === 'MTX' ? (
+            <HyperLink
+              tooltip_content="View Patient in MaxtrixCare"
+              href={`https://clearviewhcm.matrixcare.com/core/selectResident.action?residentID=${row.original.patient_id}`}
+            >
+              {row.getValue('patient_name')}
+            </HyperLink>
+          ) : (
+            <p>{row.getValue('patient_name')}</p>
+          )}
         </div>
         <div className="mt-2.5">
           <span className="font-bold">Patient ID: </span>
@@ -256,7 +268,7 @@ const renderSubComponent = ({
                       setIsOpen={setIsOpen}
                     />
                   </Modal>
-                  <Tooltip id="comment-tooltip" />
+                  <Tooltip id="comment-tooltip" className="font-bold" />
                 </td>
                 <td className="pr-30 pt-2.5">
                   <ShowMoreText anchorClass="text-primary cursor-pointer block dark:text-secondary">
@@ -620,7 +632,8 @@ export default function TriggerWords() {
     }));
   };
   if (localStorage.getItem('clearStorage') !== '1') {
-    localStorage.clear();
+    localStorage.removeItem('recent');
+    localStorage.removeItem('userVisibilitySettings');
     localStorage.setItem('clearStorage', '1');
   }
   const userVisibilitySettings = localStorage.getItem('userVisibilitySettings');

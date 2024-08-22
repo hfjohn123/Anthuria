@@ -77,6 +77,22 @@ export default function AuthWrapper({ children }: { children: JSX.Element }) {
       email: user_data.email, // IMPORTANT: Replace "user.email" with the variable you use to capture the user's email
     });
 
+  user_data &&
+    // @ts-expect-error Canny integration
+    Canny('identify', {
+      appID: '66577caeac17c62e53e3940f',
+      user: {
+        // Replace these values with the current user's data
+        email: user_data.email,
+        name: user_data.name,
+        id: user_data.email,
+
+        // // These fields are optional, but recommended:
+        // avatarURL: user_data.avatarURL,
+        // created: new Date(user.created).toISOString(),
+      },
+    });
+
   useEffect(() => {
     if (queryClient && user_applications_locations && user_data) {
       // setFrontendCookie('email', user_data?.email || '', '\\');

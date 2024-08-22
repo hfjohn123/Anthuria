@@ -40,7 +40,9 @@ const DropdownUser = () => {
   async function onLogout() {
     await signOut();
     sessionStorage.clear();
-    localStorage.clear();
+    // localStorage.clear();
+    localStorage.removeItem('recent');
+    localStorage.removeItem('userVisibilitySettings');
     // window.location.href = '/auth'; // or to wherever your logic page is
   }
 

@@ -1,4 +1,5 @@
 const defaultTheme = require('tailwindcss/defaultTheme')
+const { getTheme } = require("reshaped/config/tailwind");
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -6,7 +7,7 @@ module.exports = {
   darkMode: 'class',
   theme: {
     fontFamily: {
-      satoshi: ['Inter', 'sans-serif'],
+      inter: ['Inter', 'sans-serif'],
     },
     screens: {
       '2xsm': '375px',
@@ -14,8 +15,23 @@ module.exports = {
       '3xl': '2000px',
       ...defaultTheme.screens,
     },
+
     extend: {
+      // borderColor: {
+      //     ...getTheme().borderColor,
+      // },
+      // ...getTheme(),
+      // textColor: {
+      //   ...getTheme().textColor,
+      // },
+      // backgroundColor: {
+      //   ...getTheme().backgroundColor,
+      // },
+      // screens: {
+      //   ...getTheme().screens,
+      // },
       colors: {
+        // ...getTheme().colors,
         current: 'currentColor',
         transparent: 'transparent',
         white: '#FFFFFF',
@@ -63,6 +79,7 @@ module.exports = {
         'title-xsm': ['18px', '24px'],
       },
       spacing: {
+        // ...getTheme().spacing,
         4.5: '1.125rem',
         5.5: '1.375rem',
         6.5: '1.625rem',
@@ -205,17 +222,16 @@ module.exports = {
       opacity: {
         65: '.65',
       },
-      backgroundImage: {
-        video: "url('../images/video/video.png')",
-      },
-      content: {
-        'icon-copy': 'url("../images/icon/icon-copy-alt.svg")',
-      },
       transitionProperty: { width: 'width', stroke: 'stroke' },
       borderWidth: {
         6: '6px',
       },
+
+      // borderRadius: {
+      //   ...getTheme().borderRadius,
+      // },
       boxShadow: {
+        // ...getTheme().boxShadow,
         default: '0px 8px 13px -3px rgba(0, 0, 0, 0.07)',
         card: '0px 1px 3px rgba(0, 0, 0, 0.12)',
         'card-2': '0px 1px 2px rgba(0, 0, 0, 0.05)',
