@@ -750,7 +750,7 @@ export default function TriggerWords() {
   }
   return (
     <DefaultLayout title={'Clinical Pulse'}>
-      <h1 className="text-2xl font-bold">Review Triggers</h1>
+      <h1 className="text-2xl font-bold mt-3 sm:mt-0">Review Triggers</h1>
       <div className="grid xl:grid-cols-6 grid-cols-3 sm:gap-3 mt-5">
         {predefinedTriggerWords.map((word) => (
           <NumberCards
@@ -809,40 +809,7 @@ export default function TriggerWords() {
         ))}
       </div>
       <div className="grid grid-cols-12 mt-5">
-        <div className="col-span-12 sm:col-span-9 flex items-center">
-          {/*<span className="text-xl lg:text-2xl font-bold gap-1 ">*/}
-          {/*  Trigger Word Type:*/}
-          {/*</span>*/}
-          {/*<Select*/}
-          {/*  components={{ IndicatorSeparator: () => null }}*/}
-          {/*  isSearchable={false}*/}
-          {/*  isMulti={false}*/}
-          {/*  options={[*/}
-          {/*    { label: 'Predefined', value: 'Predefined' },*/}
-          {/*    { label: 'Temporary', value: 'Temporary' },*/}
-          {/*  ]}*/}
-          {/*  value={{ label: triggerType, value: triggerType }}*/}
-          {/*  onChange={(e) => {*/}
-          {/*    setTriggerType(e?.value ?? 'Predefined');*/}
-          {/*    e?.value === 'Temporary'*/}
-          {/*      ? queryClient.invalidateQueries({*/}
-          {/*          queryKey: ['temporary-data', route],*/}
-          {/*        })*/}
-          {/*      : queryClient.invalidateQueries({*/}
-          {/*          queryKey: ['trigger-words', route],*/}
-          {/*        });*/}
-          {/*  }}*/}
-          {/*  classNames={{*/}
-          {/*    control: () =>*/}
-          {/*      '!bg-transparent !border-0 text-xl lg:text-2xl font-bold !shadow-none',*/}
-          {/*    valueContainer: () => '!pr-0',*/}
-          {/*    dropdownIndicator: () => '!pl-0',*/}
-          {/*    singleValue: () => '!text-body dark:!text-bodydark',*/}
-          {/*    menu: () => 'dark:bg-form-input min-w-max',*/}
-          {/*    option: () => 'text-body dark:!text-bodydark',*/}
-          {/*  }}*/}
-          {/*/>*/}
-        </div>
+        <div className="col-span-12 sm:col-span-9 flex items-center"></div>
         <Modal
           isOpen={isOpen}
           setIsOpen={setIsOpen}
