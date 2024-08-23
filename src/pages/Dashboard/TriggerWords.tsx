@@ -209,7 +209,7 @@ const renderSubComponent = ({
                 <Tooltip id="bot-tooltip" />
               </div>
             </th>
-            <th className="text-left pt-2.5 pr-30 w-8/12">
+            <th className="text-left pt-2.5 pr-30 w-6/12">
               <div className="flex gap-1.5">
                 <p>Explanations</p>
                 <Bot
@@ -221,7 +221,10 @@ const renderSubComponent = ({
               </div>
             </th>
             <th className="text-left pt-2.5 w-2/12">
-              <p>Status</p>
+              <p>Review</p>
+            </th>
+            <th className="text-left pt-2.5 w-2/12">
+              <p>Actions</p>
             </th>
           </tr>
         </thead>
@@ -277,21 +280,6 @@ const renderSubComponent = ({
                 </td>
                 <td className="pt-2.5 align-top	">
                   <div className=" flex items-center flex-nowrap gap-1.5">
-                    {/*{status === 'Needs review' && (*/}
-                    {/*  <div className="size-3 rounded bg-primary"></div>*/}
-                    {/*)}*/}
-                    {/*{status === 'Pending' && (*/}
-                    {/*  <div className="size-3 rounded bg-warning"></div>*/}
-                    {/*)}*/}
-                    {/*{status === 'Done' && (*/}
-                    {/*  <div className="size-3 rounded bg-success"></div>*/}
-                    {/*)}*/}
-                    {/*{status === 'Rejected' && (*/}
-                    {/*  <div className="size-3 rounded bg-danger"></div>*/}
-                    {/*)}*/}
-                    {/*{status === 'temporary' && (*/}
-                    {/*  <div className="size-3 rounded bg-slate-500"></div>*/}
-                    {/*)}*/}
                     <Checkbox
                       checked={status === 'Reviewed'}
                       className="block size-4 bg-white rounded border group"
@@ -309,6 +297,23 @@ const renderSubComponent = ({
                     </Checkbox>
                     {status}
                   </div>
+                </td>
+                <td className="align-top pt-2.5">
+                  {trigger_word === 'Fall' ? (
+                    <HyperLink
+                      tooltip_content={'Create an Event in MatrixCare'}
+                      href={`https://clearviewhcm.matrixcare.com/Zion?zionpagealias=EVENTCREATE&PATIENTID=${row.original.patient_id}&formId=944&categoryName=Safety%20Events&formDescription=Post+Fall+Event+v3`}
+                    >
+                      Create Event
+                    </HyperLink>
+                  ) : (
+                    <HyperLink
+                      tooltip_content={'Create an Event in MatrixCare'}
+                      href={`https://clearviewhcm.matrixcare.com/Zion?zionpagealias=EVENTCREATE&PATIENTID=${row.original.patient_id}`}
+                    >
+                      Create Event
+                    </HyperLink>
+                  )}
                 </td>
               </tr>
             ),
@@ -454,6 +459,17 @@ export default function TriggerWords() {
         cell: (info) => {
           if (user_data.email == 'athenaw.design@gmail.com') {
             return 'John Doe';
+          } else {
+            if (info.row.original.upstream === 'MTX') {
+              return (
+                <HyperLink
+                  tooltip_content={'View Patient in MaxtrixCare'}
+                  href={`https://clearviewhcm.matrixcare.com/core/selectResident.action?residentID=${info.row.original.patient_id}`}
+                >
+                  {info.row.getValue('patient_name')}
+                </HyperLink>
+              );
+            }
           }
           return info.renderValue();
         },
@@ -734,7 +750,8 @@ export default function TriggerWords() {
   }
   return (
     <DefaultLayout title={'Clinical Pulse'}>
-      <div className="grid xl:grid-cols-6 grid-cols-3 sm:gap-3">
+      <h1 className="text-2xl font-bold">Review Triggers</h1>
+      <div className="grid xl:grid-cols-6 grid-cols-3 sm:gap-3 mt-5">
         {predefinedTriggerWords.map((word) => (
           <NumberCards
             key={word}
