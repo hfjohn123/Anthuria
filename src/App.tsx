@@ -1,5 +1,11 @@
 import { useEffect } from 'react';
-import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
+import {
+  Navigate,
+  Route,
+  Routes,
+  useLocation,
+  useNavigate,
+} from 'react-router-dom';
 
 import { Toaster } from 'react-hot-toast';
 import PageTitle from './components/PageTitle';
@@ -7,7 +13,7 @@ import NHQI from './pages/Dashboard/NHQI';
 import Home from './pages/Home';
 import ErrorPage from './common/ErrorPage.tsx';
 import CashflowForecast from './pages/Dashboard/CashflowForecast.tsx';
-import TriggerWords from './pages/Dashboard/TriggerWords.tsx';
+import ReviewTriggers from './pages/TriggerWords/ReviewTriggers.tsx';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import SuperTokens, { SuperTokensWrapper } from 'supertokens-auth-react';
 import Passwordless from 'supertokens-auth-react/recipe/passwordless';
@@ -18,6 +24,7 @@ import SignUp from './pages/Authentication/SignUp.tsx';
 import AccountSetting from './pages/Authentication/AccountSetting.tsx';
 import EmailPassword from 'supertokens-auth-react/recipe/emailpassword';
 import ResetPassword from './pages/Authentication/SignIn/ResetPassword.tsx';
+import EventTracker from './pages/TriggerWords/EventTracker.tsx';
 
 SuperTokens.init({
   appInfo: {
@@ -68,12 +75,27 @@ function App() {
               }
             />
             <Route
-              path="/trigger-words"
+              path="/trigger-words/review-triggers"
               element={
                 <SessionAuth>
                   <PageTitle title="Clinical Pulse" recenctable />
-                  <TriggerWords />
+                  <ReviewTriggers />
                 </SessionAuth>
+              }
+            />
+            <Route
+              path="/trigger-words/event-tracker"
+              element={
+                <SessionAuth>
+                  <PageTitle title="Clinical Pulse" recenctable />
+                  <EventTracker />
+                </SessionAuth>
+              }
+            />
+            <Route
+              path="/trigger-words"
+              element={
+                <Navigate to="/trigger-words/review-triggers" replace={true} />
               }
             />
             <Route

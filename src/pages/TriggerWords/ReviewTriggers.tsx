@@ -1,4 +1,4 @@
-import DefaultLayout from '../../layout/DefaultLayout';
+import DefaultLayout from '../../layout/DefaultLayout.tsx';
 import axios from 'axios';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { MagnifyingGlassIcon, CheckIcon } from '@heroicons/react/24/solid';
@@ -195,10 +195,10 @@ const renderSubComponent = ({
           </p>
         </div>
       </div>
-      <table className="basis-full mt-7.5 border-stroke border-t">
+      <table className="basis-full mt-7.5 border-stroke border-t border-spacing-y-2.5 border-separate">
         <thead>
           <tr>
-            <th className="text-left pt-2.5 w-2/12">
+            <th className="text-left w-2/12">
               <div className="flex gap-1.5">
                 <p>Trigger</p>
                 <Bot
@@ -209,7 +209,7 @@ const renderSubComponent = ({
                 <Tooltip id="bot-tooltip" />
               </div>
             </th>
-            <th className="text-left pt-2.5 pr-30 w-6/12">
+            <th className="text-left pr-10 w-6/12">
               <div className="flex gap-1.5">
                 <p>Explanations</p>
                 <Bot
@@ -220,10 +220,10 @@ const renderSubComponent = ({
                 <Tooltip id="bot-tooltip" />
               </div>
             </th>
-            <th className="text-left pt-2.5 w-2/12">
+            <th className="text-left  w-2/12">
               <p>Review</p>
             </th>
-            <th className="text-left pt-2.5 w-2/12">
+            <th className="text-left w-2/12">
               <p>Actions</p>
             </th>
           </tr>
@@ -232,7 +232,7 @@ const renderSubComponent = ({
           {row.original.trigger_words.map(
             ({ trigger_word, status, summary, comment }) => (
               <tr key={row.id + trigger_word}>
-                <td className="whitespace-nowrap pt-2.5 align-top flex items-center flex-nowrap">
+                <td className="whitespace-nowrap align-top flex items-center flex-nowrap">
                   {trigger_word}
                   <Modal
                     isOpen={isOpen}
@@ -273,12 +273,12 @@ const renderSubComponent = ({
                   </Modal>
                   <Tooltip id="comment-tooltip" className="font-bold" />
                 </td>
-                <td className="pr-30 pt-2.5">
+                <td className="pr-10">
                   <ShowMoreText anchorClass="text-primary cursor-pointer block dark:text-secondary">
                     {summary}
                   </ShowMoreText>
                 </td>
-                <td className="pt-2.5 align-top	">
+                <td className=" align-top	">
                   <div className=" flex items-center flex-nowrap gap-1.5">
                     <Checkbox
                       checked={status === 'Reviewed'}
@@ -298,7 +298,7 @@ const renderSubComponent = ({
                     {status}
                   </div>
                 </td>
-                <td className="align-top pt-2.5">
+                <td className="align-top ">
                   {trigger_word === 'Fall' ? (
                     <HyperLink
                       tooltip_content={'Create an Event in MatrixCare'}
@@ -333,7 +333,7 @@ const initialNewTrigger: {
   internal_facility_id: [],
   date_range: [new Date(), new Date()],
 };
-export default function TriggerWords() {
+export default function ReviewTriggers() {
   const { route, user_applications_locations, user_data } =
     useContext(AuthContext);
   const { locations } = user_applications_locations.find(
