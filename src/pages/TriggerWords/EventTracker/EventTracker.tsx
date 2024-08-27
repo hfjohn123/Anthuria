@@ -1,18 +1,18 @@
-import DefaultLayout from '../../layout/DefaultLayout.tsx';
+import DefaultLayout from '../../../layout/DefaultLayout.tsx';
 import axios from 'axios';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import { Cog6ToothIcon } from '@heroicons/react/24/outline';
-import SortDownIcon from '../../images/icon/sort-down.svg';
-import SortUpIcon from '../../images/icon/sort-up.svg';
+import SortDownIcon from '../../../images/icon/sort-down.svg';
+import SortUpIcon from '../../../images/icon/sort-up.svg';
 import { Tooltip } from 'react-tooltip';
 import { Fragment, useContext, useEffect, useMemo, useState } from 'react';
-import Loader from '../../common/Loader';
+import Loader from '../../../common/Loader';
 import AutosizeInput from 'react-18-input-autosize';
 import 'react-datepicker/dist/react-datepicker.css';
-import CheckboxOption from '../../components/Select/CheckboxOption.tsx';
+import CheckboxOption from '../../../components/Select/CheckboxOption.tsx';
 import Select, { ActionMeta, ClassNamesConfig, MultiValue } from 'react-select';
-import FilterValueContainer from '../../components/Select/FilterValueContainer.tsx';
+import FilterValueContainer from '../../../components/Select/FilterValueContainer.tsx';
 import {
   ColumnDef,
   ColumnDefTemplate,
@@ -28,33 +28,15 @@ import {
   TableState,
   useReactTable,
 } from '@tanstack/react-table';
-import getFacetedUniqueValues from '../../common/getFacetedUniqueValues.ts';
-import getFacetedMinMaxValues from '../../common/getFacetedMinMaxValues.ts';
-import { AuthContext } from '../../components/AuthWrapper.tsx';
+import getFacetedUniqueValues from '../../../common/getFacetedUniqueValues.ts';
+import getFacetedMinMaxValues from '../../../common/getFacetedMinMaxValues.ts';
+import { AuthContext } from '../../../components/AuthWrapper.tsx';
 import DatePicker from 'react-datepicker';
-import ShowMoreText from 'react-show-more-text';
-import Modal from '../../components/Modal/Modal.tsx';
-
-import HyperLink from '../../components/Basic/HyerLink.tsx';
-import EventTrackerData from '../Test/Data/EventTrackerData.ts';
-type EventFinal = {
-  event_id: number;
-  internal_facility_id: string;
-  facility_name: string;
-  upstream: string;
-  patient_name: string;
-  patient_id: string;
-  occurrence: string;
-  occurrence_date: Date;
-  created_by: string;
-  // revision_by: string;
-  progress_notes: {
-    created_date: Date;
-    category: string;
-    note: string;
-    created_by: string;
-  }[];
-};
+import Modal from '../../../components/Modal/Modal.tsx';
+import { EventFinal } from '../../../types/EventFinal.ts';
+import HyperLink from '../../../components/Basic/HyerLink.tsx';
+import EventTrackerData from '../../Test/Data/EventTrackerData.ts';
+import ProgressNote from './ProgressNote.tsx';
 
 const selectStyles: ClassNamesConfig<{
   label: string;
@@ -97,53 +79,7 @@ const dateRangeFilterFn = (
 const renderSubComponent = ({ row }: { row: Row<EventFinal> }) => {
   return (
     <div className="bg-slate-50 dark:bg-slate-900 px-4 text-sm py-4 flex flex-col">
-      <div>
-        <h3 className="text-base font-semibold underline">Progress Notes</h3>
-        <table className="w-full mt-3">
-          <thead>
-            <tr className="border-b border-stroke dark:border-strokedark">
-              <th className="text-left w-2/12">Date</th>
-              <th className="text-left w-1/12">Category</th>
-              <th className="text-left w-5/12">Note</th>
-              <th className="text-left w-2/12">Auther</th>
-              <th className="text-left w-2/12">Link</th>
-            </tr>
-          </thead>
-          <tbody>
-            {row.original.progress_notes.map((s) => (
-              <Fragment
-                key={row.getValue('event_id') + s.created_date.toLocaleString()}
-              >
-                <tr
-                  className={`${
-                    row.original.progress_notes.indexOf(s) === 0 ? '' : 'hidden'
-                  }`}
-                >
-                  <td className="align-top">
-                    {new Date(s.created_date)
-                      .toLocaleString(navigator.language, {
-                        year: 'numeric',
-                        month: '2-digit',
-                        day: '2-digit',
-                        hour: 'numeric',
-                        minute: '2-digit',
-                      })
-                      .replace(/,/g, ' ')}
-                  </td>
-                  <td className="align-top">{s.category}</td>
-                  <td className="align-top">
-                    <ShowMoreText anchorClass="text-primary cursor-pointer block dark:text-secondary ">
-                      {s.note}
-                    </ShowMoreText>
-                  </td>
-                  <td className="align-top">{s.created_by}</td>
-                  <td className="align-top">Placeholder</td>
-                </tr>
-              </Fragment>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <ProgressNote row={row} />
     </div>
   );
 };

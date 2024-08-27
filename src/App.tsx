@@ -24,7 +24,7 @@ import SignUp from './pages/Authentication/SignUp.tsx';
 import AccountSetting from './pages/Authentication/AccountSetting.tsx';
 import EmailPassword from 'supertokens-auth-react/recipe/emailpassword';
 import ResetPassword from './pages/Authentication/SignIn/ResetPassword.tsx';
-import EventTracker from './pages/TriggerWords/EventTracker.tsx';
+import EventTracker from './pages/TriggerWords/EventTracker/EventTracker.tsx';
 
 SuperTokens.init({
   appInfo: {
