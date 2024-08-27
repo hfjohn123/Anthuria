@@ -9,12 +9,12 @@ export default function ProgressNote({ row }: { row: Row<EventFinal> }) {
   return (
     <div>
       <h3 className="text-base font-semibold underline">Progress Notes</h3>
-      <table className="w-full mt-3">
+      <table className="w-full mt-3 border-b-[1.5px] border-stroke dark:border-strokedark">
         <thead>
-          <tr className="border-b border-stroke dark:border-strokedark">
-            <th className="text-left w-2/12">Date</th>
+          <tr className="border-b-[1.5px] border-stroke dark:border-strokedark">
+            <th className="text-left w-1/12">Date</th>
             <th className="text-left w-1/12">Category</th>
-            <th className="text-left w-5/12">Note</th>
+            <th className="text-left w-6/12">Note</th>
             <th className="text-left w-2/12">Auther</th>
             <th className="text-left w-2/12">Link</th>
           </tr>
@@ -31,7 +31,7 @@ export default function ProgressNote({ row }: { row: Row<EventFinal> }) {
                     : 'hidden'
                 }`}
               >
-                <td className="align-top">
+                <td className="whitespace-pre-line">
                   {new Date(s.created_date)
                     .toLocaleString(navigator.language, {
                       year: 'numeric',
@@ -40,16 +40,16 @@ export default function ProgressNote({ row }: { row: Row<EventFinal> }) {
                       hour: 'numeric',
                       minute: '2-digit',
                     })
-                    .replace(/,/g, ' ')}
+                    .replace(/,/g, '\n')}
                 </td>
-                <td className="align-top">{s.category}</td>
-                <td className="align-top">
+                <td className="">{s.category}</td>
+                <td className="">
                   <ShowMoreText anchorClass="text-primary cursor-pointer block dark:text-secondary ">
                     {s.note}
                   </ShowMoreText>
                 </td>
-                <td className="align-top">{s.created_by}</td>
-                <td className="align-top">Placeholder</td>
+                <td className="">{s.created_by}</td>
+                <td className="">Placeholder</td>
               </tr>
             </Fragment>
           ))}
