@@ -44,9 +44,9 @@ export default function EventTrackerData() {
       tasks: [
         {
           category: 'Communications',
-          task: 'What so ever',
+          task: '<p>What <strong>so</strong> ever</p>',
           status: 'Open',
-          due: '2024-09-12T22:57:29.974Z',
+          due: '2024-08-27T23:00:00.974Z',
         },
       ],
     },
