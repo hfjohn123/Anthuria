@@ -55,16 +55,17 @@ const AccountSetting = () => {
                 <form action="#">
                   <div className="mb-4 flex items-center gap-3">
                     <div className="h-14 w-14 rounded-full">
-                      <img
-                        className="rounded-full"
-                        src={
-                          user_data.picture ||
-                          'https://ui-avatars.com/api/?background=random&name=' +
-                            user_data.name +
-                            ''
-                        }
-                        alt="User"
-                      />
+                      {user_data.picture ? (
+                        <img
+                          src={user_data.picture}
+                          alt="User"
+                          className="rounded-full"
+                        />
+                      ) : (
+                        <div className="h-12 w-12 rounded-full bg-yellow-200 flex justify-center items-center">
+                          {user_data.name.split(' ').map((n) => n.charAt(0))}
+                        </div>
+                      )}
                     </div>
                     <div>
                       <span className="mb-1.5 text-black dark:text-white">

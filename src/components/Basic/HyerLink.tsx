@@ -20,10 +20,10 @@ export default function HyperLink({
           data-tooltip-id="hyper-tooltip"
           data-tooltip-content={tooltip_content}
           onClick={(event) => event.stopPropagation()}
-          className="flex gap-1 items-center flex-nowrap"
+          className="flex gap-1 items-center flex-nowrap underline"
         >
           {children}
-          <ArrowSquareOut />
+          <ArrowSquareOut className="size-4" />
         </a>
         <Tooltip id="hyper-tooltip" className="font-bold" />
       </div>

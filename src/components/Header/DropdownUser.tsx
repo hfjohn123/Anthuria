@@ -62,14 +62,13 @@ const DropdownUser = () => {
         </span>
 
         <span className="h-12 w-12 rounded-full">
-          <img
-            src={
-              picture ||
-              'https://ui-avatars.com/api/?background=random&name=' + name + ''
-            }
-            alt="User"
-            className="rounded-full"
-          />
+          {picture ? (
+            <img src={picture} alt="User" className="rounded-full" />
+          ) : (
+            <div className="h-12 w-12 rounded-full bg-yellow-200 flex justify-center items-center">
+              {name.split(' ').map((n) => n.charAt(0))}
+            </div>
+          )}
         </span>
 
         <svg

@@ -41,6 +41,14 @@ export default function EventTrackerData() {
           created_by: 'Carlton Gerhold',
         },
       ],
+      tasks: [
+        {
+          category: 'Communications',
+          task: 'What so ever',
+          status: 'Open',
+          due: '2024-09-12T22:57:29.974Z',
+        },
+      ],
     },
     {
       event_id: 38145,
@@ -83,6 +91,7 @@ export default function EventTrackerData() {
           created_by: 'Carlton Gerhold',
         },
       ],
+      tasks: [],
     },
   ];
 }

@@ -9,14 +9,24 @@ export default function ProgressNote({ row }: { row: Row<EventFinal> }) {
   return (
     <div>
       <h3 className="text-base font-semibold underline">Progress Notes</h3>
-      <table className="w-full mt-3 border-b-[1.5px] border-stroke dark:border-strokedark">
+      <table className="w-full mt-3 border-b-[1.5px] border-stroke dark:border-strokedark border-separate border-spacing-y-3">
         <thead>
-          <tr className="border-b-[1.5px] border-stroke dark:border-strokedark">
-            <th className="text-left w-1/12">Date</th>
-            <th className="text-left w-1/12">Category</th>
-            <th className="text-left w-6/12">Note</th>
-            <th className="text-left w-2/12">Auther</th>
-            <th className="text-left w-2/12">Link</th>
+          <tr className="border-[1.5px] border-stroke dark:border-strokedark">
+            <th className="text-left w-1/12 pb-1 border-b-[1.5px] border-stroke dark:border-strokedark pr-10">
+              Date
+            </th>
+            <th className="text-left w-1/12 pb-1 border-b-[1.5px] border-stroke dark:border-strokedark pr-10">
+              Category
+            </th>
+            <th className="text-left w-6/12 pb-1 border-b-[1.5px] border-stroke dark:border-strokedark pr-10">
+              Note
+            </th>
+            <th className="text-left w-2/12 pb-1 border-b-[1.5px] border-stroke dark:border-strokedark pr-10">
+              Auther
+            </th>
+            <th className="text-left w-2/12 pb-1 border-b-[1.5px] border-stroke dark:border-strokedark pr-10">
+              Link
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -29,9 +39,9 @@ export default function ProgressNote({ row }: { row: Row<EventFinal> }) {
                   row.original.progress_notes.indexOf(s) === 0 || open
                     ? ''
                     : 'hidden'
-                }`}
+                } `}
               >
-                <td className="whitespace-pre-line">
+                <td className="whitespace-pre-line pr-10">
                   {new Date(s.created_date)
                     .toLocaleString(navigator.language, {
                       year: 'numeric',
@@ -42,25 +52,27 @@ export default function ProgressNote({ row }: { row: Row<EventFinal> }) {
                     })
                     .replace(/,/g, '\n')}
                 </td>
-                <td className="">{s.category}</td>
-                <td className="">
+                <td className="pr-10">{s.category}</td>
+                <td className="pr-10">
                   <ShowMoreText anchorClass="text-primary cursor-pointer block dark:text-secondary ">
                     {s.note}
                   </ShowMoreText>
                 </td>
-                <td className="">{s.created_by}</td>
+                <td className="pr-10">{s.created_by}</td>
                 <td className="">Placeholder</td>
               </tr>
             </Fragment>
           ))}
         </tbody>
       </table>
-      <Button
-        className="text-primary"
-        onClick={() => setOpen((prevState) => !prevState)}
-      >
-        {open ? 'View Less' : 'View All'}
-      </Button>
+      {row.original.progress_notes.length > 1 && (
+        <Button
+          className="text-primary mt-3"
+          onClick={() => setOpen((prevState) => !prevState)}
+        >
+          {open ? 'View Less' : 'View All'}
+        </Button>
+      )}
     </div>
   );
 }

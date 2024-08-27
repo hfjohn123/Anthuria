@@ -37,6 +37,7 @@ import { EventFinal } from '../../../types/EventFinal.ts';
 import HyperLink from '../../../components/Basic/HyerLink.tsx';
 import EventTrackerData from '../../Test/Data/EventTrackerData.ts';
 import ProgressNote from './ProgressNote.tsx';
+import ProgressTracking from './ProgressTracking.tsx';
 
 const selectStyles: ClassNamesConfig<{
   label: string;
@@ -78,12 +79,13 @@ const dateRangeFilterFn = (
 
 const renderSubComponent = ({ row }: { row: Row<EventFinal> }) => {
   return (
-    <div className="bg-slate-50 dark:bg-slate-900 px-4 text-sm py-4 flex flex-col">
+    <div className="bg-slate-50 dark:bg-slate-900 px-4 text-sm py-4 flex flex-col gap-5">
+      <ProgressTracking row={row} />
       <ProgressNote row={row} />
     </div>
   );
 };
-const permenentColumnFilters = ['facility_name', 'trigger_word'];
+const permenentColumnFilters = ['facility_name', 'occurrence'];
 export default function EventTracker() {
   const { route, user_data } = useContext(AuthContext);
   const queryClient = useQueryClient();
@@ -116,12 +118,17 @@ export default function EventTracker() {
           } else {
             if (info.row.original.upstream === 'MTX') {
               return (
-                <HyperLink
-                  tooltip_content={'View Patient in MaxtrixCare'}
-                  href={`https://clearviewhcm.matrixcare.com/core/selectResident.action?residentID=${info.row.original.patient_id}`}
-                >
-                  {info.row.getValue('patient_name')}
-                </HyperLink>
+                <>
+                  <HyperLink
+                    tooltip_content={'View Patient in MaxtrixCare'}
+                    href={`https://clearviewhcm.matrixcare.com/core/selectResident.action?residentID=${info.row.original.patient_id}`}
+                  >
+                    {info.row.getValue('patient_name')}
+                  </HyperLink>
+                  <p className="text-body-2">
+                    {info.row.getValue('facility_name')}
+                  </p>
+                </>
               );
             }
           }
@@ -130,9 +137,23 @@ export default function EventTracker() {
         header: 'Patient',
         filterFn: 'includesString',
         meta: {
-          wrap: false,
+          wrap: 'pre',
           type: 'text',
         },
+      },
+      {
+        accessorKey: 'occurrence',
+        cell: (info) => {
+          return (
+            <>
+              <p>{info.row.getValue('occurrence')}</p>
+              <p className="text-body-2">#{info.row.original.event_id}</p>
+            </>
+          );
+        },
+        header: 'Occurrence',
+        filterFn: 'arrIncludesSome',
+        meta: { wrap: false, type: 'categorical' },
       },
       {
         accessorKey: 'occurrence_date',
@@ -163,6 +184,7 @@ export default function EventTracker() {
         },
       },
       {
+        accessorKey: 'progress_notes',
         accessorFn: (row) => {
           return row.progress_notes.map((s) => s.note);
         },
@@ -246,7 +268,7 @@ export default function EventTracker() {
             patient_name: true,
             created_date: false,
             created_by: false,
-            progress_note: false,
+            progress_notes: false,
           }
         : {
             facility_name: true,
@@ -768,7 +790,7 @@ export default function EventTracker() {
                           return (
                             <td
                               key={cell.id}
-                              className={`py-2 px-3 w-[${cell.column.getSize() || 'auto'}] text-sm ${!cell.column.columnDef.meta?.wrap && 'whitespace-nowrap'} ${row.getIsExpanded() && 'bg-slate-100 dark:bg-slate-700'}`}
+                              className={`py-2 px-3 w-[${cell.column.getSize() || 'auto'}] text-sm ${cell.column.columnDef.meta?.wrap == 'pre' ? 'whitespace-pre-wrap' : cell.column.columnDef.meta?.wrap ? '' : 'whitespace-nowrap'} ${row.getIsExpanded() && 'bg-slate-100 dark:bg-slate-700'}`}
                               role="button"
                               onClick={row.getToggleExpandedHandler()}
                             >
