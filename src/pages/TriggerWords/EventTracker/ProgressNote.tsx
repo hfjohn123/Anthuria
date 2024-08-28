@@ -3,6 +3,7 @@ import ShowMoreText from 'react-show-more-text';
 import { Row } from '@tanstack/react-table';
 import { EventFinal } from '../../../types/EventFinal.ts';
 import { Button } from '@headlessui/react';
+import HyperLink from '../../../components/Basic/HyerLink.tsx';
 
 export default function ProgressNote({ row }: { row: Row<EventFinal> }) {
   const [open, setOpen] = useState<boolean>(false);
@@ -11,7 +12,7 @@ export default function ProgressNote({ row }: { row: Row<EventFinal> }) {
       <h3 className="text-base font-semibold underline">Progress Notes</h3>
       <table className="w-full mt-3 border-b-[1.5px] border-stroke dark:border-strokedark border-separate border-spacing-y-3">
         <thead>
-          <tr className="border-[1.5px] border-stroke dark:border-strokedark">
+          <tr className="border-[1.5px] border-stroke dark:border-strokedark text-body-2">
             <th className="text-left w-1/12 pb-1 border-b-[1.5px] border-stroke dark:border-strokedark pr-10">
               Date
             </th>
@@ -52,14 +53,28 @@ export default function ProgressNote({ row }: { row: Row<EventFinal> }) {
                     })
                     .replace(/,/g, '\n')}
                 </td>
-                <td className="pr-10">{s.category}</td>
                 <td className="pr-10">
-                  <ShowMoreText anchorClass="text-primary cursor-pointer block dark:text-secondary ">
+                  <span className="px-2 py-0.5 bg-opacity-15 rounded-md bg-[#807F7F]">
+                    {s.category}
+                  </span>
+                </td>
+                <td className="pr-10">
+                  <ShowMoreText
+                    anchorClass="text-primary cursor-pointer block dark:text-secondary "
+                    lines={4}
+                  >
                     {s.note}
                   </ShowMoreText>
                 </td>
                 <td className="pr-10">{s.created_by}</td>
-                <td className="">Placeholder</td>
+                <td className="">
+                  <HyperLink
+                    href={`https://clearviewhcm.matrixcare.com/core/selectResident.action?residentID=${row.original.patient_id}&referringPage=/progressNoteView.action?progressNoteID=${s.progress_note_id}`}
+                    tooltip_content={'Click to view Progress Note'}
+                  >
+                    Note
+                  </HyperLink>
+                </td>
               </tr>
             </Fragment>
           ))}

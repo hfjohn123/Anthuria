@@ -1,4 +1,5 @@
 export type ProgressNote = {
+  progress_note_id: number;
   created_date: Date;
   category: string;
   note: string;

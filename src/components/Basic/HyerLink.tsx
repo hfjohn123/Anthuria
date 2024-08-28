@@ -6,7 +6,7 @@ export default function HyperLink({
   href,
   children,
 }: {
-  tooltip_content: string;
+  tooltip_content?: string;
   href: string;
   children: React.ReactNode;
 }) {

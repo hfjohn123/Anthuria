@@ -39,6 +39,7 @@ module.exports = {
         'black-2': '#010101',
         body: '#64748B',
         'body-2': '#807F7F',
+        'red-warning': '#8B4646',
         bodydark: '#AEB7C0',
         bodydark1: '#DEE4EE',
         bodydark2: '#8A99AF',

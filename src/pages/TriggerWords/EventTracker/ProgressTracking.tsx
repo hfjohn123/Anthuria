@@ -11,66 +11,118 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import { EventFinal, Task } from '../../../types/EventFinal.ts';
-import { useEffect, useMemo, useState } from 'react';
+import { useState } from 'react';
 import getFacetedUniqueValues from '../../../common/getFacetedUniqueValues.ts';
 import getFacetedMinMaxValues from '../../../common/getFacetedMinMaxValues.ts';
+import Countdown from 'react-countdown';
+import clsx from 'clsx';
+import { Button } from '@headlessui/react';
+import HyperLink from '../../../components/Basic/HyerLink.tsx';
 
+const renderer = ({ days, hours, minutes, seconds, completed }: any) => {
+  if (completed) {
+    // Render a completed state
+    return <span className="text-red-warning font-semibold">Overdue</span>;
+  }
+  // Render a countdown
+  if (days < 1) {
+    if (hours < 1) {
+      if (minutes < 1) {
+        return (
+          <span className="text-red-warning font-semibold">In {seconds}s</span>
+        );
+      }
+      return (
+        <span className="text-red-warning font-semibold">
+          In {minutes}m {seconds}s
+        </span>
+      );
+    }
+    return (
+      <span className="text-red-warning font-semibold">
+        In {hours}h {minutes + 1}m
+      </span>
+    );
+  }
+  if (days < 2) {
+    return <span>Tomorrow</span>;
+  }
+  return <span>In {days} days</span>;
+};
 export default function ProgressTracking({ row }: { row: Row<EventFinal> }) {
   const tasks = row.original.tasks;
-  const columns = useMemo<ColumnDef<Task>[]>(
-    () => [
-      { accessorKey: 'category', header: 'Category' },
-      {
-        accessorKey: 'task',
-        header: 'Task',
-        cell: (info) => (
-          <p dangerouslySetInnerHTML={{ __html: info.getValue() as string }} />
-        ),
-      },
-      { accessorKey: 'status', header: 'Status' },
-      {
-        accessorKey: 'due',
-        header: 'Due',
-        cell: (info) => {
-          const dueDate = new Date(info.getValue() as Date);
-          const diffTime = dueDate.getTime() - new Date().getTime();
-          const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-          const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
-          const diffMins = Math.ceil(
-            (diffTime % (1000 * 60 * 60)) / (1000 * 60),
-          );
+  const columns: ColumnDef<Task>[] = [
+    {
+      accessorKey: 'category',
+      header: 'Category',
+      cell: (info) => (
+        <span
+          className={clsx(
+            'px-2 py-0.5 bg-opacity-15 rounded-md',
+            info.getValue() === 'Communications' && 'bg-[#FFC300]',
+            info.getValue() === 'Orders' && 'bg-[#2B00FF]',
+            info.getValue() === 'Care Plan Review' && 'bg-[#00AEFF]',
+            info.getValue() === 'Forms' && 'bg-[#FF2B00]',
+            info.getValue() === 'Vitals' && 'bg-[#D900FF]',
+          )}
+        >
+          {info.getValue() as string}
+        </span>
+      ),
+    },
+    {
+      accessorKey: 'task',
+      header: 'Task',
+      cell: (info) => (
+        <p dangerouslySetInnerHTML={{ __html: info.getValue() as string }} />
+      ),
+    },
+    { accessorKey: 'status', header: 'Status' },
+    {
+      accessorKey: 'due',
+      header: 'Due',
+      cell: (info) => {
+        const dueDate = new Date(info.getValue() as Date);
 
-          return (
-            <p>
-              {diffDays < 1 ? (
-                <span>
-                  In {diffHours}h {diffMins}m
-                </span>
-              ) : diffDays < 2 ? (
-                <span>Tomorrow</span>
-              ) : (
-                <span>In {diffDays} days</span>
+        return (
+          <p>
+            <Countdown date={dueDate} renderer={renderer} />
+            <br />
+            <span>
+              {new Date(info.getValue() as Date).toLocaleString(
+                navigator.language,
+                {
+                  year: 'numeric',
+                  month: '2-digit',
+                  day: '2-digit',
+                  hour: 'numeric',
+                  minute: '2-digit',
+                },
               )}
-              <br />
-              <span>
-                {new Date(info.getValue() as Date).toLocaleString(
-                  navigator.language,
-                  {
-                    year: 'numeric',
-                    month: '2-digit',
-                    day: '2-digit',
-                    hour: 'numeric',
-                    minute: '2-digit',
-                  },
-                )}
-              </span>
-            </p>
-          );
-        },
+            </span>
+          </p>
+        );
       },
-    ],
-    [],
-  );
+    },
+    {
+      accessorKey: 'link',
+      header: 'Link',
+      accessorFn: (row) => row.category === 'Communications' && 'Notifications',
+      cell: (info) => {
+        return (
+          <HyperLink
+            href={
+              info.row.getValue('category') === 'Communications'
+                ? `https://clearviewhcm.matrixcare.com/Zion?zionpagealias=EVENTVIEW&NSPID=${row.original.patient_id}&CHGPID=true&EVENTID=${row.original.event_id}&dashboardHomePage=true&OEType=Event&PATIENTID=${row.original.patient_id}`
+                : info.row.getValue('category') === 'Vitals'
+            }
+          >
+            {info.getValue() as string}
+          </HyperLink>
+        );
+      },
+    },
+  ];
   const [tableState, setTableState] = useState<TableState>({
     globalFilter: '',
     columnSizing: {},
@@ -108,7 +160,7 @@ export default function ProgressTracking({ row }: { row: Row<EventFinal> }) {
       pageSize: 30,
     },
   });
-
+  const [showAll, setShowAll] = useState(false);
   const table = useReactTable({
     data: tasks,
     columns,
@@ -211,7 +263,15 @@ export default function ProgressTracking({ row }: { row: Row<EventFinal> }) {
               return (
                 <tr
                   key={row.id}
-                  className="border-b-[1.5px] border-stroke dark:border-strokedark"
+                  className={clsx(
+                    'border-b-[1.5px] border-stroke dark:border-strokedark',
+                    !showAll &&
+                      new Date(row.getValue('due')).getTime() -
+                        new Date().getTime() >=
+                        1000 * 60 * 60 * 48 &&
+                      row.getValue('status') === 'Open' &&
+                      'hidden',
+                  )}
                 >
                   {row.getVisibleCells().map((cell) => {
                     return (
@@ -219,12 +279,12 @@ export default function ProgressTracking({ row }: { row: Row<EventFinal> }) {
                         key={cell.id}
                         className="py-2 border-b-[1.5px] border-stroke dark:border-strokedark"
                       >
-                        {cell.column.id === 'due'
-                          ? null
-                          : (flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext(),
-                            ) as string)}
+                        {
+                          flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext(),
+                          ) as string
+                        }
                       </td>
                     );
                   })}
@@ -234,6 +294,14 @@ export default function ProgressTracking({ row }: { row: Row<EventFinal> }) {
           </tbody>
         </table>
       </div>
+      <Button
+        className="self-start text-primary"
+        onClick={() => {
+          setShowAll((prevState) => !prevState);
+        }}
+      >
+        {showAll ? 'Show Upcoming Open Tasks' : 'Show Future & Closed Tasks'}
+      </Button>
     </div>
   );
 }
