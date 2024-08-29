@@ -17,6 +17,7 @@ export default function Home() {
   } = useQuery({
     queryKey: ['user_stars', route],
     queryFn: () => axios.get(`${route}/user_stars`).then((res) => res.data),
+    retryDelay: 3000,
   });
   if (isPending) {
     return <Loader />;

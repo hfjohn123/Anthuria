@@ -8,6 +8,7 @@ export type ProgressNote = {
 
 export type Task = {
   category: string;
+  corresponding_id: number;
   task: string;
   status: string;
   due: Date;

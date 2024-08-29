@@ -11,8 +11,8 @@ import Loader from '../../../common/Loader';
 import AutosizeInput from 'react-18-input-autosize';
 import 'react-datepicker/dist/react-datepicker.css';
 import CheckboxOption from '../../../components/Select/CheckboxOption.tsx';
-import Select, { ActionMeta, ClassNamesConfig, MultiValue } from 'react-select';
-import FilterValueContainer from '../../../components/Select/FilterValueContainer.tsx';
+import Select, { ActionMeta, MultiValue } from 'react-select';
+import filterValueContainer from '../../../components/Select/FilterValueContainer.tsx';
 import {
   ColumnDef,
   ColumnDefTemplate,
@@ -38,30 +38,7 @@ import HyperLink from '../../../components/Basic/HyerLink.tsx';
 import EventTrackerData from '../../Test/Data/EventTrackerData.ts';
 import ProgressNote from './ProgressNote.tsx';
 import ProgressTracking from './ProgressTracking.tsx';
-
-const selectStyles: ClassNamesConfig<{
-  label: string;
-  value: string;
-}> = {
-  control: (state) =>
-    state.hasValue
-      ? '!border-stroke  dark:!border-white dark:bg-form-input !min-h-min !rounded-lg !text-sm'
-      : '!border-stroke dark:!border-white dark:bg-form-input !border-dashed !min-h-min !rounded-lg !text-sm',
-  singleValue: () => 'dark:text-white ',
-  valueContainer: () => '!py-0 !pr-0',
-  dropdownIndicator: (state) =>
-    state.hasValue
-      ? '!hidden'
-      : state.isFocused
-        ? 'dark:text-white dark:hover:text-white !p-0'
-        : '!p-0',
-  indicatorsContainer: () => '!p-0',
-  clearIndicator: (state) =>
-    state.isFocused ? 'dark:text-white dark:hover:text-white !p-0' : '!p-0',
-  input: () => '!py-0',
-  menu: () => 'dark:bg-form-input min-w-max max-w-max',
-  option: () => '!bg-transparent !text-body dark:!text-bodydark',
-};
+import filterSelectStyles from '../../../components/Select/FilterSelectStyles.ts';
 
 const dateRangeFilterFn = (
   row: Row<EventFinal>,
@@ -79,7 +56,7 @@ const dateRangeFilterFn = (
 
 const renderSubComponent = ({ row }: { row: Row<EventFinal> }) => {
   return (
-    <div className="bg-slate-50 dark:bg-slate-900 px-4 text-sm py-4 flex flex-col gap-5">
+    <div className="bg-slate-50 dark:bg-slate-900 px-3 text-sm py-4 flex flex-col gap-5">
       <ProgressTracking row={row} />
       <ProgressNote row={row} />
     </div>
@@ -398,7 +375,7 @@ export default function EventTracker() {
           <div className="flex p-1 gap-1.5 flex-wrap">
             {permenentColumnFilters.map((filter) => (
               <Select
-                classNames={{ ...selectStyles }}
+                classNames={{ ...filterSelectStyles }}
                 key={filter}
                 placeholder={
                   table.getColumn(filter)?.columnDef.header as string
@@ -407,7 +384,7 @@ export default function EventTracker() {
                 hideSelectedOptions={false}
                 components={{
                   IndicatorSeparator: () => null,
-                  ValueContainer: FilterValueContainer,
+                  ValueContainer: filterValueContainer,
                   Option: CheckboxOption,
                 }}
                 isClearable={true}
@@ -440,7 +417,7 @@ export default function EventTracker() {
                 table.getColumn(filter.id)?.columnDef.meta?.type ===
                 'categorical' ? (
                   <Select
-                    classNames={{ ...selectStyles }}
+                    classNames={{ ...filterSelectStyles }}
                     key={filter.id}
                     placeholder={
                       table.getColumn(filter.id)?.columnDef?.header as string
@@ -451,7 +428,7 @@ export default function EventTracker() {
                     autoFocus={true}
                     components={{
                       IndicatorSeparator: () => null,
-                      ValueContainer: FilterValueContainer,
+                      ValueContainer: filterValueContainer,
                       Option: CheckboxOption,
                     }}
                     isClearable={true}
@@ -663,7 +640,7 @@ export default function EventTracker() {
                 ) : null,
               )}
             <Select
-              classNames={{ ...selectStyles }}
+              classNames={{ ...filterSelectStyles }}
               placeholder="Add Filter"
               isMulti={false}
               closeMenuOnSelect={true}

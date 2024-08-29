@@ -18,6 +18,17 @@ import Countdown from 'react-countdown';
 import clsx from 'clsx';
 import { Button } from '@headlessui/react';
 import HyperLink from '../../../components/Basic/HyerLink.tsx';
+import {
+  FileText,
+  Heartbeat,
+  MagnifyingGlass,
+  Megaphone,
+  TestTube,
+} from '@phosphor-icons/react';
+import FilterValueContainer from '../../../components/Select/FilterValueContainer.tsx';
+import CheckboxOption from '../../../components/Select/CheckboxOption.tsx';
+import Select from 'react-select';
+import filterSelectStyles from '../../../components/Select/FilterSelectStyles.ts';
 
 const renderer = ({ days, hours, minutes, seconds, completed }: any) => {
   if (completed) {
@@ -49,6 +60,7 @@ const renderer = ({ days, hours, minutes, seconds, completed }: any) => {
   }
   return <span>In {days} days</span>;
 };
+const permenentColumnFilters = ['category', 'status'];
 export default function ProgressTracking({ row }: { row: Row<EventFinal> }) {
   const tasks = row.original.tasks;
   const columns: ColumnDef<Task>[] = [
@@ -107,17 +119,22 @@ export default function ProgressTracking({ row }: { row: Row<EventFinal> }) {
     {
       accessorKey: 'link',
       header: 'Link',
-      accessorFn: (row) => row.category === 'Communications' && 'Notifications',
+      accessorFn: (task) => {
+        if (
+          task.category === 'Communications' ||
+          task.category === 'Forms' ||
+          task.category === 'Care Plan Review'
+        )
+          return `https://clearviewhcm.matrixcare.com/Zion?zionpagealias=EVENTVIEW&NSPID=${row.original.patient_id}&CHGPID=true&EVENTID=${row.original.event_id}&dashboardHomePage=true&OEType=Event&PATIENTID=${row.original.patient_id}`;
+        if (task.category === 'Vitals')
+          return `https://clearviewhcm.matrixcare.com/Zion?zionpagealias=MEASUREMENTVIEW&measurementDetailID=${task.corresponding_id}&PATIENTID=${row.original.patient_id}`;
+        if (task.category === 'Orders')
+          return `https://clearviewhcm.matrixcare.com/Zion?zionpagealias=ORDERBIOLABVIEW&orderID=${task.corresponding_id}&PATIENTID=${row.original.patient_id}&EVENTID=${row.original.event_id}&NSPID=${row.original.patient_id}&CHGPID=true`;
+      },
       cell: (info) => {
         return (
-          <HyperLink
-            href={
-              info.row.getValue('category') === 'Communications'
-                ? `https://clearviewhcm.matrixcare.com/Zion?zionpagealias=EVENTVIEW&NSPID=${row.original.patient_id}&CHGPID=true&EVENTID=${row.original.event_id}&dashboardHomePage=true&OEType=Event&PATIENTID=${row.original.patient_id}`
-                : info.row.getValue('category') === 'Vitals'
-            }
-          >
-            {info.getValue() as string}
+          <HyperLink href={info.row.getValue('link') as string}>
+            {info.row.getValue('category')}
           </HyperLink>
         );
       },
@@ -179,60 +196,81 @@ export default function ProgressTracking({ row }: { row: Row<EventFinal> }) {
 
   return (
     <div className="w-full flex flex-col gap-5">
-      <div className="w-full flex flex-col gap-5">
+      <div className="w-full flex flex-col gap-8 px-3">
         <div className="w-full flex items-center gap-3">
           <h3 className="text-base font-semibold underline">
             Progress Tracking
           </h3>
           <p className="text-body-2">Placeholder Complete</p>
         </div>
-        <div className="w-full flex items-center justify-around">
+        <div className="w-full flex items-center justify-center gap-18">
           <div className="flex flex-col items-center justify-center">
-            <div className="border rounded-full size-12 flex items-center justify-center">
-              Icon
-            </div>
-            <p>Create Event</p>
-            <p>Place Holder</p>
-          </div>
-          <div className="flex flex-col items-center justify-center">
-            <div className="border rounded-full size-12 flex items-center justify-center">
-              Icon
-            </div>
+            <Megaphone className="size-12" />
             <p>Communications</p>
             <p>Place Holder</p>
           </div>
           <div className="flex flex-col items-center justify-center">
-            <div className="border rounded-full size-12 flex items-center justify-center">
-              Icon
-            </div>
+            <TestTube className="size-12" />
             <p>Orders</p>
             <p>Place Holder</p>
           </div>
           <div className="flex flex-col items-center justify-center">
-            <div className="border rounded-full size-12 flex items-center justify-center">
-              Icon
-            </div>
+            <MagnifyingGlass className="size-12" />
             <p>Care Plan Review</p>
             <p>Place Holder</p>
           </div>
           <div className="flex flex-col items-center justify-center">
-            <div className="border rounded-full size-12 flex items-center justify-center">
-              Icon
-            </div>
-            <p>Notes</p>
+            <FileText className="size-12" />
+            <p>Forms</p>
             <p>Place Holder</p>
           </div>
           <div className="flex flex-col items-center justify-center">
-            <div className="border rounded-full size-12 flex items-center justify-center">
-              Icon
-            </div>
-            <p>Sign Offs</p>
+            <Heartbeat className="size-12" />
+            <p>Vitals</p>
             <p>Place Holder</p>
           </div>
         </div>
       </div>
-      <div className="w-full flex flex-col gap-5">
+      <div className="w-full flex flex-col gap-3  py-4 px-3">
         <h3 className="text-base font-semibold underline">Tasks</h3>
+        <div className="w-full flex items-center gap-3">
+          {permenentColumnFilters.map((filter) => (
+            <Select
+              classNames={{ ...filterSelectStyles }}
+              key={filter}
+              placeholder={table.getColumn(filter)?.columnDef.header as string}
+              closeMenuOnSelect={false}
+              hideSelectedOptions={false}
+              components={{
+                IndicatorSeparator: () => null,
+                ValueContainer: FilterValueContainer,
+                Option: CheckboxOption,
+              }}
+              isClearable={true}
+              isMulti={true}
+              value={
+                tableState.columnFilters.find((f) => f.id === filter)
+                  ? (
+                      tableState.columnFilters.find((f) => f.id === filter)
+                        ?.value as string[]
+                    ).map((s) => ({
+                      label: s,
+                      value: s,
+                    }))
+                  : []
+              }
+              name={filter}
+              options={Array.from(
+                table?.getColumn(filter)?.getFacetedUniqueValues()?.keys() ??
+                  [],
+              ).map((key) => ({
+                label: key,
+                value: key,
+              }))}
+              // onChange={handleFilterChange}
+            />
+          ))}
+        </div>
         <table className="w-full">
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -293,15 +331,15 @@ export default function ProgressTracking({ row }: { row: Row<EventFinal> }) {
             })}
           </tbody>
         </table>
+        <Button
+          className="self-start text-primary"
+          onClick={() => {
+            setShowAll((prevState) => !prevState);
+          }}
+        >
+          {showAll ? 'Show Upcoming Open Tasks' : 'Show Future & Closed Tasks'}
+        </Button>
       </div>
-      <Button
-        className="self-start text-primary"
-        onClick={() => {
-          setShowAll((prevState) => !prevState);
-        }}
-      >
-        {showAll ? 'Show Upcoming Open Tasks' : 'Show Future & Closed Tasks'}
-      </Button>
     </div>
   );
 }

@@ -8,9 +8,9 @@ import HyperLink from '../../../components/Basic/HyerLink.tsx';
 export default function ProgressNote({ row }: { row: Row<EventFinal> }) {
   const [open, setOpen] = useState<boolean>(false);
   return (
-    <div>
+    <div className="flex flex-col gap-3 py-4 px-3">
       <h3 className="text-base font-semibold underline">Progress Notes</h3>
-      <table className="w-full mt-3 border-b-[1.5px] border-stroke dark:border-strokedark border-separate border-spacing-y-3">
+      <table className="w-full border-b-[1.5px] border-stroke dark:border-strokedark border-separate border-spacing-y-3">
         <thead>
           <tr className="border-[1.5px] border-stroke dark:border-strokedark text-body-2">
             <th className="text-left w-1/12 pb-1 border-b-[1.5px] border-stroke dark:border-strokedark pr-10">
@@ -82,7 +82,7 @@ export default function ProgressNote({ row }: { row: Row<EventFinal> }) {
       </table>
       {row.original.progress_notes.length > 1 && (
         <Button
-          className="text-primary mt-3"
+          className="text-primary mt-3 self-start"
           onClick={() => setOpen((prevState) => !prevState)}
         >
           {open ? 'View Less' : 'View All'}

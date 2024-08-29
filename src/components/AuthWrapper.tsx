@@ -31,7 +31,7 @@ export const AuthContext = createContext({
 export function getRoute() {
   if (window.location.origin === 'http://localhost') {
     return 'http://localhost:3009';
-    // return 'https://dataservice.noahexample.com';
+    // return 'https://dataservice.triedgesandbox.com';
   } else {
     return 'https://dataservice.triedgesandbox.com';
   }
@@ -45,7 +45,6 @@ export default function AuthWrapper({ children }: { children: JSX.Element }) {
   async function onLogout() {
     await signOut();
   }
-
   const {
     isPending,
     isError,
@@ -55,6 +54,7 @@ export default function AuthWrapper({ children }: { children: JSX.Element }) {
     queryKey: ['user', route],
     queryFn: () => axios.get(`${route}/user`).then((res) => res.data),
     enabled: !sessionContext.loading && sessionContext.doesSessionExist,
+    retryDelay: 3000,
   });
 
   const {
@@ -67,6 +67,7 @@ export default function AuthWrapper({ children }: { children: JSX.Element }) {
     queryFn: () =>
       axios.get(`${route}/user_applications_locations`).then((res) => res.data),
     enabled: !sessionContext.loading && sessionContext.doesSessionExist,
+    retryDelay: 3000,
   });
 
   user_data &&
