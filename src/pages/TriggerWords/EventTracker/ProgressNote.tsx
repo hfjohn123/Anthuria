@@ -54,13 +54,14 @@ export default function ProgressNote({ row }: { row: Row<EventFinal> }) {
                     .replace(/,/g, '\n')}
                 </td>
                 <td className="pr-10">
-                  <span className="px-2 py-0.5 bg-opacity-15 rounded-md bg-[#807F7F]">
+                  <span className="px-2 py-0.5 bg-opacity-15 rounded-md bg-[#807F7F] text-nowrap">
                     {s.category}
                   </span>
                 </td>
-                <td className="pr-10">
+                <td className="pr-10 ">
                   <ShowMoreText
                     anchorClass="text-primary cursor-pointer block dark:text-secondary "
+                    className="whitespace-pre-wrap"
                     lines={4}
                   >
                     {s.note}

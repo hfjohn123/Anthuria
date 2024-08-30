@@ -1,5 +1,6 @@
 import {
   ColumnDef,
+  ColumnFilter,
   flexRender,
   getCoreRowModel,
   getExpandedRowModel,
@@ -27,8 +28,9 @@ import {
 } from '@phosphor-icons/react';
 import FilterValueContainer from '../../../components/Select/FilterValueContainer.tsx';
 import CheckboxOption from '../../../components/Select/CheckboxOption.tsx';
-import Select from 'react-select';
-import filterSelectStyles from '../../../components/Select/FilterSelectStyles.ts';
+import Select, { ActionMeta, MultiValue } from 'react-select';
+import filterSelectStyles from '../../../components/Select/filterSelectStyles.ts';
+import dateRangeFilterFn from '../../../components/Select/dateRangeFilterFn.ts';
 
 const renderer = ({ days, hours, minutes, seconds, completed }: any) => {
   if (completed) {
@@ -71,36 +73,58 @@ export default function ProgressTracking({ row }: { row: Row<EventFinal> }) {
         <span
           className={clsx(
             'px-2 py-0.5 bg-opacity-15 rounded-md',
-            info.getValue() === 'Communications' && 'bg-[#FFC300]',
-            info.getValue() === 'Orders' && 'bg-[#2B00FF]',
-            info.getValue() === 'Care Plan Review' && 'bg-[#00AEFF]',
-            info.getValue() === 'Forms' && 'bg-[#FF2B00]',
-            info.getValue() === 'Vitals' && 'bg-[#D900FF]',
+            info.row.getValue('status') === 'Closed'
+              ? 'bg-[#807F7F]'
+              : [
+                  info.getValue() === 'Communications' && 'bg-[#FFC300]',
+                  info.getValue() === 'Orders' && 'bg-[#2B00FF]',
+                  info.getValue() === 'Care Plan Review' && 'bg-[#00AEFF]',
+                  info.getValue() === 'Forms' && 'bg-[#FF2B00]',
+                  info.getValue() === 'Vitals' && 'bg-[#D900FF]',
+                ],
           )}
         >
           {info.getValue() as string}
         </span>
       ),
+      filterFn: 'arrIncludesSome',
     },
     {
       accessorKey: 'task',
       header: 'Task',
       cell: (info) => (
-        <p dangerouslySetInnerHTML={{ __html: info.getValue() as string }} />
+        <p
+          className={clsx(
+            info.row.getValue('status') === 'Closed' && 'line-through',
+          )}
+          dangerouslySetInnerHTML={{ __html: info.getValue() as string }}
+        />
       ),
     },
-    { accessorKey: 'status', header: 'Status' },
+    { accessorKey: 'status', header: 'Status', filterFn: 'arrIncludesSome' },
     {
       accessorKey: 'due',
       header: 'Due',
       cell: (info) => {
         const dueDate = new Date(info.getValue() as Date);
-
         return (
           <p>
-            <Countdown date={dueDate} renderer={renderer} />
-            <br />
-            <span>
+            {info.row.getValue('status') === 'Open' && (
+              <>
+                <Countdown
+                  date={dueDate}
+                  renderer={renderer}
+                  controlled={false}
+                />
+                <br />
+              </>
+            )}
+
+            <span
+              className={clsx(
+                info.row.getValue('status') === 'Closed' && 'line-through',
+              )}
+            >
               {new Date(info.getValue() as Date).toLocaleString(
                 navigator.language,
                 {
@@ -115,21 +139,21 @@ export default function ProgressTracking({ row }: { row: Row<EventFinal> }) {
           </p>
         );
       },
+      filterFn: dateRangeFilterFn,
     },
     {
       accessorKey: 'link',
       header: 'Link',
       accessorFn: (task) => {
-        if (
-          task.category === 'Communications' ||
-          task.category === 'Forms' ||
-          task.category === 'Care Plan Review'
-        )
-          return `https://clearviewhcm.matrixcare.com/Zion?zionpagealias=EVENTVIEW&NSPID=${row.original.patient_id}&CHGPID=true&EVENTID=${row.original.event_id}&dashboardHomePage=true&OEType=Event&PATIENTID=${row.original.patient_id}`;
-        if (task.category === 'Vitals')
-          return `https://clearviewhcm.matrixcare.com/Zion?zionpagealias=MEASUREMENTVIEW&measurementDetailID=${task.corresponding_id}&PATIENTID=${row.original.patient_id}`;
-        if (task.category === 'Orders')
-          return `https://clearviewhcm.matrixcare.com/Zion?zionpagealias=ORDERBIOLABVIEW&orderID=${task.corresponding_id}&PATIENTID=${row.original.patient_id}&EVENTID=${row.original.event_id}&NSPID=${row.original.patient_id}&CHGPID=true`;
+        // if (
+        //   task.category === 'Communications' ||
+        //   task.category === 'Forms' ||
+        //   task.category === 'Vitals' ||
+        //   task.category === 'Orders'
+        // )
+        return `https://clearviewhcm.matrixcare.com/Zion?zionpagealias=EVENTVIEW&NSPID=${row.original.patient_id}&CHGPID=true&EVENTID=${row.original.event_id}&dashboardHomePage=true&OEType=Event&PATIENTID=${row.original.patient_id}`;
+        // if (task.category === 'Vitals')
+        //   return `https://clearviewhcm.matrixcare.com/Zion?zionpagealias=MEASUREMENTVIEW&measurementDetailID=${task.corresponding_id}&PATIENTID=${row.original.patient_id}`;
       },
       cell: (info) => {
         return (
@@ -159,7 +183,16 @@ export default function ProgressTracking({ row }: { row: Row<EventFinal> }) {
     expanded: {},
     grouping: [],
     sorting: [],
-    columnFilters: [],
+    columnFilters: [
+      { id: 'status', value: ['Open'] },
+      {
+        id: 'due',
+        value: [
+          new Date(1996, 0, 1),
+          new Date(new Date().getTime() + 1000 * 60 * 60 * 48),
+        ],
+      },
+    ],
     columnPinning: {
       left: [],
       right: [],
@@ -177,7 +210,11 @@ export default function ProgressTracking({ row }: { row: Row<EventFinal> }) {
       pageSize: 30,
     },
   });
-  const [showAll, setShowAll] = useState(false);
+  console.log(tableState.columnFilters);
+  const showOpen = tableState.columnFilters.some((filter: ColumnFilter) => {
+    return filter.id === 'due';
+  });
+  console.log(showOpen);
   const table = useReactTable({
     data: tasks,
     columns,
@@ -193,6 +230,35 @@ export default function ProgressTracking({ row }: { row: Row<EventFinal> }) {
     getFacetedMinMaxValues: getFacetedMinMaxValues(), // generate min/max values for numeric range filter
     getSortedRowModel: getSortedRowModel(),
   });
+  const handleFilterChange = (
+    selected: MultiValue<{
+      label: string;
+      value: string;
+    }>,
+    {
+      name,
+    }: ActionMeta<{
+      label: string;
+      value: string;
+    }>,
+  ) => {
+    if (selected.length === 0) {
+      setTableState((prev) => ({
+        ...prev,
+        columnFilters: prev.columnFilters.filter((f) => f.id !== name),
+      }));
+      return;
+    }
+    setTableState((prev) => ({
+      ...prev,
+      columnFilters: prev.columnFilters
+        .filter((f) => f.id !== name)
+        .concat({
+          id: name || '',
+          value: selected.map((s) => s.value),
+        }),
+    }));
+  };
 
   return (
     <div className="w-full flex flex-col gap-5">
@@ -201,33 +267,33 @@ export default function ProgressTracking({ row }: { row: Row<EventFinal> }) {
           <h3 className="text-base font-semibold underline">
             Progress Tracking
           </h3>
-          <p className="text-body-2">Placeholder Complete</p>
+          <p className="text-body-2">Placeholder</p>
         </div>
         <div className="w-full flex items-center justify-center gap-18">
           <div className="flex flex-col items-center justify-center">
             <Megaphone className="size-12" />
             <p>Communications</p>
-            <p>Place Holder</p>
+            <p>PlaceHolder</p>
           </div>
           <div className="flex flex-col items-center justify-center">
             <TestTube className="size-12" />
             <p>Orders</p>
-            <p>Place Holder</p>
+            <p>PlaceHolder</p>
           </div>
           <div className="flex flex-col items-center justify-center">
             <MagnifyingGlass className="size-12" />
             <p>Care Plan Review</p>
-            <p>Place Holder</p>
+            <p>PlaceHolder</p>
           </div>
           <div className="flex flex-col items-center justify-center">
             <FileText className="size-12" />
             <p>Forms</p>
-            <p>Place Holder</p>
+            <p>PlaceHolder</p>
           </div>
           <div className="flex flex-col items-center justify-center">
             <Heartbeat className="size-12" />
             <p>Vitals</p>
-            <p>Place Holder</p>
+            <p>PlaceHolder</p>
           </div>
         </div>
       </div>
@@ -267,7 +333,7 @@ export default function ProgressTracking({ row }: { row: Row<EventFinal> }) {
                 label: key,
                 value: key,
               }))}
-              // onChange={handleFilterChange}
+              onChange={handleFilterChange}
             />
           ))}
         </div>
@@ -303,19 +369,15 @@ export default function ProgressTracking({ row }: { row: Row<EventFinal> }) {
                   key={row.id}
                   className={clsx(
                     'border-b-[1.5px] border-stroke dark:border-strokedark',
-                    !showAll &&
-                      new Date(row.getValue('due')).getTime() -
-                        new Date().getTime() >=
-                        1000 * 60 * 60 * 48 &&
-                      row.getValue('status') === 'Open' &&
-                      'hidden',
                   )}
                 >
                   {row.getVisibleCells().map((cell) => {
                     return (
                       <td
                         key={cell.id}
-                        className="py-2 border-b-[1.5px] border-stroke dark:border-strokedark"
+                        className={clsx(
+                          'py-2 border-b-[1.5px] border-stroke dark:border-strokedark',
+                        )}
                       >
                         {
                           flexRender(
@@ -334,10 +396,32 @@ export default function ProgressTracking({ row }: { row: Row<EventFinal> }) {
         <Button
           className="self-start text-primary"
           onClick={() => {
-            setShowAll((prevState) => !prevState);
+            showOpen
+              ? setTableState((prev) => ({
+                  ...prev,
+                  columnFilters: prev.columnFilters.filter((f) => {
+                    return f.id !== 'due' && f.id !== 'status';
+                  }),
+                }))
+              : setTableState((prev) => ({
+                  ...prev,
+                  columnFilters: [
+                    ...prev.columnFilters,
+                    { id: 'status', value: ['Open'] },
+                    {
+                      id: 'due',
+                      value: [
+                        new Date(1996, 0, 1),
+                        new Date(new Date().getTime() + 1000 * 60 * 60 * 48),
+                      ],
+                    },
+                  ],
+                }));
           }}
         >
-          {showAll ? 'Show Upcoming Open Tasks' : 'Show Future & Closed Tasks'}
+          {!showOpen
+            ? 'Show Upcoming Open Tasks'
+            : 'Show Future & Closed Tasks'}
         </Button>
       </div>
     </div>

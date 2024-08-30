@@ -38,21 +38,8 @@ import HyperLink from '../../../components/Basic/HyerLink.tsx';
 import EventTrackerData from '../../Test/Data/EventTrackerData.ts';
 import ProgressNote from './ProgressNote.tsx';
 import ProgressTracking from './ProgressTracking.tsx';
-import filterSelectStyles from '../../../components/Select/FilterSelectStyles.ts';
-
-const dateRangeFilterFn = (
-  row: Row<EventFinal>,
-  columnId: string,
-  filterValue: [Date, Date],
-) => {
-  const value = new Date(row.getValue(columnId) as string | number | Date);
-  return (
-    filterValue[0] <= value &&
-    new Date(
-      new Date(filterValue[1]).setDate(new Date(filterValue[1]).getDate() + 1),
-    ) >= value
-  );
-};
+import filterSelectStyles from '../../../components/Select/filterSelectStyles.ts';
+import dateRangeFilterFn from '../../../components/Select/dateRangeFilterFn.ts';
 
 const renderSubComponent = ({ row }: { row: Row<EventFinal> }) => {
   return (
@@ -242,13 +229,17 @@ export default function EventTracker() {
       : window.screen.width < 1024
         ? {
             facility_name: true,
+            occurrence: true,
             patient_name: true,
+
             created_date: false,
             created_by: false,
+
             progress_notes: false,
           }
         : {
             facility_name: true,
+            occurrence: true,
             patient_name: true,
             created_date: true,
             created_by: true,
@@ -279,6 +270,7 @@ export default function EventTracker() {
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
   });
+  // console.log(tableState.columnFilters);
 
   useEffect(() => {
     localStorage.setItem(
@@ -675,11 +667,6 @@ export default function EventTracker() {
                     },
                   ],
                 }));
-                // setColumnFilters([...columnFilters, {
-                //   // @ts-expect-error Error already handled
-                //   id: newValue.value as string,
-                //   value: []
-                // }]);
                 setAdditionalFilters(null);
               }}
             />
