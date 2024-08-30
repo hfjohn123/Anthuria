@@ -1,7 +1,7 @@
 import DefaultLayout from '../../layout/DefaultLayout.tsx';
 import axios from 'axios';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { MagnifyingGlassIcon, CheckIcon } from '@heroicons/react/24/solid';
+import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import { Cog6ToothIcon } from '@heroicons/react/24/outline';
 import SortDownIcon from '../../images/icon/sort-down.svg';
 import SortUpIcon from '../../images/icon/sort-up.svg';
@@ -12,7 +12,7 @@ import Loader from '../../common/Loader';
 import AutosizeInput from 'react-18-input-autosize';
 import 'react-datepicker/dist/react-datepicker.css';
 import CheckboxOption from '../../components/Select/CheckboxOption.tsx';
-import Select, { ActionMeta, ClassNamesConfig, MultiValue } from 'react-select';
+import Select, { ActionMeta, MultiValue } from 'react-select';
 import FilterValueContainer from '../../components/Select/FilterValueContainer.tsx';
 import {
   ColumnDef,
@@ -38,11 +38,13 @@ import NumberCards from '../../components/Cards/NumberCards.tsx';
 import clsx from 'clsx';
 import Modal from '../../components/Modal/Modal.tsx';
 import CommentForm from '../../components/Forms/CommentForm.tsx';
-import ThumbsUpAndDown from '../../images/icon/ThumbUpAndDown.tsx';
 import { createToast } from '../../hooks/fireToast.tsx';
-import { Checkbox, Field, Input, Label } from '@headlessui/react';
-
+import { Field, Input, Label } from '@headlessui/react';
+import filterSelectStyles from '../../components/Select/filterSelectStyles.ts';
+import dateRangeFilterFn from '../../components/Select/dateRangeFilterFn.ts';
 import HyperLink from '../../components/Basic/HyerLink.tsx';
+import { ThumbsDown, ThumbsUp } from '@phosphor-icons/react';
+import usePutComment from '../../interface/usePutComment.ts';
 type TriggerFinal = {
   progress_note_id: number;
   internal_facility_id: string;
@@ -58,9 +60,10 @@ type TriggerFinal = {
   trigger_words: {
     trigger_word: string;
     summary: string;
-    status: string;
+    is_thumb_up: boolean;
     update_time: Date;
     comment: string;
+    event_ids: number[];
   }[];
 };
 const predefinedTriggerWords = [
@@ -71,43 +74,6 @@ const predefinedTriggerWords = [
   'Neglect',
   'Allegation',
 ];
-const selectStyles: ClassNamesConfig<{
-  label: string;
-  value: string;
-}> = {
-  control: (state) =>
-    state.hasValue
-      ? '!border-stroke  dark:!border-white dark:bg-form-input !min-h-min !rounded-lg !text-sm'
-      : '!border-stroke dark:!border-white dark:bg-form-input !border-dashed !min-h-min !rounded-lg !text-sm',
-  singleValue: () => 'dark:text-white ',
-  valueContainer: () => '!py-0 !pr-0',
-  dropdownIndicator: (state) =>
-    state.hasValue
-      ? '!hidden'
-      : state.isFocused
-        ? 'dark:text-white dark:hover:text-white !p-0'
-        : '!p-0',
-  indicatorsContainer: () => '!p-0',
-  clearIndicator: (state) =>
-    state.isFocused ? 'dark:text-white dark:hover:text-white !p-0' : '!p-0',
-  input: () => '!py-0',
-  menu: () => 'dark:bg-form-input min-w-max max-w-max',
-  option: () => '!bg-transparent !text-body dark:!text-bodydark',
-};
-
-const dateRangeFilterFn = (
-  row: Row<TriggerFinal>,
-  columnId: string,
-  filterValue: [Date, Date],
-) => {
-  const value = new Date(row.getValue(columnId) as string | number | Date);
-  return (
-    filterValue[0] <= value &&
-    new Date(
-      new Date(filterValue[1]).setDate(new Date(filterValue[1]).getDate() + 1),
-    ) >= value
-  );
-};
 
 const renderSubComponent = ({
   row,
@@ -115,14 +81,14 @@ const renderSubComponent = ({
   setIsOpen,
   commentState,
   setCommentState,
-  changeStatus,
+  putComment,
 }: {
   row: Row<TriggerFinal>;
   isOpen: boolean;
   setIsOpen: any;
   commentState: any;
   setCommentState: any;
-  changeStatus: any;
+  putComment: any;
 }) => {
   return (
     <div className="bg-slate-50 dark:bg-slate-900 px-4 text-sm py-4 flex flex-wrap">
@@ -230,48 +196,10 @@ const renderSubComponent = ({
         </thead>
         <tbody>
           {row.original.trigger_words.map(
-            ({ trigger_word, status, summary, comment }) => (
+            ({ trigger_word, is_thumb_up, summary, comment, event_ids }) => (
               <tr key={row.id + trigger_word}>
                 <td className="whitespace-nowrap align-top flex items-center flex-nowrap">
                   {trigger_word}
-                  <Modal
-                    isOpen={isOpen}
-                    setIsOpen={setIsOpen}
-                    classNameses={{
-                      title: 'text-xl sm:text-2xl',
-                    }}
-                    title={'What is Going Wrong?'}
-                    button={
-                      <div
-                        className={clsx(
-                          'rounded-full hover:bg-blue-100 cursor-pointer dark:hover:bg-slate-700 p-1 ',
-                          comment && 'bg-slate-200 dark:bg-slate-600',
-                        )}
-                        data-tooltip-id="comment-tooltip"
-                        data-tooltip-content="Is it a good trigger?"
-                      >
-                        <ThumbsUpAndDown
-                          className={clsx(
-                            'size-4 sm:size-4.5 stroke-current stroke-[3px]',
-                          )}
-                        />
-                      </div>
-                    }
-                    onOpenCallback={() =>
-                      setCommentState({
-                        comment: comment || '',
-                        trigger_word,
-                        progress_note_id: row.original.progress_note_id,
-                      })
-                    }
-                  >
-                    <CommentForm
-                      commentState={commentState}
-                      setCommentState={setCommentState}
-                      setIsOpen={setIsOpen}
-                    />
-                  </Modal>
-                  <Tooltip id="comment-tooltip" className="font-bold" />
                 </td>
                 <td className="pr-10">
                   <ShowMoreText anchorClass="text-primary cursor-pointer block dark:text-secondary">
@@ -279,27 +207,92 @@ const renderSubComponent = ({
                   </ShowMoreText>
                 </td>
                 <td className=" align-top	">
-                  <div className=" flex items-center flex-nowrap gap-1.5">
-                    <Checkbox
-                      checked={status === 'Reviewed'}
-                      className="block size-4 bg-white rounded border group"
-                      onChange={() => {
-                        changeStatus.mutate({
-                          progress_note_id: row.original.progress_note_id,
-                          trigger_word: trigger_word,
-                          revision_date: row.original.revision_date,
-                          status:
-                            status === 'Reviewed' ? 'Needs review' : 'Reviewed',
-                        });
-                      }}
-                    >
-                      <CheckIcon className="hidden size-3.5 fill-black group-data-[checked]:block" />
-                    </Checkbox>
-                    {status}
+                  <div className=" flex items-center flex-nowrap gap-2">
+                    {is_thumb_up ? (
+                      <ThumbsUp
+                        className="size-4 text-meta-3 cursor-pointer"
+                        weight="fill"
+                      />
+                    ) : (
+                      <ThumbsUp
+                        className="size-4 cursor-pointer"
+                        onClick={() =>
+                          putComment.mutate({
+                            progress_note_id: row.original.progress_note_id,
+                            trigger_word: trigger_word,
+                            comment: '',
+                            is_thumb_up: true,
+                          })
+                        }
+                      />
+                    )}
+                    {!is_thumb_up && comment !== null ? (
+                      <Modal
+                        isOpen={isOpen}
+                        setIsOpen={setIsOpen}
+                        onOpenCallback={() =>
+                          setCommentState({
+                            comment: comment || '',
+                            trigger_word,
+                            progress_note_id: row.original.progress_note_id,
+                          })
+                        }
+                        classNameses={{
+                          title: 'text-xl sm:text-2xl',
+                        }}
+                        title={'What is Going Wrong?'}
+                        button={
+                          <ThumbsDown
+                            className="size-4 cursor-pointer text-meta-1"
+                            weight="fill"
+                          />
+                        }
+                      >
+                        <CommentForm
+                          commentState={commentState}
+                          setIsOpen={setIsOpen}
+                          setCommentState={setCommentState}
+                        />
+                      </Modal>
+                    ) : (
+                      <Modal
+                        isOpen={isOpen}
+                        setIsOpen={setIsOpen}
+                        onOpenCallback={() =>
+                          setCommentState({
+                            comment: comment || '',
+                            trigger_word,
+                            progress_note_id: row.original.progress_note_id,
+                          })
+                        }
+                        classNameses={{
+                          title: 'text-xl sm:text-2xl',
+                        }}
+                        title={'What is Going Wrong?'}
+                        button={
+                          <ThumbsDown className="size-4 cursor-pointer" />
+                        }
+                      >
+                        <CommentForm
+                          commentState={commentState}
+                          setIsOpen={setIsOpen}
+                          setCommentState={setCommentState}
+                        />
+                      </Modal>
+                    )}
                   </div>
                 </td>
                 <td className="align-top ">
-                  {trigger_word === 'Fall' ? (
+                  {event_ids && event_ids.length > 0 ? (
+                    event_ids.map((event_id) => (
+                      <HyperLink
+                        key={event_id}
+                        href={`https://clearviewhcm.matrixcare.com/Zion?zionpagealias=EVENTVIEW&NSPID=${row.original.patient_id}&CHGPID=true&EVENTID=${event_id}&dashboardHomePage=true&OEType=Event&PATIENTID=${row.original.patient_id}`}
+                      >
+                        View the Event
+                      </HyperLink>
+                    ))
+                  ) : trigger_word === 'Fall' ? (
                     <HyperLink
                       tooltip_content={'Create an Event in MatrixCare'}
                       href={`https://clearviewhcm.matrixcare.com/Zion?zionpagealias=EVENTCREATE&PATIENTID=${row.original.patient_id}&formId=944&categoryName=Safety%20Events&formDescription=Post+Fall+Event+v3`}
@@ -348,61 +341,10 @@ export default function ReviewTriggers() {
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [showCommentModal, setShowCommentModal] = useState(false);
   const [commentState, setCommentState] = useState({});
+  const putComment = usePutComment(route, queryClient);
   const { isPending, isError, data, error } = useQuery({
     queryKey: ['trigger-words', route],
     queryFn: () => axios.get(`${route}/trigger_final`).then((res) => res.data),
-  });
-  const changeStatus = useMutation({
-    mutationFn: ({
-      progress_note_id,
-      trigger_word,
-      revision_date,
-      status,
-    }: {
-      progress_note_id: number;
-      trigger_word: string;
-      revision_date: Date;
-      status: string;
-    }) => {
-      return axios.patch(`${route}/trigger_final_status`, {
-        progress_note_id,
-        trigger_word,
-        revision_date,
-        status,
-      });
-    },
-    onMutate: async ({
-      progress_note_id,
-      trigger_word,
-      status,
-    }: {
-      progress_note_id: number;
-      trigger_word: string;
-      status: string;
-    }) => {
-      await queryClient.cancelQueries({ queryKey: ['trigger-words', route] });
-      const previousData = queryClient.getQueryData<any[]>([
-        'trigger-words',
-        route,
-      ]);
-      if (previousData) {
-        const newData = structuredClone(previousData);
-        for (let i = 0; i < newData.length; i++) {
-          if (newData[i].progress_note_id === progress_note_id) {
-            for (let j = 0; j < newData[i].trigger_words.length; j++) {
-              if (newData[i].trigger_words[j].trigger_word === trigger_word) {
-                newData[i].trigger_words[j].status = status;
-              }
-            }
-          }
-        }
-        queryClient.setQueryData(['trigger-words', route], newData);
-      }
-      return { previousData };
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['trigger-words', route] });
-    },
   });
 
   const addTemporary = useMutation({
@@ -605,16 +547,16 @@ export default function ReviewTriggers() {
         sortingFn: 'datetime',
         filterFn: dateRangeFilterFn,
       },
-      {
-        accessorKey: 'status',
-        accessorFn: (row) => row.trigger_words.map((d) => d.status),
-        header: 'Status',
-        meta: {
-          wrap: false,
-          type: 'categorical',
-        },
-        filterFn: 'arrIncludesSome',
-      },
+      // {
+      //   accessorKey: 'status',
+      //   accessorFn: (row) => row.trigger_words.map((d) => d.status),
+      //   header: 'Status',
+      //   meta: {
+      //     wrap: false,
+      //     type: 'categorical',
+      //   },
+      //   filterFn: 'arrIncludesSome',
+      // },
     ],
     [],
   );
@@ -693,7 +635,6 @@ export default function ReviewTriggers() {
             progress_note: false,
             summary: false,
             update_time: false,
-            status: false,
           }
         : {
             facility_name: true,
@@ -707,14 +648,12 @@ export default function ReviewTriggers() {
             progress_note: false,
             summary: false,
             update_time: false,
-            status: false,
           },
     pagination: {
       pageIndex: 0,
       pageSize: 30,
     },
   });
-
   const table = useReactTable({
     data: data,
     columns,
@@ -1031,7 +970,7 @@ export default function ReviewTriggers() {
           <div className="flex p-1 gap-1.5 flex-wrap">
             {permenentColumnFilters.map((filter) => (
               <Select
-                classNames={{ ...selectStyles }}
+                classNames={{ ...filterSelectStyles }}
                 key={filter}
                 placeholder={
                   table.getColumn(filter)?.columnDef.header as string
@@ -1073,7 +1012,7 @@ export default function ReviewTriggers() {
                 table.getColumn(filter.id)?.columnDef.meta?.type ===
                 'categorical' ? (
                   <Select
-                    classNames={{ ...selectStyles }}
+                    classNames={{ ...filterSelectStyles }}
                     key={filter.id}
                     placeholder={
                       table.getColumn(filter.id)?.columnDef?.header as string
@@ -1307,7 +1246,7 @@ export default function ReviewTriggers() {
                 ) : null,
               )}
             <Select
-              classNames={{ ...selectStyles }}
+              classNames={{ ...filterSelectStyles }}
               placeholder="Add Filter"
               isMulti={false}
               closeMenuOnSelect={true}
@@ -1456,7 +1395,7 @@ export default function ReviewTriggers() {
                               setIsOpen: setShowCommentModal,
                               commentState: commentState,
                               setCommentState: setCommentState,
-                              changeStatus,
+                              putComment,
                             })}
                           </td>
                         </tr>
