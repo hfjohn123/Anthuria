@@ -5,8 +5,7 @@ import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import { Cog6ToothIcon } from '@heroicons/react/24/outline';
 import SortDownIcon from '../../../images/icon/sort-down.svg';
 import SortUpIcon from '../../../images/icon/sort-up.svg';
-import { Tooltip } from 'react-tooltip';
-import { Fragment, useContext, useEffect, useMemo, useState } from 'react';
+import { Fragment, useContext, useEffect, useState } from 'react';
 import Loader from '../../../common/Loader';
 import AutosizeInput from 'react-18-input-autosize';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -51,8 +50,7 @@ const renderSubComponent = ({ row }: { row: Row<EventFinal> }) => {
 };
 const permenentColumnFilters = ['facility_name', 'occurrence'];
 export default function EventTracker() {
-  const { route, user_data } = useContext(AuthContext);
-  const queryClient = useQueryClient();
+  const { user_data } = useContext(AuthContext);
   const [additionalFilters, setAdditionalFilters] = useState<{
     label: string;
     value: string;
@@ -62,106 +60,153 @@ export default function EventTracker() {
   //   queryKey: ['trigger-words', route],
   //   queryFn: () => axios.get(`${route}/trigger_final`).then((res) => res.data),
   // });
+  const [now, setNow] = useState(new Date());
+  useEffect(() => {
+    const interval = setInterval(
+      () => {
+        setNow(new Date());
+      },
+      1000 * 60 * 5,
+    );
+    return () => clearInterval(interval);
+  }, []);
   const data = EventTrackerData();
-  const columns = useMemo<ColumnDef<EventFinal>[]>(
-    () => [
-      {
-        accessorKey: 'facility_name',
-        header: 'Facility',
-        meta: {
-          wrap: false,
-          type: 'categorical',
-        },
-        filterFn: 'arrIncludesSome',
+  const columns: ColumnDef<EventFinal>[] = [
+    {
+      accessorKey: 'facility_name',
+      header: 'Facility',
+      meta: {
+        wrap: false,
+        type: 'categorical',
       },
-      {
-        accessorKey: 'patient_name',
-        cell: (info) => {
-          if (user_data.email == 'athenaw.design@gmail.com') {
-            return 'John Doe';
-          } else {
-            if (info.row.original.upstream === 'MTX') {
-              return (
-                <>
-                  <HyperLink
-                    tooltip_content={'View Patient in MaxtrixCare'}
-                    href={`https://clearviewhcm.matrixcare.com/core/selectResident.action?residentID=${info.row.original.patient_id}`}
-                  >
-                    {info.row.getValue('patient_name')}
-                  </HyperLink>
-                  <p className="text-body-2">
-                    {info.row.getValue('facility_name')}
-                  </p>
-                </>
-              );
-            }
+      filterFn: 'arrIncludesSome',
+    },
+    {
+      accessorKey: 'patient_name',
+      cell: (info) => {
+        if (user_data.email == 'athenaw.design@gmail.com') {
+          return 'John Doe';
+        } else {
+          if (info.row.original.upstream === 'MTX') {
+            return (
+              <>
+                <HyperLink
+                  tooltip_content={'View Patient in MaxtrixCare'}
+                  href={`https://clearviewhcm.matrixcare.com/core/selectResident.action?residentID=${info.row.original.patient_id}`}
+                >
+                  {info.row.getValue('patient_name')}
+                </HyperLink>
+                <p className="text-body-2">
+                  {info.row.getValue('facility_name')}
+                </p>
+              </>
+            );
           }
-          return info.renderValue();
-        },
-        header: 'Patient',
-        filterFn: 'includesString',
-        meta: {
-          wrap: 'pre',
-          type: 'text',
-        },
+        }
+        return info.renderValue();
       },
-      {
-        accessorKey: 'occurrence',
-        cell: (info) => {
-          return (
-            <>
-              <p>{info.row.getValue('occurrence')}</p>
-              <p className="text-body-2">#{info.row.original.event_id}</p>
-            </>
-          );
-        },
-        header: 'Occurrence',
-        filterFn: 'arrIncludesSome',
-        meta: { wrap: false, type: 'categorical' },
+      header: 'Patient',
+      filterFn: 'includesString',
+      meta: {
+        wrap: 'pre',
+        type: 'text',
       },
-      {
-        accessorKey: 'occurrence_date',
-        header: 'Occurrence Date',
-        cell: (info) => {
-          const date = new Date(info.getValue() as string | number | Date);
-          return `${date.toLocaleDateString()} ${date.toLocaleTimeString(
-            navigator.language,
-            {
-              hour: '2-digit',
-              minute: '2-digit',
-            },
-          )}`;
-        },
-        filterFn: dateRangeFilterFn,
-        meta: {
-          wrap: false,
-          type: 'daterange',
-        },
+    },
+    {
+      accessorKey: 'occurrence',
+      cell: (info) => {
+        return (
+          <>
+            <p>{info.row.getValue('occurrence')}</p>
+            <p className="text-body-2">#{info.row.original.event_id}</p>
+          </>
+        );
       },
-      {
-        accessorKey: 'created_by',
-        header: 'Created By',
-        filterFn: 'arrIncludesSome',
-        meta: {
-          wrap: false,
-          type: 'categorical',
-        },
+      header: 'Occurrence',
+      filterFn: 'arrIncludesSome',
+      meta: { wrap: false, type: 'categorical' },
+    },
+    {
+      accessorKey: 'occurrence_date',
+      header: 'Occurrence Date',
+      cell: (info) => {
+        const date = new Date(info.getValue() as string | number | Date);
+        return `${date.toLocaleDateString()} ${date.toLocaleTimeString(
+          navigator.language,
+          {
+            hour: '2-digit',
+            minute: '2-digit',
+          },
+        )}`;
       },
-      {
-        accessorKey: 'progress_notes',
-        accessorFn: (row) => {
-          return row.progress_notes.map((s) => s.note);
-        },
-        header: 'Progress Notes',
-        filterFn: 'includesString',
-        meta: {
-          wrap: true,
-          type: 'text',
-        },
+      filterFn: dateRangeFilterFn,
+      meta: {
+        wrap: false,
+        type: 'daterange',
       },
-    ],
-    [],
-  );
+    },
+    {
+      accessorKey: 'created_by',
+      header: 'Created By',
+      filterFn: 'arrIncludesSome',
+      meta: {
+        wrap: false,
+        type: 'categorical',
+      },
+    },
+    {
+      accessorKey: 'progress_notes',
+      accessorFn: (row) => {
+        return row.progress_notes.map((s) => s.note);
+      },
+      header: 'Progress Notes',
+      filterFn: 'includesString',
+      meta: {
+        wrap: true,
+        type: 'text',
+      },
+    },
+    {
+      accessorKey: 'open_tasks',
+      accessorFn: (row) => {
+        return row.tasks.filter((t) => t.status === 'Open').map((s) => s.task);
+      },
+      cell: (info) => {
+        return <p>{(info.getValue() as string[]).length} Tasks</p>;
+      },
+      header: 'Open Tasks',
+      filterFn: 'arrIncludesSome',
+      meta: {
+        wrap: true,
+        type: 'categorical',
+      },
+    },
+    {
+      accessorKey: 'due_tasks',
+      accessorFn: (row) => {
+        return row.tasks
+          .filter((t) => t.status === 'Open')
+          .filter(
+            (t) =>
+              new Date(t.due) < new Date(now.getTime() + 1000 * 60 * 60 * 24),
+          )
+          .map((s) => s.task);
+      },
+      cell: (info) => {
+        return (
+          <p className="text-red-warning font-semibold">
+            {(info.getValue() as string[]).length} Tasks
+          </p>
+        );
+      },
+      header: 'Due Today',
+      filterFn: 'arrIncludesSome',
+      meta: {
+        wrap: true,
+        type: 'categorical',
+      },
+    },
+  ];
   const handleFilterChange = (
     selected: MultiValue<{
       label: string;
@@ -191,10 +236,9 @@ export default function EventTracker() {
         }),
     }));
   };
-  if (localStorage.getItem('clearStorage') !== '1') {
-    localStorage.removeItem('recent');
+  if (localStorage.getItem('EventTrackerClearStorage') !== '1') {
     localStorage.removeItem('eventTackerUserVisibilitySettings');
-    localStorage.setItem('clearStorage', '1');
+    localStorage.setItem('EventTrackerClearStorage', '1');
   }
   const eventTackerUserVisibilitySettings = localStorage.getItem(
     'eventTackerUserVisibilitySettings',
@@ -228,21 +272,23 @@ export default function EventTracker() {
       ? JSON.parse(eventTackerUserVisibilitySettings)
       : window.screen.width < 1024
         ? {
-            facility_name: true,
+            facility_name: false,
             occurrence: true,
             patient_name: true,
-
-            created_date: false,
-            created_by: false,
-
+            occurrence_date: true,
+            created_by: true,
+            open_tasks: true,
+            due_tasks: true,
             progress_notes: false,
           }
         : {
-            facility_name: true,
+            facility_name: false,
             occurrence: true,
             patient_name: true,
-            created_date: true,
+            occurrence_date: true,
             created_by: true,
+            open_tasks: true,
+            due_tasks: true,
             progress_notes: false,
           },
     pagination: {

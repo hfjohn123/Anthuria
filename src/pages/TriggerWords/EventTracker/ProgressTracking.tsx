@@ -20,6 +20,7 @@ import clsx from 'clsx';
 import { Button } from '@headlessui/react';
 import HyperLink from '../../../components/Basic/HyerLink.tsx';
 import {
+  Check,
   FileText,
   Heartbeat,
   MagnifyingGlass,
@@ -65,6 +66,16 @@ const renderer = ({ days, hours, minutes, seconds, completed }: any) => {
 const permenentColumnFilters = ['category', 'status'];
 export default function ProgressTracking({ row }: { row: Row<EventFinal> }) {
   const tasks = row.original.tasks;
+  const communications = tasks.filter(
+    (task) => task.category === 'Communications',
+  );
+  const orders = tasks.filter((task) => task.category === 'Orders');
+  const carePlanReview = tasks.filter(
+    (task) => task.category === 'Care Plan Review',
+  );
+  const forms = tasks.filter((task) => task.category === 'Forms');
+  const vitals = tasks.filter((task) => task.category === 'Vitals');
+
   const columns: ColumnDef<Task>[] = [
     {
       accessorKey: 'category',
@@ -144,7 +155,7 @@ export default function ProgressTracking({ row }: { row: Row<EventFinal> }) {
     {
       accessorKey: 'link',
       header: 'Link',
-      accessorFn: (task) => {
+      accessorFn: () => {
         // if (
         //   task.category === 'Communications' ||
         //   task.category === 'Forms' ||
@@ -273,27 +284,82 @@ export default function ProgressTracking({ row }: { row: Row<EventFinal> }) {
           <div className="flex flex-col items-center justify-center">
             <Megaphone className="size-12" />
             <p>Communications</p>
-            <p>PlaceHolder</p>
+            {communications.filter((c) => c.status === 'Open').length === 0 ? (
+              <Check className="size-4 text-[#468B49]" />
+            ) : (
+              <p>
+                {Math.round(
+                  (communications.filter((c) => c.status === 'Closed').length /
+                    communications.length) *
+                    100,
+                )}
+                % Complete
+              </p>
+            )}
           </div>
           <div className="flex flex-col items-center justify-center">
             <TestTube className="size-12" />
             <p>Orders</p>
-            <p>PlaceHolder</p>
+            {orders.filter((c) => c.status === 'Open').length === 0 ? (
+              <Check className="size-4 text-[#468B49]" />
+            ) : (
+              <p>
+                {Math.round(
+                  (orders.filter((c) => c.status === 'Closed').length /
+                    orders.length) *
+                    100,
+                )}
+                % Complete
+              </p>
+            )}
           </div>
           <div className="flex flex-col items-center justify-center">
             <MagnifyingGlass className="size-12" />
             <p>Care Plan Review</p>
-            <p>PlaceHolder</p>
+            {carePlanReview.filter((c) => c.status === 'Open').length === 0 ? (
+              <Check className="size-4 text-[#468B49]" />
+            ) : (
+              <p>
+                {Math.round(
+                  (carePlanReview.filter((c) => c.status === 'Closed').length /
+                    carePlanReview.length) *
+                    100,
+                )}
+                % Complete
+              </p>
+            )}
           </div>
           <div className="flex flex-col items-center justify-center">
             <FileText className="size-12" />
             <p>Forms</p>
-            <p>PlaceHolder</p>
+            {forms.filter((c) => c.status === 'Open').length === 0 ? (
+              <Check className="size-4 text-[#468B49]" />
+            ) : (
+              <p>
+                {Math.round(
+                  (forms.filter((c) => c.status === 'Closed').length /
+                    forms.length) *
+                    100,
+                )}
+                % Complete
+              </p>
+            )}
           </div>
           <div className="flex flex-col items-center justify-center">
             <Heartbeat className="size-12" />
             <p>Vitals</p>
-            <p>PlaceHolder</p>
+            {vitals.filter((c) => c.status === 'Open').length === 0 ? (
+              <Check className="size-4 text-[#468B49]" />
+            ) : (
+              <p>
+                {Math.round(
+                  (vitals.filter((c) => c.status === 'Closed').length /
+                    vitals.length) *
+                    100,
+                )}
+                % Complete
+              </p>
+            )}
           </div>
         </div>
       </div>
