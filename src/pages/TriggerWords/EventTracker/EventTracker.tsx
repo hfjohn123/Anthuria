@@ -49,6 +49,7 @@ const renderSubComponent = ({ row }: { row: Row<EventFinal> }) => {
   );
 };
 const permenentColumnFilters = ['facility_name', 'occurrence'];
+
 export default function EventTracker() {
   const { user_data } = useContext(AuthContext);
   const [additionalFilters, setAdditionalFilters] = useState<{

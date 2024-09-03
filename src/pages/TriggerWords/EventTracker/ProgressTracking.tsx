@@ -270,7 +270,9 @@ export default function ProgressTracking({ row }: { row: Row<EventFinal> }) {
         }),
     }));
   };
-
+  let filter =
+    (tableState.columnFilters.find(({ id }) => id === 'category')
+      ?.value as string[]) || [];
   return (
     <div className="w-full flex flex-col gap-5">
       <div className="w-full flex flex-col gap-8 px-3">
@@ -281,13 +283,46 @@ export default function ProgressTracking({ row }: { row: Row<EventFinal> }) {
           <p className="text-body-2">Placeholder</p>
         </div>
         <div className="w-full flex items-center justify-center gap-18">
-          <div className="flex flex-col items-center justify-center">
-            <Megaphone className="size-12" />
+          <div
+            className="flex flex-col items-center justify-center cursor-pointer"
+            onClick={() => {
+              if (filter.includes('Communications')) {
+                filter = filter.filter((f) => f !== 'Communications');
+              } else {
+                filter.push('Communications');
+              }
+              if (filter.length === 0) {
+                setTableState((prev) => ({
+                  ...prev,
+                  columnFilters: prev.columnFilters.filter(
+                    ({ id }) => id !== 'category',
+                  ),
+                }));
+                return;
+              }
+              setTableState((prev) => ({
+                ...prev,
+                columnFilters: [
+                  ...prev.columnFilters.filter(({ id }) => id !== 'category'),
+                  {
+                    id: 'category',
+                    value: filter,
+                  },
+                ],
+              }));
+            }}
+          >
+            <Megaphone
+              className={clsx(
+                'size-12',
+                filter.includes('Communications') && 'text-primary',
+              )}
+            />
             <p>Communications</p>
             {communications.filter((c) => c.status === 'Open').length === 0 ? (
               <Check className="size-4 text-[#468B49]" />
             ) : (
-              <p>
+              <p className={'font-semibold text-red-warning'}>
                 {Math.round(
                   (communications.filter((c) => c.status === 'Closed').length /
                     communications.length) *
@@ -297,13 +332,46 @@ export default function ProgressTracking({ row }: { row: Row<EventFinal> }) {
               </p>
             )}
           </div>
-          <div className="flex flex-col items-center justify-center">
-            <TestTube className="size-12" />
+          <div
+            className="flex flex-col items-center justify-center cursor-pointer"
+            onClick={() => {
+              if (filter.includes('Orders')) {
+                filter = filter.filter((f) => f !== 'Orders');
+              } else {
+                filter.push('Orders');
+              }
+              if (filter.length === 0) {
+                setTableState((prev) => ({
+                  ...prev,
+                  columnFilters: prev.columnFilters.filter(
+                    ({ id }) => id !== 'category',
+                  ),
+                }));
+                return;
+              }
+              setTableState((prev) => ({
+                ...prev,
+                columnFilters: [
+                  ...prev.columnFilters.filter(({ id }) => id !== 'category'),
+                  {
+                    id: 'category',
+                    value: filter,
+                  },
+                ],
+              }));
+            }}
+          >
+            <TestTube
+              className={clsx(
+                'size-12',
+                filter.includes('Orders') && 'text-primary',
+              )}
+            />
             <p>Orders</p>
             {orders.filter((c) => c.status === 'Open').length === 0 ? (
               <Check className="size-4 text-[#468B49]" />
             ) : (
-              <p>
+              <p className={'font-semibold text-red-warning'}>
                 {Math.round(
                   (orders.filter((c) => c.status === 'Closed').length /
                     orders.length) *
@@ -313,13 +381,46 @@ export default function ProgressTracking({ row }: { row: Row<EventFinal> }) {
               </p>
             )}
           </div>
-          <div className="flex flex-col items-center justify-center">
-            <MagnifyingGlass className="size-12" />
+          <div
+            className="flex flex-col items-center justify-center cursor-pointer"
+            onClick={() => {
+              if (filter.includes('Care Plan Review')) {
+                filter = filter.filter((f) => f !== 'Care Plan Review');
+              } else {
+                filter.push('Care Plan Review');
+              }
+              if (filter.length === 0) {
+                setTableState((prev) => ({
+                  ...prev,
+                  columnFilters: prev.columnFilters.filter(
+                    ({ id }) => id !== 'category',
+                  ),
+                }));
+                return;
+              }
+              setTableState((prev) => ({
+                ...prev,
+                columnFilters: [
+                  ...prev.columnFilters.filter(({ id }) => id !== 'category'),
+                  {
+                    id: 'category',
+                    value: filter,
+                  },
+                ],
+              }));
+            }}
+          >
+            <MagnifyingGlass
+              className={clsx(
+                'size-12',
+                filter.includes('Care Plan Review') && 'text-primary',
+              )}
+            />
             <p>Care Plan Review</p>
             {carePlanReview.filter((c) => c.status === 'Open').length === 0 ? (
               <Check className="size-4 text-[#468B49]" />
             ) : (
-              <p>
+              <p className={'font-semibold text-red-warning'}>
                 {Math.round(
                   (carePlanReview.filter((c) => c.status === 'Closed').length /
                     carePlanReview.length) *
@@ -329,13 +430,46 @@ export default function ProgressTracking({ row }: { row: Row<EventFinal> }) {
               </p>
             )}
           </div>
-          <div className="flex flex-col items-center justify-center">
-            <FileText className="size-12" />
+          <div
+            className="flex flex-col items-center justify-center cursor-pointer"
+            onClick={() => {
+              if (filter.includes('Forms')) {
+                filter = filter.filter((f) => f !== 'Forms');
+              } else {
+                filter.push('Forms');
+              }
+              if (filter.length === 0) {
+                setTableState((prev) => ({
+                  ...prev,
+                  columnFilters: prev.columnFilters.filter(
+                    ({ id }) => id !== 'category',
+                  ),
+                }));
+                return;
+              }
+              setTableState((prev) => ({
+                ...prev,
+                columnFilters: [
+                  ...prev.columnFilters.filter(({ id }) => id !== 'category'),
+                  {
+                    id: 'category',
+                    value: filter,
+                  },
+                ],
+              }));
+            }}
+          >
+            <FileText
+              className={clsx(
+                'size-12',
+                filter.includes('Forms') && 'text-primary',
+              )}
+            />
             <p>Forms</p>
             {forms.filter((c) => c.status === 'Open').length === 0 ? (
               <Check className="size-4 text-[#468B49]" />
             ) : (
-              <p>
+              <p className={'font-semibold text-red-warning'}>
                 {Math.round(
                   (forms.filter((c) => c.status === 'Closed').length /
                     forms.length) *
@@ -345,13 +479,46 @@ export default function ProgressTracking({ row }: { row: Row<EventFinal> }) {
               </p>
             )}
           </div>
-          <div className="flex flex-col items-center justify-center">
-            <Heartbeat className="size-12" />
+          <div
+            className="flex flex-col items-center justify-center cursor-pointer"
+            onClick={() => {
+              if (filter.includes('Vitals')) {
+                filter = filter.filter((f) => f !== 'Vitals');
+              } else {
+                filter.push('Vitals');
+              }
+              if (filter.length === 0) {
+                setTableState((prev) => ({
+                  ...prev,
+                  columnFilters: prev.columnFilters.filter(
+                    ({ id }) => id !== 'category',
+                  ),
+                }));
+                return;
+              }
+              setTableState((prev) => ({
+                ...prev,
+                columnFilters: [
+                  ...prev.columnFilters.filter(({ id }) => id !== 'category'),
+                  {
+                    id: 'category',
+                    value: filter,
+                  },
+                ],
+              }));
+            }}
+          >
+            <Heartbeat
+              className={clsx(
+                'size-12',
+                filter.includes('Vitals') && 'text-primary',
+              )}
+            />
             <p>Vitals</p>
             {vitals.filter((c) => c.status === 'Open').length === 0 ? (
               <Check className="size-4 text-[#468B49]" />
             ) : (
-              <p>
+              <p className={'font-semibold text-red-warning'}>
                 {Math.round(
                   (vitals.filter((c) => c.status === 'Closed').length /
                     vitals.length) *

@@ -72,7 +72,6 @@ const predefinedTriggerWords = [
   'Condition Change',
   'Abuse',
   'Neglect',
-  'Allegation',
 ];
 
 const renderSubComponent = ({
@@ -690,7 +689,7 @@ export default function ReviewTriggers() {
   return (
     <DefaultLayout title={'Clinical Pulse'}>
       <h1 className="text-2xl font-bold mt-3 sm:mt-0">Review Triggers</h1>
-      <div className="grid xl:grid-cols-6 grid-cols-3 sm:gap-3 mt-5">
+      <div className="grid xl:grid-cols-5 grid-cols-3 sm:gap-3 mt-5">
         {predefinedTriggerWords.map((word) => (
           <NumberCards
             key={word}
