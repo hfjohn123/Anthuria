@@ -1,6 +1,6 @@
 import DefaultLayout from '../../../layout/DefaultLayout.tsx';
 import axios from 'axios';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import { Cog6ToothIcon } from '@heroicons/react/24/outline';
 import SortDownIcon from '../../../images/icon/sort-down.svg';
@@ -34,11 +34,10 @@ import DatePicker from 'react-datepicker';
 import Modal from '../../../components/Modal/Modal.tsx';
 import { EventFinal } from '../../../types/EventFinal.ts';
 import HyperLink from '../../../components/Basic/HyerLink.tsx';
-import EventTrackerData from '../../Test/Data/EventTrackerData.ts';
 import ProgressNote from './ProgressNote.tsx';
 import ProgressTracking from './ProgressTracking.tsx';
 import filterSelectStyles from '../../../components/Select/filterSelectStyles.ts';
-import dateRangeFilterFn from '../../../components/Select/dateRangeFilterFn.ts';
+import dateRangeFilterFn from '../../../common/dateRangeFilterFn.ts';
 
 const renderSubComponent = ({ row }: { row: Row<EventFinal> }) => {
   return (
@@ -51,7 +50,7 @@ const renderSubComponent = ({ row }: { row: Row<EventFinal> }) => {
 const permenentColumnFilters = ['facility_name', 'occurrence'];
 
 export default function EventTracker() {
-  const { user_data } = useContext(AuthContext);
+  const { user_data, route } = useContext(AuthContext);
   const [additionalFilters, setAdditionalFilters] = useState<{
     label: string;
     value: string;
@@ -71,7 +70,13 @@ export default function EventTracker() {
     );
     return () => clearInterval(interval);
   }, []);
-  const data = EventTrackerData();
+  const { isPending, data, error, isError } = useQuery({
+    queryKey: ['trigger_word_view_event_detail_final', route],
+    queryFn: () =>
+      axios
+        .get(`${route}/trigger_word_view_event_detail_final`)
+        .then((res) => res.data),
+  });
   const columns: ColumnDef<EventFinal>[] = [
     {
       accessorKey: 'facility_name',
@@ -326,12 +331,12 @@ export default function EventTracker() {
     );
   }, [tableState.columnVisibility]);
 
-  // if (isPending) {
-  //   return <Loader />;
-  // }
-  // if (isError) {
-  //   return <div>Error: {error.message}</div>;
-  // }
+  if (isPending) {
+    return <Loader />;
+  }
+  if (isError) {
+    return <div>Error: {error.message}</div>;
+  }
   return (
     <DefaultLayout title={'Clinical Pulse'}>
       <h1 className="text-2xl font-bold mt-3 sm:mt-0">Open Event</h1>

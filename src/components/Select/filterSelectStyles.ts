@@ -6,8 +6,8 @@ const filterSelectStyles: ClassNamesConfig<{
 }> = {
   control: (state) =>
     state.hasValue
-      ? '!border-stroke  dark:!border-white dark:bg-form-input !min-h-min !rounded-lg !text-sm'
-      : '!border-stroke dark:!border-white dark:bg-form-input !border-dashed !min-h-min !rounded-lg !text-sm',
+      ? ' !bg-transparent  dark:!border-white !border-body  !min-h-min !rounded-lg !text-sm'
+      : '!border-stroke  !bg-transparent !min-h-min !rounded-lg !text-sm',
   singleValue: () => 'dark:text-white ',
   valueContainer: () => '!py-0 !pr-0',
   dropdownIndicator: (state) =>

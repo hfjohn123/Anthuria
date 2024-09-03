@@ -31,7 +31,7 @@ import FilterValueContainer from '../../../components/Select/FilterValueContaine
 import CheckboxOption from '../../../components/Select/CheckboxOption.tsx';
 import Select, { ActionMeta, MultiValue } from 'react-select';
 import filterSelectStyles from '../../../components/Select/filterSelectStyles.ts';
-import dateRangeFilterFn from '../../../components/Select/dateRangeFilterFn.ts';
+import dateRangeFilterFn from '../../../common/dateRangeFilterFn.ts';
 
 const renderer = ({ days, hours, minutes, seconds, completed }: any) => {
   if (completed) {
@@ -280,7 +280,9 @@ export default function ProgressTracking({ row }: { row: Row<EventFinal> }) {
           <h3 className="text-base font-semibold underline">
             Progress Tracking
           </h3>
-          <p className="text-body-2">Placeholder</p>
+          <p className="text-body-2">
+            {tasks.filter((f) => f.status !== 'Closed').length} open
+          </p>
         </div>
         <div className="w-full flex items-center justify-center gap-18">
           <div
@@ -596,6 +598,16 @@ export default function ProgressTracking({ row }: { row: Row<EventFinal> }) {
             ))}
           </thead>
           <tbody>
+            {table.getRowModel().rows.length === 0 && (
+              <tr>
+                <td
+                  colSpan={table.getAllColumns().length}
+                  className="py-2 border-b-[1.5px] border-stroke dark:border-strokedark text-left select-none group whitespace-nowrap text-body-2"
+                >
+                  No tasks found
+                </td>
+              </tr>
+            )}
             {table.getRowModel().rows.map((row) => {
               return (
                 <tr
