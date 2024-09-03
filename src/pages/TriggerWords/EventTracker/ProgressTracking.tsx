@@ -32,6 +32,7 @@ import CheckboxOption from '../../../components/Select/CheckboxOption.tsx';
 import Select, { ActionMeta, MultiValue } from 'react-select';
 import filterSelectStyles from '../../../components/Select/filterSelectStyles.ts';
 import dateRangeFilterFn from '../../../common/dateRangeFilterFn.ts';
+import PrimaryButton from '../../../components/Basic/PrimaryButton.tsx';
 
 const renderer = ({ days, hours, minutes, seconds, completed }: any) => {
   if (completed) {
@@ -63,7 +64,7 @@ const renderer = ({ days, hours, minutes, seconds, completed }: any) => {
   }
   return <span>In {days} days</span>;
 };
-const permenentColumnFilters = ['category', 'status'];
+const permanentColumnFilters = ['category', 'status'];
 export default function ProgressTracking({ row }: { row: Row<EventFinal> }) {
   const tasks = row.original.tasks;
   const communications = tasks.filter(
@@ -174,6 +175,15 @@ export default function ProgressTracking({ row }: { row: Row<EventFinal> }) {
         );
       },
     },
+    {
+      accessorKey: 'action',
+      header: '',
+      cell: (info) => {
+        if (info.row.getValue('category') === 'Orders') {
+          return <PrimaryButton>Bypass</PrimaryButton>;
+        }
+      },
+    },
   ];
   const [tableState, setTableState] = useState<TableState>({
     globalFilter: '',
@@ -221,7 +231,6 @@ export default function ProgressTracking({ row }: { row: Row<EventFinal> }) {
       pageSize: 30,
     },
   });
-  console.log(tableState.columnFilters);
   const showOpen = tableState.columnFilters.some((filter: ColumnFilter) => {
     return filter.id === 'due';
   });
@@ -535,7 +544,7 @@ export default function ProgressTracking({ row }: { row: Row<EventFinal> }) {
       <div className="w-full flex flex-col gap-3  py-4 px-3">
         <h3 className="text-base font-semibold underline">Tasks</h3>
         <div className="w-full flex items-center gap-3">
-          {permenentColumnFilters.map((filter) => (
+          {permanentColumnFilters.map((filter) => (
             <Select
               classNames={{ ...filterSelectStyles }}
               key={filter}
@@ -571,6 +580,16 @@ export default function ProgressTracking({ row }: { row: Row<EventFinal> }) {
               onChange={handleFilterChange}
             />
           ))}
+          {tableState.columnFilters.length > 0 && (
+            <Button
+              color="secondary"
+              onClick={() =>
+                setTableState((prev) => ({ ...prev, columnFilters: [] }))
+              }
+            >
+              Clear all
+            </Button>
+          )}
         </div>
         <table className="w-full">
           <thead>
