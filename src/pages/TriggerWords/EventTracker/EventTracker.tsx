@@ -2,7 +2,6 @@ import DefaultLayout from '../../../layout/DefaultLayout.tsx';
 import axios from 'axios';
 import { useQuery } from '@tanstack/react-query';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
-import { Cog6ToothIcon } from '@heroicons/react/24/outline';
 import SortDownIcon from '../../../images/icon/sort-down.svg';
 import SortUpIcon from '../../../images/icon/sort-up.svg';
 import { Fragment, useContext, useEffect, useState } from 'react';
@@ -14,7 +13,6 @@ import Select, { ActionMeta, MultiValue } from 'react-select';
 import filterValueContainer from '../../../components/Select/FilterValueContainer.tsx';
 import {
   ColumnDef,
-  ColumnDefTemplate,
   flexRender,
   getCoreRowModel,
   getExpandedRowModel,
@@ -22,7 +20,6 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  HeaderContext,
   Row,
   TableState,
   useReactTable,
@@ -31,7 +28,6 @@ import getFacetedUniqueValues from '../../../common/getFacetedUniqueValues.ts';
 import getFacetedMinMaxValues from '../../../common/getFacetedMinMaxValues.ts';
 import { AuthContext } from '../../../components/AuthWrapper.tsx';
 import DatePicker from 'react-datepicker';
-import Modal from '../../../components/Modal/Modal.tsx';
 import { EventFinal } from '../../../types/EventFinal.ts';
 import HyperLink from '../../../components/Basic/HyerLink.tsx';
 import ProgressNote from './ProgressNote.tsx';
@@ -55,11 +51,8 @@ export default function EventTracker() {
     label: string;
     value: string;
   } | null>(null);
-  const [showSettingsModal, setShowSettingsModal] = useState(false);
-  // const { isPending, isError, data, error } = useQuery({
-  //   queryKey: ['trigger-words', route],
-  //   queryFn: () => axios.get(`${route}/trigger_final`).then((res) => res.data),
-  // });
+  // const [showSettingsModal, setShowSettingsModal] = useState(false);
+
   const [now, setNow] = useState(new Date());
   useEffect(() => {
     const interval = setInterval(
@@ -356,65 +349,65 @@ export default function EventTracker() {
               className=" w-full py-2 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
             />
 
-            <Modal
-              isOpen={showSettingsModal}
-              setIsOpen={setShowSettingsModal}
-              title={'Clinical Pulse Settings'}
-              button={<Cog6ToothIcon />}
-              classNameses={{
-                button: 'size-6 mr-2 text-gray-900 hover:text-primary',
-              }}
-            >
-              <div>
-                <label>Column Visibility</label>
-                <Select
-                  options={table
-                    .getAllColumns()
-                    .map((c) => {
-                      return {
-                        value: c.id,
-                        label: c.columnDef.header,
-                      };
-                    })
-                    .filter(({ value }) => value !== 'status')}
-                  isMulti
-                  hideSelectedOptions={false}
-                  isClearable={false}
-                  isSearchable={false}
-                  closeMenuOnSelect={false}
-                  classNames={{ control: () => 'w-90' }}
-                  value={Object.entries(tableState.columnVisibility)
-                    .filter(([, v]) => v)
-                    .map(([k]) => {
-                      return {
-                        label: table.getColumn(k)?.columnDef.header,
-                        value: k,
-                      };
-                    })}
-                  onChange={(
-                    selected: MultiValue<{
-                      label:
-                        | ColumnDefTemplate<HeaderContext<EventFinal, unknown>>
-                        | undefined;
-                      value: string;
-                    }>,
-                  ) => {
-                    setTableState((prev) => ({
-                      ...prev,
-                      columnVisibility: {
-                        ...table
-                          .getAllColumns()
-                          .reduce((acc, c) => ({ ...acc, [c.id]: false }), {}),
-                        ...selected.reduce(
-                          (acc, c) => ({ ...acc, [c.value]: true }),
-                          {},
-                        ),
-                      },
-                    }));
-                  }}
-                />
-              </div>
-            </Modal>
+            {/*<Modal*/}
+            {/*  isOpen={showSettingsModal}*/}
+            {/*  setIsOpen={setShowSettingsModal}*/}
+            {/*  title={'Clinical Pulse Settings'}*/}
+            {/*  button={<Cog6ToothIcon />}*/}
+            {/*  classNameses={{*/}
+            {/*    button: 'size-6 mr-2 text-gray-900 hover:text-primary',*/}
+            {/*  }}*/}
+            {/*>*/}
+            {/*  <div>*/}
+            {/*    <label>Column Visibility</label>*/}
+            {/*    <Select*/}
+            {/*      options={table*/}
+            {/*        .getAllColumns()*/}
+            {/*        .map((c) => {*/}
+            {/*          return {*/}
+            {/*            value: c.id,*/}
+            {/*            label: c.columnDef.header,*/}
+            {/*          };*/}
+            {/*        })*/}
+            {/*        .filter(({ value }) => value !== 'status')}*/}
+            {/*      isMulti*/}
+            {/*      hideSelectedOptions={false}*/}
+            {/*      isClearable={false}*/}
+            {/*      isSearchable={false}*/}
+            {/*      closeMenuOnSelect={false}*/}
+            {/*      classNames={{ control: () => 'w-90' }}*/}
+            {/*      value={Object.entries(tableState.columnVisibility)*/}
+            {/*        .filter(([, v]) => v)*/}
+            {/*        .map(([k]) => {*/}
+            {/*          return {*/}
+            {/*            label: table.getColumn(k)?.columnDef.header,*/}
+            {/*            value: k,*/}
+            {/*          };*/}
+            {/*        })}*/}
+            {/*      onChange={(*/}
+            {/*        selected: MultiValue<{*/}
+            {/*          label:*/}
+            {/*            | ColumnDefTemplate<HeaderContext<EventFinal, unknown>>*/}
+            {/*            | undefined;*/}
+            {/*          value: string;*/}
+            {/*        }>,*/}
+            {/*      ) => {*/}
+            {/*        setTableState((prev) => ({*/}
+            {/*          ...prev,*/}
+            {/*          columnVisibility: {*/}
+            {/*            ...table*/}
+            {/*              .getAllColumns()*/}
+            {/*              .reduce((acc, c) => ({ ...acc, [c.id]: false }), {}),*/}
+            {/*            ...selected.reduce(*/}
+            {/*              (acc, c) => ({ ...acc, [c.value]: true }),*/}
+            {/*              {},*/}
+            {/*            ),*/}
+            {/*          },*/}
+            {/*        }));*/}
+            {/*      }}*/}
+            {/*    />*/}
+            {/*  </div>*/}
+            {/*</Modal>*/}
           </div>
           <div className="flex p-1 gap-1.5 flex-wrap">
             {permenentColumnFilters.map((filter) => (

@@ -12,7 +12,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import { EventFinal, Task } from '../../../types/EventFinal.ts';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import getFacetedUniqueValues from '../../../common/getFacetedUniqueValues.ts';
 import getFacetedMinMaxValues from '../../../common/getFacetedMinMaxValues.ts';
 import Countdown from 'react-countdown';
@@ -33,6 +33,9 @@ import Select, { ActionMeta, MultiValue } from 'react-select';
 import filterSelectStyles from '../../../components/Select/filterSelectStyles.ts';
 import dateRangeFilterFn from '../../../common/dateRangeFilterFn.ts';
 import PrimaryButton from '../../../components/Basic/PrimaryButton.tsx';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import axios from 'axios';
+import { AuthContext } from '../../../components/AuthWrapper.tsx';
 
 const renderer = ({ days, hours, minutes, seconds, completed }: any) => {
   if (completed) {
@@ -66,6 +69,7 @@ const renderer = ({ days, hours, minutes, seconds, completed }: any) => {
 };
 const permanentColumnFilters = ['category', 'status'];
 export default function ProgressTracking({ row }: { row: Row<EventFinal> }) {
+  const { route } = useContext(AuthContext);
   const tasks = row.original.tasks;
   const communications = tasks.filter(
     (task) => task.category === 'Communications',
@@ -76,6 +80,49 @@ export default function ProgressTracking({ row }: { row: Row<EventFinal> }) {
   );
   const forms = tasks.filter((task) => task.category === 'Forms');
   const vitals = tasks.filter((task) => task.category === 'Vitals');
+  const queryClient = useQueryClient();
+  const orderBypass = useMutation({
+    mutationFn: async () => {
+      axios.put(`${route}/order_bypass`, {
+        event_id: row.original.event_id,
+        patient_id: row.original.patient_id,
+      });
+    },
+    onMutate: async () => {
+      await queryClient.cancelQueries({
+        queryKey: ['trigger_word_view_event_detail_final', route],
+      });
+      const previous = queryClient.getQueryData<EventFinal[]>([
+        'trigger_word_view_event_detail_final',
+        route,
+      ]);
+      if (previous) {
+        const data = structuredClone(row.original);
+        const old = structuredClone(previous);
+
+        for (let i = 0; i < data.tasks.length; i++) {
+          if (data.tasks[i].category === 'Orders') {
+            data.tasks[i].status = 'Closed';
+          }
+        }
+        for (let i = 0; i < old.length; i++) {
+          if (old[i].event_id === data.event_id) {
+            old[i] = data;
+          }
+        }
+        queryClient.setQueryData(
+          ['trigger_word_view_event_detail_final', route],
+          old,
+        );
+      }
+      return { previous };
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['trigger_word_view_event_detail_final', route],
+      });
+    },
+  });
 
   const columns: ColumnDef<Task>[] = [
     {
@@ -180,7 +227,14 @@ export default function ProgressTracking({ row }: { row: Row<EventFinal> }) {
       header: '',
       cell: (info) => {
         if (info.row.getValue('category') === 'Orders') {
-          return <PrimaryButton>Bypass</PrimaryButton>;
+          if (info.row.getValue('status') === 'Open') {
+            return (
+              <PrimaryButton onClick={() => orderBypass.mutate()}>
+                Bypass
+              </PrimaryButton>
+            );
+          }
+          return <PrimaryButton disabled>Bypass</PrimaryButton>;
         }
       },
     },
@@ -234,7 +288,6 @@ export default function ProgressTracking({ row }: { row: Row<EventFinal> }) {
   const showOpen = tableState.columnFilters.some((filter: ColumnFilter) => {
     return filter.id === 'due';
   });
-  console.log(showOpen);
   const table = useReactTable({
     data: tasks,
     columns,
