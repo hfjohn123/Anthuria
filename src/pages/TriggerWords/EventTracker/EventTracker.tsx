@@ -175,6 +175,12 @@ export default function EventTracker() {
       },
       header: 'Open Tasks',
       filterFn: 'arrIncludesSome',
+      sortingFn: (rowA, rowB, columnId) => {
+        return (rowA.getValue(columnId) as string[]).length <
+          (rowB.getValue(columnId) as string[]).length
+          ? -1
+          : 1;
+      },
       meta: {
         wrap: true,
         type: 'categorical',
@@ -199,6 +205,12 @@ export default function EventTracker() {
         );
       },
       header: 'Due Today',
+      sortingFn: (rowA, rowB, columnId) => {
+        return (rowA.getValue(columnId) as string[]).length <
+          (rowB.getValue(columnId) as string[]).length
+          ? -1
+          : 1;
+      },
       filterFn: 'arrIncludesSome',
       meta: {
         wrap: true,

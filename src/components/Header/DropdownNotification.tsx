@@ -193,7 +193,6 @@ const DropdownNotification = () => {
                     readNotification.mutate(item.notification_type_id);
                     navigate(item.corresponding_url || '#');
                   }}
-                  reloadDocument={!!item.corresponding_url}
                   className="flex flex-col gap-2.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4"
                   to="#"
                 >
