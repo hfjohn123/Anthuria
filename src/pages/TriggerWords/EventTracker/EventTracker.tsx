@@ -272,7 +272,12 @@ export default function EventTracker() {
     },
     expanded: {},
     grouping: [],
-    sorting: [],
+    sorting: [
+      {
+        id: 'due_tasks',
+        desc: true,
+      },
+    ],
     columnFilters: [],
     columnPinning: {
       left: [],
