@@ -680,6 +680,16 @@ export default function ReviewTriggers() {
     );
   }, [tableState.columnVisibility]);
 
+  useEffect(() => {
+    setTableState((prev) => ({
+      ...prev,
+      pagination: {
+        pageIndex: 0,
+        pageSize: prev.pagination.pageSize,
+      },
+    }));
+  }, [tableState.columnFilters, tableState.globalFilter]);
+
   if (isPending) {
     return <Loader />;
   }

@@ -321,7 +321,6 @@ export default function EventTracker() {
     onStateChange: setTableState,
     getRowCanExpand: () => true,
     autoResetPageIndex: false,
-
     getFacetedUniqueValues: getFacetedUniqueValues(),
     autoResetExpanded: false,
     getCoreRowModel: getCoreRowModel(),
@@ -340,6 +339,16 @@ export default function EventTracker() {
       JSON.stringify(tableState.columnVisibility),
     );
   }, [tableState.columnVisibility]);
+
+  useEffect(() => {
+    setTableState((prev) => ({
+      ...prev,
+      pagination: {
+        pageIndex: 0,
+        pageSize: prev.pagination.pageSize,
+      },
+    }));
+  }, [tableState.columnFilters, tableState.globalFilter]);
 
   if (isPending) {
     return <Loader />;
