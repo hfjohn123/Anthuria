@@ -282,8 +282,8 @@ const renderSubComponent = ({
                   </div>
                 </td>
                 <td className="align-top ">
-                  {row.original.upstream === 'MTX' &&
-                    (event_ids && event_ids.length > 0 ? (
+                  {row.original.upstream === 'MTX' ? (
+                    event_ids && event_ids.length > 0 ? (
                       event_ids.map((event_id) => (
                         <HyperLink
                           key={event_id}
@@ -306,7 +306,10 @@ const renderSubComponent = ({
                       >
                         Create Event
                       </HyperLink>
-                    ))}
+                    )
+                  ) : (
+                    <p>Coming Soon</p>
+                  )}
                 </td>
               </tr>
             ),
