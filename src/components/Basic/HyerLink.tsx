@@ -5,10 +5,12 @@ export default function HyperLink({
   tooltip_content,
   href,
   children,
+  ...props
 }: {
   tooltip_content?: string;
   href: string;
   children: React.ReactNode;
+  [key: string]: any;
 }) {
   return (
     <>
@@ -21,6 +23,7 @@ export default function HyperLink({
           data-tooltip-content={tooltip_content}
           onClick={(event) => event.stopPropagation()}
           className="flex gap-1 items-center flex-nowrap underline"
+          {...props}
         >
           {children}
           <ArrowSquareOut className="size-4" />

@@ -123,6 +123,48 @@ export default function ProgressTracking({ row }: { row: Row<EventFinal> }) {
       });
     },
   });
+  const pendingTask = useMutation({
+    mutationFn: async (type_id: string) => {
+      axios.put(`${route}/pending_task`, {
+        event_id: row.original.event_id,
+        type_id: type_id,
+      });
+    },
+    onMutate: async (type_id: string) => {
+      await queryClient.cancelQueries({
+        queryKey: ['trigger_word_view_event_detail_final', route],
+      });
+      const previous = queryClient.getQueryData<EventFinal[]>([
+        'trigger_word_view_event_detail_final',
+        route,
+      ]);
+      if (previous) {
+        const data = structuredClone(row.original);
+        const old = structuredClone(previous);
+
+        for (let i = 0; i < data.tasks.length; i++) {
+          if (data.tasks[i].type_id === type_id) {
+            data.tasks[i].status = 'Pending';
+          }
+        }
+        for (let i = 0; i < old.length; i++) {
+          if (old[i].event_id === data.event_id) {
+            old[i] = data;
+          }
+        }
+        queryClient.setQueryData(
+          ['trigger_word_view_event_detail_final', route],
+          old,
+        );
+      }
+      return { previous };
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['trigger_word_view_event_detail_final', route],
+      });
+    },
+  });
 
   const columns: ColumnDef<Task>[] = [
     {
@@ -216,7 +258,15 @@ export default function ProgressTracking({ row }: { row: Row<EventFinal> }) {
       },
       cell: (info) => {
         return (
-          <HyperLink href={info.row.getValue('link') as string}>
+          <HyperLink
+            href={info.row.getValue('link') as string}
+            onAuxClick={() => {
+              pendingTask.mutate(info.row.original.type_id as string);
+            }}
+            onClick={() => {
+              pendingTask.mutate(info.row.original.type_id as string);
+            }}
+          >
             {info.row.getValue('category')}
           </HyperLink>
         );

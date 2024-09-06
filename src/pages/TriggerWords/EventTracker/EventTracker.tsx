@@ -168,7 +168,9 @@ export default function EventTracker() {
     {
       accessorKey: 'open_tasks',
       accessorFn: (row) => {
-        return row.tasks.filter((t) => t.status === 'Open').map((s) => s.task);
+        return row.tasks
+          .filter((t) => t.status !== 'Closed')
+          .map((s) => s.task);
       },
       cell: (info) => {
         return <p>{(info.getValue() as string[]).length} Tasks</p>;
@@ -190,7 +192,7 @@ export default function EventTracker() {
       accessorKey: 'due_tasks',
       accessorFn: (row) => {
         return row.tasks
-          .filter((t) => t.status === 'Open')
+          .filter((t) => t.status !== 'Closed')
           .filter(
             (t) =>
               new Date(t.due) < new Date(now.getTime() + 1000 * 60 * 60 * 24),
