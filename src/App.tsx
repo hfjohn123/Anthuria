@@ -1,11 +1,4 @@
-import { useEffect } from 'react';
-import {
-  Navigate,
-  Route,
-  Routes,
-  useLocation,
-  useNavigate,
-} from 'react-router-dom';
+import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 
 import { Toaster } from 'react-hot-toast';
 import PageTitle from './components/PageTitle';
@@ -45,11 +38,8 @@ SuperTokens.init({
 const queryClient = new QueryClient();
 
 function App() {
-  const { pathname } = useLocation();
   const navigate = useNavigate();
-  useEffect(() => {
-    window && window.scrollTo(0, 0);
-  }, [pathname]);
+
   return (
     <SuperTokensWrapper>
       <QueryClientProvider client={queryClient}>

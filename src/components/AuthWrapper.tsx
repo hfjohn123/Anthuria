@@ -5,7 +5,8 @@ import ErrorPage from '../common/ErrorPage.tsx';
 import axios from 'axios';
 import Session from 'supertokens-auth-react/recipe/session';
 import { signOut } from 'supertokens-auth-react/recipe/passwordless';
-import Intercom from '@intercom/messenger-js-sdk';
+import Intercom, { shutdown } from '@intercom/messenger-js-sdk';
+import { useLocation } from 'react-router-dom';
 
 export const AuthContext = createContext({
   user_data: {
@@ -70,29 +71,36 @@ export default function AuthWrapper({ children }: { children: JSX.Element }) {
     retryDelay: 3000,
   });
 
-  user_data &&
-    Intercom({
-      app_id: 'x02d82le',
-      user_id: user_data.email, // IMPORTANT: Replace "user.id" with the variable you use to capture the user's ID
-      name: user_data.name, // IMPORTANT: Replace "user.name" with the variable you use to capture the user's name
-      email: user_data.email, // IMPORTANT: Replace "user.email" with the variable you use to capture the user's email
-    });
+  useEffect(() => {
+    user_data &&
+      // @ts-expect-error Canny integration
 
-  user_data &&
-    // @ts-expect-error Canny integration
-    Canny('identify', {
-      appID: '66577caeac17c62e53e3940f',
-      user: {
-        // Replace these values with the current user's data
-        email: user_data.email,
-        name: user_data.name,
-        id: user_data.email,
+      Canny('identify', {
+        appID: '66577caeac17c62e53e3940f',
+        user: {
+          // Replace these values with the current user's data
+          email: user_data.email,
+          name: user_data.name,
+          id: user_data.email,
 
-        // // These fields are optional, but recommended:
-        // avatarURL: user_data.avatarURL,
-        // created: new Date(user.created).toISOString(),
-      },
-    });
+          // // These fields are optional, but recommended:
+          // avatarURL: user_data.avatarURL,
+          // created: new Date(user.created).toISOString(),
+        },
+      });
+  }, [user_data]);
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    user_data && shutdown();
+    user_data &&
+      Intercom({
+        app_id: 'x02d82le',
+        user_id: user_data.email, // IMPORTANT: Replace "user.id" with the variable you use to capture the user's ID
+        name: user_data.name, // IMPORTANT: Replace "user.name" with the variable you use to capture the user's name
+        email: user_data.email, // IMPORTANT: Replace "user.email" with the variable you use to capture the user's email
+      });
+  }, [pathname, user_data]);
 
   useEffect(() => {
     if (queryClient && user_applications_locations && user_data) {

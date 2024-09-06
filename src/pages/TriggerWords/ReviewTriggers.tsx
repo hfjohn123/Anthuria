@@ -282,30 +282,31 @@ const renderSubComponent = ({
                   </div>
                 </td>
                 <td className="align-top ">
-                  {event_ids && event_ids.length > 0 ? (
-                    event_ids.map((event_id) => (
+                  {row.original.upstream === 'MTX' &&
+                    (event_ids && event_ids.length > 0 ? (
+                      event_ids.map((event_id) => (
+                        <HyperLink
+                          key={event_id}
+                          href={`https://clearviewhcm.matrixcare.com/Zion?zionpagealias=EVENTVIEW&NSPID=${row.original.patient_id}&CHGPID=true&EVENTID=${event_id}&dashboardHomePage=true&OEType=Event&PATIENTID=${row.original.patient_id}`}
+                        >
+                          View the Event
+                        </HyperLink>
+                      ))
+                    ) : trigger_word === 'Fall' ? (
                       <HyperLink
-                        key={event_id}
-                        href={`https://clearviewhcm.matrixcare.com/Zion?zionpagealias=EVENTVIEW&NSPID=${row.original.patient_id}&CHGPID=true&EVENTID=${event_id}&dashboardHomePage=true&OEType=Event&PATIENTID=${row.original.patient_id}`}
+                        tooltip_content={'Create an Event in MatrixCare'}
+                        href={`https://clearviewhcm.matrixcare.com/Zion?zionpagealias=EVENTCREATE&PATIENTID=${row.original.patient_id}&formId=944&categoryName=Safety%20Events&formDescription=Post+Fall+Event+v3`}
                       >
-                        View the Event
+                        Create Event
                       </HyperLink>
-                    ))
-                  ) : trigger_word === 'Fall' ? (
-                    <HyperLink
-                      tooltip_content={'Create an Event in MatrixCare'}
-                      href={`https://clearviewhcm.matrixcare.com/Zion?zionpagealias=EVENTCREATE&PATIENTID=${row.original.patient_id}&formId=944&categoryName=Safety%20Events&formDescription=Post+Fall+Event+v3`}
-                    >
-                      Create Event
-                    </HyperLink>
-                  ) : (
-                    <HyperLink
-                      tooltip_content={'Create an Event in MatrixCare'}
-                      href={`https://clearviewhcm.matrixcare.com/Zion?zionpagealias=EVENTCREATE&PATIENTID=${row.original.patient_id}`}
-                    >
-                      Create Event
-                    </HyperLink>
-                  )}
+                    ) : (
+                      <HyperLink
+                        tooltip_content={'Create an Event in MatrixCare'}
+                        href={`https://clearviewhcm.matrixcare.com/Zion?zionpagealias=EVENTCREATE&PATIENTID=${row.original.patient_id}`}
+                      >
+                        Create Event
+                      </HyperLink>
+                    ))}
                 </td>
               </tr>
             ),
