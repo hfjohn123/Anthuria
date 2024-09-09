@@ -3,7 +3,6 @@ import axios from 'axios';
 import { useQuery } from '@tanstack/react-query';
 import number_formate from '../../common/number_formate.ts';
 // import tableview from 'billboard.js/dist/plugin/billboardjs-plugin-tableview';
-
 import {
   ReactElement,
   useContext,

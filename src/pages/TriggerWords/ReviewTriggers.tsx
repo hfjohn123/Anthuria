@@ -12,7 +12,8 @@ import Loader from '../../common/Loader';
 import AutosizeInput from 'react-18-input-autosize';
 import 'react-datepicker/dist/react-datepicker.css';
 import CheckboxOption from '../../components/Select/CheckboxOption.tsx';
-import Select, { ActionMeta, MultiValue } from 'react-select';
+import Select, { MultiValue } from 'react-select';
+import handleFilterChange from '../../components/Tables/handleFilterChange.ts';
 import FilterValueContainer from '../../components/Select/FilterValueContainer.tsx';
 import {
   ColumnDef,
@@ -45,27 +46,9 @@ import dateRangeFilterFn from '../../common/dateRangeFilterFn.ts';
 import HyperLink from '../../components/Basic/HyerLink.tsx';
 import { ThumbsDown, ThumbsUp } from '@phosphor-icons/react';
 import usePutComment from '../../interface/usePutComment.ts';
-type TriggerFinal = {
-  progress_note_id: number;
-  internal_facility_id: string;
-  facility_name: string;
-  upstream: string;
-  patient_name: string;
-  patient_id: string;
-  created_by: string;
-  created_date: Date;
-  revision_by: string;
-  revision_date: Date;
-  progress_note: string;
-  trigger_words: {
-    trigger_word: string;
-    summary: string;
-    is_thumb_up: boolean;
-    update_time: Date;
-    comment: string;
-    event_ids: number[];
-  }[];
-};
+import { TriggerFinal } from '../../types/TriggerFinal.ts';
+import PageNavigation from '../../components/Tables/PageNavigation.tsx';
+
 const predefinedTriggerWords = [
   'Fall',
   'Unwanted Behavior',
@@ -550,48 +533,10 @@ export default function ReviewTriggers() {
         sortingFn: 'datetime',
         filterFn: dateRangeFilterFn,
       },
-      // {
-      //   accessorKey: 'status',
-      //   accessorFn: (row) => row.trigger_words.map((d) => d.status),
-      //   header: 'Status',
-      //   meta: {
-      //     wrap: false,
-      //     type: 'categorical',
-      //   },
-      //   filterFn: 'arrIncludesSome',
-      // },
     ],
     [],
   );
-  const handleFilterChange = (
-    selected: MultiValue<{
-      label: string;
-      value: string;
-    }>,
-    {
-      name,
-    }: ActionMeta<{
-      label: string;
-      value: string;
-    }>,
-  ) => {
-    if (selected.length === 0) {
-      setTableState((prev) => ({
-        ...prev,
-        columnFilters: prev.columnFilters.filter((f) => f.id !== name),
-      }));
-      return;
-    }
-    setTableState((prev) => ({
-      ...prev,
-      columnFilters: prev.columnFilters
-        .filter((f) => f.id !== name)
-        .concat({
-          id: name || '',
-          value: selected.map((s) => s.value),
-        }),
-    }));
-  };
+
   if (localStorage.getItem('clearStorage') !== '1') {
     localStorage.removeItem('recent');
     localStorage.removeItem('userVisibilitySettings');
@@ -906,7 +851,7 @@ export default function ReviewTriggers() {
         <div className=" mt-5 col-span-12 bg-white dark:bg-boxdark shadow-default  ">
           <div className="flex items-center border-b border-stroke">
             <MagnifyingGlassIcon className="size-5 text-body dark:text-bodydark mx-1" />
-            <input
+            <Input
               onChange={(e) => {
                 setTableState((prev) => ({
                   ...prev,
@@ -1016,7 +961,9 @@ export default function ReviewTriggers() {
                   label: key,
                   value: key,
                 }))}
-                onChange={handleFilterChange}
+                onChange={(selected, action) => {
+                  handleFilterChange(selected, action, setTableState);
+                }}
               />
             ))}
             {tableState.columnFilters
@@ -1063,7 +1010,9 @@ export default function ReviewTriggers() {
                       label: key,
                       value: key,
                     }))}
-                    onChange={handleFilterChange}
+                    onChange={(selected, action) => {
+                      handleFilterChange(selected, action, setTableState);
+                    }}
                     onMenuClose={() => {
                       (
                         tableState.columnFilters.find((f) => f.id === filter.id)
@@ -1177,6 +1126,7 @@ export default function ReviewTriggers() {
                           ?.value[1]
                       }
                       onChange={([start, end]: [Date | null, Date | null]) => {
+                        end && end.setHours(23, 59, 59, 999);
                         setTableState((prev) => ({
                           ...prev,
                           columnFilters: prev.columnFilters.map((f) =>
@@ -1419,73 +1369,7 @@ export default function ReviewTriggers() {
               </tbody>
             </table>
           </div>
-          <div className="flex items-center gap-2 px-2 py-2  w-full text-sm sm:text-base ">
-            <button
-              className="border rounded p-1 disabled:opacity-30 hidden sm:block"
-              onClick={() => table.firstPage()}
-              disabled={!table.getCanPreviousPage()}
-            >
-              {'<<'}
-            </button>
-            <button
-              className="border rounded p-1 disabled:opacity-30"
-              onClick={() => table.previousPage()}
-              disabled={!table.getCanPreviousPage()}
-            >
-              {'<'}
-            </button>
-            <button
-              className="border rounded p-1 disabled:opacity-30"
-              onClick={() => table.nextPage()}
-              disabled={!table.getCanNextPage()}
-            >
-              {'>'}
-            </button>
-            <button
-              className="border rounded p-1 disabled:opacity-30 hidden sm:block"
-              onClick={() => table.lastPage()}
-              disabled={!table.getCanNextPage()}
-            >
-              {'>>'}
-            </button>
-            <span className="flex items-center gap-1 whitespace-nowrap">
-              <div>Page</div>
-              <strong>
-                {tableState.pagination.pageIndex + 1} of{' '}
-                {table.getPageCount().toLocaleString()}
-              </strong>
-            </span>
-            <span className="flex items-center gap-1 whitespace-nowrap text-sm sm:text-base">
-              | Go to page:
-              <input
-                type="number"
-                onChange={(e) => {
-                  const page = e.target.value
-                    ? Math.min(
-                        Number(e.target.value) - 1,
-                        table.getPageCount() - 1,
-                      )
-                    : 0;
-                  table.setPageIndex(page);
-                }}
-                value={tableState.pagination.pageIndex + 1}
-                className="border border-stroke p-1 rounded w-6 sm:w-16 bg-transparent"
-              />
-            </span>
-            <select
-              value={tableState.pagination.pageSize}
-              onChange={(e) => {
-                table.setPageSize(Number(e.target.value));
-              }}
-              className="bg-transparent"
-            >
-              {[10, 20, 30, 50, 100, 200].map((pageSize) => (
-                <option key={pageSize} value={pageSize}>
-                  Show {pageSize}
-                </option>
-              ))}
-            </select>
-          </div>
+          <PageNavigation table={table} tableState={tableState} />
         </div>
       </div>
     </DefaultLayout>

@@ -6,7 +6,7 @@ import axios from 'axios';
 import Session from 'supertokens-auth-react/recipe/session';
 import { signOut } from 'supertokens-auth-react/recipe/passwordless';
 import Intercom, { shutdown } from '@intercom/messenger-js-sdk';
-import { useLocation } from 'react-router-dom';
+import { useLocation } from '@tanstack/react-router';
 
 export const AuthContext = createContext({
   user_data: {

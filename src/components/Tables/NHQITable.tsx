@@ -1,4 +1,4 @@
-const Table = ({ data }) => {
+const NHQITable = ({ data }) => {
   if (!data) {
     return null;
   }
@@ -71,4 +71,4 @@ const Table = ({ data }) => {
   );
 };
 
-export default Table;
+export default NHQITable;

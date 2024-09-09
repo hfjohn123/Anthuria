@@ -1,8 +1,7 @@
 import { FormEvent, Fragment, useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { createToast } from '../../../hooks/fireToast';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from '@tanstack/react-router';
 import {
   clearLoginAttemptInfo,
   consumeCode,
@@ -53,7 +52,7 @@ async function resendOTP(navigate: any) {
         3,
         'Login Failed',
       );
-      navigate('/auth');
+      navigate({ to: '/auth' });
     } else {
       // OTP resent successfully.
       createToast(

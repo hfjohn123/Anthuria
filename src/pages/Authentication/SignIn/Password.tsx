@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from '@tanstack/react-router';
 import { signIn } from 'supertokens-web-js/recipe/emailpassword';
 import { createToast } from '../../../hooks/fireToast.tsx';
 import Modal from '../../../components/Modal/Modal.tsx';

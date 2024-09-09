@@ -29,13 +29,14 @@ import {
 } from '@phosphor-icons/react';
 import FilterValueContainer from '../../../components/Select/FilterValueContainer.tsx';
 import CheckboxOption from '../../../components/Select/CheckboxOption.tsx';
-import Select, { ActionMeta, MultiValue } from 'react-select';
+import Select from 'react-select';
 import filterSelectStyles from '../../../components/Select/filterSelectStyles.ts';
 import dateRangeFilterFn from '../../../common/dateRangeFilterFn.ts';
 import PrimaryButton from '../../../components/Basic/PrimaryButton.tsx';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { AuthContext } from '../../../components/AuthWrapper.tsx';
+import handleFilterChange from '../../../components/Tables/handleFilterChange.ts';
 
 const renderer = ({ days, hours, minutes, seconds, completed }: any) => {
   if (completed) {
@@ -68,7 +69,13 @@ const renderer = ({ days, hours, minutes, seconds, completed }: any) => {
   return <span>In {days} days</span>;
 };
 const permanentColumnFilters = ['category', 'status'];
-export default function ProgressTracking({ row }: { row: Row<EventFinal> }) {
+export default function ProgressTracking({
+  row,
+  now,
+}: {
+  row: Row<EventFinal>;
+  now: Date;
+}) {
   const { route } = useContext(AuthContext);
   const tasks = row.original.tasks;
   const communications = tasks.filter(
@@ -205,9 +212,10 @@ export default function ProgressTracking({ row }: { row: Row<EventFinal> }) {
     { accessorKey: 'status', header: 'Status', filterFn: 'arrIncludesSome' },
     {
       accessorKey: 'due',
+      accessorFn: (row) => new Date(row.due),
       header: 'Due',
       cell: (info) => {
-        const dueDate = new Date(info.getValue() as Date);
+        const dueDate = info.getValue() as Date;
         return (
           <p>
             {info.row.getValue('status') === 'Open' && (
@@ -314,7 +322,7 @@ export default function ProgressTracking({ row }: { row: Row<EventFinal> }) {
         id: 'due',
         value: [
           new Date(1996, 0, 1),
-          new Date(new Date().getTime() + 1000 * 60 * 60 * 48),
+          new Date(now.getTime() + 1000 * 60 * 60 * 48),
         ],
       },
     ],
@@ -353,38 +361,11 @@ export default function ProgressTracking({ row }: { row: Row<EventFinal> }) {
     getFacetedMinMaxValues: getFacetedMinMaxValues(), // generate min/max values for numeric range filter
     getSortedRowModel: getSortedRowModel(),
   });
-  const handleFilterChange = (
-    selected: MultiValue<{
-      label: string;
-      value: string;
-    }>,
-    {
-      name,
-    }: ActionMeta<{
-      label: string;
-      value: string;
-    }>,
-  ) => {
-    if (selected.length === 0) {
-      setTableState((prev) => ({
-        ...prev,
-        columnFilters: prev.columnFilters.filter((f) => f.id !== name),
-      }));
-      return;
-    }
-    setTableState((prev) => ({
-      ...prev,
-      columnFilters: prev.columnFilters
-        .filter((f) => f.id !== name)
-        .concat({
-          id: name || '',
-          value: selected.map((s) => s.value),
-        }),
-    }));
-  };
+
   let filter =
     (tableState.columnFilters.find(({ id }) => id === 'category')
       ?.value as string[]) || [];
+
   return (
     <div className="w-full flex flex-col gap-5">
       <div className="w-full flex flex-col gap-8 px-3">
@@ -680,7 +661,9 @@ export default function ProgressTracking({ row }: { row: Row<EventFinal> }) {
                 label: key,
                 value: key,
               }))}
-              onChange={handleFilterChange}
+              onChange={(selected, action) => {
+                handleFilterChange(selected, action, setTableState);
+              }}
             />
           ))}
           {tableState.columnFilters.length > 0 && (
@@ -779,7 +762,7 @@ export default function ProgressTracking({ row }: { row: Row<EventFinal> }) {
                       id: 'due',
                       value: [
                         new Date(1996, 0, 1),
-                        new Date(new Date().getTime() + 1000 * 60 * 60 * 48),
+                        new Date(now.getTime() + 1000 * 60 * 60 * 48),
                       ],
                     },
                   ],

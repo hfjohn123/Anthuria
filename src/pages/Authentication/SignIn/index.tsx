@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useParams } from '@tanstack/react-router';
 import Logo from '../../../images/logo/logo.png';
 import NoBar from '../../../layout/NoBar';
 import Loader from '../../../common/Loader';
@@ -13,9 +13,8 @@ import Password from './Password.tsx';
 function SignIn() {
   const [isLoading, setIsLoading] = useState(false);
   const [isPasswordless, setIsPasswordless] = useState(true);
-  const [searchParams] = useSearchParams();
-  const companyId = searchParams.get('companyID');
-  const redirect = searchParams.get('redirect');
+  const { companyId, redirect } = useParams({ strict: false });
+  console.log(redirect, companyId);
   const navigate = useNavigate();
   const route = getRoute();
   const {
@@ -59,7 +58,7 @@ function SignIn() {
             `https://canny.io/api/redirects/sso?companyID=${companyId}&ssoToken=${canny_jwt}&redirect=${redirect}`,
           );
         } else if (!companyId && !redirect) {
-          navigate('/');
+          navigate({ to: '/' });
         }
       }
     })();

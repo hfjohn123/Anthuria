@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from '@tanstack/react-router';
 import Logo from '../../images/logo/logo.png';
 import NoBar from '../../layout/NoBar';
 const SignUp: React.FC = () => {

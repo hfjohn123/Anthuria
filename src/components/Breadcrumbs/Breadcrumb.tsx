@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link } from '@tanstack/react-router';
 import SelectInline from '../Forms/SelectGroup/SelectInline';
 interface BreadcrumbProps {
   title: string;

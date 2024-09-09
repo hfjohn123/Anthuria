@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { Link, useLocation } from '@tanstack/react-router';
 import SidebarLinkGroup from './SidebarLinkGroup';
 import Logo from '../../images/logo/logo.png';
 import { CurrencyDollarIcon } from '@heroicons/react/24/outline';
@@ -67,10 +67,10 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
     >
       {/* <!-- SIDEBAR HEADER --> */}
       <div className="flex items-center justify-between px-8 py-5.5 lg:py-6.5">
-        <NavLink to="/" className={'flex items-center'}>
+        <Link to="/" className={'flex items-center'}>
           <img src={Logo} alt="Logo" className="w-20" />
           <span className="text-3xl font-bold text-white">NOAH</span>
-        </NavLink>
+        </Link>
 
         <button
           ref={trigger}
@@ -111,7 +111,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                 (location) => location.id === 'nhqi',
               ) && (
                 <li>
-                  <NavLink
+                  <Link
                     to="/dashboard"
                     className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
                       pathname.includes('dashboard') &&
@@ -144,7 +144,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                       />
                     </svg>
                     NHQI Dashboard
-                  </NavLink>
+                  </Link>
                 </li>
               )}
 
@@ -163,7 +163,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                     {(handleClick, open) => {
                       return (
                         <>
-                          <NavLink
+                          <Link
                             to="#"
                             className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
                               (pathname === '/trigger-words' ||
@@ -192,7 +192,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                             </svg>
                             Clinical Pulse
                             <CaretDown open={open} />
-                          </NavLink>
+                          </Link>
                           {/* <!-- Dropdown Menu Start --> */}
                           <div
                             className={`translate transform overflow-hidden ${
@@ -201,26 +201,26 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                           >
                             <ul className="mt-4 mb-5.5 flex flex-col gap-2.5 pl-6">
                               <li>
-                                <NavLink
+                                <Link
                                   to="/trigger-words/review-triggers"
-                                  className={({ isActive }) =>
-                                    'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
-                                    (isActive && '!text-white')
+                                  activeProps={{ className: '!text-white' }}
+                                  className={
+                                    'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white '
                                   }
                                 >
                                   Review Triggers
-                                </NavLink>
+                                </Link>
                               </li>
                               <li>
-                                <NavLink
+                                <Link
                                   to="/trigger-words/event-tracker"
-                                  className={({ isActive }) =>
-                                    'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
-                                    (isActive && '!text-white')
+                                  activeProps={{ className: '!text-white' }}
+                                  className={
+                                    'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white '
                                   }
                                 >
                                   Event Tracker
-                                </NavLink>
+                                </Link>
                               </li>
                             </ul>
                           </div>
@@ -237,7 +237,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                 (location) => location.id === 'cashflow_forecast',
               ) && (
                 <li>
-                  <NavLink
+                  <Link
                     to="/cashflow-forecast"
                     className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
                       pathname.includes('cashflow-forecast') &&
@@ -249,7 +249,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                       viewBox="2 2 20 20"
                     />
                     Cashflow Forecast
-                  </NavLink>
+                  </Link>
                 </li>
               )}
               {/* <!-- Menu Item Profile --> */}
@@ -263,7 +263,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                   {(handleClick, open) => {
                     return (
                       <React.Fragment>
-                        <NavLink
+                        <Link
                           to="#"
                           className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
                             (pathname === '/forms' ||
@@ -324,7 +324,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                               fill=""
                             />
                           </svg>
-                        </NavLink>
+                        </Link>
                         {/* <!-- Dropdown Menu Start --> */}
                         <div
                           className={`translate transform overflow-hidden ${
@@ -333,26 +333,26 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                         >
                           <ul className="mt-4 mb-5.5 flex flex-col gap-2.5 pl-6">
                             <li>
-                              <NavLink
+                              <Link
                                 to="dashboard"
-                                className={({ isActive }) =>
-                                  'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
-                                  (isActive && '!text-white')
+                                activeProps={{ className: '!text-white' }}
+                                className={
+                                  'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white '
                                 }
                               >
                                 Dummy
-                              </NavLink>
+                              </Link>
                             </li>
                             <li>
-                              <NavLink
-                                to="dashboard"
-                                className={({ isActive }) =>
-                                  'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
-                                  (isActive && '!text-white')
+                              <Link
+                                to="/dasd"
+                                activeProps={{ className: '!text-white' }}
+                                className={
+                                  'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white '
                                 }
                               >
                                 Dummy
-                              </NavLink>
+                              </Link>
                             </li>
                           </ul>
                         </div>
@@ -365,7 +365,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
               {/* <!-- Menu Item Forms --> */}
               {/* <!-- Menu Item Tables --> */}
               <li>
-                <NavLink
+                <Link
                   to="#"
                   className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
                     pathname.includes('tables') && 'bg-graydark dark:bg-meta-4'
@@ -397,7 +397,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                     </defs>
                   </svg>
                   Dummy
-                </NavLink>
+                </Link>
               </li>
               {/* <!-- Menu Item Tables --> */}
               {/* <!-- Menu Item Ui Elements --> */}
@@ -407,7 +407,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                 {(handleClick, open) => {
                   return (
                     <React.Fragment>
-                      <NavLink
+                      <Link
                         to="#"
                         className={`group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
                           (pathname === '/ui' || pathname.includes('ui')) &&
@@ -471,7 +471,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                             fill=""
                           />
                         </svg>
-                      </NavLink>
+                      </Link>
                       {/* <!-- Dropdown Menu Start --> */}
                       <div
                         className={`translate transform overflow-hidden ${
@@ -480,26 +480,26 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                       >
                         <ul className="mb-5.5 mt-4 flex flex-col gap-2.5 pl-6">
                           <li>
-                            <NavLink
+                            <Link
                               to="#"
-                              className={({ isActive }) =>
-                                'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
-                                (isActive && '!text-white')
+                              activeProps={{ className: '!text-white' }}
+                              className={
+                                'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white '
                               }
                             >
                               Dummy
-                            </NavLink>
+                            </Link>
                           </li>
                           <li>
-                            <NavLink
+                            <Link
                               to="#"
-                              className={({ isActive }) =>
-                                'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
-                                (isActive && '!text-white')
+                              activeProps={{ className: '!text-white' }}
+                              className={
+                                'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white '
                               }
                             >
                               Dummy
-                            </NavLink>
+                            </Link>
                           </li>
                         </ul>
                       </div>
@@ -521,7 +521,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
             <ul className="mb-6 flex flex-col gap-1.5">
               {/* <!-- Menu Item Chart --> */}
               <li>
-                <NavLink
+                <Link
                   to="#"
                   className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
                     pathname.includes('chart') && 'bg-graydark dark:bg-meta-4'
@@ -557,13 +557,13 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                     </defs>
                   </svg>
                   Dummy
-                </NavLink>
+                </Link>
               </li>
               {/* <!-- Menu Item Chart --> */}
 
               {/* <!-- Menu Item Settings_Temp --> */}
               <li>
-                <NavLink
+                <Link
                   to="/settings"
                   className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
                     pathname.includes('settings') &&
@@ -600,11 +600,11 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                     </defs>
                   </svg>
                   Settings
-                </NavLink>
+                </Link>
               </li>
               {/* <!-- Menu Item Settings_Temp --> */}
               {/* <!-- Menu Item Auth Pages --> */}
-              <NavLink
+              <Link
                 to="/"
                 className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4`}
               >
@@ -638,7 +638,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                   </defs>
                 </svg>
                 Back to Home
-              </NavLink>
+              </Link>
             </ul>
           </div>
         </nav>

@@ -1,9 +1,10 @@
 import { useContext, useEffect, useRef, useState } from 'react';
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { useNavigate } from '@tanstack/react-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { AuthContext } from '../AuthWrapper.tsx';
 import { createToast } from '../../hooks/fireToast.tsx';
+import { Button } from '@headlessui/react';
 
 type Notification = {
   user_id: string;
@@ -125,13 +126,12 @@ const DropdownNotification = () => {
 
   return (
     <li className="relative">
-      <Link
+      <Button
         ref={trigger}
         onClick={() => {
           setNotifying(false);
           setDropdownOpen(!dropdownOpen);
         }}
-        to="#"
         className="relative flex h-8.5 w-8.5 items-center justify-center rounded-full border-[0.5px] border-stroke bg-gray hover:text-primary dark:border-strokedark dark:bg-meta-4 dark:text-white"
       >
         <span
@@ -155,7 +155,7 @@ const DropdownNotification = () => {
             fill=""
           />
         </svg>
-      </Link>
+      </Button>
 
       <div
         ref={dropdown}
@@ -188,13 +188,12 @@ const DropdownNotification = () => {
           {data &&
             data.map((item: Notification) => (
               <li key={item.user_id + item.notification_type_id}>
-                <NavLink
+                <div
                   onClick={() => {
                     readNotification.mutate(item.notification_type_id);
-                    navigate(item.corresponding_url || '#');
+                    navigate({ to: item.corresponding_url || '#' });
                   }}
                   className="flex flex-col gap-2.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4"
-                  to="#"
                 >
                   <span
                     className={`absolute left-0.5 -translate-y-1.5  z-1 h-2 w-2 rounded-full bg-meta-1 ${
@@ -229,7 +228,7 @@ const DropdownNotification = () => {
                       X
                     </span>
                   </div>
-                </NavLink>
+                </div>
               </li>
             ))}
         </ul>

@@ -1,5 +1,5 @@
 import { useContext, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation } from '@tanstack/react-router';
 import { AuthContext } from './AuthWrapper.tsx';
 
 const PageTitle: React.FC<{ title: string; recenctable?: boolean }> = ({

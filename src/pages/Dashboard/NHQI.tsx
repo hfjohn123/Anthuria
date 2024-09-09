@@ -7,7 +7,7 @@ import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
 import { AuthContext } from '../../components/AuthWrapper.tsx';
 import * as d3 from 'd3';
 import Loader from '../../common/Loader';
-import Table from '../../components/Tables/Table';
+import NHQITable from '../../components/Tables/NHQITable.tsx';
 import Accordion from '../../components/Accordions/Accordion';
 import SelectGroupOne from '../../components/Forms/SelectGroup/SelectGroupOne.tsx';
 
@@ -46,8 +46,6 @@ const NHQI: React.FC = () => {
   const [cardData, setCardData] = useState(null);
   const [accordionData, setAccordionData] = useState(null);
   const locationsOptions = locations.map((d) => d['facility_name']);
-
-
 
   function handleSelectLocation(option: string) {
     setLocation(option);
@@ -230,7 +228,7 @@ const NHQI: React.FC = () => {
               location={location}
             />
             <LineChart data={data} />
-            <Table data={tabledata} />
+            <NHQITable data={tabledata} />
           </div>
         </div>
       </DefaultLayout>

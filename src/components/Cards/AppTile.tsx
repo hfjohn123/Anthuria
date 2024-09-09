@@ -1,7 +1,7 @@
 import { useContext } from 'react';
 import star_icon from '../../images/icon/icon_star.svg';
 import star_yellow_icon from '../../images/icon/icon_star_yellow.svg';
-import { Link } from 'react-router-dom';
+import { Link } from '@tanstack/react-router';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { AuthContext } from '../AuthWrapper.tsx';

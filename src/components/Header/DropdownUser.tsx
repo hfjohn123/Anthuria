@@ -1,5 +1,5 @@
 import { useContext, useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from '@tanstack/react-router';
 import { AuthContext } from '../AuthWrapper.tsx';
 import { signOut } from 'supertokens-auth-react/recipe/passwordless';
 import { Button } from '@headlessui/react';

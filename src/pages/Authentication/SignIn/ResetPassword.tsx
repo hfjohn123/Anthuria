@@ -2,7 +2,7 @@ import { Button, Field, Input, Label } from '@headlessui/react';
 import { useState } from 'react';
 import { submitNewPassword } from 'supertokens-web-js/recipe/emailpassword';
 import { createToast } from '../../../hooks/fireToast.tsx';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@tanstack/react-router';
 
 async function newPasswordEntered(newPassword: string, navigate: any) {
   try {
@@ -35,10 +35,10 @@ async function newPasswordEntered(newPassword: string, navigate: any) {
         3,
         'Password Set Failed',
       );
-      navigate('/auth');
+      navigate({ to: '/auth' });
     } else {
       createToast('Password Set Successful', '', 0, 'Password Set Successful');
-      navigate('/auth');
+      navigate({ to: '/auth' });
     }
   } catch (err: any) {
     if (err.isSuperTokensGeneralError === true) {
