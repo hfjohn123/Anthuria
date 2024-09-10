@@ -113,6 +113,13 @@ const renderSubComponent = ({
             >
               {row.getValue('patient_name')}
             </HyperLink>
+          ) : row.original.upstream === 'PCC' ? (
+            <HyperLink
+              tooltip_content="View Patient in PCC"
+              href={`https://www19.pointclickcare.com/admin/client/clientlist.jsp?ESOLtabtype=C&ESOLglobalclientsearch=Y&ESOLclientid=${row.original.patient_id}&ESOLfacid=${row.original.internal_facility_id.split('_').pop()}&ESOLsave=P`}
+            >
+              {row.getValue('patient_name')}
+            </HyperLink>
           ) : (
             <p>{row.getValue('patient_name')}</p>
           )}
@@ -291,7 +298,7 @@ const renderSubComponent = ({
                       </HyperLink>
                     )
                   ) : (
-                    <p>Coming Soon</p>
+                    row.original.upstream === 'PCC' && <p>Comming Soon</p>
                   )}
                 </td>
               </tr>
@@ -385,19 +392,25 @@ export default function ReviewTriggers() {
       {
         accessorKey: 'patient_name',
         cell: (info) => {
-          if (user_data.email == 'athenaw.design@gmail.com') {
-            return 'John Doe';
-          } else {
-            if (info.row.original.upstream === 'MTX') {
-              return (
-                <HyperLink
-                  tooltip_content={'View Patient in MaxtrixCare'}
-                  href={`https://clearviewhcm.matrixcare.com/core/selectResident.action?residentID=${info.row.original.patient_id}`}
-                >
-                  {info.row.getValue('patient_name')}
-                </HyperLink>
-              );
-            }
+          if (info.row.original.upstream === 'MTX') {
+            return (
+              <HyperLink
+                tooltip_content={'View Patient in MaxtrixCare'}
+                href={`https://clearviewhcm.matrixcare.com/core/selectResident.action?residentID=${info.row.original.patient_id}`}
+              >
+                {info.row.getValue('patient_name')}
+              </HyperLink>
+            );
+          }
+          if (info.row.original.upstream === 'PCC') {
+            return (
+              <HyperLink
+                tooltip_content={'View Patient in PCC'}
+                href={`https://www19.pointclickcare.com/admin/client/clientlist.jsp?ESOLtabtype=C&ESOLglobalclientsearch=Y&ESOLclientid=${info.row.original.patient_id}&ESOLfacid=${info.row.original.internal_facility_id.split('_').pop()}&ESOLsave=P`}
+              >
+                {info.row.getValue('patient_name')}
+              </HyperLink>
+            );
           }
           return info.renderValue();
         },
