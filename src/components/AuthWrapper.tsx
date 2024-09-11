@@ -34,7 +34,7 @@ export function getRoute() {
     return 'http://localhost:3009';
     // return 'https://dataservice.triedgesandbox.com';
   } else {
-    return 'https://dataservice.triedgesandbox.com';
+    return 'https://brea-dataservice-dev.triedgesandbox.com';
   }
 }
 
