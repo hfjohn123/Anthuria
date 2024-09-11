@@ -80,7 +80,7 @@ const NHQIRoute = createRoute({
   component: () => {
     return (
       <SessionAuth>
-        <PageTitle title="Dashboard" />
+        <PageTitle id="nhqi" />
         <NHQI />
       </SessionAuth>
     );
@@ -93,7 +93,7 @@ const ReviewTriggersRoute = createRoute({
   component: () => {
     return (
       <SessionAuth>
-        <PageTitle title="Clinical Pulse" />
+        <PageTitle id="trigger_words" />
         <ReviewTriggers />
       </SessionAuth>
     );
@@ -106,7 +106,7 @@ const EventTrackerRoute = createRoute({
   component: () => {
     return (
       <SessionAuth>
-        <PageTitle title="Clinical Pulse" />
+        <PageTitle id="trigger_words" />
         <EventTracker />
       </SessionAuth>
     );
@@ -119,7 +119,7 @@ const CashflowForecastRoute = createRoute({
   component: () => {
     return (
       <SessionAuth>
-        <PageTitle title="Cashflow Forecast" />
+        <PageTitle id="cashflow_forecast" />
         <CashflowForecast />
       </SessionAuth>
     );

@@ -43,6 +43,7 @@ const DropdownUser = () => {
     // localStorage.clear();
     localStorage.removeItem('recent');
     localStorage.removeItem('userVisibilitySettings');
+
     // window.location.href = '/auth'; // or to wherever your logic page is
   }
 

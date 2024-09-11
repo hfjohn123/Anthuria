@@ -172,7 +172,6 @@ export default function ProgressTracking({
       });
     },
   });
-
   const columns: ColumnDef<Task>[] = [
     {
       accessorKey: 'category',
@@ -366,6 +365,31 @@ export default function ProgressTracking({
     (tableState.columnFilters.find(({ id }) => id === 'category')
       ?.value as string[]) || [];
 
+  const filterHandler = (value: string) => {
+    if (filter.includes(value)) {
+      filter = filter.filter((f) => f !== value);
+    } else {
+      filter = [value];
+    }
+    if (filter.length === 0) {
+      setTableState((prev) => ({
+        ...prev,
+        columnFilters: prev.columnFilters.filter(({ id }) => id !== 'category'),
+      }));
+      return;
+    }
+    setTableState((prev) => ({
+      ...prev,
+      columnFilters: [
+        ...prev.columnFilters.filter(({ id }) => id !== 'category'),
+        {
+          id: 'category',
+          value: filter,
+        },
+      ],
+    }));
+  };
+
   return (
     <div className="w-full flex flex-col gap-5">
       <div className="w-full flex flex-col gap-8 px-3">
@@ -380,32 +404,7 @@ export default function ProgressTracking({
         <div className="w-full flex items-center justify-center gap-18">
           <div
             className="flex flex-col items-center justify-center cursor-pointer"
-            onClick={() => {
-              if (filter.includes('Communications')) {
-                filter = filter.filter((f) => f !== 'Communications');
-              } else {
-                filter.push('Communications');
-              }
-              if (filter.length === 0) {
-                setTableState((prev) => ({
-                  ...prev,
-                  columnFilters: prev.columnFilters.filter(
-                    ({ id }) => id !== 'category',
-                  ),
-                }));
-                return;
-              }
-              setTableState((prev) => ({
-                ...prev,
-                columnFilters: [
-                  ...prev.columnFilters.filter(({ id }) => id !== 'category'),
-                  {
-                    id: 'category',
-                    value: filter,
-                  },
-                ],
-              }));
-            }}
+            onClick={() => filterHandler('Communications')}
           >
             <Megaphone
               className={clsx(
@@ -429,32 +428,7 @@ export default function ProgressTracking({
           </div>
           <div
             className="flex flex-col items-center justify-center cursor-pointer"
-            onClick={() => {
-              if (filter.includes('Orders')) {
-                filter = filter.filter((f) => f !== 'Orders');
-              } else {
-                filter.push('Orders');
-              }
-              if (filter.length === 0) {
-                setTableState((prev) => ({
-                  ...prev,
-                  columnFilters: prev.columnFilters.filter(
-                    ({ id }) => id !== 'category',
-                  ),
-                }));
-                return;
-              }
-              setTableState((prev) => ({
-                ...prev,
-                columnFilters: [
-                  ...prev.columnFilters.filter(({ id }) => id !== 'category'),
-                  {
-                    id: 'category',
-                    value: filter,
-                  },
-                ],
-              }));
-            }}
+            onClick={() => filterHandler('Orders')}
           >
             <TestTube
               className={clsx(
@@ -478,32 +452,7 @@ export default function ProgressTracking({
           </div>
           <div
             className="flex flex-col items-center justify-center cursor-pointer"
-            onClick={() => {
-              if (filter.includes('Care Plan Review')) {
-                filter = filter.filter((f) => f !== 'Care Plan Review');
-              } else {
-                filter.push('Care Plan Review');
-              }
-              if (filter.length === 0) {
-                setTableState((prev) => ({
-                  ...prev,
-                  columnFilters: prev.columnFilters.filter(
-                    ({ id }) => id !== 'category',
-                  ),
-                }));
-                return;
-              }
-              setTableState((prev) => ({
-                ...prev,
-                columnFilters: [
-                  ...prev.columnFilters.filter(({ id }) => id !== 'category'),
-                  {
-                    id: 'category',
-                    value: filter,
-                  },
-                ],
-              }));
-            }}
+            onClick={() => filterHandler('Care Plan Review')}
           >
             <MagnifyingGlass
               className={clsx(
@@ -527,32 +476,7 @@ export default function ProgressTracking({
           </div>
           <div
             className="flex flex-col items-center justify-center cursor-pointer"
-            onClick={() => {
-              if (filter.includes('Forms')) {
-                filter = filter.filter((f) => f !== 'Forms');
-              } else {
-                filter.push('Forms');
-              }
-              if (filter.length === 0) {
-                setTableState((prev) => ({
-                  ...prev,
-                  columnFilters: prev.columnFilters.filter(
-                    ({ id }) => id !== 'category',
-                  ),
-                }));
-                return;
-              }
-              setTableState((prev) => ({
-                ...prev,
-                columnFilters: [
-                  ...prev.columnFilters.filter(({ id }) => id !== 'category'),
-                  {
-                    id: 'category',
-                    value: filter,
-                  },
-                ],
-              }));
-            }}
+            onClick={() => filterHandler('Forms')}
           >
             <FileText
               className={clsx(
@@ -576,32 +500,7 @@ export default function ProgressTracking({
           </div>
           <div
             className="flex flex-col items-center justify-center cursor-pointer"
-            onClick={() => {
-              if (filter.includes('Vitals')) {
-                filter = filter.filter((f) => f !== 'Vitals');
-              } else {
-                filter.push('Vitals');
-              }
-              if (filter.length === 0) {
-                setTableState((prev) => ({
-                  ...prev,
-                  columnFilters: prev.columnFilters.filter(
-                    ({ id }) => id !== 'category',
-                  ),
-                }));
-                return;
-              }
-              setTableState((prev) => ({
-                ...prev,
-                columnFilters: [
-                  ...prev.columnFilters.filter(({ id }) => id !== 'category'),
-                  {
-                    id: 'category',
-                    value: filter,
-                  },
-                ],
-              }));
-            }}
+            onClick={() => filterHandler('Vitals')}
           >
             <Heartbeat
               className={clsx(

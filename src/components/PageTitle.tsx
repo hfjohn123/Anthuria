@@ -1,30 +1,42 @@
-import { useContext, useEffect } from 'react';
-import { useLocation } from '@tanstack/react-router';
+import { useContext } from 'react';
 import { AuthContext } from './AuthWrapper.tsx';
 
-const PageTitle: React.FC<{ title: string; recenctable?: boolean }> = ({
+const PageTitle: React.FC<{
+  id?: string;
+  recenctable?: boolean;
+  title?: string;
+}> = ({
+  id,
+  recenctable = true,
   title,
-  recenctable = false,
 }: {
-  title: string;
+  id?: string;
+  title?: string;
   recenctable?: boolean;
 }) => {
-  const location = useLocation();
   const { user_applications_locations } = useContext(AuthContext);
-  useEffect(() => {
+  if (!id && title) {
     document.title = title;
+    return null;
+  }
+  if (localStorage.getItem('clearRecent') !== '1') {
+    localStorage.removeItem('recent');
+    localStorage.setItem('clearRecent', '1');
+  }
+  const recent = JSON.parse(localStorage.getItem('recent') || '[]');
+  const foundApplication:
+    | (typeof user_applications_locations)[number]
+    | undefined = user_applications_locations.find(
+    (application: (typeof user_applications_locations)[number]): boolean =>
+      application['id'] === id,
+  );
+  if (foundApplication) {
+    document.title = foundApplication['display_name'];
     if (recenctable) {
-      const recent = JSON.parse(localStorage.getItem('recent') || '[]');
-      const foundApplication = user_applications_locations.find(
-        (application) => application['uri'] === location.pathname,
-      );
-      const id = foundApplication ? foundApplication['id'] : null;
-      if (id) {
-        const new_recent = [...new Set([id, ...recent])].slice(0, 4);
-        localStorage.setItem('recent', JSON.stringify(new_recent));
-      }
+      const new_recent = [...new Set([id, ...recent])].slice(0, 4);
+      localStorage.setItem('recent', JSON.stringify(new_recent));
     }
-  }, [location]);
+  }
 
   return null;
 };

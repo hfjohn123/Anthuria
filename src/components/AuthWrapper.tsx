@@ -32,10 +32,10 @@ export const AuthContext = createContext({
 export function getRoute() {
   if (window.location.origin === 'http://localhost') {
     return 'http://localhost:3009';
-    // return 'https://dataservice.triedgesandbox.com';
-  } else {
-    return 'https://brea-dataservice-dev.triedgesandbox.com';
   }
+  if (window.location.origin === 'https://brea-dev.triedgesandbox.com')
+    return 'https://brea-dataservice-dev.triedgesandbox.com';
+  return 'https://dataservice.triedgesandbox.com';
 }
 
 export default function AuthWrapper({ children }: { children: JSX.Element }) {
