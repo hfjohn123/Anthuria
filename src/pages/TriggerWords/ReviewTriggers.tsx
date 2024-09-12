@@ -107,11 +107,17 @@ const renderSubComponent = ({
         <div>
           <span className="font-bold">Patient Name:</span>
           {row.original.upstream === 'MTX' ? (
-            <HyperLink tooltip_content="View Patient in MaxtrixCare" href={``}>
+            <HyperLink
+              tooltip_content="View Patient in MaxtrixCare"
+              href={`https://clearviewhcm.matrixcare.com/core/selectResident.action?residentID=${row.original.patient_id}`}
+            >
               {row.getValue('patient_name')}
             </HyperLink>
           ) : row.original.upstream === 'PCC' ? (
-            <HyperLink tooltip_content="View Patient in PCC" href={``}>
+            <HyperLink
+              tooltip_content="View Patient in PCC"
+              href={`https://www19.pointclickcare.com/admin/client/clientlist.jsp?ESOLtabtype=C&ESOLglobalclientsearch=Y&ESOLclientid=${row.original.patient_id}&ESOLfacid=${row.original.internal_facility_id.split('_').pop()}&ESOLsave=P`}
+            >
               {row.getValue('patient_name')}
             </HyperLink>
           ) : (
@@ -269,21 +275,24 @@ const renderSubComponent = ({
                   {row.original.upstream === 'MTX' ? (
                     event_ids && event_ids.length > 0 ? (
                       event_ids.map((event_id) => (
-                        <HyperLink key={event_id} href={``}>
+                        <HyperLink
+                          key={event_id}
+                          href={`https://clearviewhcm.matrixcare.com/Zion?zionpagealias=EVENTVIEW&NSPID=${row.original.patient_id}&CHGPID=true&EVENTID=${event_id}&dashboardHomePage=true&OEType=Event&PATIENTID=${row.original.patient_id}`}
+                        >
                           View the Event
                         </HyperLink>
                       ))
                     ) : trigger_word === 'Fall' ? (
                       <HyperLink
                         tooltip_content={'Create an Event in MatrixCare'}
-                        href={``}
+                        href={`https://clearviewhcm.matrixcare.com/Zion?zionpagealias=EVENTCREATE&PATIENTID=${row.original.patient_id}&formId=944&categoryName=Safety%20Events&formDescription=Post+Fall+Event+v3`}
                       >
                         Create Event
                       </HyperLink>
                     ) : (
                       <HyperLink
                         tooltip_content={'Create an Event in MatrixCare'}
-                        href={``}
+                        href={`https://clearviewhcm.matrixcare.com/Zion?zionpagealias=EVENTCREATE&PATIENTID=${row.original.patient_id}`}
                       >
                         Create Event
                       </HyperLink>
@@ -387,7 +396,7 @@ export default function ReviewTriggers() {
             return (
               <HyperLink
                 tooltip_content={'View Patient in MaxtrixCare'}
-                href={``}
+                href={`https://clearviewhcm.matrixcare.com/core/selectResident.action?residentID=${info.row.original.patient_id}`}
               >
                 {info.row.getValue('patient_name')}
               </HyperLink>
@@ -395,7 +404,10 @@ export default function ReviewTriggers() {
           }
           if (info.row.original.upstream === 'PCC') {
             return (
-              <HyperLink tooltip_content={'View Patient in PCC'} href={``}>
+              <HyperLink
+                tooltip_content={'View Patient in PCC'}
+                href={`https://www19.pointclickcare.com/admin/client/clientlist.jsp?ESOLtabtype=C&ESOLglobalclientsearch=Y&ESOLclientid=${info.row.original.patient_id}&ESOLfacid=${info.row.original.internal_facility_id.split('_').pop()}&ESOLsave=P`}
+              >
                 {info.row.getValue('patient_name')}
               </HyperLink>
             );
