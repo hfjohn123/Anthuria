@@ -74,7 +74,7 @@ export default function ProgressNote({ row }: { row: Row<EventFinal> }) {
                   <td className="pr-10">{s.created_by}</td>
                   <td className="">
                     <HyperLink
-                      href={`https://clearviewhcm.matrixcare.com/core/selectResident.action?residentID=${row.original.patient_id}&referringPage=/progressNoteView.action?progressNoteID=${s.progress_note_id}`}
+                      href={``}
                       tooltip_content={'Click to view Progress Note'}
                     >
                       Note

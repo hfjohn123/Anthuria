@@ -264,9 +264,10 @@ export default function ProgressTracking({
         //   return `https://clearviewhcm.matrixcare.com/Zion?zionpagealias=MEASUREMENTVIEW&measurementDetailID=${task.corresponding_id}&PATIENTID=${row.original.patient_id}`;
       },
       cell: (info) => {
-        return (
+        return info.row.getValue('status') !== 'Closed' ? (
           <HyperLink
-            href={info.row.getValue('link') as string}
+            href={''}
+            disabled
             onAuxClick={() => {
               pendingTask.mutate(info.row.original.type_id as string);
             }}
@@ -274,6 +275,10 @@ export default function ProgressTracking({
               pendingTask.mutate(info.row.original.type_id as string);
             }}
           >
+            {info.row.getValue('category')}
+          </HyperLink>
+        ) : (
+          <HyperLink disabled href={''}>
             {info.row.getValue('category')}
           </HyperLink>
         );

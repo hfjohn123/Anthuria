@@ -78,7 +78,7 @@ export default function EventTrackerTable({
             <>
               <HyperLink
                 tooltip_content={'View Patient in MaxtrixCare'}
-                href={`https://clearviewhcm.matrixcare.com/core/selectResident.action?residentID=${info.row.original.patient_id}`}
+                href={``}
               >
                 {info.row.getValue('patient_name')}
               </HyperLink>
@@ -91,10 +91,7 @@ export default function EventTrackerTable({
         if (info.row.original.upstream === 'PCC') {
           return (
             <>
-              <HyperLink
-                tooltip_content={'View Patient in PCC'}
-                href={`https://www19.pointclickcare.com/admin/client/clientlist.jsp?ESOLtabtype=C&ESOLglobalclientsearch=Y&ESOLclientid=${info.row.original.patient_id}&ESOLfacid=${info.row.original.internal_facility_id.split('_').pop()}&ESOLsave=P`}
-              >
+              <HyperLink tooltip_content={'View Patient in PCC'} href={``}>
                 {info.row.getValue('patient_name')}
               </HyperLink>
               <p className="text-body-2">
