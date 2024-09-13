@@ -641,7 +641,6 @@ export default function ReviewTriggers() {
       JSON.stringify(tableState.columnVisibility),
     );
   }, [tableState.columnVisibility]);
-
   useEffect(() => {
     setTableState((prev) => ({
       ...prev,

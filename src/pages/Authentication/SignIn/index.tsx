@@ -79,7 +79,7 @@ function SignIn() {
             <div className="py-17.5 px-26 text-center">
               <div className="flex items-center justify-center">
                 <img src={Logo} alt="Logo" className="w-35" />
-                <span className="text-6xl font-bold text-black">Brea</span>
+                <span className="text-6xl font-bold text-black">NOAH</span>
               </div>
             </div>
           </div>

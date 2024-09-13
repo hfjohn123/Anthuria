@@ -69,7 +69,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
       <div className="flex items-center justify-between px-8 py-5.5 lg:py-6.5">
         <Link to="/" className={'flex items-center'}>
           <img src={Logo} alt="Logo" className="w-20" />
-          <span className="text-3xl font-bold text-white">Brea</span>
+          <span className="text-3xl font-bold text-white">NOAH</span>
         </Link>
 
         <button
