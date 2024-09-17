@@ -6,7 +6,7 @@ import { useQueryClient } from '@tanstack/react-query';
 
 import ErrorPage from '../../common/ErrorPage.tsx';
 import PersonalInformationForm from '../../components/Forms/AccountSettings/PersonalInformationForm.tsx';
-import useUpdateUser from '../../interface/modifyUser.ts';
+import useUpdateUser from '../../hooks/interface/modifyUser.ts';
 import AccessManagement from '../../components/Forms/AccountSettings/AccessManagement.tsx';
 import Loader from '../../common/Loader';
 

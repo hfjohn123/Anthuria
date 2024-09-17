@@ -1,6 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
-import { createToast } from '../hooks/fireToast.tsx';
+import { createToast } from '../fireToast.tsx';
 
 const usePutComment = (route: string, queryClient: any) => {
   const { mutate, ...rest } = useMutation({

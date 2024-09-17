@@ -2,7 +2,7 @@ import { Field, Label, Textarea } from '@headlessui/react';
 import { useContext } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { AuthContext } from '../AuthWrapper.tsx';
-import usePutComment from '../../interface/usePutComment.ts';
+import usePutComment from '../../hooks/interface/usePutComment.ts';
 
 export default function CommentForm({
   commentState,

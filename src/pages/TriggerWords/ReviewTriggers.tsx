@@ -45,7 +45,7 @@ import filterSelectStyles from '../../components/Select/filterSelectStyles.ts';
 import dateRangeFilterFn from '../../common/dateRangeFilterFn.ts';
 import HyperLink from '../../components/Basic/HyerLink.tsx';
 import { ThumbsDown, ThumbsUp } from '@phosphor-icons/react';
-import usePutComment from '../../interface/usePutComment.ts';
+import usePutComment from '../../hooks/interface/usePutComment.ts';
 import { TriggerFinal } from '../../types/TriggerFinal.ts';
 import PageNavigation from '../../components/Tables/PageNavigation.tsx';
 
