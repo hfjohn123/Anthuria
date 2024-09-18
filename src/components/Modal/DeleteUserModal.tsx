@@ -8,7 +8,6 @@ import { createToast } from '../../hooks/fireToast.tsx';
 import { AuthContext } from '../AuthWrapper.tsx';
 
 const DeleteUserModal = memo(function DeleteUserModal({ member }: any) {
-  console.log(member);
   const { route } = useContext(AuthContext);
   const queryClient = useQueryClient();
   const [deleteModal, setDeleteModal] = useState(false);

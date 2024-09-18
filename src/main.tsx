@@ -26,7 +26,7 @@ import EmailPassword from 'supertokens-auth-react/recipe/emailpassword';
 import Session, { SessionAuth } from 'supertokens-auth-react/recipe/session';
 import PageTitle from './components/PageTitle.tsx';
 import EventTracker from './pages/TriggerWords/EventTracker/EventTracker.tsx';
-import AccountSetting from './pages/Authentication/AccountSetting.tsx';
+import AccountSetting from './pages/AccountSetting/AccountSetting.tsx';
 import ResetPassword from './pages/Authentication/SignIn/ResetPassword.tsx';
 import PrimaryButton from './components/Basic/PrimaryButton.tsx';
 
