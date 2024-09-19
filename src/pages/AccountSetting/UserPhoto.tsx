@@ -3,13 +3,33 @@ import { useContext, useState } from 'react';
 import { AuthContext } from '../../components/AuthWrapper.tsx';
 import UpLoadIcon from '../../images/icon/UpLoadIcon.tsx';
 import Cropper, { Area } from 'react-easy-crop';
+import getCroppedImg from '../../common/cropImage.ts';
+import axios from 'axios';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 export default function UserPhoto() {
-  const { user_data } = useContext(AuthContext);
+  const queryClient = useQueryClient();
+  const { user_data, route } = useContext(AuthContext);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedArea, setCroppedArea] = useState<Area | null>(null);
   const [file, setFile] = useState<string | undefined>(undefined);
+  const updatePhoto = useMutation({
+    mutationFn: (file: File) => {
+      return axios.post(
+        `${route}/update_user_profile`,
+        { file: file },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user', route] });
+    },
+  });
   return (
     <div className="col-span-5 xl:col-span-2">
       <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
@@ -52,7 +72,9 @@ export default function UserPhoto() {
                   cropShape="round"
                   aspect={1}
                   showGrid={false}
-                  onCropComplete={(croppedArea) => setCroppedArea(croppedArea)}
+                  onCropComplete={(_croppedArea, croppedAreaPixels) =>
+                    setCroppedArea(croppedAreaPixels)
+                  }
                 />
               </div>
             ) : (
@@ -94,16 +116,19 @@ export default function UserPhoto() {
               </Button>
               <Button
                 className="flex justify-center rounded bg-primary py-2 px-6 font-medium text-gray hover:bg-opacity-90"
-                // onClick={async () => {
-                //   if (file) {
-                //     const croppedImage = await getCroppedImg(
-                //       URL.createObjectURL(file),
-                //       croppedAreaPixels,
-                //       rotation,
-                //     );
-                //     console.log(croppedImage);
-                //   }
-                // }}
+                onClick={async () => {
+                  if (file) {
+                    const croppedImage = await getCroppedImg(
+                      file,
+                      croppedArea,
+                      0,
+                    );
+                    if (croppedImage) {
+                      const ImageFile = new File([croppedImage], 'avatar.jpg');
+                      updatePhoto.mutate(ImageFile);
+                    }
+                  }
+                }}
               >
                 Save
               </Button>
