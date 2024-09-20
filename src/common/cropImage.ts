@@ -33,7 +33,7 @@ export default async function getCroppedImg(
   pixelCrop,
   rotation = 0,
   flip = { horizontal: false, vertical: false },
-): Promise<BlobPart | null> {
+): Promise<Blob | null> {
   const image = await createImage(imageSrc);
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d');
@@ -96,7 +96,7 @@ export default async function getCroppedImg(
   return new Promise((resolve, reject) => {
     croppedCanvas.toBlob((file) => {
       if (file) {
-        resolve(URL.createObjectURL(file));
+        resolve(file);
       } else {
         reject(new Error('Failed to create blob'));
       }

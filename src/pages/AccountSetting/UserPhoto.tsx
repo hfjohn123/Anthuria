@@ -16,15 +16,13 @@ export default function UserPhoto() {
   const [file, setFile] = useState<string | undefined>(undefined);
   const updatePhoto = useMutation({
     mutationFn: (file: File) => {
-      return axios.post(
-        `${route}/update_user_profile`,
-        { file: file },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
+      const formData = new FormData();
+      formData.append('file', file);
+      return axios.post(`${route}/update_user_profile`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
         },
-      );
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['user', route] });
@@ -110,7 +108,12 @@ export default function UserPhoto() {
             <div className="flex justify-end gap-4.5">
               <Button
                 className="flex justify-center rounded border border-stroke py-2 px-6 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white"
-                type="reset"
+                onClick={() => {
+                  setFile(undefined);
+                  setCroppedArea(null);
+                  setZoom(1);
+                  setCrop({ x: 0, y: 0 });
+                }}
               >
                 Reset
               </Button>
