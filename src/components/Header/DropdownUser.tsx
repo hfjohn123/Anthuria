@@ -5,7 +5,7 @@ import { signOut } from 'supertokens-auth-react/recipe/passwordless';
 import { Button } from '@headlessui/react';
 
 const DropdownUser = () => {
-  const { user_data } = useContext(AuthContext);
+  const { user_data, route } = useContext(AuthContext);
   const { name, email, picture } = user_data;
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const trigger = useRef<HTMLAnchorElement>(null);
@@ -64,7 +64,7 @@ const DropdownUser = () => {
 
         <span className="h-12 w-12 rounded-full">
           {picture ? (
-            <img src={picture} alt="User" className="rounded-full" />
+            <img src={route + picture} alt="User" className="rounded-full" />
           ) : (
             <div className="h-12 w-12 rounded-full bg-yellow-200 flex justify-center items-center">
               {name.split(' ').map((n) => n.charAt(0))}

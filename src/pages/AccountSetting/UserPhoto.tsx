@@ -65,7 +65,7 @@ export default function UserPhoto() {
               <div className="h-14 w-14 rounded-full">
                 {user_data.picture ? (
                   <img
-                    src={user_data.picture}
+                    src={route + user_data.picture}
                     alt="User"
                     className="rounded-full"
                   />
