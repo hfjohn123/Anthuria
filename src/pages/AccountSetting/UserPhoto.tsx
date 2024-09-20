@@ -117,8 +117,15 @@ export default function UserPhoto() {
                   type="file"
                   onChange={(e) => {
                     const file = e.target.files?.[0];
-                    if (file) {
+                    if (file && file.size <= 10485760) {
                       setFile(URL.createObjectURL(file));
+                    } else {
+                      createToast(
+                        'File too large',
+                        'Please upload a file less than 10 MB',
+                        3,
+                        'File too large',
+                      );
                     }
                   }}
                   accept="image/*"
@@ -133,7 +140,7 @@ export default function UserPhoto() {
                     drag and drop
                   </p>
                   <p className="mt-1.5">SVG, PNG, JPG or GIF</p>
-                  <p>(max, 800 X 800px)</p>
+                  <p>Please upload file less than 10 MB</p>
                 </div>
               </div>
             )}
