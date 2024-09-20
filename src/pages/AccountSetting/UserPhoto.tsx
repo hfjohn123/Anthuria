@@ -6,6 +6,7 @@ import Cropper, { Area } from 'react-easy-crop';
 import getCroppedImg from '../../common/cropImage.ts';
 import axios from 'axios';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { createToast } from '../../hooks/fireToast.tsx';
 
 export default function UserPhoto() {
   const queryClient = useQueryClient();
@@ -23,6 +24,30 @@ export default function UserPhoto() {
           'Content-Type': 'multipart/form-data',
         },
       });
+    },
+    onError: (error) => {
+      createToast(
+        'Error updating photo',
+        error.message,
+        3,
+        'Error updating photo',
+      );
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user', route] });
+    },
+  });
+  const deletePhoto = useMutation({
+    mutationFn: () => {
+      return axios.put(`${route}/delete_user_photo`);
+    },
+    onError: (error) => {
+      createToast(
+        'Error deleting photo',
+        error.message,
+        3,
+        'Error deleting photo',
+      );
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['user', route] });
@@ -55,7 +80,15 @@ export default function UserPhoto() {
                   Edit your photo
                 </span>
                 <span className="flex gap-2.5">
-                  <button className="text-sm hover:text-primary">Delete</button>
+                  <button
+                    className="text-sm hover:text-primary"
+                    onClick={(event) => {
+                      event.preventDefault();
+                      deletePhoto.mutate();
+                    }}
+                  >
+                    Delete
+                  </button>
                 </span>
               </div>
             </div>
