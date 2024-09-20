@@ -6,10 +6,10 @@ import { Button } from '@headlessui/react';
 
 const DropdownUser = () => {
   const { user_data, route } = useContext(AuthContext);
-  const { name, email, picture } = user_data;
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const trigger = useRef<HTMLAnchorElement>(null);
   const dropdown = useRef<HTMLDivElement>(null);
+
   // close on click outside
   useEffect(() => {
     const clickHandler = ({ target }: MouseEvent) => {
@@ -57,17 +57,21 @@ const DropdownUser = () => {
       >
         <span className="hidden text-right lg:block">
           <span className="block text-sm font-medium text-black dark:text-white">
-            {name}
+            {user_data.name}
           </span>
-          <span className="block text-xs">{email}</span>
+          <span className="block text-xs">{user_data.email}</span>
         </span>
 
         <span className="h-12 w-12 rounded-full">
-          {picture ? (
-            <img src={route + picture} alt="User" className="rounded-full" />
+          {user_data.picture ? (
+            <img
+              src={route + user_data.picture}
+              alt="User"
+              className="rounded-full"
+            />
           ) : (
             <div className="h-12 w-12 rounded-full bg-yellow-200 flex justify-center items-center">
-              {name.split(' ').map((n) => n.charAt(0))}
+              {user_data.name.split(' ').map((n) => n.charAt(0))}
             </div>
           )}
         </span>
