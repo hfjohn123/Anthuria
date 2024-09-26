@@ -27,6 +27,7 @@
     "clsx": "^2.1.1",
     "d3": "^7.9.0",
     "echarts": "^5.5.1",
+    "export-to-csv": "^1.4.0",
     "flatpickr": "^4.6.13",
     "jsvectormap": "^1.6.0",
     "lucide-react": "^0.427.0",

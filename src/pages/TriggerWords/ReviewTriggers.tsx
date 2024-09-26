@@ -44,10 +44,18 @@ import { Field, Input, Label } from '@headlessui/react';
 import filterSelectStyles from '../../components/Select/filterSelectStyles.ts';
 import dateRangeFilterFn from '../../common/dateRangeFilterFn.ts';
 import HyperLink from '../../components/Basic/HyerLink.tsx';
-import { ThumbsDown, ThumbsUp } from '@phosphor-icons/react';
+import { DownloadSimple, ThumbsDown, ThumbsUp } from '@phosphor-icons/react';
 import usePutComment from '../../hooks/interface/usePutComment.ts';
 import { TriggerFinal } from '../../types/TriggerFinal.ts';
 import PageNavigation from '../../components/Tables/PageNavigation.tsx';
+import { mkConfig, generateCsv, download } from 'export-to-csv';
+
+const csvConfig = mkConfig({
+  fieldSeparator: ',',
+  filename: 'ReviewTriggers', // export file name (without .csv)
+  decimalSeparator: '.',
+  useKeysAsHeaders: true,
+});
 
 const predefinedTriggerWords = [
   'Fall',
@@ -636,6 +644,22 @@ export default function ReviewTriggers() {
     getPaginationRowModel: getPaginationRowModel(),
   });
 
+  const exportExcel = (rows: Row<TriggerFinal>[]) => {
+    const rowData = rows.map((row) => {
+      const { created_date, revision_date, ...rest } = row.original;
+      return {
+        ...rest,
+        created_date: new Date(created_date).toLocaleString(), // Convert Date to string
+        revision_date: new Date(revision_date).toLocaleString(),
+        trigger_words: row.original.trigger_words
+          .map((d) => d.trigger_word)
+          .join(', '),
+      };
+    });
+    const csv = generateCsv(csvConfig)(rowData);
+    download(csvConfig)(csv);
+  };
+
   useEffect(() => {
     localStorage.setItem(
       'userVisibilitySettings',
@@ -875,6 +899,12 @@ export default function ReviewTriggers() {
               placeholder="Global Search"
               className=" w-full py-2 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
             />
+            <button
+              type="button"
+              onClick={() => exportExcel(table.getFilteredRowModel().rows)}
+            >
+              <DownloadSimple size={22} />
+            </button>
 
             <Modal
               isOpen={showSettingsModal}
