@@ -50,13 +50,6 @@ import { TriggerFinal } from '../../types/TriggerFinal.ts';
 import PageNavigation from '../../components/Tables/PageNavigation.tsx';
 import { mkConfig, generateCsv, download } from 'export-to-csv';
 
-const csvConfig = mkConfig({
-  fieldSeparator: ',',
-  filename: 'ReviewTriggers', // export file name (without .csv)
-  decimalSeparator: '.',
-  useKeysAsHeaders: true,
-});
-
 const predefinedTriggerWords = [
   'Fall',
   'Unwanted Behavior',
@@ -65,6 +58,36 @@ const predefinedTriggerWords = [
   'Neglect',
   'Wound/Ulcer',
 ];
+const csvHeaders = [
+  { key: 'facility_name', displayLabel: 'Facility' },
+  {
+    key: 'patient_name',
+    displayLabel: 'Patient',
+  },
+  {
+    key: 'progress_note_id',
+    displayLabel: 'Progress Note ID',
+  },
+  { key: 'created_date', displayLabel: 'Created Date' },
+  { key: 'created_by', displayLabel: 'Created By' },
+  { key: 'revision_date', displayLabel: 'Revision Date' },
+  { key: 'revision_by', displayLabel: 'Revision By' },
+  {
+    key: 'trigger_words',
+    displayLabel: 'Trigger Words',
+  },
+  {
+    key: 'progress_note',
+    displayLabel: 'Progress Note',
+  },
+];
+const csvConfig = mkConfig({
+  fieldSeparator: ',',
+  filename: 'ReviewTriggers', // export file name (without .csv)
+  decimalSeparator: '.',
+  columnHeaders: csvHeaders,
+  useKeysAsHeaders: false,
+});
 
 const renderSubComponent = ({
   row,
@@ -646,14 +669,21 @@ export default function ReviewTriggers() {
 
   const exportExcel = (rows: Row<TriggerFinal>[]) => {
     const rowData = rows.map((row) => {
-      const { created_date, revision_date, ...rest } = row.original;
+      const rest = {};
+      csvHeaders.forEach((header) => {
+        if (header.key in row.original) {
+          // @ts-expect-error ts-migrate(7053)
+          rest[header.key] = row.original[header.key];
+        }
+      });
       return {
         ...rest,
-        created_date: new Date(created_date).toLocaleString(), // Convert Date to string
-        revision_date: new Date(revision_date).toLocaleString(),
+        created_date: row.getValue('created_date') as string, // Convert Date to string
+        revision_date: row.getValue('revision_date') as string, // Convert Date to string
         trigger_words: row.original.trigger_words
           .map((d) => d.trigger_word)
           .join(', '),
+        progress_note: row.original.progress_note.replace(/[\r\n]+/g, '\n'),
       };
     });
     const csv = generateCsv(csvConfig)(rowData);
