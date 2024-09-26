@@ -49,6 +49,7 @@ import usePutComment from '../../hooks/interface/usePutComment.ts';
 import { TriggerFinal } from '../../types/TriggerFinal.ts';
 import PageNavigation from '../../components/Tables/PageNavigation.tsx';
 import { mkConfig, generateCsv, download } from 'export-to-csv';
+import exportExcel from '../../common/excelExport.ts';
 
 const predefinedTriggerWords = [
   'Fall',
@@ -667,7 +668,11 @@ export default function ReviewTriggers() {
     getPaginationRowModel: getPaginationRowModel(),
   });
 
-  const exportExcel = (rows: Row<TriggerFinal>[]) => {
+  const exportExcel2 = (
+    table: unknown,
+    p0: string,
+    rows: Row<TriggerFinal>[],
+  ) => {
     const rowData = rows.map((row) => {
       const rest = {};
       csvHeaders.forEach((header) => {
@@ -931,7 +936,7 @@ export default function ReviewTriggers() {
             />
             <button
               type="button"
-              onClick={() => exportExcel(table.getFilteredRowModel().rows)}
+              onClick={() => exportExcel(table, 'clinical_pulse')}
             >
               <DownloadSimple size={22} />
             </button>
