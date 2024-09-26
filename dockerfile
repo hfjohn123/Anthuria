@@ -4,6 +4,8 @@ WORKDIR /react-docker/
 
 COPY . .
 
+
+
 RUN npm install
 
 RUN npm run build
