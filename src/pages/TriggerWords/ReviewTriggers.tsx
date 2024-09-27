@@ -893,7 +893,12 @@ export default function ReviewTriggers() {
             />
             <button
               type="button"
-              onClick={() => exportExcel(table, 'clinical_pulse')}
+              onClick={() =>
+                exportExcel(
+                  table,
+                  'review_triggers_' + new Date().toLocaleString(),
+                )
+              }
             >
               <DownloadSimple size={22} />
             </button>

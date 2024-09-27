@@ -20,7 +20,6 @@ export default async function exportExcel(
   const columns = all_columns.filter(
     (column) => column.columnDef.meta?.download,
   );
-  console.log(columns[5].getIsVisible());
 
   ws.columns = columns.map((column) => {
     return {
