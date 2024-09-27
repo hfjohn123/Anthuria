@@ -574,11 +574,11 @@ export default function ReviewTriggers() {
         accessorKey: 'has_events',
         header: 'Events Associated',
         accessorFn: (row) => {
-          return row.trigger_words.some((d) => d.event_ids.length > 0);
+          return row.trigger_words.some((d) => d.event_ids.length > 0)
+            ? 'Yes'
+            : 'No';
         },
-        cell: (info) => {
-          return info.getValue() ? 'Yes' : 'No';
-        },
+        filterFn: 'arrIncludesSome',
         meta: {
           wrap: false,
           type: 'categorical',
@@ -587,7 +587,6 @@ export default function ReviewTriggers() {
     ],
     [],
   );
-
   if (localStorage.getItem('clearStorage') !== '1') {
     localStorage.removeItem('recent');
     localStorage.removeItem('userVisibilitySettings');
@@ -672,6 +671,7 @@ export default function ReviewTriggers() {
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
   });
+  console.log(tableState.columnFilters);
 
   useEffect(() => {
     localStorage.setItem(
