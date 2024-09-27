@@ -291,6 +291,13 @@ const renderSubComponent = ({
                       >
                         Create Event
                       </HyperLink>
+                    ) : trigger_word === 'Wound/Ulcer' ? (
+                      <HyperLink
+                        tooltip_content={'Create an Event in MatrixCare'}
+                        href={`https://clearviewhcm.matrixcare.com/Zion?zionpagealias=EVENTCREATE&PATIENTID=${row.original.patient_id}&formId=948&categoryName=Skin%20Integrity%20Events&formDescription=Wound+Other+Event`}
+                      >
+                        Create Event
+                      </HyperLink>
                     ) : (
                       <HyperLink
                         tooltip_content={'Create an Event in MatrixCare'}
@@ -562,6 +569,20 @@ export default function ReviewTriggers() {
         },
         sortingFn: 'datetime',
         filterFn: dateRangeFilterFn,
+      },
+      {
+        accessorKey: 'has_events',
+        header: 'Events Associated',
+        accessorFn: (row) => {
+          return row.trigger_words.some((d) => d.event_ids.length > 0);
+        },
+        cell: (info) => {
+          return info.getValue() ? 'Yes' : 'No';
+        },
+        meta: {
+          wrap: false,
+          type: 'categorical',
+        },
       },
     ],
     [],
