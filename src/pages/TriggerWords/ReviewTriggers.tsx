@@ -40,7 +40,7 @@ import clsx from 'clsx';
 import Modal from '../../components/Modal/Modal.tsx';
 import CommentForm from '../../components/Forms/CommentForm.tsx';
 import { createToast } from '../../hooks/fireToast.tsx';
-import { Field, Input, Label } from '@headlessui/react';
+import { Button, Field, Input, Label } from '@headlessui/react';
 import filterSelectStyles from '../../components/Select/filterSelectStyles.ts';
 import dateRangeFilterFn from '../../common/dateRangeFilterFn.ts';
 import HyperLink from '../../components/Basic/HyerLink.tsx';
@@ -58,6 +58,67 @@ const predefinedTriggerWords = [
   'Neglect',
   'Wound/Ulcer',
 ];
+
+const initialTableState: TableState = {
+  globalFilter: '',
+  columnSizing: {},
+  columnSizingInfo: {
+    startOffset: null,
+    startSize: null,
+    deltaOffset: null,
+    deltaPercentage: null,
+    isResizingColumn: false,
+    columnSizingStart: [],
+  },
+  rowSelection: {},
+  rowPinning: {
+    top: [],
+    bottom: [],
+  },
+  expanded: {},
+  grouping: [],
+  sorting: [],
+  columnFilters: [],
+  columnPinning: {
+    left: [],
+    right: [],
+  },
+  columnOrder: [],
+  columnVisibility:
+    window.screen.width < 1024
+      ? {
+          facility_name: false,
+          patient_name: true,
+          progress_note_id: false,
+          created_date: false,
+          created_by: false,
+          revision_by: false,
+          revision_date: true,
+          trigger_word: true,
+          progress_note: false,
+          summary: false,
+          update_time: false,
+          has_events: false,
+        }
+      : {
+          facility_name: true,
+          patient_name: true,
+          progress_note_id: true,
+          created_date: false,
+          created_by: false,
+          revision_by: false,
+          revision_date: true,
+          trigger_word: true,
+          progress_note: false,
+          summary: false,
+          update_time: false,
+          has_events: true,
+        },
+  pagination: {
+    pageIndex: 0,
+    pageSize: 30,
+  },
+};
 
 const renderSubComponent = ({
   row,
@@ -587,71 +648,26 @@ export default function ReviewTriggers() {
     ],
     [],
   );
-  if (localStorage.getItem('clearStorage') !== '1') {
-    localStorage.removeItem('recent');
-    localStorage.removeItem('userVisibilitySettings');
-    localStorage.setItem('clearStorage', '1');
-  }
-  const userVisibilitySettings = localStorage.getItem('userVisibilitySettings');
-  const [tableState, setTableState] = useState<TableState>({
-    globalFilter: '',
-    columnSizing: {},
-    columnSizingInfo: {
-      startOffset: null,
-      startSize: null,
-      deltaOffset: null,
-      deltaPercentage: null,
-      isResizingColumn: false,
-      columnSizingStart: [],
-    },
-    rowSelection: {},
-    rowPinning: {
-      top: [],
-      bottom: [],
-    },
-    expanded: {},
-    grouping: [],
-    sorting: [],
-    columnFilters: [],
-    columnPinning: {
-      left: [],
-      right: [],
-    },
-    columnOrder: [],
-    columnVisibility: userVisibilitySettings
-      ? JSON.parse(userVisibilitySettings)
-      : window.screen.width < 1024
-        ? {
-            facility_name: false,
-            patient_name: true,
-            progress_note_id: false,
-            created_date: false,
-            created_by: false,
-            revision_by: false,
-            revision_date: true,
-            trigger_word: true,
-            progress_note: false,
-            summary: false,
-            update_time: false,
-          }
-        : {
-            facility_name: true,
-            patient_name: true,
-            progress_note_id: true,
-            created_date: false,
-            created_by: false,
-            revision_by: false,
-            revision_date: true,
-            trigger_word: true,
-            progress_note: false,
-            summary: false,
-            update_time: false,
-          },
-    pagination: {
-      pageIndex: 0,
-      pageSize: 30,
-    },
-  });
+  const [tableState, setTableState] = useState<TableState>(initialTableState);
+
+  useEffect(() => {
+    if (localStorage.getItem('clearStorage') !== '3') {
+      localStorage.removeItem('recent');
+      localStorage.removeItem('userVisibilitySettings');
+      localStorage.setItem('clearStorage', '3');
+    } else {
+      const userVisibilitySettings = localStorage.getItem(
+        'userVisibilitySettings',
+      );
+      if (userVisibilitySettings) {
+        setTableState((prev) => ({
+          ...prev,
+          columnVisibility: JSON.parse(userVisibilitySettings),
+        }));
+      }
+    }
+  }, []);
+
   const table = useReactTable({
     data: data,
     columns,
@@ -671,7 +687,6 @@ export default function ReviewTriggers() {
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
   });
-  console.log(tableState.columnFilters);
 
   useEffect(() => {
     localStorage.setItem(
@@ -912,8 +927,9 @@ export default function ReviewTriggers() {
               placeholder="Global Search"
               className=" w-full py-2 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
             />
-            <button
+            <Button
               type="button"
+              className="hover:text-primary"
               onClick={() =>
                 exportExcel(
                   table,
@@ -922,7 +938,7 @@ export default function ReviewTriggers() {
               }
             >
               <DownloadSimple size={22} />
-            </button>
+            </Button>
 
             <Modal
               isOpen={showSettingsModal}
@@ -950,7 +966,7 @@ export default function ReviewTriggers() {
                   isClearable={false}
                   isSearchable={false}
                   closeMenuOnSelect={false}
-                  classNames={{ control: () => 'w-90' }}
+                  classNames={{ control: () => 'sm:w-[50vw]' }}
                   value={Object.entries(tableState.columnVisibility)
                     .filter(([, v]) => v)
                     .map(([k]) => {
@@ -983,6 +999,16 @@ export default function ReviewTriggers() {
                     }));
                   }}
                 />
+                <Button
+                  onClick={() =>
+                    setTableState((prev) => ({
+                      ...prev,
+                      columnVisibility: initialTableState.columnVisibility,
+                    }))
+                  }
+                >
+                  Reset to default
+                </Button>
               </div>
             </Modal>
           </div>
@@ -1199,13 +1225,6 @@ export default function ReviewTriggers() {
                               : f,
                           ),
                         }));
-                        // setColumnFilters([
-                        //   ...columnFilters.filter((f) => f.id !== filter.id),
-                        //   {
-                        //     id: filter.id,
-                        //     value: [start || null, end || null]
-                        //   }
-                        // ]);
                       }}
                       minDate={
                         new Date(
