@@ -16,34 +16,26 @@ export default async function exportExcel(
     console.error('No header groups found', table.getHeaderGroups());
     return;
   }
-  console.log(lastHeaderGroup);
-  ws.columns = lastHeaderGroup.headers
-    .filter((h) => h.column.getIsVisible())
-    .map((header) => {
-      if (header.id === 'progress_note') {
-        return {
-          header: header.column.columnDef.header as string,
-          key: header.id,
-          width: 80,
-          alignment: {
-            wrapText: true,
-          },
-        };
-      }
-      return {
-        header: header.column.columnDef.header as string,
-        key: header.id,
-        width: 20,
-      };
-    });
+  const all_columns = table.getAllColumns();
+  const columns = all_columns.filter(
+    (column) => column.columnDef.meta?.download,
+  );
+  console.log(columns[5].getIsVisible());
+
+  ws.columns = columns.map((column) => {
+    return {
+      header: column.columnDef.header as string,
+      key: column.id,
+      width: column.columnDef.meta?.excelWidth,
+    };
+  });
 
   const exportRows = applyFilters
     ? table.getFilteredRowModel().rows
     : table.getCoreRowModel().rows;
 
   exportRows.forEach((row) => {
-    const cells = row.getVisibleCells();
-    const values = cells.map((cell) => cell.getValue() ?? '');
+    const values = ws.columns.map((col) => row.getValue(col.key as string));
     ws.addRow(values);
   });
 

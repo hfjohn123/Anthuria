@@ -48,7 +48,6 @@ import { DownloadSimple, ThumbsDown, ThumbsUp } from '@phosphor-icons/react';
 import usePutComment from '../../hooks/interface/usePutComment.ts';
 import { TriggerFinal } from '../../types/TriggerFinal.ts';
 import PageNavigation from '../../components/Tables/PageNavigation.tsx';
-import { mkConfig, generateCsv, download } from 'export-to-csv';
 import exportExcel from '../../common/excelExport.ts';
 
 const predefinedTriggerWords = [
@@ -59,36 +58,6 @@ const predefinedTriggerWords = [
   'Neglect',
   'Wound/Ulcer',
 ];
-const csvHeaders = [
-  { key: 'facility_name', displayLabel: 'Facility' },
-  {
-    key: 'patient_name',
-    displayLabel: 'Patient',
-  },
-  {
-    key: 'progress_note_id',
-    displayLabel: 'Progress Note ID',
-  },
-  { key: 'created_date', displayLabel: 'Created Date' },
-  { key: 'created_by', displayLabel: 'Created By' },
-  { key: 'revision_date', displayLabel: 'Revision Date' },
-  { key: 'revision_by', displayLabel: 'Revision By' },
-  {
-    key: 'trigger_words',
-    displayLabel: 'Trigger Words',
-  },
-  {
-    key: 'progress_note',
-    displayLabel: 'Progress Note',
-  },
-];
-const csvConfig = mkConfig({
-  fieldSeparator: ',',
-  filename: 'ReviewTriggers', // export file name (without .csv)
-  decimalSeparator: '.',
-  columnHeaders: csvHeaders,
-  useKeysAsHeaders: false,
-});
 
 const renderSubComponent = ({
   row,
@@ -419,6 +388,8 @@ export default function ReviewTriggers() {
         meta: {
           wrap: false,
           type: 'categorical',
+          download: true,
+          excelWidth: 20,
         },
         filterFn: 'arrIncludesSome',
       },
@@ -452,6 +423,8 @@ export default function ReviewTriggers() {
         meta: {
           wrap: false,
           type: 'text',
+          download: true,
+          excelWidth: 20,
         },
       },
       {
@@ -460,6 +433,8 @@ export default function ReviewTriggers() {
         meta: {
           wrap: false,
           type: 'text',
+          download: true,
+          excelWidth: 20,
         },
         sortingFn: 'text',
         sortDescFirst: false,
@@ -533,6 +508,8 @@ export default function ReviewTriggers() {
         meta: {
           wrap: true,
           type: 'categorical',
+          download: true,
+          excelWidth: 20,
         },
       },
       {
@@ -542,16 +519,23 @@ export default function ReviewTriggers() {
         meta: {
           wrap: true,
           type: 'text',
+          download: true,
+          excelWidth: 80,
         },
       },
       {
         accessorKey: 'summary',
-        accessorFn: (row) => row.trigger_words.map((d) => d.summary).join(' '),
+        accessorFn: (row) =>
+          row.trigger_words
+            .map((d) => d.trigger_word + ': ' + d.summary)
+            .join('\n\n'),
         header: 'Explanation',
         filterFn: 'includesString',
         meta: {
           wrap: true,
           type: 'text',
+          download: true,
+          excelWidth: 80,
         },
       },
       {
@@ -667,33 +651,6 @@ export default function ReviewTriggers() {
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
   });
-
-  const exportExcel2 = (
-    table: unknown,
-    p0: string,
-    rows: Row<TriggerFinal>[],
-  ) => {
-    const rowData = rows.map((row) => {
-      const rest = {};
-      csvHeaders.forEach((header) => {
-        if (header.key in row.original) {
-          // @ts-expect-error ts-migrate(7053)
-          rest[header.key] = row.original[header.key];
-        }
-      });
-      return {
-        ...rest,
-        created_date: row.getValue('created_date') as string, // Convert Date to string
-        revision_date: row.getValue('revision_date') as string, // Convert Date to string
-        trigger_words: row.original.trigger_words
-          .map((d) => d.trigger_word)
-          .join(', '),
-        progress_note: row.original.progress_note.replace(/[\r\n]+/g, '\n'),
-      };
-    });
-    const csv = generateCsv(csvConfig)(rowData);
-    download(csvConfig)(csv);
-  };
 
   useEffect(() => {
     localStorage.setItem(
@@ -1414,7 +1371,7 @@ export default function ReviewTriggers() {
                           return (
                             <td
                               key={cell.id}
-                              className={`py-2 px-3 w-[${cell.column.getSize() || 'auto'}] text-sm ${!cell.column.columnDef.meta?.wrap && 'whitespace-nowrap'} ${row.getIsExpanded() && 'bg-slate-100 dark:bg-slate-700'}`}
+                              className={`py-2 px-3 w-[${cell.column.getSize() || 'auto'}] text-sm  ${cell.column.columnDef.meta?.wrap ? 'whitespace-pre-wrap' : 'whitespace-nowrap'} ${row.getIsExpanded() && 'bg-slate-100 dark:bg-slate-700'}`}
                               role="button"
                               onClick={row.getToggleExpandedHandler()}
                             >
