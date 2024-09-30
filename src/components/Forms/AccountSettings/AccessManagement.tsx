@@ -1,27 +1,18 @@
-import { Button, Field, Input, Label } from '@headlessui/react';
+import { Field, Input, Label } from '@headlessui/react';
 import UserName from '../../../images/icon/UserName.tsx';
 import EmailIcon from '../../../images/icon/EmailIcon.tsx';
-import Modal from '../../Modal/Modal.tsx';
-import { useContext, useState } from 'react';
-import { useMutation, useQuery } from '@tanstack/react-query';
-import axios, { AxiosError } from 'axios';
-import { createToast } from '../../../hooks/fireToast.tsx';
+import { useContext } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
 import { AuthContext } from '../../AuthWrapper.tsx';
 import ErrorPage from '../../../common/ErrorPage.tsx';
 import Loader from '../../../common/Loader';
-import AccessManagementModal from '../../Modal/AcessManagementModal.tsx';
-import DeleteUserModal from '../../Modal/DeleteUserModal.tsx';
+import AccessManagementModal from '../../../pages/AccountSetting/AcessManagementModal.tsx';
+import DeleteUserModal from '../../../pages/AccountSetting/DeleteUserModal.tsx';
+import InviteUserModal from '../../../pages/AccountSetting/InviteUserModal.tsx';
 
-export default function AccessManagement({ queryClient }: any) {
+export default function AccessManagement() {
   const { user_data, route } = useContext(AuthContext);
-  const [inviteModal, setInviteModal] = useState(false);
-  const [inviteModalData, setInviteModalData] = useState<{
-    email: string;
-    name: string;
-  }>({
-    email: '',
-    name: '',
-  });
 
   const { isPending, isError, data, error }: any = useQuery({
     queryKey: ['access_management', route],
@@ -36,33 +27,6 @@ export default function AccessManagement({ queryClient }: any) {
       label: d.display_name,
     }));
 
-  const inviteUser = useMutation({
-    mutationFn: ({ email, name }: { email: string; name: string }) => {
-      return axios.post(`${route}/create_user`, { email, name });
-    },
-    onError: (err: AxiosError) => {
-      if (err.response?.data) {
-        createToast(
-          'Invite Failed',
-          (err.response.data as { detail: string }).detail,
-          3,
-          'Invite Failed',
-        );
-      } else {
-        createToast(
-          'Invite Failed',
-          'Something went wrong',
-          3,
-          'Invite Failed',
-        );
-      }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['access_management', route],
-      });
-    },
-  });
   if (isPending) {
     return <Loader />;
   }
@@ -140,84 +104,7 @@ export default function AccessManagement({ queryClient }: any) {
           <div className="flex flex-col sm:flex-row justify-end gap-4.5 mt-7">
             {(data.organization.seats === 0 ||
               data.members.length < data.organization.seats) && (
-              <Modal
-                isOpen={inviteModal}
-                setIsOpen={setInviteModal}
-                title="Invite A New User"
-                classNameses={{
-                  button:
-                    'flex whitespace-nowrap justify-center rounded border border-stroke py-2 px-6 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white',
-                }}
-                button={<p>Invite A New User</p>}
-                onOpenCallback={() =>
-                  setInviteModalData({ email: '', name: '' })
-                }
-              >
-                <form
-                  className="flex flex-col gap-3 w-100"
-                  onSubmit={(event) => {
-                    event.preventDefault();
-                    inviteUser.mutate(inviteModalData);
-                    setInviteModal(false);
-                  }}
-                >
-                  <Field className="relative">
-                    <Label className="mb-1 block text-sm font-medium text-black dark:text-white">
-                      Email
-                    </Label>
-                    <EmailIcon className="absolute left-3.5 top-9.5" />
-                    <Input
-                      type="email"
-                      required
-                      className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                      placeholder="Email"
-                      value={inviteModalData.email}
-                      onChange={(e) => {
-                        setInviteModalData((prev) => ({
-                          ...prev,
-                          email: e.target.value,
-                        }));
-                      }}
-                    />
-                  </Field>
-                  <Field className="relative">
-                    <Label className="mb-1 block text-sm font-medium text-black dark:text-white">
-                      Full Name
-                    </Label>
-                    <UserName className="absolute left-3.5 top-9.5" />
-                    <Input
-                      className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                      placeholder="Full Name"
-                      required
-                      value={inviteModalData.name}
-                      onChange={(e) => {
-                        setInviteModalData((prev) => ({
-                          ...prev,
-                          name: e.target.value,
-                        }));
-                      }}
-                    />
-                  </Field>
-                  <div className="flex justify-end gap-4.5 mt-3">
-                    <Button
-                      className="flex justify-center rounded border border-stroke py-2 px-6 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white"
-                      type="reset"
-                      onClick={() => {
-                        setInviteModalData({ email: '', name: '' });
-                        setInviteModal(false);
-                      }}
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      className="flex justify-center rounded bg-primary py-2 px-6 font-medium text-gray hover:bg-opacity-90"
-                      type="submit"
-                    >
-                      Send
-                    </Button>
-                  </div>
-                </form>
-              </Modal>
+              <InviteUserModal />
             )}
           </div>
         </div>

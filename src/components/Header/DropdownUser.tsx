@@ -46,6 +46,7 @@ const DropdownUser = () => {
 
     // window.location.href = '/auth'; // or to wherever your logic page is
   }
+  console.log(route + user_data.picture);
 
   return (
     <div className="relative">

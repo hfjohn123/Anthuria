@@ -1,22 +1,21 @@
 import { Field, Label, Textarea } from '@headlessui/react';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { AuthContext } from '../AuthWrapper.tsx';
 import usePutComment from '../../hooks/interface/usePutComment.ts';
 
 export default function CommentForm({
-  commentState,
+  comment,
   setIsOpen,
-  setCommentState,
 }: {
-  commentState: {
+  comment: {
     progress_note_id: number;
     trigger_word: string;
     comment: string;
   };
   setIsOpen: any;
-  setCommentState: any;
 }) {
+  const [commentState, setCommentState] = useState(comment);
   const { route } = useContext(AuthContext);
   const queryClient = useQueryClient();
   const putComment = usePutComment(route, queryClient);

@@ -46,7 +46,7 @@ const AccountSetting = () => {
           <UserPhoto />
 
           {/* <!-- ===== Access Management ===== --> */}
-          {isAdmin && <AccessManagement queryClient={queryClient} />}
+          {isAdmin && <AccessManagement />}
         </div>
       </div>
     </DefaultLayout>

@@ -1,4 +1,4 @@
-import Modal from './Modal.tsx';
+import Modal from '../../components/Modal/Modal.tsx';
 import { ChevronDownIcon, PenSquare, Trash } from 'lucide-react';
 import {
   Button,
@@ -19,7 +19,7 @@ import UserName from '../../images/icon/UserName.tsx';
 import EmailIcon from '../../images/icon/EmailIcon.tsx';
 import clsx from 'clsx';
 import { useEffect, useState, useContext, memo } from 'react';
-import { AuthContext } from '../AuthWrapper.tsx';
+import { AuthContext } from '../../components/AuthWrapper.tsx';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios, { AxiosError } from 'axios';
 import { createToast } from '../../hooks/fireToast.tsx';

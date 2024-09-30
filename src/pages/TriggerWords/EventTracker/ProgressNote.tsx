@@ -1,10 +1,9 @@
 import { Fragment, useState } from 'react';
-import ShowMoreText from 'react-show-more-text';
 import { Row } from '@tanstack/react-table';
 import { EventFinal } from '../../../types/EventFinal.ts';
 import { Button } from '@headlessui/react';
 import HyperLink from '../../../components/Basic/HyerLink.tsx';
-
+import ShowMoreText from 'react-show-more-text';
 export default function ProgressNote({ row }: { row: Row<EventFinal> }) {
   const [open, setOpen] = useState<boolean>(false);
   return (
@@ -65,7 +64,7 @@ export default function ProgressNote({ row }: { row: Row<EventFinal> }) {
                   <td className="pr-10 ">
                     <ShowMoreText
                       anchorClass="text-primary cursor-pointer block dark:text-secondary "
-                      className="whitespace-pre-wrap"
+                      className="whitespace-pre-line"
                       lines={4}
                     >
                       {s.note}

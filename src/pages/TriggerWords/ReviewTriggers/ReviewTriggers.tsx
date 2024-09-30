@@ -1,20 +1,18 @@
-import DefaultLayout from '../../layout/DefaultLayout.tsx';
+import DefaultLayout from '../../../layout/DefaultLayout.tsx';
 import axios from 'axios';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import { Cog6ToothIcon } from '@heroicons/react/24/outline';
-import SortDownIcon from '../../images/icon/sort-down.svg';
-import SortUpIcon from '../../images/icon/sort-up.svg';
-import { Bot } from 'lucide-react';
-import { Tooltip } from 'react-tooltip';
+import SortDownIcon from '../../../images/icon/sort-down.svg';
+import SortUpIcon from '../../../images/icon/sort-up.svg';
 import { Fragment, useContext, useEffect, useMemo, useState } from 'react';
-import Loader from '../../common/Loader';
+import Loader from '../../../common/Loader';
 import AutosizeInput from 'react-18-input-autosize';
 import 'react-datepicker/dist/react-datepicker.css';
-import CheckboxOption from '../../components/Select/CheckboxOption.tsx';
+import CheckboxOption from '../../../components/Select/CheckboxOption.tsx';
 import Select, { MultiValue } from 'react-select';
-import handleFilterChange from '../../components/Tables/handleFilterChange.ts';
-import FilterValueContainer from '../../components/Select/FilterValueContainer.tsx';
+import handleFilterChange from '../../../components/Tables/handleFilterChange.ts';
+import FilterValueContainer from '../../../components/Select/FilterValueContainer.tsx';
 import {
   ColumnDef,
   ColumnDefTemplate,
@@ -30,25 +28,23 @@ import {
   TableState,
   useReactTable,
 } from '@tanstack/react-table';
-import getFacetedUniqueValues from '../../common/getFacetedUniqueValues.ts';
-import getFacetedMinMaxValues from '../../common/getFacetedMinMaxValues.ts';
-import { AuthContext } from '../../components/AuthWrapper.tsx';
+import getFacetedUniqueValues from '../../../common/getFacetedUniqueValues.ts';
+import getFacetedMinMaxValues from '../../../common/getFacetedMinMaxValues.ts';
+import { AuthContext } from '../../../components/AuthWrapper.tsx';
 import DatePicker from 'react-datepicker';
-import ShowMoreText from 'react-show-more-text';
-import NumberCards from '../../components/Cards/NumberCards.tsx';
+import NumberCards from '../../../components/Cards/NumberCards.tsx';
 import clsx from 'clsx';
-import Modal from '../../components/Modal/Modal.tsx';
-import CommentForm from '../../components/Forms/CommentForm.tsx';
-import { createToast } from '../../hooks/fireToast.tsx';
+import Modal from '../../../components/Modal/Modal.tsx';
+import { createToast } from '../../../hooks/fireToast.tsx';
 import { Button, Field, Input, Label } from '@headlessui/react';
-import filterSelectStyles from '../../components/Select/filterSelectStyles.ts';
-import dateRangeFilterFn from '../../common/dateRangeFilterFn.ts';
-import HyperLink from '../../components/Basic/HyerLink.tsx';
-import { DownloadSimple, ThumbsDown, ThumbsUp } from '@phosphor-icons/react';
-import usePutComment from '../../hooks/interface/usePutComment.ts';
-import { TriggerFinal } from '../../types/TriggerFinal.ts';
-import PageNavigation from '../../components/Tables/PageNavigation.tsx';
-import exportExcel from '../../common/excelExport.ts';
+import filterSelectStyles from '../../../components/Select/filterSelectStyles.ts';
+import dateRangeFilterFn from '../../../common/dateRangeFilterFn.ts';
+import HyperLink from '../../../components/Basic/HyerLink.tsx';
+import { DownloadSimple } from '@phosphor-icons/react';
+import { TriggerFinal } from '../../../types/TriggerFinal.ts';
+import PageNavigation from '../../../components/Tables/PageNavigation.tsx';
+import exportExcel from '../../../common/excelExport.ts';
+import TriggerNoteDetail from './TriggerNoteDetail.tsx';
 
 const predefinedTriggerWords = [
   'Fall',
@@ -58,6 +54,7 @@ const predefinedTriggerWords = [
   'Neglect',
   'Wound/Ulcer',
 ];
+const PERMANENT_COLUMN_FILTERS = ['facility_name', 'trigger_word'];
 
 const initialTableState: TableState = {
   globalFilter: '',
@@ -120,266 +117,10 @@ const initialTableState: TableState = {
   },
 };
 
-const renderSubComponent = ({
-  row,
-  isOpen,
-  setIsOpen,
-  commentState,
-  setCommentState,
-  putComment,
-}: {
-  row: Row<TriggerFinal>;
-  isOpen: boolean;
-  setIsOpen: any;
-  commentState: any;
-  setCommentState: any;
-  putComment: any;
-}) => {
-  return (
-    <div className="bg-slate-50 dark:bg-slate-900 px-4 text-sm py-4 flex flex-wrap">
-      <div className="basis-1/2 border-r border-stroke pr-10">
-        <div>
-          <span className="font-bold">Progress Note:</span>
-          <ShowMoreText anchorClass="text-primary cursor-pointer block dark:text-secondary ">
-            <p>{row.getValue('progress_note')}</p>
-          </ShowMoreText>
-        </div>
-        <div className="mt-2.5">
-          <span className="font-bold"> Progress Note ID:</span>
-          <p>{row.getValue('progress_note_id')}</p>
-        </div>
-        <div className="mt-2.5">
-          <span className="font-bold"> Created By:</span>
-          <p>{row.getValue('created_by')}</p>
-        </div>
-        <div className="mt-2.5">
-          <span className="font-bold">Created Date: </span>
-          <p>
-            {new Date(row.getValue('created_date')).toLocaleDateString()}{' '}
-            {new Date(row.getValue('created_date')).toLocaleTimeString(
-              navigator.language,
-              {
-                hour: '2-digit',
-                minute: '2-digit',
-              },
-            )}
-          </p>
-        </div>
-      </div>
-      <div className="basis-1/2 pl-10">
-        <div>
-          <span className="font-bold">Patient Name:</span>
-          {row.original.upstream === 'MTX' ? (
-            <HyperLink
-              tooltip_content="View Patient in MaxtrixCare"
-              href={`https://clearviewhcm.matrixcare.com/core/selectResident.action?residentID=${row.original.patient_id}`}
-            >
-              {row.getValue('patient_name')}
-            </HyperLink>
-          ) : row.original.upstream === 'PCC' ? (
-            <HyperLink
-              tooltip_content="View Patient in PCC"
-              href={`https://www19.pointclickcare.com/admin/client/clientlist.jsp?ESOLtabtype=C&ESOLglobalclientsearch=Y&ESOLclientid=${row.original.patient_id}&ESOLfacid=${row.original.internal_facility_id.split('_').pop()}&ESOLsave=P`}
-            >
-              {row.getValue('patient_name')}
-            </HyperLink>
-          ) : (
-            <p>{row.getValue('patient_name')}</p>
-          )}
-        </div>
-        <div className="mt-2.5">
-          <span className="font-bold">Patient ID: </span>
-          <p>{row.original.patient_id}</p>
-        </div>
-        <div className="mt-2.5">
-          <span className="font-bold">Facility Name:</span>
-          <p>{row.getValue('facility_name')}</p>
-        </div>
-        <div className="mt-2.5">
-          <span className="font-bold">Last Revision By:</span>
-          <p>{row.getValue('revision_by')}</p>
-        </div>
-        <div className="mt-2.5">
-          <span className="font-bold">Last Revision Date:</span>
-          <p>
-            {new Date(row.getValue('revision_date')).toLocaleDateString()}{' '}
-            {new Date(row.getValue('revision_date')).toLocaleTimeString(
-              navigator.language,
-              {
-                hour: '2-digit',
-                minute: '2-digit',
-              },
-            )}
-          </p>
-        </div>
-      </div>
-      <table className="basis-full mt-7.5 border-stroke border-t border-spacing-y-2.5 border-separate">
-        <thead>
-          <tr>
-            <th className="text-left w-2/12">
-              <div className="flex gap-1.5">
-                <p>Trigger</p>
-                <Bot
-                  data-tooltip-id="bot-tooltip"
-                  data-tooltip-content="Trigger generated by AI from Progress Note"
-                  className="size-5 block focus:outline-none"
-                />
-                <Tooltip id="bot-tooltip" />
-              </div>
-            </th>
-            <th className="text-left pr-10 w-6/12">
-              <div className="flex gap-1.5">
-                <p>Explanations</p>
-                <Bot
-                  data-tooltip-id="bot-tooltip"
-                  data-tooltip-content="Explanation generated by AI from Progress Note"
-                  className="size-5 block focus:outline-none"
-                />
-                <Tooltip id="bot-tooltip" />
-              </div>
-            </th>
-            <th className="text-left  w-2/12">
-              <p>Review</p>
-            </th>
-            <th className="text-left w-2/12">
-              <p>Actions</p>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {row.original.trigger_words.map(
-            ({ trigger_word, is_thumb_up, summary, comment, event_ids }) => (
-              <tr key={row.id + trigger_word}>
-                <td className="whitespace-nowrap align-top flex items-center flex-nowrap">
-                  {trigger_word}
-                </td>
-                <td className="pr-10">
-                  <ShowMoreText anchorClass="text-primary cursor-pointer block dark:text-secondary">
-                    {summary}
-                  </ShowMoreText>
-                </td>
-                <td className=" align-top	">
-                  <div className=" flex items-center flex-nowrap gap-2">
-                    {is_thumb_up ? (
-                      <ThumbsUp
-                        className="size-4 text-meta-3 cursor-pointer"
-                        weight="fill"
-                      />
-                    ) : (
-                      <ThumbsUp
-                        className="size-4 cursor-pointer"
-                        onClick={() =>
-                          putComment.mutate({
-                            progress_note_id: row.original.progress_note_id,
-                            trigger_word: trigger_word,
-                            comment: '',
-                            is_thumb_up: true,
-                          })
-                        }
-                      />
-                    )}
-                    {!is_thumb_up && comment !== null ? (
-                      <Modal
-                        isOpen={isOpen}
-                        setIsOpen={setIsOpen}
-                        onOpenCallback={() =>
-                          setCommentState({
-                            comment: comment || '',
-                            trigger_word,
-                            progress_note_id: row.original.progress_note_id,
-                          })
-                        }
-                        classNameses={{
-                          title: 'text-xl sm:text-2xl',
-                        }}
-                        title={'What is Going Wrong?'}
-                        button={
-                          <ThumbsDown
-                            className="size-4 cursor-pointer text-meta-1"
-                            weight="fill"
-                          />
-                        }
-                      >
-                        <CommentForm
-                          commentState={commentState}
-                          setIsOpen={setIsOpen}
-                          setCommentState={setCommentState}
-                        />
-                      </Modal>
-                    ) : (
-                      <Modal
-                        isOpen={isOpen}
-                        setIsOpen={setIsOpen}
-                        onOpenCallback={() =>
-                          setCommentState({
-                            comment: comment || '',
-                            trigger_word,
-                            progress_note_id: row.original.progress_note_id,
-                          })
-                        }
-                        classNameses={{
-                          title: 'text-xl sm:text-2xl',
-                        }}
-                        title={'What is Going Wrong?'}
-                        button={
-                          <ThumbsDown className="size-4 cursor-pointer" />
-                        }
-                      >
-                        <CommentForm
-                          commentState={commentState}
-                          setIsOpen={setIsOpen}
-                          setCommentState={setCommentState}
-                        />
-                      </Modal>
-                    )}
-                  </div>
-                </td>
-                <td className="align-top ">
-                  {row.original.upstream === 'MTX' ? (
-                    event_ids && event_ids.length > 0 ? (
-                      event_ids.map((event_id) => (
-                        <HyperLink
-                          key={event_id}
-                          href={`https://clearviewhcm.matrixcare.com/Zion?zionpagealias=EVENTVIEW&NSPID=${row.original.patient_id}&CHGPID=true&EVENTID=${event_id}&dashboardHomePage=true&OEType=Event&PATIENTID=${row.original.patient_id}`}
-                        >
-                          View the Event
-                        </HyperLink>
-                      ))
-                    ) : trigger_word === 'Fall' ? (
-                      <HyperLink
-                        tooltip_content={'Create an Event in MatrixCare'}
-                        href={`https://clearviewhcm.matrixcare.com/Zion?zionpagealias=EVENTCREATE&PATIENTID=${row.original.patient_id}&formId=944&categoryName=Safety%20Events&formDescription=Post+Fall+Event+v3`}
-                      >
-                        Create Event
-                      </HyperLink>
-                    ) : trigger_word === 'Wound/Ulcer' ? (
-                      <HyperLink
-                        tooltip_content={'Create an Event in MatrixCare'}
-                        href={`https://clearviewhcm.matrixcare.com/Zion?zionpagealias=EVENTCREATE&PATIENTID=${row.original.patient_id}&formId=948&categoryName=Skin%20Integrity%20Events&formDescription=Wound+Other+Event`}
-                      >
-                        Create Event
-                      </HyperLink>
-                    ) : (
-                      <HyperLink
-                        tooltip_content={'Create an Event in MatrixCare'}
-                        href={`https://clearviewhcm.matrixcare.com/Zion?zionpagealias=EVENTCREATE&PATIENTID=${row.original.patient_id}`}
-                      >
-                        Create Event
-                      </HyperLink>
-                    )
-                  ) : (
-                    row.original.upstream === 'PCC' && <p>Comming Soon</p>
-                  )}
-                </td>
-              </tr>
-            ),
-          )}
-        </tbody>
-      </table>
-    </div>
-  );
+const renderSubComponent = ({ row }: { row: Row<TriggerFinal> }) => {
+  return <TriggerNoteDetail row={row} />;
 };
-const permenentColumnFilters = ['facility_name', 'trigger_word'];
+
 const initialNewTrigger: {
   trigger_word: string;
   internal_facility_id: string[];
@@ -395,16 +136,12 @@ export default function ReviewTriggers() {
   const { locations } = user_applications_locations.find(
     (d) => d['id'] === 'trigger_words',
   ) || { locations: [] };
-  const queryClient = useQueryClient();
   const [additionalFilters, setAdditionalFilters] = useState<{
     label: string;
     value: string;
   } | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
-  const [showCommentModal, setShowCommentModal] = useState(false);
-  const [commentState, setCommentState] = useState({});
-  const putComment = usePutComment(route, queryClient);
   const { isPending, isError, data, error } = useQuery({
     queryKey: ['trigger-words', route],
     queryFn: () => axios.get(`${route}/trigger_final`).then((res) => res.data),
@@ -713,7 +450,7 @@ export default function ReviewTriggers() {
   return (
     <DefaultLayout title={'Clinical Pulse'}>
       <h1 className="text-2xl font-bold mt-3 sm:mt-0">Review Triggers</h1>
-      <div className="grid xl:grid-cols-6 grid-cols-3 sm:gap-3 mt-5">
+      <div className="grid xl:grid-cols-4 grid-cols-3 sm:gap-3 mt-5">
         {predefinedTriggerWords.map((word) => (
           <NumberCards
             key={word}
@@ -1013,7 +750,7 @@ export default function ReviewTriggers() {
             </Modal>
           </div>
           <div className="flex p-1 gap-1.5 flex-wrap">
-            {permenentColumnFilters.map((filter) => (
+            {PERMANENT_COLUMN_FILTERS.map((filter) => (
               <Select
                 classNames={{ ...filterSelectStyles }}
                 key={filter}
@@ -1054,7 +791,7 @@ export default function ReviewTriggers() {
               />
             ))}
             {tableState.columnFilters
-              .filter((f) => !permenentColumnFilters.includes(f.id))
+              .filter((f) => !PERMANENT_COLUMN_FILTERS.includes(f.id))
               .map((filter) =>
                 table.getColumn(filter.id)?.columnDef.meta?.type ===
                 'categorical' ? (
@@ -1301,7 +1038,7 @@ export default function ReviewTriggers() {
                 .filter(
                   (c) =>
                     !tableState.columnFilters.find((f) => f.id === c.id) &&
-                    !permenentColumnFilters.includes(c.id),
+                    !PERMANENT_COLUMN_FILTERS.includes(c.id),
                 )
                 .map((c) => ({
                   label: c.columnDef.header as string,
@@ -1434,11 +1171,6 @@ export default function ReviewTriggers() {
                           <td colSpan={row.getVisibleCells().length}>
                             {renderSubComponent({
                               row,
-                              isOpen: showCommentModal,
-                              setIsOpen: setShowCommentModal,
-                              commentState: commentState,
-                              setCommentState: setCommentState,
-                              putComment,
                             })}
                           </td>
                         </tr>

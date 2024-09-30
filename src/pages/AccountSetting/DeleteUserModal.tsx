@@ -1,11 +1,11 @@
-import Modal from './Modal.tsx';
+import Modal from '../../components/Modal/Modal.tsx';
 import { Trash } from 'lucide-react';
 import { Button } from '@headlessui/react';
 import { memo, useContext, useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios, { AxiosError } from 'axios';
 import { createToast } from '../../hooks/fireToast.tsx';
-import { AuthContext } from '../AuthWrapper.tsx';
+import { AuthContext } from '../../components/AuthWrapper.tsx';
 
 const DeleteUserModal = memo(function DeleteUserModal({ member }: any) {
   const { route } = useContext(AuthContext);

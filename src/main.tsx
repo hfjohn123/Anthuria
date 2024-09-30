@@ -6,7 +6,7 @@ import NHQI from './pages/Dashboard/NHQI';
 import ErrorPage from './common/ErrorPage.tsx';
 import { Toaster } from 'react-hot-toast';
 import CashflowForecast from './pages/Dashboard/CashflowForecast.tsx';
-import ReviewTriggers from './pages/TriggerWords/ReviewTriggers.tsx';
+import ReviewTriggers from './pages/TriggerWords/ReviewTriggers/ReviewTriggers.tsx';
 import SignIn from './pages/Authentication/SignIn/index.tsx';
 import SignUp from './pages/Authentication/SignUp.tsx';
 import {
@@ -29,6 +29,7 @@ import EventTracker from './pages/TriggerWords/EventTracker/EventTracker.tsx';
 import AccountSetting from './pages/AccountSetting/AccountSetting.tsx';
 import ResetPassword from './pages/Authentication/SignIn/ResetPassword.tsx';
 import PrimaryButton from './components/Basic/PrimaryButton.tsx';
+import MDS from './pages/MDS/MDS.tsx';
 
 const queryClient = new QueryClient();
 
@@ -139,6 +140,19 @@ const AccountSettingRoute = createRoute({
   },
 });
 
+const MDSRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/mds',
+  component: () => {
+    return (
+      <SessionAuth>
+        <PageTitle id="mds" />
+        <MDS />
+      </SessionAuth>
+    );
+  },
+});
+
 const ClinicalPulseRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/trigger-words',
@@ -177,6 +191,7 @@ const routeTree = rootRoute.addChildren([
   CashflowForecastRoute,
   AccountSettingRoute,
   ClinicalPulseRoute,
+  MDSRoute,
   SignInRoute,
   SignUpRoute,
   ResetPasswordRoute,
