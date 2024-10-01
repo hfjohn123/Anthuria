@@ -53,6 +53,7 @@ const predefinedTriggerWords = [
   'Abuse',
   'Neglect',
   'Wound/Ulcer',
+  'Weight Change',
 ];
 const PERMANENT_COLUMN_FILTERS = ['facility_name', 'trigger_word'];
 
