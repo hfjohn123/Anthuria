@@ -72,9 +72,8 @@ export default function AuthWrapper({ children }: { children: JSX.Element }) {
   });
 
   useEffect(() => {
-    user_data &&
-      // @ts-expect-error Canny integration
-
+    if (user_data) {
+      // @ts-expect-error Canny Integration
       Canny('identify', {
         appID: '66577caeac17c62e53e3940f',
         user: {
@@ -88,6 +87,14 @@ export default function AuthWrapper({ children }: { children: JSX.Element }) {
           // created: new Date(user.created).toISOString(),
         },
       });
+      // @ts-expect-error Pendo Integration
+      pendo.initialize({
+        account: {
+          id: user_data.email,
+          name: user_data.name,
+        },
+      });
+    }
   }, [user_data]);
   const { pathname } = useLocation();
 
