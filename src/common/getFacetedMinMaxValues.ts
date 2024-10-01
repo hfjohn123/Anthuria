@@ -11,9 +11,9 @@ export default function getFacetedMinMaxValues<TData extends RowData>(): (
       (facetedRowModel) => {
         if (!facetedRowModel) return undefined;
 
-        const uniqueValues = facetedRowModel.flatRows.flatMap(
-          (flatRow) => flatRow.getUniqueValues(columnId) ?? [],
-        );
+        const uniqueValues = facetedRowModel.flatRows
+          .flatMap((flatRow) => flatRow.getUniqueValues(columnId) ?? [])
+          .filter((v) => v !== null);
 
         if (!uniqueValues.length) return;
 

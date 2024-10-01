@@ -250,6 +250,7 @@ export default function ReviewTriggers() {
         accessorKey: 'created_date',
         header: 'Created Date',
         cell: (info) => {
+          if (!info.getValue()) return '';
           const date = new Date(info.getValue() as string | number | Date);
           return `${date.toLocaleDateString()} ${date.toLocaleTimeString(
             navigator.language,
@@ -278,6 +279,7 @@ export default function ReviewTriggers() {
         accessorKey: 'revision_date',
         header: 'Revision Date',
         cell: (info) => {
+          if (!info.getValue()) return '';
           const date = new Date(info.getValue() as string | number | Date);
           return `${date.toLocaleDateString()} ${date.toLocaleTimeString(
             navigator.language,
