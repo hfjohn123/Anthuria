@@ -15,6 +15,8 @@ export const AuthContext = createContext({
     picture: '',
     phone: '',
     hasPassword: false,
+    organization_id: '',
+    organization_name: '',
   },
   user_applications_locations: [
     {
@@ -89,9 +91,14 @@ export default function AuthWrapper({ children }: { children: JSX.Element }) {
       });
       // @ts-expect-error Pendo Integration
       pendo.initialize({
-        account: {
+        visitor: {
           id: user_data.email,
-          name: user_data.name,
+          email: user_data.email,
+          full_name: user_data.name,
+        },
+        account: {
+          id: user_data.organization_id,
+          name: user_data.organization_name,
         },
       });
     }
