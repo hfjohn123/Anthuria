@@ -24,7 +24,6 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   HeaderContext,
-  Row,
   TableState,
   useReactTable,
 } from '@tanstack/react-table';
@@ -116,10 +115,6 @@ const initialTableState: TableState = {
     pageIndex: 0,
     pageSize: 30,
   },
-};
-
-const renderSubComponent = ({ row }: { row: Row<TriggerFinal> }) => {
-  return <TriggerNoteDetail row={row} />;
 };
 
 const initialNewTrigger: {
@@ -1172,9 +1167,7 @@ export default function ReviewTriggers() {
                         <tr>
                           {/* 2nd row is a custom 1 cell row */}
                           <td colSpan={row.getVisibleCells().length}>
-                            {renderSubComponent({
-                              row,
-                            })}
+                            <TriggerNoteDetail row={row} />
                           </td>
                         </tr>
                       )}

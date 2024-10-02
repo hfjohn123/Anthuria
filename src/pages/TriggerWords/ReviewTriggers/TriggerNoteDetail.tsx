@@ -45,14 +45,14 @@ export default function TriggerNoteDetail({ row }: { row: Row<TriggerFinal> }) {
             <span className="font-bold">Patient ID: </span>
             <p>{row.original.patient_id}</p>
           </div>
-        </div>
-        <div className="basis-1/2 pl-10">
-          <div>
+          <div className="mt-2.5">
             <span className="font-bold">Facility Name:</span>
             <p>{row.getValue('facility_name')}</p>
           </div>
+        </div>
+        <div className="basis-1/2 pl-10">
           {row.getValue('created_date') !== null && (
-            <div className="mt-2.5">
+            <div>
               <span className="font-bold">Created Date: </span>
               <p>
                 {new Date(row.getValue('created_date')).toLocaleDateString()}{' '}
@@ -64,6 +64,12 @@ export default function TriggerNoteDetail({ row }: { row: Row<TriggerFinal> }) {
                   },
                 )}
               </p>
+            </div>
+          )}
+          {row.getValue('created_by') !== null && (
+            <div className="mt-2.5">
+              <span className="font-bold">Created By: </span>
+              <p>{row.getValue('created_by')}</p>
             </div>
           )}
           {row.getValue('revision_date') !== null && (
@@ -79,6 +85,12 @@ export default function TriggerNoteDetail({ row }: { row: Row<TriggerFinal> }) {
                   },
                 )}
               </p>
+            </div>
+          )}
+          {row.getValue('revision_by') !== null && (
+            <div className="mt-2.5">
+              <span className="font-bold">Last Revision By: </span>
+              <p>{row.getValue('revision_by')}</p>
             </div>
           )}
         </div>
