@@ -365,6 +365,8 @@ export default function TriggerNoteDetail({ row }: { row: Row<TriggerFinal> }) {
                       >
                         Create Event
                       </HyperLink>
+                    ) : trigger_word === 'Weight Change' ? (
+                      <p>Comming Soon</p>
                     ) : (
                       <HyperLink
                         tooltip_content={'Create an Event in MatrixCare'}
