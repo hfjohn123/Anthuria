@@ -3,11 +3,13 @@ export default function NumberCards({
   value,
   title,
   onClick,
+  ...props
 }: {
   className?: string;
   value: number;
   title: string;
   onClick?: () => void;
+  [key: string]: any;
 }) {
   return (
     <div
@@ -16,6 +18,7 @@ export default function NumberCards({
         ' ' +
         className
       }
+      {...props}
       onClick={onClick}
     >
       <h3 className="sm:whitespace-nowrap text-sm sm:text-base text-center">

@@ -6,7 +6,10 @@ const CheckboxOption = (
     value: string;
   }>,
 ) => (
-  <components.Option {...props}>
+  <components.Option
+    {...props}
+    className={'Option-' + props.label.replace(' ', '-')}
+  >
     <input type="checkbox" checked={props.isSelected} onChange={() => null} />{' '}
     <label>{props.label}</label>
   </components.Option>

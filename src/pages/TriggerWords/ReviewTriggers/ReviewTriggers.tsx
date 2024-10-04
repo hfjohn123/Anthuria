@@ -463,6 +463,7 @@ export default function ReviewTriggers() {
                 ? 'bg-slate-200 dark:bg-slate-600 '
                 : 'bg-white dark:bg-boxdark hover:bg-slate-100 hover:dark:bg-slate-700',
             )}
+            id={'NumberCards-' + word.replace(' ', '-')}
             value={
               table
                 .getColumn('trigger_word')
