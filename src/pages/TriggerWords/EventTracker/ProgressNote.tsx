@@ -65,6 +65,7 @@ export default function ProgressNote({ row }: { row: Row<EventFinal> }) {
                     <ShowMoreText
                       anchorClass="text-primary cursor-pointer block dark:text-secondary "
                       className="whitespace-pre-line"
+                      keepNewLines
                       lines={4}
                     >
                       {s.note}

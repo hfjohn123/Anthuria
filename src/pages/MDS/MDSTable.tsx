@@ -16,7 +16,6 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  Row,
   TableState,
   useReactTable,
 } from '@tanstack/react-table';
@@ -24,32 +23,23 @@ import SortUpIcon from '../../images/icon/sort-up.svg';
 import SortDownIcon from '../../images/icon/sort-down.svg';
 import { Fragment, useState, useEffect } from 'react';
 import PageNavigation from '../../components/Tables/PageNavigation.tsx';
-import { EventFinal } from '../../types/EventFinal.ts';
 import getFacetedUniqueValues from '../../common/getFacetedUniqueValues.ts';
 import getFacetedMinMaxValues from '../../common/getFacetedMinMaxValues.ts';
 import HyperLink from '../../components/Basic/HyerLink.tsx';
 import dateRangeFilterFn from '../../common/dateRangeFilterFn.ts';
+import MDSDetail from '../MDSDetail.tsx';
+import { MDSFinal } from '../../types/MDSFinal.ts';
+import ShowMoreText from 'react-show-more-text';
 
-const PERMANENT_COLUMN_FILTERS = ['facility_name', 'occurrence'];
+const PERMANENT_COLUMN_FILTERS = ['facility_name'];
 
-const renderSubComponent = ({ row }: { row: Row<EventFinal> }) => {
-  return (
-    <div className="bg-slate-50 dark:bg-slate-900 px-3 text-sm py-4 flex flex-col gap-5"></div>
-  );
-};
-export default function MDSTable({
-  data,
-  now,
-}: {
-  data: EventFinal[];
-  now: Date;
-}) {
+export default function MDSTable({ data }: { data: MDSFinal[] }) {
   const [additionalFilters, setAdditionalFilters] = useState<{
     label: string;
     value: string;
   } | null>(null);
 
-  const columns: ColumnDef<EventFinal>[] = [
+  const columns: ColumnDef<MDSFinal>[] = [
     {
       accessorKey: 'facility_name',
       header: 'Facility',
@@ -102,23 +92,9 @@ export default function MDSTable({
       },
     },
     {
-      accessorKey: 'occurrence',
-      cell: (info) => {
-        return (
-          <>
-            <p>{info.row.getValue('occurrence')}</p>
-            <p className="text-body-2">#{info.row.original.event_id}</p>
-          </>
-        );
-      },
-      header: 'Occurrence',
-      filterFn: 'arrIncludesSome',
-      meta: { wrap: false, type: 'categorical' },
-    },
-    {
-      accessorKey: 'occurrence_date',
-      header: 'Occurrence Date',
-      accessorFn: (row) => new Date(row.occurrence_date),
+      accessorKey: 'update_time',
+      header: 'Update Time',
+      accessorFn: (row) => new Date(row.update_time),
       cell: (info) => {
         const date = info.getValue() as Date;
         return `${date.toLocaleDateString()} ${date.toLocaleTimeString(
@@ -136,73 +112,14 @@ export default function MDSTable({
       },
     },
     {
-      accessorKey: 'created_by',
-      header: 'Created By',
-      filterFn: 'arrIncludesSome',
-      meta: {
-        wrap: false,
-        type: 'categorical',
-      },
-    },
-    {
-      accessorKey: 'progress_notes',
-      accessorFn: (row) => {
-        return row.progress_notes.map((s) => s.note);
-      },
-      header: 'Progress Notes',
-      filterFn: 'includesString',
-      meta: {
-        wrap: true,
-        type: 'text',
-      },
-    },
-    {
-      accessorKey: 'open_tasks',
-      accessorFn: (row) => {
-        return row.tasks
-          .filter((t) => t.status !== 'Closed')
-          .map((s) => s.task);
-      },
-      cell: (info) => {
-        return <p>{(info.getValue() as string[]).length} Tasks</p>;
-      },
-      header: 'Open Tasks',
-      filterFn: 'arrIncludesSome',
-      sortingFn: (rowA, rowB, columnId) => {
-        return (rowA.getValue(columnId) as string[]).length <
-          (rowB.getValue(columnId) as string[]).length
-          ? -1
-          : 1;
-      },
-      meta: {
-        wrap: true,
-        type: 'categorical',
-      },
-    },
-    {
-      accessorKey: 'due_tasks',
-      accessorFn: (row) => {
-        return row.tasks
-          .filter((t) => t.status !== 'Closed')
-          .filter(
-            (t) =>
-              new Date(t.due) < new Date(now.getTime() + 1000 * 60 * 60 * 24),
-          )
-          .map((s) => s.task);
-      },
+      accessorKey: 'existing_icd10',
+      header: 'Existing ICD-10',
       cell: (info) => {
         return (
-          <p className="text-red-warning font-semibold">
-            {(info.getValue() as string[]).length} Tasks
-          </p>
+          <ShowMoreText lines={2} more={''}>
+            {(info.getValue() as string[]).join(', ')}
+          </ShowMoreText>
         );
-      },
-      header: 'Due Today',
-      sortingFn: (rowA, rowB, columnId) => {
-        return (rowA.getValue(columnId) as string[]).length <
-          (rowB.getValue(columnId) as string[]).length
-          ? -1
-          : 1;
       },
       filterFn: 'arrIncludesSome',
       meta: {
@@ -233,12 +150,7 @@ export default function MDSTable({
     },
     expanded: {},
     grouping: [],
-    sorting: [
-      {
-        id: 'due_tasks',
-        desc: true,
-      },
-    ],
+    sorting: [],
     columnFilters: [],
     columnPinning: {
       left: [],
@@ -250,23 +162,15 @@ export default function MDSTable({
       : window.screen.width < 1024
         ? {
             facility_name: false,
-            occurrence: true,
             patient_name: true,
-            occurrence_date: true,
-            created_by: true,
-            open_tasks: true,
-            due_tasks: true,
-            progress_notes: false,
+            update_time: true,
+            existing_icd10: true,
           }
         : {
             facility_name: false,
-            occurrence: true,
             patient_name: true,
-            occurrence_date: true,
-            created_by: true,
-            open_tasks: true,
-            due_tasks: true,
-            progress_notes: false,
+            update_time: true,
+            existing_icd10: true,
           },
     pagination: {
       pageIndex: 0,
@@ -291,6 +195,8 @@ export default function MDSTable({
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
   });
+
+  console.log(tableState.columnFilters);
 
   useEffect(() => {
     localStorage.setItem(
@@ -724,9 +630,7 @@ export default function MDSTable({
                   {row.getIsExpanded() && (
                     <tr>
                       <td colSpan={row.getVisibleCells().length}>
-                        {renderSubComponent({
-                          row,
-                        })}
+                        <MDSDetail row={row} />
                       </td>
                     </tr>
                   )}

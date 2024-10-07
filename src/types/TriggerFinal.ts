@@ -13,9 +13,9 @@ export type TriggerFinal = {
   trigger_words: {
     trigger_word: string;
     summary: string;
-    is_thumb_up: boolean;
+    is_thumb_up?: boolean;
     update_time: Date;
-    comment: string;
+    comment?: string;
     event_ids: number[];
   }[];
 };

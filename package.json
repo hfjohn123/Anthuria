@@ -52,6 +52,7 @@
     "supertokens-auth-react": "^0.45.1"
   },
   "devDependencies": {
+    "@faker-js/faker": "^9.0.3",
     "@tanstack/eslint-plugin-query": "^5.51.15",
     "@tanstack/router-devtools": "^1.56.2",
     "@tanstack/router-plugin": "^1.56.2",

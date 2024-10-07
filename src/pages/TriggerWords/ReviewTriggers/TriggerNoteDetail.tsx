@@ -150,9 +150,10 @@ export default function TriggerNoteDetail({ row }: { row: Row<TriggerFinal> }) {
           <span className="font-bold">Progress Note:</span>
           <ShowMoreText
             className="whitespace-pre-line"
+            keepNewLines
             anchorClass="text-primary cursor-pointer block dark:text-secondary "
           >
-            <p>{row.getValue('progress_note')}</p>
+            {row.getValue('progress_note') as string}
           </ShowMoreText>
         </div>
         <div className="mt-2.5">
@@ -267,6 +268,7 @@ export default function TriggerNoteDetail({ row }: { row: Row<TriggerFinal> }) {
                 <td className="pr-10">
                   <ShowMoreText
                     className="whitespace-pre-line"
+                    keepNewLines
                     anchorClass="text-primary cursor-pointer block dark:text-secondary"
                   >
                     {summary}
