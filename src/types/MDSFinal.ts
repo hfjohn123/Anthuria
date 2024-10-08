@@ -12,9 +12,8 @@ export type MDSFinal = {
   new_icd10: ICD10[];
 };
 
-type ICD10 = {
+export type ICD10 = {
   icd10: string;
-  old_icd10?: string;
   progress_note: ProgressNoteAndSummary[];
   is_thumb_up: boolean;
   comment: string;
@@ -56,15 +55,16 @@ function generateRandomICD10(): MDSFinal {
     facility_name: faker.company.name(),
     upstream: 'MTX',
     update_time: new Date(),
-    function_score: faker.number.int({ min: 0, max: 100 }),
+    function_score: faker.number.int({ min: 1, max: 24 }),
     existing_icd10: Array.from(
-      { length: faker.number.int({ min: 40, max: 40 }) },
+      { length: faker.number.int({ min: 0, max: 12 }) },
       () => icd10,
     ),
-    new_icd10: [
-      {
+
+    new_icd10: Array.from(
+      { length: faker.number.int({ min: 1, max: 9 }) },
+      () => ({
         icd10: icd10,
-        old_icd10: 'B00-B09',
         progress_note: [
           {
             progress_note: faker.lorem.paragraph(),
@@ -73,8 +73,8 @@ function generateRandomICD10(): MDSFinal {
         ],
         is_thumb_up: faker.datatype.boolean(),
         comment: faker.lorem.paragraph(),
-      },
-    ],
+      }),
+    ),
   };
 }
 export function generateMDSData(count: number): MDSFinal[] {

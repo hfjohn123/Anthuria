@@ -1,5 +1,5 @@
 import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
-import { Input } from '@headlessui/react';
+import { Button, Input } from '@headlessui/react';
 import Select from 'react-select';
 import filterSelectStyles from '../../components/Select/filterSelectStyles.ts';
 import filterValueContainer from '../../components/Select/FilterValueContainer.tsx';
@@ -27,9 +27,8 @@ import getFacetedUniqueValues from '../../common/getFacetedUniqueValues.ts';
 import getFacetedMinMaxValues from '../../common/getFacetedMinMaxValues.ts';
 import HyperLink from '../../components/Basic/HyerLink.tsx';
 import dateRangeFilterFn from '../../common/dateRangeFilterFn.ts';
-import MDSDetail from '../MDSDetail.tsx';
+import MDSDetail from './MDSDetail.tsx';
 import { MDSFinal } from '../../types/MDSFinal.ts';
-import ShowMoreText from 'react-show-more-text';
 
 const PERMANENT_COLUMN_FILTERS = ['facility_name'];
 
@@ -44,7 +43,7 @@ export default function MDSTable({ data }: { data: MDSFinal[] }) {
       accessorKey: 'facility_name',
       header: 'Facility',
       meta: {
-        wrap: false,
+        wrap: 'whitespace-nowrap',
         type: 'categorical',
       },
       filterFn: 'arrIncludesSome',
@@ -87,7 +86,7 @@ export default function MDSTable({ data }: { data: MDSFinal[] }) {
       header: 'Patient',
       filterFn: 'includesString',
       meta: {
-        wrap: 'pre',
+        wrap: 'whitespace-pre',
         type: 'text',
       },
     },
@@ -107,7 +106,7 @@ export default function MDSTable({ data }: { data: MDSFinal[] }) {
       },
       filterFn: dateRangeFilterFn,
       meta: {
-        wrap: false,
+        wrap: 'whitespace-nowrap',
         type: 'daterange',
       },
     },
@@ -116,19 +115,35 @@ export default function MDSTable({ data }: { data: MDSFinal[] }) {
       header: 'Existing ICD-10',
       cell: (info) => {
         return (
-          <ShowMoreText lines={2} more={''}>
+          <p className="line-clamp-2">
             {(info.getValue() as string[]).join(', ')}
-          </ShowMoreText>
+          </p>
         );
       },
       filterFn: 'arrIncludesSome',
       meta: {
-        wrap: true,
+        wrap: 'whitespace-normal',
+        type: 'categorical',
+      },
+    },
+    {
+      accessorKey: 'new_icd10',
+      accessorFn: (row) => row.new_icd10.map((d) => d.icd10),
+      header: 'New ICD-10',
+      cell: (info) => {
+        return (
+          <p className="line-clamp-2">
+            {(info.getValue() as string[]).join(', ')}
+          </p>
+        );
+      },
+      filterFn: 'arrIncludesSome',
+      meta: {
+        wrap: 'whitespace-normal',
         type: 'categorical',
       },
     },
   ];
-
   const eventTackerUserVisibilitySettings = localStorage.getItem(
     'eventTackerUserVisibilitySettings',
   );
@@ -195,8 +210,6 @@ export default function MDSTable({ data }: { data: MDSFinal[] }) {
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
   });
-
-  console.log(tableState.columnFilters);
 
   useEffect(() => {
     localStorage.setItem(
@@ -470,7 +483,7 @@ export default function MDSTable({ data }: { data: MDSFinal[] }) {
                       }));
                   }}
                 />
-                <button
+                <Button
                   onClick={() =>
                     setTableState((prev) => ({
                       ...prev,
@@ -490,7 +503,7 @@ export default function MDSTable({ data }: { data: MDSFinal[] }) {
                   >
                     <path d="M14.348 14.849c-0.469 0.469-1.229 0.469-1.697 0l-2.651-3.030-2.651 3.029c-0.469 0.469-1.229 0.469-1.697 0-0.469-0.469-0.469-1.229 0-1.697l2.758-3.15-2.759-3.152c-0.469-0.469-0.469-1.228 0-1.697s1.228-0.469 1.697 0l2.652 3.031 2.651-3.031c0.469-0.469 1.228-0.469 1.697 0s0.469 1.229 0 1.697l-2.758 3.152 2.758 3.15c0.469 0.469 0.469 1.229 0 1.698z"></path>
                   </svg>
-                </button>
+                </Button>
               </div>
             ) : null,
           )}
@@ -615,7 +628,7 @@ export default function MDSTable({ data }: { data: MDSFinal[] }) {
                       return (
                         <td
                           key={cell.id}
-                          className={`py-2 px-3 w-[${cell.column.getSize() || 'auto'}] text-sm ${cell.column.columnDef.meta?.wrap == 'pre' ? 'whitespace-pre-wrap' : cell.column.columnDef.meta?.wrap ? '' : 'whitespace-nowrap'} ${row.getIsExpanded() && 'bg-slate-100 dark:bg-slate-700'}`}
+                          className={`py-2 px-3 w-[${cell.column.getSize() || 'auto'}] text-sm ${cell.column.columnDef.meta?.wrap} ${row.getIsExpanded() && 'bg-slate-100 dark:bg-slate-700'}`}
                           role="button"
                           onClick={row.getToggleExpandedHandler()}
                         >
