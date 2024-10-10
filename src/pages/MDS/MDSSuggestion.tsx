@@ -65,7 +65,7 @@ export default function MDSSuggestion({ icd10 }: { icd10: NTAICD10[] }) {
                       data-tooltip-content={explanation}
                       className="whitespace-normal"
                     >
-                      {highlights}
+                      Highlights: {highlights}
                     </span>
                     {index <
                       (info.getValue() as ProgressNoteAndSummary[]).length -
