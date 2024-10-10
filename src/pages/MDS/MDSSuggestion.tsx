@@ -46,7 +46,7 @@ export default function MDSSuggestion({ icd10 }: { icd10: NTAICD10[] }) {
       header: 'Comorbidity',
       filterFn: 'arrIncludesSome',
       meta: {
-        wrap: 'whitespace-nowrap',
+        wrap: 'whitespace-normal',
         type: 'categorical',
       },
     },
@@ -135,6 +135,9 @@ export default function MDSSuggestion({ icd10 }: { icd10: NTAICD10[] }) {
       header: 'Actions',
       cell: () => {
         return <p>Coming Soon</p>;
+      },
+      meta: {
+        wrap: 'whitespace-nowrap',
       },
     },
   ];
@@ -276,13 +279,13 @@ export default function MDSSuggestion({ icd10 }: { icd10: NTAICD10[] }) {
             </tr>
           ))}
         </thead>
-        <tbody>
+        <tbody className="w-full">
           {table.getRowModel().rows.map((row, index) => {
             return (
               <tr
                 key={row.id}
                 className={clsx(
-                  'border-b-[1.5px] border-stroke dark:border-strokedark',
+                  'border-b-[1.5px] border-stroke dark:border-strokedark w-full',
                   index > 2 && !expanded && 'hidden',
                 )}
               >
@@ -291,7 +294,8 @@ export default function MDSSuggestion({ icd10 }: { icd10: NTAICD10[] }) {
                     <td
                       key={cell.id}
                       className={clsx(
-                        'py-2 border-b-[1.5px] border-stroke dark:border-strokedark',
+                        'py-2 border-b-[1.5px] border-stroke dark:border-strokedark max-w-[40vw]',
+                        cell.column.columnDef.meta?.wrap,
                       )}
                     >
                       {
