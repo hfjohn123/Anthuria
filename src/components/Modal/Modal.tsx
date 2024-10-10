@@ -1,5 +1,6 @@
 import {
   Button,
+  CloseButton,
   Dialog,
   DialogBackdrop,
   DialogPanel,
@@ -7,6 +8,7 @@ import {
 } from '@headlessui/react';
 import classNames from 'classnames';
 import { memo } from 'react';
+import { X } from '@phosphor-icons/react';
 
 const Modal = memo(function Modal({
   children,
@@ -14,6 +16,7 @@ const Modal = memo(function Modal({
   setIsOpen,
   title,
   button,
+  hasCloseButton = true,
   classNameses,
   onOpenCallback,
   onCloseCallback,
@@ -23,6 +26,7 @@ const Modal = memo(function Modal({
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
   title?: string;
   button: JSX.Element;
+  hasCloseButton?: boolean;
   classNameses?: {
     title?: string;
     button?: string;
@@ -51,15 +55,27 @@ const Modal = memo(function Modal({
         className="relative"
       >
         <DialogBackdrop className="fixed inset-0 bg-black/30 z-999" />
-        <div className="fixed inset-0 flex w-screen items-center justify-center p-4 z-999">
-          <DialogPanel className="space-y-4 rounded-md bg-white dark:bg-slate-700 p-12">
-            <DialogTitle
-              className={classNames('text-2xl font-bold', classNameses?.title)}
-            >
-              {title}
-            </DialogTitle>
-            {children}
-          </DialogPanel>
+        <div className="fixed inset-0  w-screen overflow-y-auto p-4 z-999">
+          <div className="flex min-h-full items-center justify-center">
+            <DialogPanel className="space-y-4 rounded-md bg-white dark:bg-slate-700">
+              <div className="flex items-center justify-between border-b p-4">
+                <DialogTitle
+                  className={classNames(
+                    'text-2xl font-bold',
+                    classNameses?.title,
+                  )}
+                >
+                  {title}
+                </DialogTitle>
+                {hasCloseButton && (
+                  <CloseButton>
+                    <X className="size-6 hover:text-primary" />
+                  </CloseButton>
+                )}
+              </div>
+              <div className="pb-4">{children}</div>
+            </DialogPanel>
+          </div>
         </div>
       </Dialog>
     </>

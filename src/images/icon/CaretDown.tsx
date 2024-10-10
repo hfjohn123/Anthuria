@@ -1,9 +1,15 @@
-export default function CaretDown({ open }: { open: boolean }) {
+export default function CaretDown({
+  open,
+  className,
+}: {
+  open: boolean;
+  className?: string;
+}) {
   return (
     <svg
       className={`absolute right-4 top-1/2 -translate-y-1/2 fill-current ${
         open && 'rotate-180'
-      }`}
+      } ${className || ''}`}
       width="20"
       height="20"
       viewBox="0 0 20 20"

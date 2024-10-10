@@ -169,7 +169,7 @@ function Password({ setIsPasswordless }: any) {
             title="Forgot Password"
           >
             <form
-              className="flex flex-col gap-4"
+              className="flex flex-col gap-4 px-4"
               onSubmit={(e) => {
                 e.preventDefault();
                 e.stopPropagation();

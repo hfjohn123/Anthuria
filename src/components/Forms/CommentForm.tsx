@@ -21,7 +21,7 @@ export default function CommentForm({
   const putComment = usePutComment(route, queryClient);
   return (
     <form
-      className="flex flex-col gap-5 justify-center w-full sm:w-[480px]"
+      className="flex flex-col gap-5 justify-center w-full sm:w-[480px] px-4"
       autoFocus
       onSubmit={(e) => {
         e.preventDefault();

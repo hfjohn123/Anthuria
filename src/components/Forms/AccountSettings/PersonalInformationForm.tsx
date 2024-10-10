@@ -185,7 +185,7 @@ export default function PersonalInformationForm({
                   setIsOpen={setShowPasswordModal}
                 >
                   <form
-                    className="flex flex-col gap-4.5"
+                    className="flex flex-col gap-4.5 px-4"
                     onSubmit={(event) => {
                       event.preventDefault();
                       event.stopPropagation();

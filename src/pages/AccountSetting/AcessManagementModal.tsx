@@ -110,7 +110,7 @@ const AccessManagementModal = memo(function AccessManagementModal({
       }}
     >
       <form
-        className="sm:w-150 w-screen"
+        className="sm:w-150 w-screen px-4"
         onSubmit={(e) => {
           e.preventDefault();
           const data = {
@@ -133,7 +133,7 @@ const AccessManagementModal = memo(function AccessManagementModal({
           setEditModal(false);
         }}
       >
-        <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
+        <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row ">
           <Field className="relative w-full sm:w-1/2">
             <Label className="mb-3 block text-sm font-medium text-black dark:text-white">
               Full Name

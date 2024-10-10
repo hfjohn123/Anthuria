@@ -121,6 +121,12 @@ export default function MDSTable({ data }: { data: MDSFinal[] }) {
         );
       },
       filterFn: 'arrIncludesSome',
+      sortingFn: (rowA, rowB) => {
+        return rowA.original.existing_icd10.length <
+          rowB.original.existing_icd10.length
+          ? -1
+          : 1;
+      },
       meta: {
         wrap: 'whitespace-normal',
         type: 'categorical',
@@ -128,7 +134,7 @@ export default function MDSTable({ data }: { data: MDSFinal[] }) {
     },
     {
       accessorKey: 'new_icd10',
-      accessorFn: (row) => row.new_icd10.map((d) => d.icd10),
+      accessorFn: (row) => row.new_nta_icd10.map((d) => d.icd10),
       header: 'New ICD-10',
       cell: (info) => {
         return (
@@ -137,6 +143,12 @@ export default function MDSTable({ data }: { data: MDSFinal[] }) {
           </p>
         );
       },
+      sortingFn: (rowA, rowB) => {
+        return rowA.original.new_nta_icd10.length <
+          rowB.original.new_nta_icd10.length
+          ? -1
+          : 1;
+      },
       filterFn: 'arrIncludesSome',
       meta: {
         wrap: 'whitespace-normal',
@@ -144,9 +156,7 @@ export default function MDSTable({ data }: { data: MDSFinal[] }) {
       },
     },
   ];
-  const eventTackerUserVisibilitySettings = localStorage.getItem(
-    'eventTackerUserVisibilitySettings',
-  );
+
   const [tableState, setTableState] = useState<TableState>({
     globalFilter: '',
     columnSizing: {},
@@ -172,9 +182,8 @@ export default function MDSTable({ data }: { data: MDSFinal[] }) {
       right: [],
     },
     columnOrder: [],
-    columnVisibility: eventTackerUserVisibilitySettings
-      ? JSON.parse(eventTackerUserVisibilitySettings)
-      : window.screen.width < 1024
+    columnVisibility:
+      window.screen.width < 1024
         ? {
             facility_name: false,
             patient_name: true,
@@ -213,7 +222,7 @@ export default function MDSTable({ data }: { data: MDSFinal[] }) {
 
   useEffect(() => {
     localStorage.setItem(
-      'eventTackerUserVisibilitySettings',
+      'MDSUserVisibilitySettings',
       JSON.stringify(tableState.columnVisibility),
     );
   }, [tableState.columnVisibility]);

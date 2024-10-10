@@ -531,6 +531,7 @@ export default function ReviewTriggers() {
               setIsOpen(false);
               setNewTriggerWord(initialNewTrigger);
             }}
+            className="px-4"
           >
             <div className="flex flex-col gap-4">
               <Field>
@@ -685,7 +686,7 @@ export default function ReviewTriggers() {
                 button: 'size-6 mr-2 text-gray-900 hover:text-primary',
               }}
             >
-              <div>
+              <div className="px-4">
                 <label>Column Visibility</label>
                 <Select
                   options={table

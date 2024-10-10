@@ -62,7 +62,7 @@ const DeleteUserModal = memo(function DeleteUserModal({ member }: any) {
       button={<Trash />}
       title={`Delete ${member.name}- ${member.email} ?`}
     >
-      <div className=" flex justify-end gap-5">
+      <div className=" flex justify-end gap-5 px-4">
         <Button
           className="flex justify-center rounded border border-stroke py-2 px-6 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white"
           onClick={() => {

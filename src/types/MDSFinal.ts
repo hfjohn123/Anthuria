@@ -7,25 +7,31 @@ export type MDSFinal = {
   facility_name: string;
   upstream: string;
   update_time: Date;
-  function_score: number;
+  nta_score: number;
+  nta_group: string;
+  nta_score_gap_score: number;
+  nta_score_recommendation: number;
+  nta_group_recommendation: string;
   existing_icd10: string[];
-  new_icd10: ICD10[];
+  new_nta_icd10: NTAICD10[];
 };
 
-export type ICD10 = {
+export type NTAICD10 = {
   icd10: string;
+  comorbidity: string;
   progress_note: ProgressNoteAndSummary[];
   is_thumb_up: boolean;
   comment: string;
 };
 
-type ProgressNoteAndSummary = {
+export type ProgressNoteAndSummary = {
+  highlights: string;
   progress_note: string;
-  summary: string;
+  explanation: string;
 };
 
 function generateRandomICD10(): MDSFinal {
-  const icd10 = faker.helpers.arrayElement([
+  const icd10 = [
     'A00-A09',
     'A10-A19',
     'A20-A28',
@@ -44,7 +50,7 @@ function generateRandomICD10(): MDSFinal {
     'B60-B69',
     'B70-B79',
     'B80-B89',
-  ]);
+  ];
 
   return {
     patient_id: faker.number
@@ -54,23 +60,42 @@ function generateRandomICD10(): MDSFinal {
     internal_facility_id: faker.string.uuid(),
     facility_name: faker.company.name(),
     upstream: 'MTX',
-    update_time: new Date(),
-    function_score: faker.number.int({ min: 1, max: 24 }),
-    existing_icd10: Array.from(
-      { length: faker.number.int({ min: 0, max: 12 }) },
-      () => icd10,
+    update_time: faker.date.anytime(),
+    nta_score: faker.number.int({ min: 0, max: 100 }),
+    nta_group: faker.helpers.arrayElement([
+      'Low',
+      'Medium',
+      'High',
+      'Very High',
+      'Extremely High',
+    ]),
+    nta_score_gap_score: faker.number.int({ min: 0, max: 100 }),
+    nta_score_recommendation: faker.number.int({ min: 0, max: 100 }),
+    nta_group_recommendation: faker.helpers.arrayElement([
+      'Low',
+      'Medium',
+      'High',
+      'Very High',
+      'Extremely High',
+    ]),
+    existing_icd10: faker.helpers.arrayElements(
+      icd10,
+      faker.number.int({ min: 0, max: 9 }),
     ),
-
-    new_icd10: Array.from(
+    new_nta_icd10: Array.from(
       { length: faker.number.int({ min: 1, max: 9 }) },
       () => ({
-        icd10: icd10,
-        progress_note: [
-          {
+        icd10: faker.helpers.arrayElement(icd10),
+        comorbidity: faker.lorem.word(),
+
+        progress_note: faker.helpers.uniqueArray(
+          () => ({
+            highlights: faker.lorem.sentence(),
             progress_note: faker.lorem.paragraph(),
-            summary: faker.lorem.paragraph(),
-          },
-        ],
+            explanation: faker.lorem.paragraph(),
+          }),
+          faker.number.int({ min: 1, max: 5 }),
+        ),
         is_thumb_up: faker.datatype.boolean(),
         comment: faker.lorem.paragraph(),
       }),

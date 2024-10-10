@@ -61,7 +61,7 @@ export default function InviteUserModal() {
       onOpenCallback={() => setInviteModalData({ email: '', name: '' })}
     >
       <form
-        className="flex flex-col gap-3 w-100"
+        className="flex flex-col gap-3 w-100 px-4"
         onSubmit={(event) => {
           event.preventDefault();
           inviteUser.mutate(inviteModalData);
