@@ -57,7 +57,7 @@ const Header = (props: {
           </button>
           {/* <!-- Hamburger Toggle BTN --> */}
         </div>
-        <h1 className="text-title-md2 font-bold text-black dark:text-white	">
+        <h1 className="sm:text-title-md2 sm:pl-0 pl-1 font-bold text-black dark:text-white	">
           {props.title}
         </h1>
         <div className="flex items-center gap-3 2xsm:gap-7">
