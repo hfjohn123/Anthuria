@@ -112,7 +112,7 @@ export default function MDSTable({ data }: { data: MDSFinal[] }) {
     },
     {
       accessorKey: 'existing_icd10',
-      header: 'Existing ICD-10',
+      header: 'Existing ICD-10 Related to NTA',
       cell: (info) => {
         return (
           <p className="line-clamp-2">
