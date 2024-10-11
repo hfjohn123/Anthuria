@@ -39,7 +39,9 @@ export default function PatientInfo({ row }: { row: Row<MDSFinal> }) {
         </div>
         <div className="basis-1/2 pl-10">
           <div className="">
-            <span className="font-bold">Existing ICD-10 Code: </span>
+            <span className="font-bold">
+              Existing ICD-10 Code Related to NTA:{' '}
+            </span>
             {row.getValue<string[]>('existing_icd10').length === 0 ? (
               <p>No ICD-10 Codes</p>
             ) : (
