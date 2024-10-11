@@ -36,8 +36,10 @@ export default function MDSSuggestion({ icd10 }: { icd10: NTAICD10[] }) {
       accessorKey: 'icd10',
       header: 'Potential ICD-10 Code',
       filterFn: 'arrIncludesSome',
+      cell: (info) => {
+        return <p className="whitespace-nowrap">{info.getValue() as string}</p>;
+      },
       meta: {
-        wrap: 'whitespace-nowrap',
         type: 'categorical',
       },
     },
@@ -45,8 +47,14 @@ export default function MDSSuggestion({ icd10 }: { icd10: NTAICD10[] }) {
       accessorKey: 'comorbidity',
       header: 'Comorbidity',
       filterFn: 'arrIncludesSome',
+      cell: (info) => {
+        return (
+          <p className="whitespace-normal max-w-[30vw]">
+            {info.getValue() as string}
+          </p>
+        );
+      },
       meta: {
-        wrap: 'whitespace-normal',
         type: 'categorical',
       },
     },
@@ -55,7 +63,7 @@ export default function MDSSuggestion({ icd10 }: { icd10: NTAICD10[] }) {
       accessorFn: (row) => row.progress_note,
       cell: (info) => {
         return (
-          <>
+          <div className="max-w-[30vw]">
             <p className="line-clamp-3 whitespace-normal">
               {(info.getValue() as ProgressNoteAndSummary[]).map(
                 ({ highlights, explanation }, index) => (
@@ -83,13 +91,10 @@ export default function MDSSuggestion({ icd10 }: { icd10: NTAICD10[] }) {
               id="explanation-tooltip"
               className="whitespace-normal sm:max-w-[40vw] max-w-[95vw]"
             />
-          </>
+          </div>
         );
       },
       header: 'Progress Note/Explanation',
-      meta: {
-        wrap: 'whitespace-normal',
-      },
     },
     {
       accessorKey: 'review',
@@ -134,10 +139,7 @@ export default function MDSSuggestion({ icd10 }: { icd10: NTAICD10[] }) {
       accessorKey: 'action',
       header: 'Actions',
       cell: () => {
-        return <p>Coming Soon</p>;
-      },
-      meta: {
-        wrap: 'whitespace-nowrap',
+        return <p className="whitespace-nowrap">Coming Soon</p>;
       },
     },
   ];
@@ -294,7 +296,7 @@ export default function MDSSuggestion({ icd10 }: { icd10: NTAICD10[] }) {
                     <td
                       key={cell.id}
                       className={clsx(
-                        'py-2 border-b-[1.5px] border-stroke dark:border-strokedark max-w-[40vw]',
+                        'py-2 border-b-[1.5px] border-stroke dark:border-strokedark',
                         cell.column.columnDef.meta?.wrap,
                       )}
                     >
