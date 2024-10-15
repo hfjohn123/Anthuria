@@ -429,10 +429,9 @@ export default function ReviewTriggers() {
   const [isRefetching, setIsRefetching] = useState(false);
 
   useEffect(() => {
-    if (localStorage.getItem('clearStorage') !== '3') {
-      localStorage.removeItem('recent');
+    if (localStorage.getItem('clearStorage') !== '4') {
       localStorage.removeItem('userVisibilitySettings');
-      localStorage.setItem('clearStorage', '3');
+      localStorage.setItem('clearStorage', '4');
     } else {
       const userVisibilitySettings = localStorage.getItem(
         'userVisibilitySettings',
