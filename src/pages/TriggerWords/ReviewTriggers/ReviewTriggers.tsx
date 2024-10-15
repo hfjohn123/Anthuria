@@ -463,7 +463,7 @@ export default function ReviewTriggers() {
                 ? 'bg-slate-200 dark:bg-slate-600 '
                 : 'bg-white dark:bg-boxdark hover:bg-slate-100 hover:dark:bg-slate-700',
             )}
-            id={'NumberCards-' + word.replace(' ', '-')}
+            id={'NumberCards-' + word.replace(' ', '-').replace(/\W/g, '-')}
             value={
               table
                 .getColumn('trigger_word')
@@ -752,6 +752,7 @@ export default function ReviewTriggers() {
           <div className="flex p-1 gap-1.5 flex-wrap">
             {PERMANENT_COLUMN_FILTERS.map((filter) => (
               <Select
+                menuIsOpen={true}
                 classNames={{ ...filterSelectStyles }}
                 key={filter}
                 placeholder={
