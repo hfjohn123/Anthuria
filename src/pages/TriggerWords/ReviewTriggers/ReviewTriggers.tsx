@@ -752,7 +752,6 @@ export default function ReviewTriggers() {
           <div className="flex p-1 gap-1.5 flex-wrap">
             {PERMANENT_COLUMN_FILTERS.map((filter) => (
               <Select
-                menuIsOpen={true}
                 classNames={{ ...filterSelectStyles }}
                 key={filter}
                 placeholder={
