@@ -76,11 +76,6 @@ const usePutComment = (route: string, queryClient: any) => {
         'Comment Update Failed',
       );
     },
-    onSettled: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['trigger_word_view_trigger_word_detail_final', route],
-      });
-    },
   });
 
   return { mutate, ...rest };

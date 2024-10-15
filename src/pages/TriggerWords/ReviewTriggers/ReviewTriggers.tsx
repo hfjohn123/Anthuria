@@ -411,8 +411,9 @@ export default function ReviewTriggers() {
         accessorKey: 'has_reviewed',
         header: 'Reviewed',
         accessorFn: (row) => {
-          return row.trigger_words.filter((d) => !d.is_thumb_up && !d.comment)
-            .length > 0
+          return row.trigger_words.filter(
+            (d) => !d.is_thumb_up && d.comment === null,
+          ).length > 0
             ? 'No'
             : 'Yes';
         },
