@@ -73,7 +73,7 @@ const Modal = memo(function Modal({
                   </CloseButton>
                 )}
               </div>
-              <div className="pb-4">{children}</div>
+              <div className="pb-4 sm:max-w-[80vw]">{children}</div>
             </DialogPanel>
           </div>
         </div>

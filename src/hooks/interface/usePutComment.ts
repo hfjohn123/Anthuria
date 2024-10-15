@@ -34,9 +34,11 @@ const usePutComment = (route: string, queryClient: any) => {
       comment: string;
       is_thumb_up: boolean;
     }) => {
-      await queryClient.cancelQueries({ queryKey: ['trigger-words', route] });
-      const previousData = queryClient.getQueryData<any[]>([
-        'trigger-words',
+      await queryClient.cancelQueries({
+        queryKey: ['trigger_word_view_trigger_word_detail_final', route],
+      });
+      const previousData = queryClient.getQueryData([
+        'trigger_word_view_trigger_word_detail_final',
         route,
       ]);
       if (previousData) {
@@ -51,7 +53,10 @@ const usePutComment = (route: string, queryClient: any) => {
             }
           }
         }
-        queryClient.setQueryData(['trigger-words', route], newData);
+        queryClient.setQueryData(
+          ['trigger_word_view_trigger_word_detail_final', route],
+          newData,
+        );
       }
       return { previousData };
     },
@@ -72,7 +77,9 @@ const usePutComment = (route: string, queryClient: any) => {
       );
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['trigger-words', route] });
+      queryClient.invalidateQueries({
+        queryKey: ['trigger_word_view_trigger_word_detail_final', route],
+      });
     },
   });
 
