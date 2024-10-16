@@ -279,11 +279,13 @@ export default function TriggerNoteDetail({ row }: { row: Row<TriggerFinal> }) {
                     {is_thumb_up ? (
                       <ThumbsUp
                         className="size-4 text-meta-3 cursor-pointer"
+                        id="thumbs_up"
                         weight="fill"
                       />
                     ) : (
                       <ThumbsUp
                         className="size-4 cursor-pointer"
+                        id="thumbs_up"
                         onClick={() =>
                           putComment.mutate({
                             progress_note_id: row.original.progress_note_id,
@@ -305,6 +307,7 @@ export default function TriggerNoteDetail({ row }: { row: Row<TriggerFinal> }) {
                         button={
                           <ThumbsDown
                             className="size-4 cursor-pointer text-meta-1"
+                            id="thumbs_down"
                             weight="fill"
                           />
                         }
@@ -327,7 +330,10 @@ export default function TriggerNoteDetail({ row }: { row: Row<TriggerFinal> }) {
                         }}
                         title={'What is Going Wrong?'}
                         button={
-                          <ThumbsDown className="size-4 cursor-pointer" />
+                          <ThumbsDown
+                            className="size-4 cursor-pointer"
+                            id="thumbs_down"
+                          />
                         }
                       >
                         <CommentForm
