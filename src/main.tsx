@@ -26,6 +26,7 @@ import EmailPassword from 'supertokens-auth-react/recipe/emailpassword';
 import Session, { SessionAuth } from 'supertokens-auth-react/recipe/session';
 import PageTitle from './components/PageTitle.tsx';
 import EventTracker from './pages/TriggerWords/EventTracker/EventTracker.tsx';
+import IncidentTracker from './pages/TriggerWords/IncidentTracker/IncidentTracker.tsx';
 import AccountSetting from './pages/AccountSetting/AccountSetting.tsx';
 import ResetPassword from './pages/Authentication/SignIn/ResetPassword.tsx';
 import PrimaryButton from './components/Basic/PrimaryButton.tsx';
@@ -161,6 +162,14 @@ const ClinicalPulseRoute = createRoute({
   },
 });
 
+const IncidentTrackerRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/trigger-words/incident-tracker',
+  component: () => {
+    return <IncidentTracker />;
+  },
+});
+
 const SignInRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/auth',
@@ -188,6 +197,7 @@ const routeTree = rootRoute.addChildren([
   NHQIRoute,
   ReviewTriggersRoute,
   EventTrackerRoute,
+  IncidentTrackerRoute,
   CashflowForecastRoute,
   AccountSettingRoute,
   ClinicalPulseRoute,

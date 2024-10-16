@@ -281,6 +281,20 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                 </Link>
                               </li>
                             )}
+                            {user_data.organization_id !==
+                              'clearview_healthcare_management' && (
+                              <li>
+                                <Link
+                                  to="/trigger-words/incident-tracker"
+                                  activeProps={{ className: '!text-white' }}
+                                  className={
+                                    'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white '
+                                  }
+                                >
+                                  Incident Tracker
+                                </Link>
+                              </li>
+                            )}
                           </ul>
                         </div>
                       </>
