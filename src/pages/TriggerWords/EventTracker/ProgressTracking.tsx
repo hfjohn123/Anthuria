@@ -266,6 +266,7 @@ export default function ProgressTracking({
       cell: (info) => {
         return info.row.getValue('status') === 'Open' ? (
           <HyperLink
+            className="action_link"
             href={info.row.getValue('link') as string}
             onAuxClick={() => {
               pendingTask.mutate(info.row.original.type_id as string);
@@ -277,7 +278,10 @@ export default function ProgressTracking({
             {info.row.getValue('category')}
           </HyperLink>
         ) : (
-          <HyperLink href={info.row.getValue('link') as string}>
+          <HyperLink
+            className="action_link"
+            href={info.row.getValue('link') as string}
+          >
             {info.row.getValue('category')}
           </HyperLink>
         );

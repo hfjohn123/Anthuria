@@ -56,6 +56,7 @@ export default function MDSTable({ data }: { data: MDSFinal[] }) {
             <>
               <HyperLink
                 tooltip_content={'View Patient in MaxtrixCare'}
+                className="patient_link"
                 href={`https://clearviewhcm.matrixcare.com/core/selectResident.action?residentID=${info.row.original.patient_id}`}
               >
                 {info.row.getValue('patient_name')}
@@ -71,6 +72,7 @@ export default function MDSTable({ data }: { data: MDSFinal[] }) {
             <>
               <HyperLink
                 tooltip_content={'View Patient in PCC'}
+                className="patient_link"
                 href={`https://www19.pointclickcare.com/admin/client/clientlist.jsp?ESOLtabtype=C&ESOLglobalclientsearch=Y&ESOLclientid=${info.row.original.patient_id}&ESOLfacid=${info.row.original.internal_facility_id.split('_').pop()}&ESOLsave=P`}
               >
                 {info.row.getValue('patient_name')}

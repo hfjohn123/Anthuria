@@ -26,12 +26,14 @@ export default function TriggerNoteDetail({ row }: { row: Row<TriggerFinal> }) {
             {row.original.upstream === 'MTX' ? (
               <HyperLink
                 tooltip_content="View Patient in MaxtrixCare"
+                className="patient_link"
                 href={`https://clearviewhcm.matrixcare.com/core/selectResident.action?residentID=${row.original.patient_id}`}
               >
                 {row.getValue('patient_name')}
               </HyperLink>
             ) : row.original.upstream === 'PCC' ? (
               <HyperLink
+                className="patient_link"
                 tooltip_content="View Patient in PCC"
                 href={`https://www19.pointclickcare.com/admin/client/clientlist.jsp?ESOLtabtype=C&ESOLglobalclientsearch=Y&ESOLclientid=${row.original.patient_id}&ESOLfacid=${row.original.internal_facility_id.split('_').pop()}&ESOLsave=P`}
               >
@@ -184,6 +186,7 @@ export default function TriggerNoteDetail({ row }: { row: Row<TriggerFinal> }) {
           {row.original.upstream === 'MTX' ? (
             <HyperLink
               tooltip_content="View Patient in MaxtrixCare"
+              className="patient_link"
               href={`https://clearviewhcm.matrixcare.com/core/selectResident.action?residentID=${row.original.patient_id}`}
             >
               {row.getValue('patient_name')}
@@ -191,6 +194,7 @@ export default function TriggerNoteDetail({ row }: { row: Row<TriggerFinal> }) {
           ) : row.original.upstream === 'PCC' ? (
             <HyperLink
               tooltip_content="View Patient in PCC"
+              className="patient_link"
               href={`https://www19.pointclickcare.com/admin/client/clientlist.jsp?ESOLtabtype=C&ESOLglobalclientsearch=Y&ESOLclientid=${row.original.patient_id}&ESOLfacid=${row.original.internal_facility_id.split('_').pop()}&ESOLsave=P`}
             >
               {row.getValue('patient_name')}
@@ -278,14 +282,12 @@ export default function TriggerNoteDetail({ row }: { row: Row<TriggerFinal> }) {
                   <div className=" flex items-center flex-nowrap gap-2">
                     {is_thumb_up ? (
                       <ThumbsUp
-                        className="size-4 text-meta-3 cursor-pointer"
-                        id="thumbs_up"
+                        className="size-4 text-meta-3 cursor-pointer thumbs_up"
                         weight="fill"
                       />
                     ) : (
                       <ThumbsUp
-                        className="size-4 cursor-pointer"
-                        id="thumbs_up"
+                        className="size-4 cursor-pointer thumbs_up"
                         onClick={() =>
                           putComment.mutate({
                             progress_note_id: row.original.progress_note_id,
@@ -306,8 +308,7 @@ export default function TriggerNoteDetail({ row }: { row: Row<TriggerFinal> }) {
                         title={'What is Going Wrong?'}
                         button={
                           <ThumbsDown
-                            className="size-4 cursor-pointer text-meta-1"
-                            id="thumbs_down"
+                            className="size-4 cursor-pointer text-meta-1 thumbs_down"
                             weight="fill"
                           />
                         }
@@ -330,10 +331,7 @@ export default function TriggerNoteDetail({ row }: { row: Row<TriggerFinal> }) {
                         }}
                         title={'What is Going Wrong?'}
                         button={
-                          <ThumbsDown
-                            className="size-4 cursor-pointer"
-                            id="thumbs_down"
-                          />
+                          <ThumbsDown className="size-4 cursor-pointer thumbs_down" />
                         }
                       >
                         <CommentForm
@@ -354,6 +352,7 @@ export default function TriggerNoteDetail({ row }: { row: Row<TriggerFinal> }) {
                       event_ids.map((event_id) => (
                         <HyperLink
                           key={event_id}
+                          className="action_link"
                           href={`https://clearviewhcm.matrixcare.com/Zion?zionpagealias=EVENTVIEW&NSPID=${row.original.patient_id}&CHGPID=true&EVENTID=${event_id}&dashboardHomePage=true&OEType=Event&PATIENTID=${row.original.patient_id}`}
                         >
                           View the Event
@@ -361,6 +360,7 @@ export default function TriggerNoteDetail({ row }: { row: Row<TriggerFinal> }) {
                       ))
                     ) : trigger_word === 'Fall' ? (
                       <HyperLink
+                        className="action_link"
                         tooltip_content={'Create an Event in MatrixCare'}
                         href={`https://clearviewhcm.matrixcare.com/Zion?zionpagealias=EVENTCREATE&PATIENTID=${row.original.patient_id}&formId=944&categoryName=Safety%20Events&formDescription=Post+Fall+Event+v3`}
                       >
@@ -369,6 +369,7 @@ export default function TriggerNoteDetail({ row }: { row: Row<TriggerFinal> }) {
                     ) : trigger_word === 'Wound/Ulcer' ? (
                       <HyperLink
                         tooltip_content={'Create an Event in MatrixCare'}
+                        className="action_link"
                         href={`https://clearviewhcm.matrixcare.com/Zion?zionpagealias=EVENTCREATE&PATIENTID=${row.original.patient_id}&formId=948&categoryName=Skin%20Integrity%20Events&formDescription=Wound+Other+Event`}
                       >
                         Create Event
@@ -378,6 +379,7 @@ export default function TriggerNoteDetail({ row }: { row: Row<TriggerFinal> }) {
                     ) : (
                       <HyperLink
                         tooltip_content={'Create an Event in MatrixCare'}
+                        className="action_link"
                         href={`https://clearviewhcm.matrixcare.com/Zion?zionpagealias=EVENTCREATE&PATIENTID=${row.original.patient_id}`}
                       >
                         Create Event

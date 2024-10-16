@@ -79,6 +79,7 @@ export default function EventTrackerTable({
           return (
             <>
               <HyperLink
+                className="patient_link"
                 tooltip_content={'View Patient in MaxtrixCare'}
                 href={`https://clearviewhcm.matrixcare.com/core/selectResident.action?residentID=${info.row.original.patient_id}`}
               >
@@ -94,6 +95,7 @@ export default function EventTrackerTable({
           return (
             <>
               <HyperLink
+                className="patient_link"
                 tooltip_content={'View Patient in PCC'}
                 href={`https://www19.pointclickcare.com/admin/client/clientlist.jsp?ESOLtabtype=C&ESOLglobalclientsearch=Y&ESOLclientid=${info.row.original.patient_id}&ESOLfacid=${info.row.original.internal_facility_id.split('_').pop()}&ESOLsave=P`}
               >
@@ -784,7 +786,7 @@ export default function EventTrackerTable({
                         return (
                           <td
                             key={cell.id}
-                            className={`py-2 px-3 w-[${cell.column.getSize() || 'auto'}] text-sm ${cell.column.columnDef.meta?.wrap == 'pre' ? 'whitespace-pre-wrap' : cell.column.columnDef.meta?.wrap ? '' : 'whitespace-nowrap'} ${row.getIsExpanded() && 'bg-slate-100 dark:bg-slate-700'}`}
+                            className={`py-2 px-3 w-[${cell.column.getSize() || 'auto'}] text-sm ${cell.column.columnDef.meta?.wrap == 'pre' ? 'whitespace-pre-wrap' : cell.column.columnDef.meta?.wrap ? '' : 'whitespace-nowrap'} ${row.getIsExpanded() ? 'bg-slate-100 dark:bg-slate-700' : 'table_row'}`}
                             role="button"
                             onClick={row.getToggleExpandedHandler()}
                           >

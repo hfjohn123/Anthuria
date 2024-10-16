@@ -16,7 +16,7 @@ interface SidebarProps {
 const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   const location = useLocation();
   const { pathname } = location;
-  const { user_applications_locations } = useContext(AuthContext);
+  const { user_applications_locations, user_data } = useContext(AuthContext);
   const trigger = useRef<any>(null);
   const sidebar = useRef<any>(null);
 
@@ -267,17 +267,20 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                 Review Triggers
                               </Link>
                             </li>
-                            <li>
-                              <Link
-                                to="/trigger-words/event-tracker"
-                                activeProps={{ className: '!text-white' }}
-                                className={
-                                  'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white '
-                                }
-                              >
-                                Event Tracker
-                              </Link>
-                            </li>
+                            {user_data.organization_id !==
+                              'oxford_valley_health' && (
+                              <li>
+                                <Link
+                                  to="/trigger-words/event-tracker"
+                                  activeProps={{ className: '!text-white' }}
+                                  className={
+                                    'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white '
+                                  }
+                                >
+                                  Event Tracker
+                                </Link>
+                              </li>
+                            )}
                           </ul>
                         </div>
                       </>
