@@ -22,10 +22,8 @@ import HyperLink from '../../../components/Basic/HyerLink.tsx';
 import {
   Check,
   FileText,
-  Heartbeat,
   MagnifyingGlass,
   Megaphone,
-  TestTube,
 } from '@phosphor-icons/react';
 import FilterValueContainer from '../../../components/Select/FilterValueContainer.tsx';
 import CheckboxOption from '../../../components/Select/CheckboxOption.tsx';
@@ -81,12 +79,10 @@ export default function ProgressTracking({
   const communications = tasks.filter(
     (task) => task.category === 'Communications',
   );
-  const orders = tasks.filter((task) => task.category === 'Orders');
   const carePlanReview = tasks.filter(
     (task) => task.category === 'Care Plan Review',
   );
   const forms = tasks.filter((task) => task.category === 'Forms');
-  const vitals = tasks.filter((task) => task.category === 'Vitals');
   const queryClient = useQueryClient();
   const orderBypass = useMutation({
     mutationFn: async () => {
@@ -253,15 +249,7 @@ export default function ProgressTracking({
       accessorKey: 'link',
       header: 'Link',
       accessorFn: () => {
-        // if (
-        //   task.category === 'Communications' ||
-        //   task.category === 'Forms' ||
-        //   task.category === 'Vitals' ||
-        //   task.category === 'Orders'
-        // )
-        return `https://clearviewhcm.matrixcare.com/Zion?zionpagealias=EVENTVIEW&NSPID=${row.original.patient_id}&CHGPID=true&EVENTID=${row.original.event_id}&dashboardHomePage=true&OEType=Event&PATIENTID=${row.original.patient_id}`;
-        // if (task.category === 'Vitals')
-        //   return `https://clearviewhcm.matrixcare.com/Zion?zionpagealias=MEASUREMENTVIEW&measurementDetailID=${task.corresponding_id}&PATIENTID=${row.original.patient_id}`;
+        return `https://www19.pointclickcare.com/admin/client/clientlist.jsp?ESOLtabtype=C&ESOLglobalclientsearch=Y&ESOLclientid=${row.original.patient_id}&ESOLfacid=${row.original.internal_facility_id.split('_').pop()}&ESOLsave=P`;
       },
       cell: (info) => {
         return info.row.getValue('status') === 'Open' ? (

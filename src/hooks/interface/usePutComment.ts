@@ -68,12 +68,16 @@ const usePutComment = (route: string, queryClient: any) => {
         'Comment Updated',
       );
     },
-    onError: (err: any) => {
+    onError: (error, _variables, context) => {
       createToast(
         'Comment Update Failed',
-        err.message,
+        error.message,
         3,
         'Comment Update Failed',
+      );
+      queryClient.setQueryData(
+        ['trigger_word_view_trigger_word_detail_final', route],
+        context?.previousData,
       );
     },
   });
