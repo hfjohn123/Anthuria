@@ -39,7 +39,7 @@ export default function IncidentTracker() {
   return (
     <DefaultLayout title={'Clinical Pulse'}>
       <div className="flex flex-col gap-7 mt-3 sm:mt-0">
-        <h1 className="text-2xl font-bold ">Open Event</h1>
+        <h1 className="text-2xl font-bold ">Open Incident</h1>
         <IncidentTrackerTable data={data} now={now} />
       </div>
     </DefaultLayout>
