@@ -82,7 +82,7 @@ export default function ProgressTracking({
   const carePlanReview = tasks.filter(
     (task) => task.category === 'Care Plan Review',
   );
-  const forms = tasks.filter((task) => task.category === 'Forms');
+  const uda = tasks.filter((task) => task.category === 'UDA');
   const queryClient = useQueryClient();
   const orderBypass = useMutation({
     mutationFn: async () => {
@@ -457,13 +457,13 @@ export default function ProgressTracking({
               )}
             />
             <p>UDA</p>
-            {forms.filter((c) => c.status === 'Open').length === 0 ? (
+            {uda.filter((c) => c.status === 'Open').length === 0 ? (
               <Check className="size-4 text-[#468B49]" />
             ) : (
               <p className={'font-semibold text-red-warning'}>
                 {Math.round(
-                  (forms.filter((c) => c.status === 'Closed').length /
-                    forms.length) *
+                  (uda.filter((c) => c.status === 'Closed').length /
+                    uda.length) *
                     100,
                 )}
                 % Complete
