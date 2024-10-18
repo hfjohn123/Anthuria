@@ -114,11 +114,14 @@ export default function MDSTable({ data }: { data: MDSFinal[] }) {
     },
     {
       accessorKey: 'existing_icd10',
-      header: 'Existing ICD-10 Related to NTA',
+      header: 'Existing ICD-10 Related to NTA and SLP',
+      accessorFn: (row) => row.existing_icd10.concat(row.existing_slp_icd10),
       cell: (info) => {
         return (
           <p className="line-clamp-2">
-            {(info.getValue() as string[]).join(', ')}
+            {info.row.original.existing_icd10
+              .concat(info.row.original.existing_slp_icd10)
+              .join(', ')}
           </p>
         );
       },

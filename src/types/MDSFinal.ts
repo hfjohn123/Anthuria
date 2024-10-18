@@ -14,6 +14,10 @@ export type MDSFinal = {
   nta_group_recommendation: string;
   existing_icd10: string[];
   new_nta_icd10: NTAICD10[];
+  bims_score: number;
+  new_bims_icd10: string[];
+  existing_slp_icd10: string[];
+  new_slp_icd10: NTAICD10[];
 };
 
 export type NTAICD10 = {

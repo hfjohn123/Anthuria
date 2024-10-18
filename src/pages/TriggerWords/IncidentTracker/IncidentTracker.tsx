@@ -19,7 +19,7 @@ export default function IncidentTracker() {
     return () => clearInterval(interval);
   }, []);
   const { isPending, data, error, isError } = useQuery({
-    queryKey: ['trigger_word_view_event_detail_final', route],
+    queryKey: ['trigger_word_view_incident_detail_final', route],
     queryFn: () =>
       axios
         .get(`${route}/trigger_word_view_incident_detail_final`)

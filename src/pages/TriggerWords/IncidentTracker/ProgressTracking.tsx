@@ -84,19 +84,20 @@ export default function ProgressTracking({
   );
   const uda = tasks.filter((task) => task.category === 'UDA');
   const queryClient = useQueryClient();
-  const orderBypass = useMutation({
-    mutationFn: async () => {
-      axios.put(`${route}/order_bypass`, {
+  const communicationsMutation = useMutation({
+    mutationFn: async ({ task_type_id }: { task_type_id: string }) => {
+      axios.put(`${route}/task_bypass`, {
+        task_type_id: task_type_id,
         event_id: row.original.event_id,
         patient_id: row.original.patient_id,
       });
     },
-    onMutate: async () => {
+    onMutate: async ({ task_type_id }: { task_type_id: string }) => {
       await queryClient.cancelQueries({
-        queryKey: ['trigger_word_view_event_detail_final', route],
+        queryKey: ['trigger_word_view_incident_detail_final', route],
       });
       const previous = queryClient.getQueryData<EventFinal[]>([
-        'trigger_word_view_event_detail_final',
+        'trigger_word_view_incident_detail_final',
         route,
       ]);
       if (previous) {
@@ -104,7 +105,7 @@ export default function ProgressTracking({
         const old = structuredClone(previous);
 
         for (let i = 0; i < data.tasks.length; i++) {
-          if (data.tasks[i].category === 'Orders') {
+          if (data.tasks[i].type_id === task_type_id) {
             data.tasks[i].status = 'Closed';
           }
         }
@@ -114,7 +115,7 @@ export default function ProgressTracking({
           }
         }
         queryClient.setQueryData(
-          ['trigger_word_view_event_detail_final', route],
+          ['trigger_word_view_incident_detail_final', route],
           old,
         );
       }
@@ -122,7 +123,7 @@ export default function ProgressTracking({
     },
     onSettled: () => {
       queryClient.invalidateQueries({
-        queryKey: ['trigger_word_view_event_detail_final', route],
+        queryKey: ['trigger_word_view_incident_detail_final', route],
       });
     },
   });
@@ -135,10 +136,10 @@ export default function ProgressTracking({
     },
     onMutate: async (type_id: string) => {
       await queryClient.cancelQueries({
-        queryKey: ['trigger_word_view_event_detail_final', route],
+        queryKey: ['trigger_word_view_incident_detail_final', route],
       });
       const previous = queryClient.getQueryData<EventFinal[]>([
-        'trigger_word_view_event_detail_final',
+        'trigger_word_view_incident_detail_final',
         route,
       ]);
       if (previous) {
@@ -156,7 +157,7 @@ export default function ProgressTracking({
           }
         }
         queryClient.setQueryData(
-          ['trigger_word_view_event_detail_final', route],
+          ['trigger_word_view_incident_detail_final', route],
           old,
         );
       }
@@ -164,7 +165,7 @@ export default function ProgressTracking({
     },
     onSettled: () => {
       queryClient.invalidateQueries({
-        queryKey: ['trigger_word_view_event_detail_final', route],
+        queryKey: ['trigger_word_view_incident_detail_final', route],
       });
     },
   });
@@ -282,7 +283,13 @@ export default function ProgressTracking({
         if (info.row.getValue('category') === 'Orders') {
           if (info.row.getValue('status') === 'Open') {
             return (
-              <PrimaryButton onClick={() => orderBypass.mutate()}>
+              <PrimaryButton
+                onClick={() =>
+                  communicationsMutation.mutate({
+                    task_type_id: info.row.original.type_id as string,
+                  })
+                }
+              >
                 Bypass
               </PrimaryButton>
             );
