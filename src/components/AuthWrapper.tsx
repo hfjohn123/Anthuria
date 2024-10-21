@@ -119,7 +119,8 @@ export default function AuthWrapper({ children }: { children: JSX.Element }) {
   useEffect(() => {
     if (queryClient && user_applications_locations && user_data) {
       // setFrontendCookie('email', user_data?.email || '', '\\');
-      const websocket = new WebSocket(`${route}/ws/${user_data?.email}`);
+      const ws_route = route.replace('https', 'wss').replace('http', 'ws');
+      const websocket = new WebSocket(`${ws_route}/ws/${user_data?.email}`);
       websocket.onopen = () => {
         console.log('connected');
       };
