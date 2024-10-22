@@ -7,6 +7,7 @@ import { Message } from '../../types/ChatBot.ts';
 import { v7 as uuidv7 } from 'uuid';
 import { Button, Textarea } from '@headlessui/react';
 import { FilePlus, PaperPlaneTilt } from '@phosphor-icons/react';
+import clsx from 'clsx';
 
 export default function MDSChatBot() {
   const [input, setInput] = useState('');
@@ -124,8 +125,11 @@ export default function MDSChatBot() {
             onChange={(e) => setInput(e.target.value)}
             placeholder="Type your message..."
             rows={3}
-            className="flex-grow w-full bg-transparent resize-none p-2 rounded-lg focus:outline-none"
-            value={input}
+            className={clsx(
+              'flex-grow w-full bg-transparent resize-none p-2 rounded-lg focus:outline-none',
+              isPending ? 'cursor-wait text-white' : 'cursor-text',
+            )}
+            value={isPending ? 'Processing...' : input}
             disabled={isPending}
           />
           <div className="flex w-full items-center p-2 justify-between">
@@ -143,6 +147,7 @@ export default function MDSChatBot() {
                   },
                 ]);
               }}
+              disabled={isPending}
             >
               <FilePlus
                 weight="fill"
