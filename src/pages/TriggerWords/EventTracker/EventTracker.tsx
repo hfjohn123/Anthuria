@@ -38,7 +38,7 @@ export default function EventTracker() {
   }
   return (
     <DefaultLayout title={'Clinical Pulse'}>
-      <div className="flex flex-col gap-7 mt-3 sm:mt-0">
+      <div className="flex flex-col gap-7 my-3 sm:my-9 max-w-screen-3xl sm:px-9 mx-auto ">
         <h1 className="text-2xl font-bold ">Open Event</h1>
         <EventTrackerTable data={data} now={now} />
       </div>

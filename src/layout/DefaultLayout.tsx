@@ -30,11 +30,7 @@ const DefaultLayout = ({
           {/* <!-- ===== Header End ===== --> */}
 
           {/* <!-- ===== Main Content Start ===== --> */}
-          <main>
-            <div className="mx-auto max-w-screen-2xl p-1 sm:p-4 md:p-6 2xl:p-10">
-              {children}
-            </div>
-          </main>
+          <main className="flex-grow max-h-[calc(100vh-5rem)]">{children}</main>
           {/* <!-- ===== Main Content End ===== --> */}
         </div>
         {/* <!-- ===== Content Area End ===== --> */}

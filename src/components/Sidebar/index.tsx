@@ -332,26 +332,84 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
               </li>
             )}
             {/* <!-- Menu Item Cashflow --> */}
+
             {user_applications_locations.some(
               (location) => location.id === 'mds',
             ) && (
               <li>
-                <Link
-                  to="/mds"
-                  className={`group relative flex items-center gap-[0.55rem] rounded-sm py-2 pl-[0.7rem] pr-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
-                    pathname.includes('mds') && 'bg-graydark dark:bg-meta-4'
-                  }`}
+                <SidebarLinkGroup
+                  activeCondition={
+                    pathname === '/mds' || pathname.includes('mds')
+                  }
                 >
-                  <HardDrives className="size-6" />
-                  <span
-                    className={clsx(
-                      !expanded && !sidebarOpen && 'hidden',
-                      'transition-all ease-in-out duration-300 overflow-x-hidden whitespace-nowrap',
-                    )}
-                  >
-                    Minimum Data Set
-                  </span>
-                </Link>
+                  {(handleClick, open) => {
+                    return (
+                      <>
+                        <Link
+                          to="#"
+                          className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-3 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                            (pathname === '/mds' || pathname.includes('mds')) &&
+                            'bg-graydark dark:bg-meta-4'
+                          }`}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            sidebarExpanded
+                              ? handleClick()
+                              : setSidebarExpanded(true);
+                          }}
+                        >
+                          <HardDrives className="size-6" />
+                          <span
+                            className={clsx(
+                              !expanded && !sidebarOpen && 'hidden',
+                              'transition-all ease-in-out duration-300 overflow-x-hidden whitespace-nowrap',
+                            )}
+                          >
+                            Minimum Data Set
+                          </span>
+                          <CaretDown
+                            className={clsx(
+                              !expanded && !sidebarOpen && 'hidden',
+                              'transition-all ease-in-out duration-300 overflow-x-hidden whitespace-nowrap',
+                            )}
+                            open={open}
+                          />
+                        </Link>
+                        {/* <!-- Dropdown Menu Start --> */}
+                        <div
+                          className={`translate transform overflow-hidden ${
+                            !open && 'hidden'
+                          } ${!expanded && !sidebarOpen && 'hidden'} transition-all ease-in-out duration-300`}
+                        >
+                          <ul className="mt-4 mb-5.5 flex flex-col gap-2.5 pl-6 whitespace-nowrap">
+                            <li>
+                              <Link
+                                to="/mds/suggestion"
+                                activeProps={{ className: '!text-white' }}
+                                className={
+                                  'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white '
+                                }
+                              >
+                                MDS
+                              </Link>
+                            </li>
+                            <li>
+                              <Link
+                                to="/mds/chatbot"
+                                activeProps={{ className: '!text-white' }}
+                                className={
+                                  'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white '
+                                }
+                              >
+                                ChatBot
+                              </Link>
+                            </li>
+                          </ul>
+                        </div>
+                      </>
+                    );
+                  }}
+                </SidebarLinkGroup>
               </li>
             )}
           </ul>

@@ -31,6 +31,7 @@ import AccountSetting from './pages/AccountSetting/AccountSetting.tsx';
 import ResetPassword from './pages/Authentication/SignIn/ResetPassword.tsx';
 import PrimaryButton from './components/Basic/PrimaryButton.tsx';
 import MDS from './pages/MDS/MDS.tsx';
+import MDSChatBot from './pages/MDS/ChatBot.tsx';
 
 const queryClient = new QueryClient();
 
@@ -143,12 +144,25 @@ const AccountSettingRoute = createRoute({
 
 const MDSRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/mds',
+  path: '/mds/suggestion',
   component: () => {
     return (
       <SessionAuth>
         <PageTitle id="mds" />
         <MDS />
+      </SessionAuth>
+    );
+  },
+});
+
+const MDSChatBotRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/mds/chatbot',
+  component: () => {
+    return (
+      <SessionAuth>
+        <PageTitle id="mds" />
+        <MDSChatBot />
       </SessionAuth>
     );
   },
@@ -205,6 +219,7 @@ const routeTree = rootRoute.addChildren([
   SignInRoute,
   SignUpRoute,
   ResetPasswordRoute,
+  MDSChatBotRoute,
 ]);
 const router = createRouter({
   routeTree,

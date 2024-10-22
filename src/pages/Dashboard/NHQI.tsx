@@ -196,39 +196,41 @@ const NHQI: React.FC = () => {
   return (
     data && (
       <DefaultLayout>
-        <Breadcrumb
-          title={selectedOption}
-          options={options}
-          isDropDown
-          selectedOption={selectedOption}
-          setSelectedOption={setSelectedOption}
-        />
-        <div className="gap-4 xl:gap-6 2xl:gap-7.5 grid grid-cols-12">
-          <div className="col-span-12 xl:col-span-4 xl:order-1 z-10 flex flex-col sm:flex-row lg:sticky lg:top-20 lg:bg-whiten lg:dark:bg-boxdark-2 xl:flex-col xl:gap-6 2xl:gap-7.5 xl:h-min xl:top-25 gap-4 sm:gap-0 sm:flex-wrap sm:gap-y-4">
-            <SelectGroupOne
-              options={locationsOptions}
-              label="Facility:"
-              labelLeft
-              handleSelectOption={handleSelectLocation}
-              selectedOption={location}
-              className={'sm:basis-full'}
-            />
-            <CardDataStats
-              title={selectedOption}
-              data={cardData}
-              currentCenter={data.self_data}
-              lowerBetter={lowerBetterList[options.indexOf(selectedOption)]}
-            />
-            <Accordion data={accordionData} options={options} />
-          </div>
-          <div className="col-span-12 xl:col-span-8 flex flex-col gap-4 md:gap-8 2xl:gap-7.5 ">
-            <MapChart
-              colorData={mapData}
-              selectedOption={selectedOption}
-              location={location}
-            />
-            <LineChart data={data} />
-            <NHQITable data={tabledata} />
+        <div className="my-3 sm:my-9 max-w-screen-3xl sm:px-9 mx-auto ">
+          <Breadcrumb
+            title={selectedOption}
+            options={options}
+            isDropDown
+            selectedOption={selectedOption}
+            setSelectedOption={setSelectedOption}
+          />
+          <div className="gap-4 xl:gap-6 2xl:gap-7.5 grid grid-cols-12">
+            <div className="col-span-12 xl:col-span-4 xl:order-1 z-10 flex flex-col sm:flex-row lg:sticky lg:top-20 lg:bg-whiten lg:dark:bg-boxdark-2 xl:flex-col xl:gap-6 2xl:gap-7.5 xl:h-min xl:top-25 gap-4 sm:gap-0 sm:flex-wrap sm:gap-y-4">
+              <SelectGroupOne
+                options={locationsOptions}
+                label="Facility:"
+                labelLeft
+                handleSelectOption={handleSelectLocation}
+                selectedOption={location}
+                className={'sm:basis-full'}
+              />
+              <CardDataStats
+                title={selectedOption}
+                data={cardData}
+                currentCenter={data.self_data}
+                lowerBetter={lowerBetterList[options.indexOf(selectedOption)]}
+              />
+              <Accordion data={accordionData} options={options} />
+            </div>
+            <div className="col-span-12 xl:col-span-8 flex flex-col gap-4 md:gap-8 2xl:gap-7.5 ">
+              <MapChart
+                colorData={mapData}
+                selectedOption={selectedOption}
+                location={location}
+              />
+              <LineChart data={data} />
+              <NHQITable data={tabledata} />
+            </div>
           </div>
         </div>
       </DefaultLayout>

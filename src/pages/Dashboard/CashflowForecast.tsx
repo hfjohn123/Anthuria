@@ -474,7 +474,7 @@ export default function CashflowForecast() {
 
   return (
     <DefaultLayout title={'Cashflow Forecast'}>
-      <div className="grid grid-cols-12 gap-1">
+      <div className="grid grid-cols-12 gap-1 my-3 sm:my-9 max-w-screen-3xl sm:px-9 mx-auto ">
         <label className="font-medium text-nowrap col-span-12 lg:col-span-3 xl:col-span-2 self-center lg:justify-self-center ">
           Loan Group and Facility:
         </label>
