@@ -134,7 +134,7 @@ export default function MDSChatBot() {
           />
           <div className="flex w-full items-center p-2 justify-between">
             <Button
-              className=" focus:outline-stroke"
+              className=" focus:outline-stroke group"
               onClick={() => {
                 setSessionId(uuidv7());
                 setMessages([
@@ -151,17 +151,17 @@ export default function MDSChatBot() {
             >
               <FilePlus
                 weight="fill"
-                className="size-5 text-primary hover:text-blue-600"
+                className="size-5 text-primary hover:text-blue-600 group-[:disabled]:text-gray"
               />
             </Button>
             <Button
               type="submit"
-              className=" focus:outline-stroke"
+              className=" focus:outline-stroke group"
               disabled={isPending}
             >
               <PaperPlaneTilt
                 weight="fill"
-                className="size-5 text-primary hover:text-blue-600"
+                className="size-5 text-primary hover:text-blue-600 group-[:disabled]:text-gray"
               />
             </Button>
           </div>
