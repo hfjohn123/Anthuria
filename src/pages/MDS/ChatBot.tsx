@@ -89,7 +89,7 @@ export default function MDSChatBot() {
   };
   return (
     <DefaultLayout title="MDS - ChatBot">
-      <div className="flex flex-col h-full max-w-screen-2xl mx-auto pb-4">
+      <div className="flex flex-col h-full max-w-screen-2xl mx-auto sm:pb-4">
         <div
           id="chat-container"
           className="flex-grow overflow-y-auto no-scrollbar bg-gray-100 p-4 rounded-lg mb-4"
