@@ -8,12 +8,35 @@ import { v7 as uuidv7 } from 'uuid';
 import { Button, Textarea } from '@headlessui/react';
 import { FilePlus, PaperPlaneTilt } from '@phosphor-icons/react';
 import clsx from 'clsx';
+import MessageContent from './MessageContent.tsx';
 
 export default function MDSChatBot() {
   const [input, setInput] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+  const handleDownload = async (s3Uri: string) => {
+    try {
+      const response = await axios.get(route + `/puclic/download_file`, {
+        params: { uri: s3Uri },
+        responseType: 'blob',
+      });
+
+      // Create and trigger download
+      const fileName = s3Uri.split('/').pop() || 'download';
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', fileName);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Download failed:', error);
+      // Handle error appropriately
+    }
   };
 
   const [messages, setMessages] = useState<Message[]>([
@@ -59,7 +82,11 @@ export default function MDSChatBot() {
         type: 'agent',
         sender: 'ChatBot',
         content: returnedData.data.message,
-        citations: returnedData.data.citations,
+        citations: returnedData.data.citations.sort(
+          (a: any, b: any) =>
+            a.generatedResponsePart.textResponsePart.span.end -
+            b.generatedResponsePart.textResponsePart.span.end,
+        ),
         time: new Date(),
       };
       setMessages((prevMessages) => [...prevMessages, agentMessage]);
@@ -87,6 +114,12 @@ export default function MDSChatBot() {
     mutation.mutate(input);
     setInput('');
   };
+
+  for (let i = 0; i < messages.length; i++) {
+    if (messages[i].sender === 'ChatBot') {
+      console.log(messages[i].citations);
+    }
+  }
   return (
     <DefaultLayout title="MDS - ChatBot">
       <div className="flex flex-col h-full max-w-screen-2xl mx-auto sm:pb-4">
@@ -111,8 +144,31 @@ export default function MDSChatBot() {
                       : 'bg-red-500 text-white'
                 }`}
               >
-                {message.content}
+                <MessageContent
+                  content={message.content}
+                  citations={message.citations}
+                />
               </span>
+              <p className="text-xs text-gray-500 mt-2 flex flex-wrap gap-2 items-center">
+                {message.type === 'agent' &&
+                  message.citations &&
+                  message.citations?.length > 0 && <span>Citations:</span>}
+                {message.type === 'agent' &&
+                  message.citations &&
+                  message.citations.map((citation, citationIndex) =>
+                    citation.retrievedReferences.map((reference, index) => (
+                      <a
+                        key={citationIndex + '' + index}
+                        className="rounded  bg-slate-200 p-1 hover:bg-slate-300 cursor-pointer"
+                        onClick={() =>
+                          handleDownload(reference.location.s3Location.uri)
+                        }
+                      >
+                        {reference.content.text.substring(0, 50) + '...'}
+                      </a>
+                    )),
+                  )}
+              </p>
             </div>
           ))}
           <div ref={messagesEndRef} />

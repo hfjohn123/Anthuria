@@ -36,7 +36,7 @@ const AccountSetting = () => {
 
   return (
     <DefaultLayout title="Account Settings">
-      <div className="mx-auto max-w-270">
+      <div className="mx-auto max-w-270 py-3 sm:py-9">
         <div className="grid grid-cols-5 gap-8">
           <PersonalInformationForm
             setLoading={setLoading}
