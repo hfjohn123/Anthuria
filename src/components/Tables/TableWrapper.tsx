@@ -11,7 +11,6 @@ import DatePicker from 'react-datepicker';
 import SortUpIcon from '../../images/icon/sort-up.svg';
 import SortDownIcon from '../../images/icon/sort-down.svg';
 import { Fragment, useState } from 'react';
-import MDSDetail from '../../pages/MDS/MDSDetail.tsx';
 import PageNavigation from './PageNavigation.tsx';
 
 export default function TableWrapper({
@@ -19,11 +18,13 @@ export default function TableWrapper({
   tableState,
   setTableState,
   permanentColumnFilters,
+  renderExpandedRow,
 }: {
   table: Table<any>;
   tableState: TableState;
   setTableState: React.Dispatch<React.SetStateAction<TableState>>;
   permanentColumnFilters: string[];
+  renderExpandedRow: any;
 }) {
   const [additionalFilters, setAdditionalFilters] = useState<{
     label: string;
@@ -449,7 +450,7 @@ export default function TableWrapper({
                   {row.getIsExpanded() && (
                     <tr>
                       <td colSpan={row.getVisibleCells().length}>
-                        <MDSDetail row={row} />
+                        {renderExpandedRow({ row })}
                       </td>
                     </tr>
                   )}

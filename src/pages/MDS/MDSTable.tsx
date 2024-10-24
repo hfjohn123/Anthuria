@@ -17,6 +17,7 @@ import HyperLink from '../../components/Basic/HyerLink.tsx';
 import dateRangeFilterFn from '../../common/dateRangeFilterFn.ts';
 import { MDSFinal } from '../../types/MDSFinal.ts';
 import TableWrapper from '../../components/Tables/TableWrapper.tsx';
+import MDSDetail from './MDSDetail.tsx';
 
 const PERMANENT_COLUMN_FILTERS = ['facility_name'];
 
@@ -226,6 +227,7 @@ export default function MDSTable({ data }: { data: MDSFinal[] }) {
       tableState={tableState}
       setTableState={setTableState}
       permanentColumnFilters={PERMANENT_COLUMN_FILTERS}
-    />
+      renderExpandedRow={MDSDetail}
+    ></TableWrapper>
   );
 }
