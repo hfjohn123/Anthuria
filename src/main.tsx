@@ -31,7 +31,7 @@ import AccountSetting from './pages/AccountSetting/AccountSetting.tsx';
 import ResetPassword from './pages/Authentication/SignIn/ResetPassword.tsx';
 import PrimaryButton from './components/Basic/PrimaryButton.tsx';
 import MDS from './pages/MDS/MDS.tsx';
-import MDSChatBot from './pages/MDS/ChatBot.tsx';
+import MDSChatBot from './pages/MDS/ChatBot/ChatBot.tsx';
 
 const queryClient = new QueryClient();
 

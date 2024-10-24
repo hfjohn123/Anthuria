@@ -39,7 +39,7 @@ const Modal = memo(function Modal({
   return (
     <>
       <Button
-        className={classNameses?.button}
+        className={'group ' + classNameses?.button}
         onClick={() => {
           setIsOpen(true);
           onOpenCallback && onOpenCallback();
@@ -58,9 +58,9 @@ const Modal = memo(function Modal({
         className="relative"
       >
         <DialogBackdrop className="fixed inset-0 bg-black/30 z-999" />
-        <div className="fixed inset-0  w-screen overflow-y-auto p-4 z-999">
-          <div className="flex min-h-full items-center justify-center">
-            <DialogPanel className="space-y-4 rounded-md bg-white dark:bg-slate-700">
+        <div className="fixed inset-0 w-screen overflow-y-auto z-999">
+          <div className="flex min-h-full justify-center sm:justify-end">
+            <DialogPanel className=" bg-white dark:bg-slate-700">
               <div className="flex items-center justify-between border-b p-4">
                 <DialogTitle
                   className={classNames(

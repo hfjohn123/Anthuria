@@ -1,14 +1,22 @@
-import DefaultLayout from '../../layout/DefaultLayout.tsx';
-import { useContext, useEffect, useRef, useState } from 'react';
+import DefaultLayout from '../../../layout/DefaultLayout.tsx';
+import {
+  FormEvent,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+  KeyboardEvent,
+} from 'react';
 import axios from 'axios';
 import { useMutation } from '@tanstack/react-query';
-import { AuthContext } from '../../components/AuthWrapper.tsx';
-import { Message } from '../../types/ChatBot.ts';
+import { AuthContext } from '../../../components/AuthWrapper.tsx';
+import { Message } from '../../../types/ChatBot.ts';
 import { v7 as uuidv7 } from 'uuid';
 import { Button, Textarea } from '@headlessui/react';
 import { FilePlus, PaperPlaneTilt } from '@phosphor-icons/react';
 import clsx from 'clsx';
-import MessageContent from './MessageContent.tsx';
+import MessageContent from '../MessageContent.tsx';
+import HistoryModal from './HistoryModal.tsx';
 
 export default function MDSChatBot() {
   const [input, setInput] = useState('');
@@ -48,6 +56,14 @@ export default function MDSChatBot() {
       time: new Date(),
     },
   ]);
+  const handleKeyDown = (e: KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault(); // Prevent new line
+      const formEvent = new Event('submit', { bubbles: true });
+      handleSubmit(formEvent as unknown as FormEvent<HTMLFormElement>);
+    }
+  };
+  console.log(messages);
 
   useEffect(() => {
     scrollToBottom();
@@ -115,11 +131,23 @@ export default function MDSChatBot() {
     setInput('');
   };
 
-  for (let i = 0; i < messages.length; i++) {
-    if (messages[i].sender === 'ChatBot') {
-      console.log(messages[i].citations);
+  const history = JSON.parse(localStorage.getItem('MDSChatBotHistory') || '[]');
+
+  useEffect(() => {
+    if (messages.length > 1) {
+      localStorage.setItem(
+        'MDSChatBotHistory',
+        JSON.stringify([
+          { sessionId: sessionId, messages: messages },
+          ...history.filter(
+            (h: { sessionId: string; messages: Message[] }) =>
+              h.sessionId !== sessionId,
+          ),
+        ]),
+      );
     }
-  }
+  }, [messages]);
+
   return (
     <DefaultLayout title="MDS - ChatBot">
       <div className="flex flex-col h-full max-w-screen-2xl mx-auto sm:pb-4">
@@ -133,7 +161,9 @@ export default function MDSChatBot() {
               className={`py-2 ${message.type === 'user' ? 'text-right' : ''}`}
             >
               <p className="text-xs text-gray-500">
-                {message.sender + ' ' + message.time.toLocaleTimeString()}
+                {message.sender +
+                  ' ' +
+                  new Date(message.time).toLocaleTimeString()}
               </p>
               <span
                 className={`inline-block p-2 rounded-lg whitespace-pre-wrap ${
@@ -185,31 +215,40 @@ export default function MDSChatBot() {
               'flex-grow w-full bg-transparent resize-none p-2 rounded-lg focus:outline-none',
               isPending ? 'cursor-wait text-white' : 'cursor-text',
             )}
+            onKeyDown={handleKeyDown}
             value={isPending ? 'Processing...' : input}
             disabled={isPending}
           />
           <div className="flex w-full items-center p-2 justify-between">
-            <Button
-              className=" focus:outline-stroke group"
-              onClick={() => {
-                setSessionId(uuidv7());
-                setMessages([
-                  {
-                    type: 'agent',
-                    sender: 'ChatBot',
-                    content:
-                      "Hello! I'm an AI assistant specializing in MDS 3.0 and PDPM documentation. I have access to the latest official information on these topics and can provide accurate, clear, and helpful answers to your questions. I can explain concepts, provide references to specific sections in the documentation, and help interpret guidelines based on the official sources. How can I assist you today with any MDS 3.0 or PDPM related questions?",
-                    time: new Date(),
-                  },
-                ]);
-              }}
-              disabled={isPending}
-            >
-              <FilePlus
-                weight="fill"
-                className="size-5 text-primary hover:text-blue-600 group-[:disabled]:text-gray"
+            <div className="flex gap-2">
+              <Button
+                className=" focus:outline-stroke group"
+                onClick={() => {
+                  setSessionId(uuidv7());
+                  setMessages([
+                    {
+                      type: 'agent',
+                      sender: 'ChatBot',
+                      content:
+                        "Hello! I'm an AI assistant specializing in MDS 3.0 and PDPM documentation. I have access to the latest official information on these topics and can provide accurate, clear, and helpful answers to your questions. I can explain concepts, provide references to specific sections in the documentation, and help interpret guidelines based on the official sources. How can I assist you today with any MDS 3.0 or PDPM related questions?",
+                      time: new Date(),
+                    },
+                  ]);
+                }}
+                disabled={isPending}
+              >
+                <FilePlus
+                  weight="fill"
+                  className="size-5 text-primary hover:text-blue-600 group-[:disabled]:text-gray"
+                />
+              </Button>
+              <HistoryModal
+                history={history}
+                setSessionId={setSessionId}
+                setMessages={setMessages}
+                disabled={isPending}
               />
-            </Button>
+            </div>
             <Button
               type="submit"
               className=" focus:outline-stroke group"

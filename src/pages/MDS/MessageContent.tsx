@@ -31,20 +31,18 @@ export default function MessageContent({ content, citations }: CitationProps) {
   const parts = [];
 
   citationMarkers.forEach((marker, index) => {
-    // Add text content
-    parts.push(content.slice(lastIndex, marker.position));
+    // Add text content without any extra space
+    const textPart = content.slice(lastIndex, marker.position - index);
+    parts.push(textPart);
 
-    // Add citation numbers
+    // Add citation numbers without margin
     parts.push(
-      <sup
-        key={`citation-${index}`}
-        className="text-inherit font-medium ml-0.5"
-      >
+      <sup key={`citation-${index}`} className="text-inherit font-medium">
         [{marker.numbers.join(',')}]
       </sup>,
     );
 
-    lastIndex = marker.position;
+    lastIndex = marker.position - index;
   });
 
   // Add remaining content
