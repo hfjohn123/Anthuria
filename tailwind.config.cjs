@@ -1,5 +1,5 @@
-const defaultTheme = require('tailwindcss/defaultTheme')
-const { getTheme } = require("reshaped/config/tailwind");
+const defaultTheme = require('tailwindcss/defaultTheme');
+const { getTheme } = require('reshaped/config/tailwind');
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -249,6 +249,7 @@ module.exports = {
         7: '-5px 0 0 #313D4A, 5px 0 0 #313D4A',
         8: '1px 0 0 #313D4A, -1px 0 0 #313D4A, 0 1px 0 #313D4A, 0 -1px 0 #313D4A, 0 3px 13px rgb(0 0 0 / 8%)',
         filter: '0 0 0 1px rgba(0,0,0,0.1)',
+        table_header: 'inset 0 -1px 0 stroke',
       },
       dropShadow: {
         1: '0px 1px 0px #E2E8F0',
@@ -270,4 +271,4 @@ module.exports = {
     },
   },
   plugins: [],
-}
+};

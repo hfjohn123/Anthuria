@@ -1183,7 +1183,7 @@ export default function ReviewTriggers() {
                           <th
                             key={header.id}
                             colSpan={header.colSpan}
-                            className="py-3 px-3 border-b-2 border-stroke dark:border-strokedark text-left select-none group whitespace-nowrap "
+                            className="py-3 px-3 shadow-table_header  shadow-stroke text-left select-none group whitespace-nowrap "
                             onClick={header.column.getToggleSortingHandler()}
                             role="button"
                           >
