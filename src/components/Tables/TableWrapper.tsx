@@ -19,12 +19,14 @@ export default function TableWrapper({
   setTableState,
   permanentColumnFilters,
   renderExpandedRow,
+  ...rest
 }: {
   table: Table<any>;
   tableState: TableState;
   setTableState: React.Dispatch<React.SetStateAction<TableState>>;
   permanentColumnFilters: string[];
   renderExpandedRow: any;
+  [key: string]: any;
 }) {
   const [additionalFilters, setAdditionalFilters] = useState<{
     label: string;
@@ -32,7 +34,7 @@ export default function TableWrapper({
   } | null>(null);
   return (
     <div className=" bg-white dark:bg-boxdark shadow-default h-full flex-col flex ">
-      <div className="sticky top-0 flex-none bg-white z-30">
+      <div className="sticky top-0 flex-none bg-white dark:bg-boxdark z-30">
         <div className="flex items-center border-b border-stroke">
           <MagnifyingGlassIcon className="size-5 text-body dark:text-bodydark mx-1" />
           <Input
@@ -450,7 +452,7 @@ export default function TableWrapper({
                   {row.getIsExpanded() && (
                     <tr>
                       <td colSpan={row.getVisibleCells().length}>
-                        {renderExpandedRow({ row })}
+                        {renderExpandedRow({ row, ...rest })}
                       </td>
                     </tr>
                   )}
