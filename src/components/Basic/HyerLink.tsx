@@ -33,7 +33,7 @@ export default function HyperLink({
           {children}
           <ArrowSquareOut className="size-4" />
         </a>
-        <Tooltip id="hyper-tooltip" className="font-bold" />
+        <Tooltip id="hyper-tooltip" className="font-bold z-99" />
       </div>
     </>
   );

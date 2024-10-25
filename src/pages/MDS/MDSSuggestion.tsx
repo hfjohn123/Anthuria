@@ -108,7 +108,7 @@ export default function MDSSuggestion({
             />
             <Tooltip
               id="explanation-tooltip"
-              className="whitespace-normal sm:max-w-[40vw] max-w-[95vw]"
+              className="whitespace-normal sm:max-w-[40vw] max-w-[95vw] z-99"
             />
           </div>
         );
@@ -278,7 +278,7 @@ export default function MDSSuggestion({
           className="size-6 focus:outline-none"
         />
       </div>
-      <Tooltip id="bot-tooltip" />
+      <Tooltip id="bot-tooltip" className="z-99" />
       <div className="flex flex-col">
         <Disclosure>
           <DisclosureButton className="group">

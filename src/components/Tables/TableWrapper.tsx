@@ -376,7 +376,7 @@ export default function TableWrapper({
                     <th
                       key={header.id}
                       colSpan={header.colSpan}
-                      className="py-3 shadow-table_header  shadow-stroke px-3  text-left select-none group whitespace-nowrap "
+                      className="py-3 shadow-table_header  shadow-stroke z-30 px-3  text-left select-none group whitespace-nowrap "
                       onClick={header.column.getToggleSortingHandler()}
                       role="button"
                     >
