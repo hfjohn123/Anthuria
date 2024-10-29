@@ -86,10 +86,11 @@ export default function ProgressTracking({
   const queryClient = useQueryClient();
   const communicationsMutation = useMutation({
     mutationFn: async ({ task_type_id }: { task_type_id: string }) => {
-      axios.put(`${route}/task_bypass`, {
+      axios.put(`${route}/incident_task_bypass`, {
         task_type_id: task_type_id,
-        event_id: row.original.event_id,
-        patient_id: row.original.patient_id,
+        incident_id: row.original.event_id,
+        internal_patient_id: row.original.internal_patient_id,
+        internal_facility_id: row.original.internal_facility_id,
       });
     },
     onMutate: async ({ task_type_id }: { task_type_id: string }) => {
@@ -280,7 +281,7 @@ export default function ProgressTracking({
       accessorKey: 'action',
       header: '',
       cell: (info) => {
-        if (info.row.getValue('category') === 'Orders') {
+        if (info.row.getValue('category') === 'Communications') {
           if (info.row.getValue('status') === 'Open') {
             return (
               <PrimaryButton

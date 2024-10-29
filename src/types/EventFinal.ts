@@ -27,4 +27,5 @@ export type EventFinal = {
   created_by: string;
   progress_notes: ProgressNote[];
   tasks: Task[];
+  internal_patient_id: string;
 };
