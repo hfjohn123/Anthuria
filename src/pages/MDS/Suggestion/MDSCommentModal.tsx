@@ -1,4 +1,4 @@
-import Modal from '../../components/Modal/Modal.tsx';
+import Modal from '../../../components/Modal/Modal.tsx';
 import { useState } from 'react';
 import { ThumbsDown } from '@phosphor-icons/react';
 import { Button, Field, Label, Textarea } from '@headlessui/react';

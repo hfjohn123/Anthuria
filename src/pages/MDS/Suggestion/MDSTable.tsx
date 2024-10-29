@@ -11,12 +11,12 @@ import {
 } from '@tanstack/react-table';
 
 import { useState, useEffect } from 'react';
-import getFacetedUniqueValues from '../../common/getFacetedUniqueValues.ts';
-import getFacetedMinMaxValues from '../../common/getFacetedMinMaxValues.ts';
-import HyperLink from '../../components/Basic/HyerLink.tsx';
-import dateRangeFilterFn from '../../common/dateRangeFilterFn.ts';
-import { MDSFinal } from '../../types/MDSFinal.ts';
-import TableWrapper from '../../components/Tables/TableWrapper.tsx';
+import getFacetedUniqueValues from '../../../common/getFacetedUniqueValues.ts';
+import getFacetedMinMaxValues from '../../../common/getFacetedMinMaxValues.ts';
+import HyperLink from '../../../components/Basic/HyerLink.tsx';
+import dateRangeFilterFn from '../../../common/dateRangeFilterFn.ts';
+import { MDSFinal } from '../../../types/MDSFinal.ts';
+import TableWrapper from '../../../components/Tables/TableWrapper.tsx';
 import MDSDetail from './MDSDetail.tsx';
 
 const PERMANENT_COLUMN_FILTERS = ['facility_name'];
@@ -99,11 +99,12 @@ export default function MDSTable({ data }: { data: MDSFinal[] }) {
     {
       accessorKey: 'existing_icd10',
       header: 'Existing ICD-10 Related to NTA and SLP',
-      accessorFn: (row) => row.existing_icd10.concat(row.existing_slp_icd10),
+      accessorFn: (row) =>
+        row.existing_nta_icd10.concat(row.existing_slp_icd10),
       cell: (info) => {
         return (
           <p className="line-clamp-2">
-            {info.row.original.existing_icd10
+            {info.row.original.existing_nta_icd10
               .concat(info.row.original.existing_slp_icd10)
               .join(', ')}
           </p>
@@ -111,8 +112,8 @@ export default function MDSTable({ data }: { data: MDSFinal[] }) {
       },
       filterFn: 'arrIncludesSome',
       sortingFn: (rowA, rowB) => {
-        return rowA.original.existing_icd10.length <
-          rowB.original.existing_icd10.length
+        return (rowA.getValue('existing_icd10') as string[]).length <
+          (rowB.getValue('existing_icd10') as string[]).length
           ? -1
           : 1;
       },
@@ -123,7 +124,10 @@ export default function MDSTable({ data }: { data: MDSFinal[] }) {
     },
     {
       accessorKey: 'new_icd10',
-      accessorFn: (row) => row.new_nta_icd10.map((d) => d.icd10),
+      accessorFn: (row) =>
+        row.new_nta_icd10
+          .map((d) => d.icd10)
+          .concat(row.new_slp_icd10.map((d) => d.icd10)),
       header: 'New ICD-10',
       cell: (info) => {
         return (
@@ -133,8 +137,10 @@ export default function MDSTable({ data }: { data: MDSFinal[] }) {
         );
       },
       sortingFn: (rowA, rowB) => {
-        return rowA.original.new_nta_icd10.length <
-          rowB.original.new_nta_icd10.length
+        return rowA.original.new_nta_icd10.length +
+          rowA.original.new_slp_icd10.length <
+          rowB.original.new_nta_icd10.length +
+            rowB.original.new_slp_icd10.length
           ? -1
           : 1;
       },

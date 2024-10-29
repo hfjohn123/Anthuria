@@ -15,7 +15,7 @@ import { v7 as uuidv7 } from 'uuid';
 import { Button, Textarea } from '@headlessui/react';
 import { FilePlus, PaperPlaneTilt } from '@phosphor-icons/react';
 import clsx from 'clsx';
-import MessageContent from '../MessageContent.tsx';
+import MessageContent from '../Suggestion/MessageContent.tsx';
 import HistoryModal from './HistoryModal.tsx';
 
 export default function MDSChatBot() {

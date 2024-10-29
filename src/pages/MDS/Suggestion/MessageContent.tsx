@@ -1,4 +1,4 @@
-import { Citation } from '../../types/ChatBot.ts';
+import { Citation } from '../../../types/ChatBot.ts';
 
 interface CitationProps {
   content: string;

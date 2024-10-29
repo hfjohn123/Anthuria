@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import Modal from '../../components/Modal/Modal.tsx';
-import { ProgressNoteAndSummary } from '../../types/MDSFinal.ts';
+import Modal from '../../../components/Modal/Modal.tsx';
+import { ProgressNoteAndSummary } from '../../../types/MDSFinal.ts';
 
-export default function NTAMDSModal({
+export default function ProgressNoteModal({
   progressNoteAndSummary,
 }: {
   progressNoteAndSummary: ProgressNoteAndSummary[];

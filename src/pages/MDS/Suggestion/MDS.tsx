@@ -1,19 +1,19 @@
-import DefaultLayout from '../../layout/DefaultLayout.tsx';
+import DefaultLayout from '../../../layout/DefaultLayout.tsx';
 import axios from 'axios';
 import { useQuery } from '@tanstack/react-query';
 import { useContext } from 'react';
-import Loader from '../../common/Loader';
+import Loader from '../../../common/Loader';
 import 'react-datepicker/dist/react-datepicker.css';
-import { AuthContext } from '../../components/AuthWrapper.tsx';
+import { AuthContext } from '../../../components/AuthWrapper.tsx';
 import MDSTable from './MDSTable.tsx';
 export default function MDS() {
   const { route } = useContext(AuthContext);
 
   const { isPending, data, error, isError } = useQuery({
-    queryKey: ['view_patient_icd10_detail_final', route],
+    queryKey: ['/mds/view_pdpm_final_result_test', route],
     queryFn: () =>
       axios
-        .get(`${route}/view_patient_icd10_detail_final`)
+        .get(`${route}/mds/view_pdpm_final_result_test`)
         .then((res) => res.data),
   });
   // if (localStorage.getItem('EventTrackerClearStorage') !== '1') {

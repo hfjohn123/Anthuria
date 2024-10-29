@@ -1,5 +1,5 @@
-import HyperLink from '../../components/Basic/HyerLink.tsx';
-import { MDSFinal } from '../../types/MDSFinal.ts';
+import HyperLink from '../../../components/Basic/HyerLink.tsx';
+import { MDSFinal } from '../../../types/MDSFinal.ts';
 import { Row } from '@tanstack/react-table';
 
 export default function PatientInfo({ row }: { row: Row<MDSFinal> }) {
