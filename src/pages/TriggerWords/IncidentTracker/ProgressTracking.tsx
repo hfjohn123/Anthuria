@@ -86,7 +86,7 @@ export default function ProgressTracking({
   const queryClient = useQueryClient();
   const communicationsMutation = useMutation({
     mutationFn: async ({ task_type_id }: { task_type_id: string }) => {
-      axios.put(`${route}/incident_task_bypass`, {
+      return await axios.put(`${route}/incident_task_bypass`, {
         task_type_id: task_type_id,
         incident_id: row.original.event_id,
         internal_patient_id: row.original.internal_patient_id,
