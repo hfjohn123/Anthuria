@@ -32,21 +32,11 @@ export default function PatientInfo({ row }: { row: Row<MDSFinal> }) {
             <span className="font-bold">Patient ID: </span>
             <p>{row.original.patient_id}</p>
           </div>
-          <div className="mt-2.5">
-            <span className="font-bold">Facility Name:</span>
-            <p>{row.getValue('facility_name')}</p>
-          </div>
         </div>
         <div className="basis-1/2 pl-10">
           <div className="">
-            <span className="font-bold">
-              Existing ICD-10 Code Related to NTA:{' '}
-            </span>
-            {row.getValue<string[]>('existing_icd10').length === 0 ? (
-              <p>No ICD-10 Codes</p>
-            ) : (
-              <p>{row.getValue<string[]>('existing_icd10').join(', ')}</p>
-            )}
+            <span className="font-bold">Facility Name:</span>
+            <p>{row.getValue('facility_name')}</p>
           </div>
           <div className="mt-2.5">
             <span className="font-bold">Last Updated:</span>

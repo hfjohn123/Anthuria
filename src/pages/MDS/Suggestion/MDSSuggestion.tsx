@@ -35,7 +35,10 @@ export default function MDSSuggestion({ row }: { row: Row<MDSFinal> }) {
             transition
             className="origin-top transition duration-200 ease-out data-[closed]:-translate-y-3 data-[closed]:opacity-0"
           >
-            <NTATable data={row.original.new_nta_icd10} />
+            <NTATable
+              data={row.original.new_nta_icd10}
+              existing_nta_icd10={row.original.existing_nta_icd10}
+            />
           </DisclosurePanel>
         </Disclosure>
         <Disclosure>
