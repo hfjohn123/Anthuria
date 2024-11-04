@@ -13,6 +13,7 @@
     "email": "qi.song@tridegelab.com"
   },
   "dependencies": {
+    "@datadog/browser-rum": "^5.29.1",
     "@headlessui/react": "^2.1.2",
     "@heroicons/react": "^2.1.5",
     "@intercom/messenger-js-sdk": "^0.0.13",
