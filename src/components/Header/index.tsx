@@ -3,6 +3,7 @@ import DarkModeSwitcher from './DarkModeSwitcher';
 import DropdownNotification from './DropdownNotification';
 import CannyChangeLog from './CannyChangeLog.tsx';
 import useColorMode from '../../hooks/useColorMode.tsx';
+
 const Header = (props: {
   sidebarOpen: string | boolean | undefined;
   setSidebarOpen: (arg0: boolean) => void;

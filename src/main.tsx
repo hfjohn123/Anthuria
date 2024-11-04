@@ -32,9 +32,26 @@ import ResetPassword from './pages/Authentication/SignIn/ResetPassword.tsx';
 import PrimaryButton from './components/Basic/PrimaryButton.tsx';
 import MDS from './pages/MDS/Suggestion/MDS.tsx';
 import MDSChatBot from './pages/MDS/ChatBot/ChatBot.tsx';
+import { datadogRum } from '@datadog/browser-rum';
 
 const queryClient = new QueryClient();
-
+datadogRum.init({
+  applicationId: '74ef0146-2176-4b8d-b608-56d9da4595fb',
+  clientToken: 'pubaac1044fefb79fcbe8b8c03513e1c3ce',
+  // `site` refers to the Datadog site parameter of your organization
+  // see https://docs.datadoghq.com/getting_started/site/
+  site: 'datadoghq.com',
+  service: 'noha-stg',
+  env: 'stg',
+  // Specify a version number to identify the deployed version of your application in Datadog
+  // version: '1.0.0',
+  sessionSampleRate: 100,
+  sessionReplaySampleRate: 20,
+  trackUserInteractions: true,
+  trackResources: true,
+  trackLongTasks: true,
+  defaultPrivacyLevel: 'mask-user-input',
+});
 SuperTokens.init({
   appInfo: {
     appName: 'NOAH',
