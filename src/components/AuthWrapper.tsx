@@ -7,6 +7,7 @@ import Session from 'supertokens-auth-react/recipe/session';
 import { signOut } from 'supertokens-auth-react/recipe/passwordless';
 import Intercom, { shutdown } from '@intercom/messenger-js-sdk';
 import { useLocation } from '@tanstack/react-router';
+import { datadogRum } from '@datadog/browser-rum';
 
 export const AuthContext = createContext({
   user_data: {
@@ -102,6 +103,11 @@ export default function AuthWrapper({ children }: { children: JSX.Element }) {
         },
       });
     }
+    datadogRum.setUser({
+      id: user_data?.email,
+      name: user_data?.name,
+      email: user_data?.email,
+    });
   }, [user_data]);
   const { pathname } = useLocation();
 

@@ -41,8 +41,9 @@ datadogRum.init({
   // `site` refers to the Datadog site parameter of your organization
   // see https://docs.datadoghq.com/getting_started/site/
   site: 'datadoghq.com',
-  service: 'noha-stg',
-  env: 'stg',
+  service:
+    window.location.origin === 'http://localhost' ? 'noah-dev' : 'noah-stg',
+  env: window.location.origin === 'http://localhost' ? 'dev' : 'stg',
   // Specify a version number to identify the deployed version of your application in Datadog
   // version: '1.0.0',
   sessionSampleRate: 100,
