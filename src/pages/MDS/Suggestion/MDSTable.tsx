@@ -169,7 +169,12 @@ export default function MDSTable({ data }: { data: MDSFinal[] }) {
     },
     expanded: {},
     grouping: [],
-    sorting: [],
+    sorting: [
+      {
+        id: 'update_time',
+        desc: true,
+      },
+    ],
     columnFilters: [],
     columnPinning: {
       left: [],
