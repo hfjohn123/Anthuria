@@ -175,7 +175,7 @@ export default function MDSChatBot() {
                 }`}
               >
                 <MessageContent
-                  content={message.content}
+                  content={message.content.replace(/[\n]{3,3}/g, '\n').trim()}
                   citations={message.citations}
                 />
               </span>

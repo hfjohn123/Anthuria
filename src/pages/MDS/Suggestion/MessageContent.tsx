@@ -32,7 +32,7 @@ export default function MessageContent({ content, citations }: CitationProps) {
 
   citationMarkers.forEach((marker, index) => {
     // Add text content without any extra space
-    const textPart = content.slice(lastIndex, marker.position - index);
+    const textPart = content.slice(lastIndex, marker.position);
     parts.push(textPart);
 
     // Add citation numbers without margin
@@ -42,7 +42,7 @@ export default function MessageContent({ content, citations }: CitationProps) {
       </sup>,
     );
 
-    lastIndex = marker.position - index;
+    lastIndex = marker.position;
   });
 
   // Add remaining content
