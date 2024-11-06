@@ -45,9 +45,10 @@ datadogRum.init({
     window.location.origin === 'http://localhost' ? 'noah-dev' : 'noah-stg',
   env: window.location.origin === 'http://localhost' ? 'dev' : 'stg',
   // Specify a version number to identify the deployed version of your application in Datadog
-  // version: '1.0.0',
+  version: '0.0.1',
+  allowedTracingUrls: [(url) => url.startsWith(getRoute())],
   sessionSampleRate: 100,
-  sessionReplaySampleRate: 20,
+  sessionReplaySampleRate: 100,
   trackUserInteractions: true,
   trackResources: true,
   trackLongTasks: true,
