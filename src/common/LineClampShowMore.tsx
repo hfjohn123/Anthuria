@@ -1,7 +1,7 @@
 import { ReactNode, useState } from 'react';
 
 export default function LineClampShowMore({
-  maxLines = 3,
+  maxLines = 6,
   className = '',
   children,
 }: {
@@ -16,7 +16,7 @@ export default function LineClampShowMore({
     <div className={`relative `}>
       <div
         className={`${
-          !isExpanded ? `overflow-hidden line-clamp-${maxLines} ` : ''
+          !isExpanded ? `overflow-hidden line-clamp-6 ` : ''
         } ${className}`}
       >
         {children}
