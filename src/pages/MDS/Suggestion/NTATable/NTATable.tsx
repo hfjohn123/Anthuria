@@ -55,7 +55,7 @@ export default function NTATable({ data }: { data: NTAEntry[] }) {
     },
     {
       accessorKey: 'existing_icd10',
-      header: 'Existing ICD-10 Code',
+      header: 'Diagnosed ICD-10 Codes',
       filterFn: 'arrIncludesSome',
       cell: (info) => {
         return (
@@ -80,7 +80,7 @@ export default function NTATable({ data }: { data: NTAEntry[] }) {
           </p>
         );
       },
-      header: 'New Suggested ICD-10 Code',
+      header: 'Progress Note Suggest ICD-10 Codes',
     },
     // {
     //   accessorKey: 'action',
