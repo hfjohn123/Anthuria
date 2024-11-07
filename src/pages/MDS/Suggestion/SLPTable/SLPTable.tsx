@@ -1,6 +1,6 @@
 import {
   ProgressNoteAndSummary,
-  SLPICD10,
+  SuggestedICD10,
 } from '../../../../types/MDSFinal.ts';
 import { Fragment, useState } from 'react';
 import {
@@ -35,12 +35,12 @@ export default function SLPTable({
   ci_status,
   new_ci_icd10,
 }: {
-  data: SLPICD10[];
+  data: SuggestedICD10[];
   ci_status: string;
-  new_ci_icd10: SLPICD10[];
+  new_ci_icd10: SuggestedICD10[];
 }) {
   const [expanded, setExpanded] = useState<boolean>(false);
-  const columns: ColumnDef<SLPICD10>[] = [
+  const columns: ColumnDef<SuggestedICD10>[] = [
     {
       accessorKey: 'icd10',
       header: 'Potential ICD-10 Code',
@@ -129,13 +129,13 @@ export default function SLPTable({
         );
       },
     },
-    {
-      accessorKey: 'action',
-      header: 'Actions',
-      cell: () => {
-        return <p className="whitespace-nowrap">Coming Soon</p>;
-      },
-    },
+    // {
+    //   accessorKey: 'action',
+    //   header: 'Actions',
+    //   cell: () => {
+    //     return <p className="whitespace-nowrap">Coming Soon</p>;
+    //   },
+    // },
   ];
   const [tableState, setTableState] = useState<TableState>({
     globalFilter: '',

@@ -24,7 +24,7 @@ export default function MDSSuggestion({ row }: { row: Row<MDSFinal> }) {
       </div>
       <Tooltip id="bot-tooltip" className="z-99" />
       <div className="flex flex-col">
-        <Disclosure>
+        <Disclosure defaultOpen={true}>
           <DisclosureButton className="group">
             <div className="flex items-center py-2 gap-2 hover:bg-[#E6F3FF] ">
               <CaretRight className="ease-in-out transition-all duration-200  group-data-[open]:rotate-90" />
@@ -35,10 +35,7 @@ export default function MDSSuggestion({ row }: { row: Row<MDSFinal> }) {
             transition
             className="origin-top transition duration-200 ease-out data-[closed]:-translate-y-3 data-[closed]:opacity-0"
           >
-            <NTATable
-              data={row.original.new_nta_icd10}
-              existing_nta_icd10={row.original.existing_nta_icd10}
-            />
+            <NTATable data={row.original.new_nta_icd10} />
           </DisclosurePanel>
         </Disclosure>
         <Disclosure>

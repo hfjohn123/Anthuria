@@ -1,7 +1,4 @@
-import {
-  NTAICD10,
-  ProgressNoteAndSummary,
-} from '../../../../types/MDSFinal.ts';
+import { NTAEntry } from '../../../../types/MDSFinal.ts';
 import {
   ColumnDef,
   flexRender,
@@ -13,11 +10,7 @@ import {
   TableState,
   useReactTable,
 } from '@tanstack/react-table';
-import { Fragment, useState } from 'react';
-import ProgressNoteModal from '../ProgressNoteModal.tsx';
-import { Tooltip } from 'react-tooltip';
-import { ThumbsUp } from '@phosphor-icons/react';
-import MDSCommentModal from '../MDSCommentModal.tsx';
+import { useState } from 'react';
 import getFacetedUniqueValues from '../../../../common/getFacetedUniqueValues.ts';
 import getFacetedMinMaxValues from '../../../../common/getFacetedMinMaxValues.ts';
 import Select from 'react-select';
@@ -27,29 +20,12 @@ import CheckboxOption from '../../../../components/Select/CheckboxOption.tsx';
 import handleFilterChange from '../../../../components/Tables/handleFilterChange.ts';
 import { Button } from '@headlessui/react';
 import clsx from 'clsx';
+import NTAModal from './NTAModal.tsx';
 
-const permanentColumnFilters = ['icd10', 'comorbidity'];
+const permanentColumnFilters = ['comorbidity', 'is_mds_table'];
 
-export default function NTATable({
-  data,
-  existing_nta_icd10,
-}: {
-  data: NTAICD10[];
-  existing_nta_icd10: string[];
-}) {
-  const [expanded, setExpanded] = useState<boolean>(false);
-  const columns: ColumnDef<NTAICD10>[] = [
-    {
-      accessorKey: 'icd10',
-      header: 'Potential ICD-10 Code',
-      filterFn: 'arrIncludesSome',
-      cell: (info) => {
-        return <p className="whitespace-nowrap">{info.getValue() as string}</p>;
-      },
-      meta: {
-        type: 'categorical',
-      },
-    },
+export default function NTATable({ data }: { data: NTAEntry[] }) {
+  const columns: ColumnDef<NTAEntry>[] = [
     {
       accessorKey: 'comorbidity',
       header: 'Comorbidity',
@@ -66,89 +42,53 @@ export default function NTATable({
       },
     },
     {
-      accessorKey: 'progress_note',
-      accessorFn: (row) => row.progress_note,
+      accessorKey: 'is_mds_table',
+      accessorFn: (row) => (row.is_mds_table ? 'Yes' : 'No'),
+      header: 'Is Already in MDS Table',
       cell: (info) => {
-        return (
-          <div className="max-w-[30vw]">
-            <p className="line-clamp-3 whitespace-normal">
-              {(info.getValue() as ProgressNoteAndSummary[]).map(
-                ({ highlights, explanation }, index) => (
-                  <Fragment key={index}>
-                    <span
-                      data-tooltip-id="explanation-tooltip"
-                      data-tooltip-content={explanation}
-                      className="whitespace-normal"
-                    >
-                      Highlights: {highlights}
-                    </span>
-                    {index <
-                      (info.getValue() as ProgressNoteAndSummary[]).length -
-                        1 && <br />}
-                  </Fragment>
-                ),
-              )}
-            </p>
-            <ProgressNoteModal
-              progressNoteAndSummary={
-                info.getValue() as ProgressNoteAndSummary[]
-              }
-            />
-            <Tooltip
-              id="explanation-tooltip"
-              className="whitespace-normal sm:max-w-[40vw] max-w-[95vw] z-99"
-            />
-          </div>
-        );
+        return <p className="whitespace-nowrap">{info.getValue() as string}</p>;
       },
-      header: 'Progress Note/Explanation',
-    },
-    {
-      accessorKey: 'review',
-      accessorFn: (row) => {
-        return {
-          is_thumb_up: row.is_thumb_up,
-          comment: row.comment,
-        };
-      },
-      header: 'Review',
-      cell: (info) => {
-        const { is_thumb_up, comment } = info.getValue() as {
-          is_thumb_up: boolean;
-          comment: string;
-        };
-        return (
-          <div className=" flex items-center flex-nowrap gap-2 ">
-            {is_thumb_up ? (
-              <ThumbsUp
-                className="size-4 text-meta-3 cursor-pointer"
-                weight="fill"
-              />
-            ) : (
-              <ThumbsUp
-                className="size-4 cursor-pointer"
-                // onClick={() =>
-                //   putComment.mutate({
-                //     progress_note_id: row.original.progress_note_id,
-                //     trigger_word: trigger_word,
-                //     comment: '',
-                //     is_thumb_up: true,
-                //   })
-                // }
-              />
-            )}
-            <MDSCommentModal comment={comment} is_thumb_up={is_thumb_up} />
-          </div>
-        );
+      filterFn: 'arrIncludesSome',
+      meta: {
+        type: 'categorical',
       },
     },
     {
-      accessorKey: 'action',
-      header: 'Actions',
-      cell: () => {
-        return <p className="whitespace-nowrap">Coming Soon</p>;
+      accessorKey: 'existing_icd10',
+      header: 'Existing ICD-10 Code',
+      filterFn: 'arrIncludesSome',
+      cell: (info) => {
+        return (
+          <p className="whitespace-nowrap">
+            {(info.getValue() as string[]).join(', ')}
+          </p>
+        );
+      },
+      meta: {
+        type: 'categorical',
       },
     },
+    {
+      accessorKey: 'new_icd10',
+      accessorFn: (row) => row.new_icd10.map((d) => d.icd10),
+      cell: (info) => {
+        return (
+          <p className="whitespace-nowrap">
+            {info.row.original.new_icd10.map((d) => {
+              return <NTAModal icd10={d} />;
+            })}
+          </p>
+        );
+      },
+      header: 'New Suggested ICD-10 Code',
+    },
+    // {
+    //   accessorKey: 'action',
+    //   header: 'Actions',
+    //   cell: () => {
+    //     return <p className="whitespace-nowrap">Coming Soon</p>;
+    //   },
+    // },
   ];
   const [tableState, setTableState] = useState<TableState>({
     globalFilter: '',
@@ -204,14 +144,6 @@ export default function NTATable({
   });
   return (
     <div className="py-5 px-5 flex flex-col gap-5 ">
-      <div className="">
-        <span className="font-bold">Existing ICD-10 Code Related to NTA: </span>
-        {existing_nta_icd10.length === 0 ? (
-          <p>No ICD-10 Codes</p>
-        ) : (
-          <p>{existing_nta_icd10.join(', ')}</p>
-        )}
-      </div>
       <div>
         <div className="w-full flex items-center gap-3 mt-1">
           {permanentColumnFilters.map((filter) => (
@@ -289,12 +221,9 @@ export default function NTATable({
             ))}
           </thead>
           <tbody className="w-full">
-            {table.getRowModel().rows.map((row, index) => {
+            {table.getRowModel().rows.map((row) => {
               return (
-                <tr
-                  key={row.id}
-                  className={clsx(index > 2 && !expanded && 'hidden')}
-                >
+                <tr key={row.id}>
                   {row.getVisibleCells().map((cell) => {
                     return (
                       <td
@@ -319,14 +248,6 @@ export default function NTATable({
           </tbody>
         </table>
         {data.length === 0 && <p>No ICD-10 Codes</p>}
-        {data.length > 3 && (
-          <Button
-            className="text-primary self-start"
-            onClick={() => setExpanded((prev) => !prev)}
-          >
-            {expanded ? 'Show Less' : 'Show More'}
-          </Button>
-        )}
       </div>
     </div>
   );

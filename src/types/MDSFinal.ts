@@ -7,23 +7,20 @@ export type MDSFinal = {
   facility_name: string;
   upstream: string;
   update_time: Date;
-  existing_nta_icd10: string[];
-  new_nta_icd10: NTAICD10[];
+  new_nta_icd10: NTAEntry[];
   ci_status: string;
-  new_ci_icd10: SLPICD10[];
+  new_ci_icd10: SuggestedICD10[];
   existing_slp_icd10: string[];
-  new_slp_icd10: SLPICD10[];
+  new_slp_icd10: SuggestedICD10[];
 };
 
-export type NTAICD10 = {
-  icd10: string;
+export type NTAEntry = {
   comorbidity: string;
-  progress_note: ProgressNoteAndSummary[];
-  is_thumb_up: boolean;
-  comment: string;
+  is_mds_table: boolean;
+  existing_icd10: string[];
+  new_icd10: SuggestedICD10[];
 };
-
-export type SLPICD10 = {
+export type SuggestedICD10 = {
   icd10: string;
   progress_note: ProgressNoteAndSummary[];
   is_thumb_up: boolean;
