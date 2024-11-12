@@ -31,8 +31,9 @@ export default function NTAModal({ icd10 }: { icd10: SuggestedICD10 }) {
             });
           },
           {
-            threshold: 0.0, // Reduced threshold to detect as soon as element starts becoming visible
+            threshold: 0, // Reduced threshold to detect as soon as element starts becoming visible
             root: scrollContainerRef.current,
+            // rootMargin: '32px 0px 32px 0px',
           },
         );
 
@@ -58,10 +59,26 @@ export default function NTAModal({ icd10 }: { icd10: SuggestedICD10 }) {
     }
 
     if (nextIndex !== currentIndex && itemRefs.current[nextIndex]) {
-      itemRefs.current[nextIndex]?.scrollIntoView({
-        behavior: 'smooth',
-        block: 'nearest', // Always align to top
-      });
+      if (nextIndex === 0) {
+        // Scroll to the very top when going to first item
+        scrollContainerRef.current?.scrollTo({
+          top: 0,
+          behavior: 'smooth',
+        });
+      } else if (nextIndex === totalItems - 1) {
+        // Scroll to the very bottom when going to last item
+        scrollContainerRef.current?.scrollTo({
+          top:
+            scrollContainerRef.current.scrollHeight -
+            scrollContainerRef.current.clientHeight,
+          behavior: 'smooth',
+        });
+      } else {
+        itemRefs.current[nextIndex]?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'nearest', // Always align to top
+        });
+      }
       setCurrentIndex(nextIndex);
     }
   };
