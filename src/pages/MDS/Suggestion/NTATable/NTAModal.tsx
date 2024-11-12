@@ -31,9 +31,8 @@ export default function NTAModal({ icd10 }: { icd10: SuggestedICD10 }) {
             });
           },
           {
-            threshold: 1, // Reduced threshold to detect as soon as element starts becoming visible
+            threshold: 0.0, // Reduced threshold to detect as soon as element starts becoming visible
             root: scrollContainerRef.current,
-            rootMargin: '0px',
           },
         );
 
@@ -61,7 +60,7 @@ export default function NTAModal({ icd10 }: { icd10: SuggestedICD10 }) {
     if (nextIndex !== currentIndex && itemRefs.current[nextIndex]) {
       itemRefs.current[nextIndex]?.scrollIntoView({
         behavior: 'smooth',
-        block: 'start', // Always align to top
+        block: 'nearest', // Always align to top
       });
       setCurrentIndex(nextIndex);
     }
