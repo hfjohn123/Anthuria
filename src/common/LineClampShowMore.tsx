@@ -10,7 +10,6 @@ export default function LineClampShowMore({
   children: ReactNode;
 }) {
   const [isExpanded, setIsExpanded] = useState(false);
-  console.log(maxLines);
 
   return (
     <div className={`relative `}>
