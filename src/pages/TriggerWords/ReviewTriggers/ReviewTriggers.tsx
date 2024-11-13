@@ -160,7 +160,7 @@ export default function ReviewTriggers() {
   const [isOpen, setIsOpen] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [includeCreatedDate, setIncludeCreatedDate] = useState(
-    search['history'] ? search['history'] === 'false' : false,
+    search['history'] ? search['history'] === 'false' : true,
   );
 
   const fetchTriggerWord = async () => {
