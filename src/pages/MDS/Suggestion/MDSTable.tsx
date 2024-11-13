@@ -148,6 +148,7 @@ export default function MDSTable({ data }: { data: MDSFinal[] }) {
     //   },
     // },
   ];
+
   const [tableState, setTableState] = useState<TableState>({
     globalFilter: '',
     columnSizing: {},
@@ -220,15 +221,7 @@ export default function MDSTable({ data }: { data: MDSFinal[] }) {
       JSON.stringify(tableState.columnVisibility),
     );
   }, [tableState.columnVisibility]);
-  useEffect(() => {
-    setTableState((prev) => ({
-      ...prev,
-      pagination: {
-        pageIndex: 0,
-        pageSize: prev.pagination.pageSize,
-      },
-    }));
-  }, [tableState.columnFilters, tableState.globalFilter]);
+
   return (
     <TableWrapper
       table={table}

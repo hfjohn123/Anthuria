@@ -16,6 +16,7 @@ import FilterValueContainer from '../../../components/Select/FilterValueContaine
 import {
   ColumnDef,
   ColumnDefTemplate,
+  ColumnFiltersState,
   flexRender,
   getCoreRowModel,
   getExpandedRowModel,
@@ -44,6 +45,8 @@ import { TriggerFinal } from '../../../types/TriggerFinal.ts';
 import PageNavigation from '../../../components/Tables/PageNavigation.tsx';
 import exportExcel from '../../../common/excelExport.ts';
 import TriggerNoteDetail from './TriggerNoteDetail.tsx';
+import { useNavigate, useSearch } from '@tanstack/react-router';
+import SearchParams from '../../../types/SearchParams.ts';
 
 const predefinedTriggerWords = [
   'Fall',
@@ -147,9 +150,18 @@ export default function ReviewTriggers() {
     label: string;
     value: string;
   } | null>(null);
+  const navigate = useNavigate({
+    from: '/trigger-words/review-triggers',
+  });
+  const search = useSearch({
+    from: '/trigger-words/review-triggers',
+  });
+
   const [isOpen, setIsOpen] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
-  const [includeCreatedDate, setIncludeCreatedDate] = useState(true);
+  const [includeCreatedDate, setIncludeCreatedDate] = useState(
+    search['history'] === 'false',
+  );
 
   const fetchTriggerWord = async () => {
     let params: { [key: string]: any } = {};
@@ -474,7 +486,76 @@ export default function ReviewTriggers() {
       JSON.stringify(tableState.columnVisibility),
     );
   }, [tableState.columnVisibility]);
+
   useEffect(() => {
+    refetch().finally(() => setIsRefetching(false));
+  }, [includeCreatedDate, refetch]);
+
+  useEffect(() => {
+    const initialFilters: ColumnFiltersState = [];
+
+    Object.entries(search).forEach(([key, value]) => {
+      if (value && key !== 'history') {
+        if (
+          (value as string).startsWith('[') &&
+          (value as string).endsWith(']')
+        ) {
+          value = (value as string)
+            .substring(1, (value as string).length - 1)
+            .split(',');
+          if (
+            !isNaN(parseInt((value as string[])[0])) &&
+            new Date(parseInt((value as string[])[0])).getTime() > 0
+          ) {
+            value = (value as string[]).map(
+              (v) => new Date(parseInt(v as string)),
+            );
+          }
+        }
+        initialFilters.push({
+          id: key,
+          value: value,
+        });
+      }
+    });
+
+    setTableState((prev) => ({
+      ...prev,
+      columnFilters: initialFilters,
+    }));
+  }, []);
+
+  useEffect(() => {
+    const searchParams: SearchParams = {};
+    tableState.columnFilters.forEach((filter) => {
+      if (filter.id !== 'patient_name') {
+        if (filter.value) {
+          // Handle array values
+          if (Array.isArray(filter.value)) {
+            searchParams[filter.id] = `[${filter.value
+              .map((v) => {
+                if (v instanceof Date) {
+                  return v.getTime();
+                } else {
+                  return v;
+                }
+              })
+              .toString()}]`;
+          } else {
+            searchParams[filter.id] = filter.value.toString();
+          }
+        }
+      }
+    });
+
+    navigate({
+      // @ts-ignore next-line
+      search: {
+        ...searchParams,
+        history: search['history'],
+      },
+      replace: true,
+    });
     setTableState((prev) => ({
       ...prev,
       pagination: {
@@ -483,10 +564,6 @@ export default function ReviewTriggers() {
       },
     }));
   }, [tableState.columnFilters, tableState.globalFilter]);
-
-  useEffect(() => {
-    refetch().finally(() => setIsRefetching(false));
-  }, [includeCreatedDate, refetch]);
 
   if (isPending || isRefetching) {
     return <Loader />;
@@ -1165,6 +1242,10 @@ export default function ReviewTriggers() {
                   onClick={() => {
                     setIsRefetching(true);
                     setIncludeCreatedDate(!includeCreatedDate);
+                    navigate({
+                      search: { ...search, history: includeCreatedDate },
+                      replace: true,
+                    });
                   }}
                 >
                   {includeCreatedDate

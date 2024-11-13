@@ -1,4 +1,9 @@
-import { flexRender, Table, TableState } from '@tanstack/react-table';
+import {
+  ColumnFiltersState,
+  flexRender,
+  Table,
+  TableState,
+} from '@tanstack/react-table';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import { Button, Input } from '@headlessui/react';
 import Select from 'react-select';
@@ -10,8 +15,10 @@ import AutosizeInput from 'react-18-input-autosize';
 import DatePicker from 'react-datepicker';
 import SortUpIcon from '../../images/icon/sort-up.svg';
 import SortDownIcon from '../../images/icon/sort-down.svg';
-import { Fragment, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import PageNavigation from './PageNavigation.tsx';
+import SearchParams from '../../types/SearchParams.ts';
+import { useNavigate, useSearch } from '@tanstack/react-router';
 
 export default function TableWrapper({
   table,
@@ -32,6 +39,80 @@ export default function TableWrapper({
     label: string;
     value: string;
   } | null>(null);
+  const navigate = useNavigate();
+  const search = useSearch({ strict: false });
+
+  useEffect(() => {
+    const initialFilters: ColumnFiltersState = [];
+
+    Object.entries(search).forEach(([key, value]) => {
+      if (value) {
+        if (
+          (value as string).startsWith('[') &&
+          (value as string).endsWith(']')
+        ) {
+          value = (value as string)
+            .substring(1, (value as string).length - 1)
+            .split(',');
+          if (
+            !isNaN(parseInt((value as string[])[0])) &&
+            new Date(parseInt((value as string[])[0])).getTime() > 0
+          ) {
+            value = (value as string[]).map(
+              (v) => new Date(parseInt(v as string)),
+            );
+          }
+        }
+        initialFilters.push({
+          id: key,
+          value: value,
+        });
+      }
+    });
+
+    setTableState((prev) => ({
+      ...prev,
+      columnFilters: initialFilters,
+    }));
+  }, []);
+
+  useEffect(() => {
+    const searchParams: SearchParams = {};
+    tableState.columnFilters.forEach((filter) => {
+      if (filter.id !== 'patient_name') {
+        if (filter.value) {
+          // Handle array values
+          if (Array.isArray(filter.value)) {
+            searchParams[filter.id] = `[${filter.value
+              .map((v) => {
+                if (v instanceof Date) {
+                  return v.getTime();
+                } else {
+                  return v;
+                }
+              })
+              .toString()}]`;
+          } else {
+            searchParams[filter.id] = filter.value.toString();
+          }
+        }
+      }
+    });
+
+    navigate({
+      // @ts-ignore next-line
+      search: searchParams,
+      replace: true,
+    });
+    setTableState((prev) => ({
+      ...prev,
+      pagination: {
+        pageIndex: 0,
+        pageSize: prev.pagination.pageSize,
+      },
+    }));
+  }, [tableState.columnFilters, tableState.globalFilter]);
+
   return (
     <div className=" bg-white dark:bg-boxdark shadow-default h-full flex-col flex ">
       <div className="sticky top-0 flex-none bg-white dark:bg-boxdark z-30">

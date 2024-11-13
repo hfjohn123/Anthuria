@@ -164,6 +164,12 @@ const AccountSettingRoute = createRoute({
 const MDSRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/mds/suggestion',
+  validateSearch: (search: Record<string, unknown>) => {
+    return {
+      facility_name: search.facility_name as string | undefined,
+      update_time: search.update_time as string | undefined,
+    };
+  },
   component: () => {
     return (
       <SessionAuth>
