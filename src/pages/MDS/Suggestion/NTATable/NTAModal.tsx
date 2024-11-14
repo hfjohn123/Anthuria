@@ -14,107 +14,39 @@ export default function NTAModal({ icd10 }: { icd10: SuggestedICD10 }) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const observerRef = useRef<IntersectionObserver | null>(null);
 
-  // Function to setup/reset intersection observer
-  const setupIntersectionObserver = () => {
-    if (scrollContainerRef.current) {
-      // Disconnect existing observer if any
-      observerRef.current?.disconnect();
-
-      observerRef.current = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              const index = itemRefs.current.findIndex(
-                (ref) => ref === entry.target,
-              );
-              if (index !== -1) {
-                setCurrentIndex(index);
-              }
-            }
-          });
-        },
-        {
-          threshold: 0.1,
-          root: scrollContainerRef.current,
-        },
-      );
-
-      // Observe all items
-      itemRefs.current.forEach((ref) => {
-        if (ref) observerRef.current?.observe(ref);
-      });
-    }
-  };
-
-  // Initial setup of intersection observer
   useEffect(() => {
-    setTimeout(setupIntersectionObserver, 0);
+    setTimeout(() => {
+      if (scrollContainerRef.current) {
+        observerRef.current = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                const index = itemRefs.current.findIndex(
+                  (ref) => ref === entry.target,
+                );
+                if (index !== -1) {
+                  setCurrentIndex(index);
+                }
+              }
+            });
+          },
+          {
+            threshold: 0.1, // Reduced threshold to detect as soon as element starts becoming visible
+            root: scrollContainerRef.current,
+            // rootMargin: '32px 0px 32px 0px',
+          },
+        );
+
+        itemRefs.current.forEach((ref) => {
+          if (ref) observerRef.current?.observe(ref);
+        });
+      }
+    }, 0);
 
     return () => {
       observerRef.current?.disconnect();
     };
   }, [icd10.progress_note, open]);
-
-  // Setup mutation observer for content changes
-  useEffect(() => {
-    if (!scrollContainerRef.current) return;
-
-    const mutationObserver = new MutationObserver((mutations) => {
-      // Check if mutations affect size/layout
-      const needsUpdate = mutations.some(
-        (mutation) =>
-          mutation.type === 'childList' ||
-          (mutation.target as Element).classList?.contains('expanded'),
-      );
-
-      if (needsUpdate) {
-        // Debounce the observer reset
-        setTimeout(setupIntersectionObserver, 100);
-      }
-    });
-
-    mutationObserver.observe(scrollContainerRef.current, {
-      childList: true,
-      subtree: true,
-      attributes: true,
-      attributeFilter: ['class'], // Watch for class changes that might indicate expansion
-    });
-
-    return () => mutationObserver.disconnect();
-  }, []);
-
-  // Backup scroll handler for better accuracy
-  useEffect(() => {
-    const container = scrollContainerRef.current;
-    if (!container) return;
-
-    const handleScroll = () => {
-      requestAnimationFrame(() => {
-        const elements = itemRefs.current;
-        const containerTop = container.scrollTop;
-        const containerBottom = containerTop + container.clientHeight;
-
-        elements.forEach((element, index) => {
-          if (element) {
-            const rect = element.getBoundingClientRect();
-            const elementTop = rect.top;
-            const elementBottom = rect.bottom;
-
-            // Check if element is mostly visible in viewport
-            if (
-              elementTop < container.clientHeight / 2 &&
-              elementBottom > container.clientHeight / 2
-            ) {
-              setCurrentIndex(index);
-            }
-          }
-        });
-      });
-    };
-
-    container.addEventListener('scroll', handleScroll);
-    return () => container.removeEventListener('scroll', handleScroll);
-  }, []);
 
   const scrollToItem = (direction: 'next' | 'prev') => {
     const totalItems = icd10.progress_note.length;
@@ -127,29 +59,14 @@ export default function NTAModal({ icd10 }: { icd10: SuggestedICD10 }) {
     }
 
     if (nextIndex !== currentIndex && itemRefs.current[nextIndex]) {
-      if (nextIndex === 0) {
-        scrollContainerRef.current?.scrollTo({
-          top: 0,
-          behavior: 'smooth',
-        });
-      } else if (nextIndex === totalItems - 1) {
-        scrollContainerRef.current?.scrollTo({
-          top:
-            scrollContainerRef.current.scrollHeight -
-            scrollContainerRef.current.clientHeight,
-          behavior: 'smooth',
-        });
-      } else {
-        itemRefs.current[nextIndex]?.scrollIntoView({
-          behavior: 'smooth',
-          block: 'nearest',
-        });
-      }
+      itemRefs.current[nextIndex]?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start', // Always align to top
+      });
       setCurrentIndex(nextIndex);
     }
   };
 
-  // Rest of your component remains the same...
   return (
     <Modal
       isOpen={open}
