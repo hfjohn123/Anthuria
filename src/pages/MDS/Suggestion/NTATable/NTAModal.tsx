@@ -13,6 +13,31 @@ export default function NTAModal({ icd10 }: { icd10: SuggestedICD10 }) {
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const observerRef = useRef<IntersectionObserver | null>(null);
+  const lastScrollTop = useRef(0);
+  const scrollDirection = useRef<'up' | 'down'>('down');
+
+  useEffect(() => {
+    const scrollContainer = scrollContainerRef.current;
+
+    const handleScroll = () => {
+      if (scrollContainer) {
+        const currentScrollTop = scrollContainer.scrollTop;
+        scrollDirection.current =
+          currentScrollTop > lastScrollTop.current ? 'down' : 'up';
+        lastScrollTop.current = currentScrollTop;
+      }
+    };
+
+    if (scrollContainer) {
+      scrollContainer.addEventListener('scroll', handleScroll);
+    }
+
+    return () => {
+      if (scrollContainer) {
+        scrollContainer.removeEventListener('scroll', handleScroll);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     setTimeout(() => {
@@ -31,9 +56,12 @@ export default function NTAModal({ icd10 }: { icd10: SuggestedICD10 }) {
             });
           },
           {
-            threshold: 0.1, // Reduced threshold to detect as soon as element starts becoming visible
+            threshold: 0,
             root: scrollContainerRef.current,
-            // rootMargin: '32px 0px 32px 0px',
+            rootMargin:
+              scrollDirection.current === 'down'
+                ? '-100% 0px 0px 0px' // Only observe bottom edge when scrolling down
+                : '0px 0px -100% 0px', // Only observe top edge when scrolling up
           },
         );
 
@@ -46,7 +74,7 @@ export default function NTAModal({ icd10 }: { icd10: SuggestedICD10 }) {
     return () => {
       observerRef.current?.disconnect();
     };
-  }, [icd10.progress_note, open]);
+  }, [icd10.progress_note, open, scrollDirection.current]);
 
   const scrollToItem = (direction: 'next' | 'prev') => {
     const totalItems = icd10.progress_note.length;
@@ -61,12 +89,13 @@ export default function NTAModal({ icd10 }: { icd10: SuggestedICD10 }) {
     if (nextIndex !== currentIndex && itemRefs.current[nextIndex]) {
       itemRefs.current[nextIndex]?.scrollIntoView({
         behavior: 'smooth',
-        block: 'start', // Always align to top
+        block: direction === 'next' ? 'end' : 'start',
       });
       setCurrentIndex(nextIndex);
     }
   };
 
+  // Rest of your component remains the same
   return (
     <Modal
       isOpen={open}
@@ -75,7 +104,7 @@ export default function NTAModal({ icd10 }: { icd10: SuggestedICD10 }) {
       title={'Suggestion for ' + icd10.icd10}
     >
       <div className="relative">
-        <div className="absolute right-5 top-1/2 -translate-y-1/2 flex flex-col items-end  gap-2 z-10">
+        <div className="absolute right-5 top-1/2 -translate-y-1/2 flex flex-col items-end gap-2 z-10">
           <button
             onClick={() => scrollToItem('prev')}
             disabled={currentIndex === 0}
