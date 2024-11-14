@@ -59,8 +59,9 @@ const predefinedTriggerWords = [
 ];
 const PERMANENT_COLUMN_FILTERS = [
   'facility_name',
+  'patient_name',
   'trigger_word',
-  'has_reviewed',
+  'revision_date',
 ];
 
 const initialTableState: TableState = {
@@ -113,7 +114,7 @@ const initialTableState: TableState = {
       : {
           facility_name: true,
           patient_name: true,
-          progress_note_id: true,
+          progress_note_id: false,
           created_date: false,
           created_by: false,
           revision_by: false,
@@ -122,7 +123,7 @@ const initialTableState: TableState = {
           progress_note: false,
           summary: false,
           update_time: false,
-          has_events: true,
+          has_events: false,
           has_reviewed: false,
         },
   pagination: {
@@ -444,9 +445,9 @@ export default function ReviewTriggers() {
   const [isRefetching, setIsRefetching] = useState(false);
 
   useEffect(() => {
-    if (localStorage.getItem('clearStorage') !== '4') {
+    if (localStorage.getItem('clearStorage') !== '5') {
       localStorage.removeItem('userVisibilitySettings');
-      localStorage.setItem('clearStorage', '4');
+      localStorage.setItem('clearStorage', '5');
     } else {
       const userVisibilitySettings = localStorage.getItem(
         'userVisibilitySettings',
