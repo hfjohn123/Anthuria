@@ -94,7 +94,7 @@ export default function NTAModal({ icd10 }: { icd10: SuggestedICD10 }) {
     if (nextIndex !== currentIndex && itemRefs.current[nextIndex]) {
       itemRefs.current[nextIndex]?.scrollIntoView({
         behavior: 'smooth',
-        block: 'start',
+        block: 'nearest',
       });
       setCurrentIndex(nextIndex);
     }
