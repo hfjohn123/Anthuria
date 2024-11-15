@@ -15,13 +15,13 @@ export default function NTAModal({ icd10 }: { icd10: SuggestedICD10 }) {
   const observerRef = useRef<IntersectionObserver | null>(null);
   const lastScrollTop = useRef(0);
   const scrollDirection = useRef<'up' | 'down'>('down');
-
   useEffect(() => {
     const scrollContainer = scrollContainerRef.current;
 
     const handleScroll = () => {
       if (scrollContainer) {
         const currentScrollTop = scrollContainer.scrollTop;
+
         scrollDirection.current =
           currentScrollTop > lastScrollTop.current ? 'down' : 'up';
         lastScrollTop.current = currentScrollTop;
@@ -37,7 +37,7 @@ export default function NTAModal({ icd10 }: { icd10: SuggestedICD10 }) {
         scrollContainer.removeEventListener('scroll', handleScroll);
       }
     };
-  }, []);
+  }, [scrollContainerRef.current]);
 
   useEffect(() => {
     setTimeout(() => {
@@ -74,7 +74,12 @@ export default function NTAModal({ icd10 }: { icd10: SuggestedICD10 }) {
     return () => {
       observerRef.current?.disconnect();
     };
-  }, [icd10.progress_note, open, scrollDirection.current]);
+  }, [
+    icd10.progress_note,
+    open,
+    scrollDirection.current,
+    scrollContainerRef.current,
+  ]);
 
   const scrollToItem = (direction: 'next' | 'prev') => {
     const totalItems = icd10.progress_note.length;
@@ -89,7 +94,7 @@ export default function NTAModal({ icd10 }: { icd10: SuggestedICD10 }) {
     if (nextIndex !== currentIndex && itemRefs.current[nextIndex]) {
       itemRefs.current[nextIndex]?.scrollIntoView({
         behavior: 'smooth',
-        block: direction === 'next' ? 'end' : 'start',
+        block: 'start',
       });
       setCurrentIndex(nextIndex);
     }
