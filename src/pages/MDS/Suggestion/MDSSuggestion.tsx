@@ -28,7 +28,20 @@ export default function MDSSuggestion({ row }: { row: Row<MDSFinal> }) {
           <DisclosureButton className="group">
             <div className="flex items-center py-2 gap-2 hover:bg-[#E6F3FF] ">
               <CaretRight className="ease-in-out transition-all duration-200  group-data-[open]:rotate-90" />
-              <h3 className="text-base font-semibold">NTA</h3>
+              <h3 className="text-base font-semibold">
+                NTA{' '}
+                <span className="text-xs">
+                  (
+                  {row.original.new_nta_icd10
+                    .map((d) => d.existing_icd10.length)
+                    .reduce((a, b) => a + b, 0)}{' '}
+                  existing diagnosis,{' '}
+                  {row.original.new_nta_icd10
+                    .flatMap((d) => d.new_icd10)
+                    .reduce((sum, c) => sum + c.progress_note.length, 0)}{' '}
+                  progress notes detected)
+                </span>
+              </h3>
             </div>
           </DisclosureButton>
           <DisclosurePanel
