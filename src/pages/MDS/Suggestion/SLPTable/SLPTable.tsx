@@ -1,5 +1,7 @@
 import {
   ProgressNoteAndSummary,
+  SLPAggregate,
+  SLPItem,
   SuggestedICD10,
 } from '../../../../types/MDSFinal.ts';
 import { Fragment, useState } from 'react';
@@ -27,18 +29,11 @@ import CheckboxOption from '../../../../components/Select/CheckboxOption.tsx';
 import handleFilterChange from '../../../../components/Tables/handleFilterChange.ts';
 import { Button } from '@headlessui/react';
 import clsx from 'clsx';
+import objIsEmpty from '../../../../common/objIsEmpty.ts';
 
 const permanentColumnFilters = ['icd10'];
 
-export default function SLPTable({
-  data,
-  ci_status,
-  new_ci_icd10,
-}: {
-  data: SuggestedICD10[];
-  ci_status: string;
-  new_ci_icd10: SuggestedICD10[];
-}) {
+export default function SLPTable({ data }: { data: SLPAggregate }) {
   const [expanded, setExpanded] = useState<boolean>(false);
   const columns: ColumnDef<SuggestedICD10>[] = [
     {
@@ -174,40 +169,47 @@ export default function SLPTable({
       pageSize: 30,
     },
   });
-  const table = useReactTable({
-    data: data,
-    columns,
-    state: tableState,
-    onStateChange: setTableState,
-    autoResetExpanded: false,
-    getRowCanExpand: () => true,
-    getFacetedUniqueValues: getFacetedUniqueValues(),
-    getCoreRowModel: getCoreRowModel(),
-    getExpandedRowModel: getExpandedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getFacetedRowModel: getFacetedRowModel(), // client-side faceting
-    getFacetedMinMaxValues: getFacetedMinMaxValues(), // generate min/max values for numeric range filter
-    getSortedRowModel: getSortedRowModel(),
-  });
+  // const table = useReactTable({
+  //   data: data,
+  //   columns,
+  //   state: tableState,
+  //   onStateChange: setTableState,
+  //   autoResetExpanded: false,
+  //   getRowCanExpand: () => true,
+  //   getFacetedUniqueValues: getFacetedUniqueValues(),
+  //   getCoreRowModel: getCoreRowModel(),
+  //   getExpandedRowModel: getExpandedRowModel(),
+  //   getFilteredRowModel: getFilteredRowModel(),
+  //   getFacetedRowModel: getFacetedRowModel(), // client-side faceting
+  //   getFacetedMinMaxValues: getFacetedMinMaxValues(), // generate min/max values for numeric range filter
+  //   getSortedRowModel: getSortedRowModel(),
+  // });
   return (
     <div className="flex flex-col gap-5 px-5 py-5">
       <div className="flex">
         <div className="basis-1/2">
-          <h3 className="font-bold">Cognition:</h3>
+          <h3 className="font-bold">Cognitive Impairment:</h3>
           <p>
-            {ci_status ?? 'No BIMS test'}{' '}
-            <span
-              className={clsx(
-                (new_ci_icd10.length === 0 ||
-                  (ci_status !== null && ci_status !== 'Intact Cognition')) &&
-                  'hidden',
-                'text-meta-1',
-              )}
-            >
-              (Given this patient may have{' '}
-              {new_ci_icd10.map(({ icd10 }) => icd10).join(', ')}. Please
-              consider do a BIMS test.)
-            </span>
+            {objIsEmpty(data.cognitive_impairment) ? (
+              'No BIMS test '
+            ) : (
+              <>
+                <span>
+                  {data.cognitive_impairment?.is_mds
+                    ? 'Is in MDS Table'
+                    : 'Not in MDS Table'}
+                </span>
+                {data.cognitive_impairment.is_suggest ? (
+                  <span className={clsx('text-primary')}>
+                    (Suggested:{' '}
+                    {data.cognitive_impairment.slp_entry
+                      .map((s) => s.explanation)
+                      .join(', ')}
+                    )
+                  </span>
+                ) : null}
+              </>
+            )}
           </p>
         </div>
         <div>
@@ -215,125 +217,125 @@ export default function SLPTable({
           <p>No existing ICD-10</p>
         </div>
       </div>
-      <div>
-        <div className="w-full flex items-center mt-1 gap-3">
-          {permanentColumnFilters.map((filter) => (
-            <Select
-              classNames={{ ...filterSelectStyles }}
-              key={filter}
-              placeholder={table.getColumn(filter)?.columnDef.header as string}
-              closeMenuOnSelect={false}
-              hideSelectedOptions={false}
-              components={{
-                IndicatorSeparator: () => null,
-                ValueContainer: FilterValueContainer,
-                Option: CheckboxOption,
-              }}
-              isClearable={true}
-              isMulti={true}
-              value={
-                tableState.columnFilters.find((f) => f.id === filter)
-                  ? (
-                      tableState.columnFilters.find((f) => f.id === filter)
-                        ?.value as string[]
-                    ).map((s) => ({
-                      label: s,
-                      value: s,
-                    }))
-                  : []
-              }
-              name={filter}
-              options={Array.from(
-                table?.getColumn(filter)?.getFacetedUniqueValues()?.keys() ??
-                  [],
-              ).map((key) => ({
-                label: key,
-                value: key,
-              }))}
-              onChange={(selected, action) => {
-                handleFilterChange(selected, action, setTableState);
-              }}
-            />
-          ))}
-          {tableState.columnFilters.length > 0 && (
-            <Button
-              color="secondary"
-              onClick={() =>
-                setTableState((prev) => ({
-                  ...prev,
-                  columnFilters: [],
-                }))
-              }
-            >
-              Clear all
-            </Button>
-          )}
-        </div>
-        <table className="mt-3 w-full">
-          <thead>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <th
-                      key={header.id}
-                      colSpan={header.colSpan}
-                      className="py-2 border-y-[1.5px] border-stroke dark:border-strokedark text-left select-none group whitespace-nowrap text-body-2"
-                    >
-                      {header.isPlaceholder ? null : (
-                        <span>
-                          {flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
-                        </span>
-                      )}
-                    </th>
-                  );
-                })}
-              </tr>
-            ))}
-          </thead>
-          <tbody className="w-full">
-            {table.getRowModel().rows.map((row, index) => {
-              return (
-                <tr
-                  key={row.id}
-                  className={clsx(index > 2 && !expanded && 'hidden')}
-                >
-                  {row.getVisibleCells().map((cell) => {
-                    return (
-                      <td
-                        key={cell.id}
-                        className={clsx(
-                          'py-2 border-b-[1.5px] border-stroke dark:border-strokedark',
-                          cell.column.columnDef.meta?.wrap,
-                        )}
-                      >
-                        {
-                          flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext(),
-                          ) as string
-                        }
-                      </td>
-                    );
-                  })}
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-        {data.length == 0 && <p>No ICD-10 Codes</p>}
-        {data.length > 3 && (
-          <Button
-            className="text-primary self-start"
-            onClick={() => setExpanded((prev) => !prev)}
-          >
-            {expanded ? 'Show Less' : 'Show More'}
-          </Button>
-        )}
-      </div>
+      {/*<div>*/}
+      {/*  <div className="w-full flex items-center mt-1 gap-3">*/}
+      {/*    {permanentColumnFilters.map((filter) => (*/}
+      {/*      <Select*/}
+      {/*        classNames={{ ...filterSelectStyles }}*/}
+      {/*        key={filter}*/}
+      {/*        placeholder={table.getColumn(filter)?.columnDef.header as string}*/}
+      {/*        closeMenuOnSelect={false}*/}
+      {/*        hideSelectedOptions={false}*/}
+      {/*        components={{*/}
+      {/*          IndicatorSeparator: () => null,*/}
+      {/*          ValueContainer: FilterValueContainer,*/}
+      {/*          Option: CheckboxOption,*/}
+      {/*        }}*/}
+      {/*        isClearable={true}*/}
+      {/*        isMulti={true}*/}
+      {/*        value={*/}
+      {/*          tableState.columnFilters.find((f) => f.id === filter)*/}
+      {/*            ? (*/}
+      {/*                tableState.columnFilters.find((f) => f.id === filter)*/}
+      {/*                  ?.value as string[]*/}
+      {/*              ).map((s) => ({*/}
+      {/*                label: s,*/}
+      {/*                value: s,*/}
+      {/*              }))*/}
+      {/*            : []*/}
+      {/*        }*/}
+      {/*        name={filter}*/}
+      {/*        options={Array.from(*/}
+      {/*          table?.getColumn(filter)?.getFacetedUniqueValues()?.keys() ??*/}
+      {/*            [],*/}
+      {/*        ).map((key) => ({*/}
+      {/*          label: key,*/}
+      {/*          value: key,*/}
+      {/*        }))}*/}
+      {/*        onChange={(selected, action) => {*/}
+      {/*          handleFilterChange(selected, action, setTableState);*/}
+      {/*        }}*/}
+      {/*      />*/}
+      {/*    ))}*/}
+      {/*    {tableState.columnFilters.length > 0 && (*/}
+      {/*      <Button*/}
+      {/*        color="secondary"*/}
+      {/*        onClick={() =>*/}
+      {/*          setTableState((prev) => ({*/}
+      {/*            ...prev,*/}
+      {/*            columnFilters: [],*/}
+      {/*          }))*/}
+      {/*        }*/}
+      {/*      >*/}
+      {/*        Clear all*/}
+      {/*      </Button>*/}
+      {/*    )}*/}
+      {/*  </div>*/}
+      {/*  <table className="mt-3 w-full">*/}
+      {/*    <thead>*/}
+      {/*      {table.getHeaderGroups().map((headerGroup) => (*/}
+      {/*        <tr key={headerGroup.id}>*/}
+      {/*          {headerGroup.headers.map((header) => {*/}
+      {/*            return (*/}
+      {/*              <th*/}
+      {/*                key={header.id}*/}
+      {/*                colSpan={header.colSpan}*/}
+      {/*                className="py-2 border-y-[1.5px] border-stroke dark:border-strokedark text-left select-none group whitespace-nowrap text-body-2"*/}
+      {/*              >*/}
+      {/*                {header.isPlaceholder ? null : (*/}
+      {/*                  <span>*/}
+      {/*                    {flexRender(*/}
+      {/*                      header.column.columnDef.header,*/}
+      {/*                      header.getContext(),*/}
+      {/*                    )}*/}
+      {/*                  </span>*/}
+      {/*                )}*/}
+      {/*              </th>*/}
+      {/*            );*/}
+      {/*          })}*/}
+      {/*        </tr>*/}
+      {/*      ))}*/}
+      {/*    </thead>*/}
+      {/*    <tbody className="w-full">*/}
+      {/*      {table.getRowModel().rows.map((row, index) => {*/}
+      {/*        return (*/}
+      {/*          <tr*/}
+      {/*            key={row.id}*/}
+      {/*            className={clsx(index > 2 && !expanded && 'hidden')}*/}
+      {/*          >*/}
+      {/*            {row.getVisibleCells().map((cell) => {*/}
+      {/*              return (*/}
+      {/*                <td*/}
+      {/*                  key={cell.id}*/}
+      {/*                  className={clsx(*/}
+      {/*                    'py-2 border-b-[1.5px] border-stroke dark:border-strokedark',*/}
+      {/*                    cell.column.columnDef.meta?.wrap,*/}
+      {/*                  )}*/}
+      {/*                >*/}
+      {/*                  {*/}
+      {/*                    flexRender(*/}
+      {/*                      cell.column.columnDef.cell,*/}
+      {/*                      cell.getContext(),*/}
+      {/*                    ) as string*/}
+      {/*                  }*/}
+      {/*                </td>*/}
+      {/*              );*/}
+      {/*            })}*/}
+      {/*          </tr>*/}
+      {/*        );*/}
+      {/*      })}*/}
+      {/*    </tbody>*/}
+      {/*  </table>*/}
+      {/*  {data.length == 0 && <p>No ICD-10 Codes</p>}*/}
+      {/*  {data.length > 3 && (*/}
+      {/*    <Button*/}
+      {/*      className="text-primary self-start"*/}
+      {/*      onClick={() => setExpanded((prev) => !prev)}*/}
+      {/*    >*/}
+      {/*      {expanded ? 'Show Less' : 'Show More'}*/}
+      {/*    </Button>*/}
+      {/*  )}*/}
+      {/*</div>*/}
     </div>
   );
 }

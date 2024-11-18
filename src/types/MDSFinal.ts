@@ -6,30 +6,52 @@ export type MDSFinal = {
   internal_facility_id: string;
   facility_name: string;
   upstream: string;
-  update_time: Date;
-  new_nta_icd10: NTAEntry[];
-  ci_status: string;
-  new_ci_icd10: SuggestedICD10[];
-  existing_slp_icd10: string[];
-  new_slp_icd10: SuggestedICD10[];
+  nta_final_entry: NTAEntry[];
+  slp_final_entry: SLPAggregate[];
 };
 
 export type NTAEntry = {
-  comorbidity: string;
-  is_mds_table: boolean;
-  existing_icd10: string[];
-  new_icd10: SuggestedICD10[];
+  comorbidity?: string;
+  is_mds_table?: boolean;
+  mds_item?: string;
+  score?: number;
+  update_time?: Date;
+  new_icd10?: SuggestedICD10[];
 };
+export type SLPAggregate = {
+  condition: string;
+  is_mds: boolean;
+  is_suggest: boolean;
+  slp_entry: SLPEntry[];
+};
+
+export type SLPItem = {
+  condition: string;
+  is_mds: boolean;
+  is_suggest: boolean;
+  slp_entry: SLPEntry[];
+};
+
+export type SLPEntry = {
+  source_category: string;
+  source_id: number;
+  explanation: string;
+  update_time: Date;
+};
+
 export type SuggestedICD10 = {
   icd10: string;
   progress_note: ProgressNoteAndSummary[];
-  is_thumb_up: boolean;
-  comment: string;
+  is_thumb_up?: boolean;
+  comment?: string;
 };
 
 export type ProgressNoteAndSummary = {
-  highlights: string;
-  progress_note: string;
+  source_id: number;
+  source_category: string;
+  update_time: Date;
+  highlights?: string;
+  progress_note?: string;
   explanation: string;
 };
 

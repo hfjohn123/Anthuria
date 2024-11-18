@@ -149,49 +149,64 @@ export default function NTAModal({ icd10 }: { icd10: SuggestedICD10 }) {
         >
           <div className="flex flex-col gap-3 border-b border-stroke dark:border-strokedark last:border-b-0">
             <div>
-              <h3 className="font-bold text-md">Review:</h3>
-              <div className="flex items-center gap-2">
-                <ThumbsUp className="size-5" />
-                <ThumbsDown className="size-5" />
-              </div>
-            </div>
-            <div>
               <h3 className="font-bold text-md">Explanation and Evidence:</h3>
-              {icd10.progress_note.map((item, index) => (
-                <div
-                  key={item.highlights}
-                  ref={(el) => (itemRefs.current[index] = el)}
-                  className={clsx(
-                    'flex flex-col gap-3 border-b border-stroke dark:border-strokedark last:border-b-0 pr-4 py-4',
-                    'scroll-mt-4 transition-colors duration-200',
-                    index === currentIndex &&
-                      'bg-gray-50/50 dark:bg-gray-800/50',
-                  )}
-                >
-                  <h3 className="font-bold text-xl">
-                    {item.highlights.split('|').map((h, hIndex) => (
-                      <span key={hIndex}>
-                        <span
-                          className={clsx(
-                            highlightColors[hIndex % highlightColors.length],
-                            'px-1 rounded',
-                          )}
-                        >
-                          {h.trim()}
-                        </span>
-                        {hIndex !== item.highlights.split('|').length - 1 &&
-                          ' | '}
-                      </span>
-                    ))}
-                  </h3>
-                  <p className="italic">
-                    <span className="font-semibold">Explanation:</span>{' '}
-                    {item.explanation}
-                  </p>
+              {icd10.progress_note.map((item, index) => {
+                if (item.source_category !== 'P' && item.highlights)
+                  return (
+                    <div
+                      key={item.highlights}
+                      ref={(el) => (itemRefs.current[index] = el)}
+                      className={clsx(
+                        'flex flex-col gap-3 border-b border-stroke dark:border-strokedark last:border-b-0 pr-4 py-4',
+                        'scroll-mt-4 transition-colors duration-200',
+                        index === currentIndex &&
+                          'bg-gray-50/50 dark:bg-gray-800/50',
+                      )}
+                    >
+                      <h3 className="font-bold text-xl">
+                        {item.highlights.split('|').map((h, hIndex, arr) => (
+                          <span key={hIndex}>
+                            <span
+                              className={clsx(
+                                highlightColors[
+                                  hIndex % highlightColors.length
+                                ],
+                                'px-1 rounded',
+                              )}
+                            >
+                              {h.trim()}
+                            </span>
+                            {hIndex !== arr.length - 1 && ' | '}
+                          </span>
+                        ))}
+                      </h3>
+                      <p className="italic">
+                        <span className="font-semibold">Explanation:</span>{' '}
+                        {item.explanation}
+                      </p>
 
-                  <NTAProgressNote progress_note={item} />
-                </div>
-              ))}
+                      <NTAProgressNote progress_note={item} />
+                    </div>
+                  );
+                if (item.source_category !== 'P')
+                  return (
+                    <div
+                      key={item.highlights}
+                      ref={(el) => (itemRefs.current[index] = el)}
+                      className={clsx(
+                        'flex flex-col gap-3 border-b border-stroke dark:border-strokedark last:border-b-0 pr-4 py-4',
+                        'scroll-mt-4 transition-colors duration-200',
+                        index === currentIndex &&
+                          'bg-gray-50/50 dark:bg-gray-800/50',
+                      )}
+                    >
+                      <h3 className="font-bold text-xl">
+                        Diagnosis {icd10.icd10}
+                      </h3>
+                      <p className="italic">{item.explanation}</p>
+                    </div>
+                  );
+              })}
             </div>
           </div>
         </div>

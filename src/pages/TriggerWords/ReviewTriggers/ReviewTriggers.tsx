@@ -946,7 +946,6 @@ export default function ReviewTriggers() {
                           }}
                           className="text-sm"
                           onChange={(e: { target: { value: string } }) => {
-                            console.log(tableState.columnFilters);
                             setTableState((prev) => ({
                               ...prev,
                               columnFilters: prev.columnFilters

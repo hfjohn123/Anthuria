@@ -6,19 +6,17 @@ import {
 } from '@tanstack/react-table';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import { Button, Input } from '@headlessui/react';
-import Select from 'react-select';
-import filterSelectStyles from '../Select/filterSelectStyles.ts';
-import filterValueContainer from '../Select/FilterValueContainer.tsx';
-import CheckboxOption from '../Select/CheckboxOption.tsx';
-import handleFilterChange from './handleFilterChange.ts';
-import AutosizeInput from 'react-18-input-autosize';
-import DatePicker from 'react-datepicker';
+
 import SortUpIcon from '../../images/icon/sort-up.svg';
 import SortDownIcon from '../../images/icon/sort-down.svg';
-import { Fragment, useEffect, useState } from 'react';
+import { Fragment, useEffect } from 'react';
 import PageNavigation from './PageNavigation.tsx';
 import SearchParams from '../../types/SearchParams.ts';
 import { useNavigate, useSearch } from '@tanstack/react-router';
+import exportExcel from '../../common/excelExport.ts';
+import { DownloadSimple } from '@phosphor-icons/react';
+import TableSettingModal from './TableSettingModal.tsx';
+import Filters from './Filters.tsx';
 
 export default function TableWrapper({
   table,
@@ -26,6 +24,13 @@ export default function TableWrapper({
   setTableState,
   permanentColumnFilters,
   renderExpandedRow,
+  download = false,
+  tableSetting = false,
+  initialTableState,
+  hasHistory = false,
+  setIsRefetching,
+  includeCreatedDate,
+  setIncludeCreatedDate,
   ...rest
 }: {
   table: Table<any>;
@@ -33,12 +38,15 @@ export default function TableWrapper({
   setTableState: React.Dispatch<React.SetStateAction<TableState>>;
   permanentColumnFilters: string[];
   renderExpandedRow: any;
+  download?: boolean;
+  tableSetting?: boolean;
+  initialTableState?: TableState;
+  hasHistory?: boolean;
+  setIsRefetching?: React.Dispatch<React.SetStateAction<boolean>>;
+  includeCreatedDate?: boolean;
+  setIncludeCreatedDate?: React.Dispatch<React.SetStateAction<boolean>>;
   [key: string]: any;
 }) {
-  const [additionalFilters, setAdditionalFilters] = useState<{
-    label: string;
-    value: string;
-  } | null>(null);
   const navigate = useNavigate();
   const search = useSearch({ strict: false });
 
@@ -100,7 +108,7 @@ export default function TableWrapper({
     });
 
     navigate({
-      // @ts-ignore next-line
+      // @ts-expect-error TS2339: Property 'search' does not exist on type 'SearchParams'.
       search: searchParams,
       replace: true,
     });
@@ -129,323 +137,39 @@ export default function TableWrapper({
             placeholder="Global Search"
             className=" w-full py-2 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
           />
-        </div>
-        <div className="flex p-1 gap-1.5 flex-wrap">
-          {permanentColumnFilters.map((filter) => (
-            <Select
-              classNames={{ ...filterSelectStyles }}
-              key={filter}
-              placeholder={table.getColumn(filter)?.columnDef.header as string}
-              closeMenuOnSelect={false}
-              hideSelectedOptions={false}
-              components={{
-                IndicatorSeparator: () => null,
-                ValueContainer: filterValueContainer,
-                Option: CheckboxOption,
-              }}
-              isClearable={true}
-              isMulti={true}
-              value={
-                tableState.columnFilters.find((f) => f.id === filter)
-                  ? (
-                      tableState.columnFilters.find((f) => f.id === filter)
-                        ?.value as string[]
-                    ).map((s) => ({
-                      label: s,
-                      value: s,
-                    }))
-                  : []
-              }
-              name={filter}
-              options={Array.from(
-                table?.getColumn(filter)?.getFacetedUniqueValues()?.keys() ??
-                  [],
-              ).map((key) => ({
-                label: key,
-                value: key,
-              }))}
-              onChange={(selected, action) =>
-                handleFilterChange(selected, action, setTableState)
-              }
-            />
-          ))}
-          {tableState.columnFilters
-            .filter((f) => !permanentColumnFilters.includes(f.id))
-            .map((filter) =>
-              table.getColumn(filter.id)?.columnDef.meta?.type ===
-              'categorical' ? (
-                <Select
-                  classNames={{ ...filterSelectStyles }}
-                  key={filter.id}
-                  placeholder={
-                    table.getColumn(filter.id)?.columnDef?.header as string
-                  }
-                  closeMenuOnSelect={false}
-                  hideSelectedOptions={false}
-                  defaultMenuIsOpen={true}
-                  autoFocus={true}
-                  components={{
-                    IndicatorSeparator: () => null,
-                    ValueContainer: filterValueContainer,
-                    Option: CheckboxOption,
-                  }}
-                  isClearable={true}
-                  isMulti={true}
-                  value={
-                    tableState.columnFilters.find((f) => f.id === filter.id)
-                      ? (
-                          tableState.columnFilters.find(
-                            (f) => f.id === filter.id,
-                          )?.value as string[]
-                        ).map((s) => ({
-                          label: s,
-                          value: s,
-                        }))
-                      : []
-                  }
-                  name={filter.id}
-                  options={Array.from(
-                    table
-                      ?.getColumn(filter.id)
-                      ?.getFacetedUniqueValues()
-                      ?.keys() ?? [],
-                  ).map((key) => ({
-                    label: key,
-                    value: key,
-                  }))}
-                  onChange={(selected, action) => {
-                    handleFilterChange(selected, action, setTableState);
-                  }}
-                  onMenuClose={() => {
-                    (
-                      tableState.columnFilters.find((f) => f.id === filter.id)
-                        ?.value as string[]
-                    ).length === 0 &&
-                      setTableState((prev) => ({
-                        ...prev,
-                        columnFilters: prev.columnFilters.filter(
-                          (f) => f.id !== filter.id,
-                        ),
-                      }));
-                  }}
-                />
-              ) : (table.getColumn(filter.id)?.columnDef?.meta?.type || '') ===
-                'text' ? (
-                <div className="text-sm has-[:focus]:!shadow-filter has-[:focus]:!shadow-blue-500 flex flex-nowrap items-center gap-1 px-2 rounded-lg border border-stroke dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary">
-                  <span className="text-nowrap">
-                    {table.getColumn(filter.id)?.columnDef.header as string}{' '}
-                    includes
-                  </span>
-                  <AutosizeInput
-                    inputStyle={{
-                      outline: 'none',
-                      background: 'transparent',
-                    }}
-                    className="text-sm"
-                    onChange={(e: { target: { value: string } }) => {
-                      setTableState((prev) => ({
-                        ...prev,
-                        columnFilters: prev.columnFilters.map((f) =>
-                          f.id === filter.id
-                            ? {
-                                ...f,
-                                value: e.target.value,
-                              }
-                            : f,
-                        ),
-                      }));
-                    }}
-                    autoFocus={true}
-                    onBlur={() => {
-                      (
-                        tableState.columnFilters.find((f) => f.id === filter.id)
-                          ?.value as string
-                      ).length === 0 &&
-                        setTableState((prev) => ({
-                          ...prev,
-                          columnFilters: prev.columnFilters.filter(
-                            (f) => f.id !== filter.id,
-                          ),
-                        }));
-                    }}
-                    minWidth="30"
-                    value={
-                      (tableState.columnFilters.find((f) => f.id === filter.id)
-                        ?.value as string) || ''
-                    }
-                  />
-                  <button
-                    onClick={() => {
-                      setTableState((prev) => ({
-                        ...prev,
-                        columnFilters: prev.columnFilters.filter(
-                          (f) => f.id !== filter.id,
-                        ),
-                      }));
-                    }}
-                    className="fill-[rgb(204,204,204)]"
-                  >
-                    <svg
-                      height="20"
-                      width="20"
-                      viewBox="0 0 20 20"
-                      aria-hidden="true"
-                      focusable="false"
-                    >
-                      <path d="M14.348 14.849c-0.469 0.469-1.229 0.469-1.697 0l-2.651-3.030-2.651 3.029c-0.469 0.469-1.229 0.469-1.697 0-0.469-0.469-0.469-1.229 0-1.697l2.758-3.15-2.759-3.152c-0.469-0.469-0.469-1.228 0-1.697s1.228-0.469 1.697 0l2.652 3.031 2.651-3.031c0.469-0.469 1.228-0.469 1.697 0s0.469 1.229 0 1.697l-2.758 3.152 2.758 3.15c0.469 0.469 0.469 1.229 0 1.698z"></path>
-                    </svg>
-                  </button>
-                </div>
-              ) : table.getColumn(filter.id)?.columnDef.meta?.type ===
-                'daterange' ? (
-                <div className="text-sm has-[:focus]:!shadow-filter has-[:focus]:!shadow-blue-500 flex flex-nowrap items-center gap-1 px-2 py-0.5 rounded-lg border border-stroke outline-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary">
-                  <span className="text-nowrap">
-                    {table.getColumn(filter.id)?.columnDef.header as string}
-                  </span>
-                  <DatePicker
-                    className="outline-0 w-full bg-transparent "
-                    autoFocus={true}
-                    selectsRange
-                    startDate={
-                      (
-                        tableState as {
-                          columnFilters: { id: string; value: any }[];
-                        }
-                      ).columnFilters.find((f) => f.id === filter.id)?.value[0]
-                    }
-                    endDate={
-                      (
-                        tableState as {
-                          columnFilters: { id: string; value: any }[];
-                        }
-                      ).columnFilters.find((f) => f.id === filter.id)?.value[1]
-                    }
-                    onChange={([start, end]: [Date | null, Date | null]) => {
-                      end && end.setHours(23, 59, 59, 999);
-                      setTableState((prev) => ({
-                        ...prev,
-                        columnFilters: prev.columnFilters.map((f) =>
-                          f.id === filter.id
-                            ? {
-                                ...f,
-                                value: [start || null, end || null],
-                              }
-                            : f,
-                        ),
-                      }));
-                    }}
-                    minDate={
-                      new Date(
-                        table
-                          .getColumn(filter.id)
-                          ?.getFacetedMinMaxValues()
-                          ?.flat()
-                          ?.filter((d) => d !== null)[0] ?? '',
-                      )
-                    }
-                    maxDate={
-                      new Date(
-                        table
-                          .getColumn(filter.id)
-                          ?.getFacetedMinMaxValues()
-                          ?.flat()
-                          ?.filter((d) => d !== null)[
-                          (table
-                            .getColumn(filter.id)
-                            ?.getFacetedMinMaxValues()
-                            ?.flat()
-                            ?.filter((d) => d !== null)?.length ?? 1) - 1
-                        ] ?? '',
-                      )
-                    }
-                    onBlur={() => {
-                      (
-                        tableState.columnFilters.find(
-                          (f) => f.id === filter.id,
-                        ) as { id: string; value: any }
-                      )?.value.length === 0 &&
-                        setTableState((prev) => ({
-                          ...prev,
-                          columnFilters: prev.columnFilters.filter(
-                            (f) => f.id !== filter.id,
-                          ),
-                        }));
-                    }}
-                  />
-                  <Button
-                    onClick={() =>
-                      setTableState((prev) => ({
-                        ...prev,
-                        columnFilters: prev.columnFilters.filter(
-                          (f) => f.id !== filter.id,
-                        ),
-                      }))
-                    }
-                    className="fill-[rgb(204,204,204)]"
-                  >
-                    <svg
-                      height="20"
-                      width="20"
-                      viewBox="0 0 20 20"
-                      aria-hidden="true"
-                      focusable="false"
-                    >
-                      <path d="M14.348 14.849c-0.469 0.469-1.229 0.469-1.697 0l-2.651-3.030-2.651 3.029c-0.469 0.469-1.229 0.469-1.697 0-0.469-0.469-0.469-1.229 0-1.697l2.758-3.15-2.759-3.152c-0.469-0.469-0.469-1.228 0-1.697s1.228-0.469 1.697 0l2.652 3.031 2.651-3.031c0.469-0.469 1.228-0.469 1.697 0s0.469 1.229 0 1.697l-2.758 3.152 2.758 3.15c0.469 0.469 0.469 1.229 0 1.698z"></path>
-                    </svg>
-                  </Button>
-                </div>
-              ) : null,
-            )}
-          <Select
-            classNames={{ ...filterSelectStyles }}
-            placeholder="Add Filter"
-            isMulti={false}
-            closeMenuOnSelect={true}
-            hideSelectedOptions={true}
-            components={{ IndicatorSeparator: () => null }}
-            value={additionalFilters}
-            options={table
-              .getAllColumns()
-              .filter(
-                (c) =>
-                  !tableState.columnFilters.find((f) => f.id === c.id) &&
-                  !permanentColumnFilters.includes(c.id),
-              )
-              .map((c) => ({
-                label: c.columnDef.header as string,
-                value: c.id,
-              }))}
-            onChange={(newValue) => {
-              setTableState((prev) => ({
-                ...prev,
-                columnFilters: [
-                  ...prev.columnFilters,
-                  {
-                    id: (newValue?.value as string) ?? '',
-                    value:
-                      table.getColumn(newValue?.value as string)?.columnDef.meta
-                        ?.type === 'categorical' ||
-                      table.getColumn(newValue?.value as string)?.columnDef.meta
-                        ?.type === 'daterange'
-                        ? []
-                        : '',
-                  },
-                ],
-              }));
-              setAdditionalFilters(null);
-            }}
-          />
-          {tableState.columnFilters.length > 0 && (
-            <button
-              className="text-sm"
+          {download && (
+            <Button
+              type="button"
+              className="hover:text-primary"
               onClick={() =>
-                setTableState((prev) => ({ ...prev, columnFilters: [] }))
+                exportExcel(
+                  table,
+                  'review_triggers_' + new Date().toLocaleString(),
+                )
               }
             >
-              Clear all
-            </button>
+              <DownloadSimple size={22} />
+            </Button>
+          )}
+          {tableSetting && initialTableState && (
+            <TableSettingModal
+              table={table}
+              tableState={tableState}
+              setTableState={setTableState}
+              initialTableState={initialTableState}
+            />
           )}
         </div>
+        <Filters
+          permanentColumnFilters={permanentColumnFilters}
+          table={table}
+          tableState={tableState}
+          setTableState={setTableState}
+          hasHistory={hasHistory}
+          setIsRefetching={setIsRefetching}
+          includeCreatedDate={includeCreatedDate}
+          setIncludeCreatedDate={setIncludeCreatedDate}
+        />
       </div>
       <div className="relative flex-1">
         <table className="w-full border-b-2 border-b-stroke ">

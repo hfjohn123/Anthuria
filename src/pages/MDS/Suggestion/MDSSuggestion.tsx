@@ -29,18 +29,18 @@ export default function MDSSuggestion({ row }: { row: Row<MDSFinal> }) {
             <div className="flex items-center py-2 gap-2 hover:bg-[#E6F3FF] ">
               <CaretRight className="ease-in-out transition-all duration-200  group-data-[open]:rotate-90" />
               <h3 className="text-base font-semibold">
-                NTA{' '}
-                <span className="text-xs">
-                  (
-                  {row.original.new_nta_icd10
-                    .map((d) => d.existing_icd10.length)
-                    .reduce((a, b) => a + b, 0)}{' '}
-                  existing diagnosis,{' '}
-                  {row.original.new_nta_icd10
-                    .flatMap((d) => d.new_icd10)
-                    .reduce((sum, c) => sum + c.progress_note.length, 0)}{' '}
-                  progress notes detected)
-                </span>
+                NTA
+                {/*<span className="text-xs">*/}
+                {/*  (*/}
+                {/*  {row.original*/}
+                {/*    .map((d) => d.existing_icd10.length)*/}
+                {/*    .reduce((a, b) => a + b, 0)}{' '}*/}
+                {/*  existing diagnosis,{' '}*/}
+                {/*  {row.original.new_nta_icd10*/}
+                {/*    .flatMap((d) => d.new_icd10)*/}
+                {/*    .reduce((sum, c) => sum + c.progress_note.length, 0)}{' '}*/}
+                {/*  progress notes detected)*/}
+                {/*</span>*/}
               </h3>
             </div>
           </DisclosureButton>
@@ -48,7 +48,7 @@ export default function MDSSuggestion({ row }: { row: Row<MDSFinal> }) {
             transition
             className="origin-top transition duration-200 ease-out data-[closed]:-translate-y-3 data-[closed]:opacity-0"
           >
-            <NTATable data={row.original.new_nta_icd10} />
+            <NTATable data={row.original.nta_final_entry} />
           </DisclosurePanel>
         </Disclosure>
         <Disclosure>
@@ -62,13 +62,7 @@ export default function MDSSuggestion({ row }: { row: Row<MDSFinal> }) {
             transition
             className="origin-top transition duration-200 ease-out data-[closed]:-translate-y-3 data-[closed]:opacity-0"
           >
-            <SLPTable
-              data={row.original.new_slp_icd10.concat(
-                row.original.new_ci_icd10,
-              )}
-              ci_status={row.original.ci_status}
-              new_ci_icd10={row.original.new_ci_icd10}
-            />
+            <SLPTable data={row.original.slp_final_entry} />
           </DisclosurePanel>
         </Disclosure>
       </div>

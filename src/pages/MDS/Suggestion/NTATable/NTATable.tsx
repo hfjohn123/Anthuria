@@ -10,7 +10,7 @@ import {
   TableState,
   useReactTable,
 } from '@tanstack/react-table';
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 import getFacetedUniqueValues from '../../../../common/getFacetedUniqueValues.ts';
 import getFacetedMinMaxValues from '../../../../common/getFacetedMinMaxValues.ts';
 import Select from 'react-select';
@@ -21,6 +21,7 @@ import handleFilterChange from '../../../../components/Tables/handleFilterChange
 import { Button } from '@headlessui/react';
 import clsx from 'clsx';
 import NTAModal from './NTAModal.tsx';
+import { ThumbsDown, ThumbsUp } from '@phosphor-icons/react';
 
 const permanentColumnFilters = ['comorbidity', 'is_mds_table'];
 
@@ -42,6 +43,14 @@ export default function NTATable({ data }: { data: NTAEntry[] }) {
       },
     },
     {
+      accessorKey: 'mds_item',
+      header: 'MDS Item',
+      filterFn: 'arrIncludesSome',
+      meta: {
+        type: 'categorical',
+      },
+    },
+    {
       accessorKey: 'is_mds_table',
       accessorFn: (row) => (row.is_mds_table ? 'Yes' : 'No'),
       header: 'Is Already in MDS Table',
@@ -54,41 +63,36 @@ export default function NTATable({ data }: { data: NTAEntry[] }) {
       },
     },
     {
-      accessorKey: 'existing_icd10',
-      header: 'Diagnosed ICD-10 Codes',
-      filterFn: 'arrIncludesSome',
-      cell: (info) => {
-        return (
-          <p className="whitespace-nowrap">
-            {(info.getValue() as string[]).join(', ')}
-          </p>
-        );
-      },
-      meta: {
-        type: 'categorical',
-      },
-    },
-    {
       accessorKey: 'new_icd10',
-      accessorFn: (row) => row.new_icd10.map((d) => d.icd10),
+      accessorFn: (row) => row.new_icd10?.map((d) => d.icd10) || [],
       cell: (info) => {
         return (
           <p className="whitespace-nowrap">
-            {info.row.original.new_icd10.map((d) => {
-              return <NTAModal icd10={d} />;
+            {info.row.original.new_icd10?.map((d, index, array) => {
+              return (
+                <Fragment key={d.icd10}>
+                  <NTAModal icd10={d} />
+                  {index < array.length - 1 && ', '}
+                </Fragment>
+              );
             })}
           </p>
         );
       },
       header: 'Progress Note Suggest ICD-10 Codes',
     },
-    // {
-    //   accessorKey: 'action',
-    //   header: 'Actions',
-    //   cell: () => {
-    //     return <p className="whitespace-nowrap">Coming Soon</p>;
-    //   },
-    // },
+    {
+      accessorKey: 'review',
+      header: 'Review',
+      cell: () => {
+        return (
+          <div className="flex items-center gap-2">
+            <ThumbsUp className="size-5" />
+            <ThumbsDown className="size-5" />
+          </div>
+        );
+      },
+    },
   ];
   const [tableState, setTableState] = useState<TableState>({
     globalFilter: '',
