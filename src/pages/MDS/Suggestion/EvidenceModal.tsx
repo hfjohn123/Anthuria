@@ -1,13 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
-import Modal from '../../../../components/Modal/Modal.tsx';
-import { SuggestedICD10 } from '../../../../types/MDSFinal.ts';
-import { ThumbsDown, ThumbsUp } from '@phosphor-icons/react';
+import Modal from '../../../components/Modal/Modal.tsx';
+import { SuggestedICD10 } from '../../../types/MDSFinal.ts';
 import { CaretUp, CaretDown } from '@phosphor-icons/react';
-import NTAProgressNote from './NTAProgressNote.tsx';
+import NTAProgressNote from './NTATable/NTAProgressNote.tsx';
 import clsx from 'clsx';
-import highlightColors from '../../../../common/highlightColors.ts';
+import highlightColors from '../../../common/highlightColors.ts';
 
-export default function NTAModal({ icd10 }: { icd10: SuggestedICD10 }) {
+export default function EvidenceModal({ icd10 }: { icd10: SuggestedICD10 }) {
   const [open, setOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);

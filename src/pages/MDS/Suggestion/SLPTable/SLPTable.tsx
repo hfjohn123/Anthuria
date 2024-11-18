@@ -30,6 +30,8 @@ import handleFilterChange from '../../../../components/Tables/handleFilterChange
 import { Button } from '@headlessui/react';
 import clsx from 'clsx';
 import objIsEmpty from '../../../../common/objIsEmpty.ts';
+import EvidenceModal from '../EvidenceModal.tsx';
+import SLPDetail from './SLPDetail.tsx';
 
 const permanentColumnFilters = ['icd10'];
 
@@ -186,35 +188,20 @@ export default function SLPTable({ data }: { data: SLPAggregate }) {
   // });
   return (
     <div className="flex flex-col gap-5 px-5 py-5">
-      <div className="flex">
-        <div className="basis-1/2">
-          <h3 className="font-bold">Cognitive Impairment:</h3>
-          <p>
-            {objIsEmpty(data.cognitive_impairment) ? (
-              'No BIMS test '
-            ) : (
-              <>
-                <span>
-                  {data.cognitive_impairment?.is_mds
-                    ? 'Is in MDS Table'
-                    : 'Not in MDS Table'}
-                </span>
-                {data.cognitive_impairment.is_suggest ? (
-                  <span className={clsx('text-primary')}>
-                    (Suggested:{' '}
-                    {data.cognitive_impairment.slp_entry
-                      .map((s) => s.explanation)
-                      .join(', ')}
-                    )
-                  </span>
-                ) : null}
-              </>
-            )}
-          </p>
+      <div className="flex justify-between">
+        <div>
+          <h3 className="font-bold">Cognitive Impairment</h3>
+          <SLPDetail data={data.cognitive_impairment} />
         </div>
         <div>
-          <h3 className="font-bold">Existing ICD-10:</h3>
-          <p>No existing ICD-10</p>
+          <h3 className="font-bold">Acute Neurologic Condition</h3>
+          <SLPDetail data={data.acute_neurologic_condition} />
+        </div>
+        <div>
+          <SLPDetail data={data.mechanically_altered_diet} />
+        </div>
+        <div>
+          <SLPDetail data={data.swallowing_disorder} />
         </div>
       </div>
       {/*<div>*/}

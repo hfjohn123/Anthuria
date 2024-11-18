@@ -20,7 +20,7 @@ import CheckboxOption from '../../../../components/Select/CheckboxOption.tsx';
 import handleFilterChange from '../../../../components/Tables/handleFilterChange.ts';
 import { Button } from '@headlessui/react';
 import clsx from 'clsx';
-import NTAModal from './NTAModal.tsx';
+import EvidenceModal from '../EvidenceModal.tsx';
 import { ThumbsDown, ThumbsUp } from '@phosphor-icons/react';
 
 const permanentColumnFilters = ['comorbidity', 'is_mds_table'];
@@ -71,7 +71,7 @@ export default function NTATable({ data }: { data: NTAEntry[] }) {
             {info.row.original.new_icd10?.map((d, index, array) => {
               return (
                 <Fragment key={d.icd10}>
-                  <NTAModal icd10={d} />
+                  <EvidenceModal icd10={d} />
                   {index < array.length - 1 && ', '}
                 </Fragment>
               );

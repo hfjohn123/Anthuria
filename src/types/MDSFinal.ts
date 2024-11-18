@@ -7,7 +7,7 @@ export type MDSFinal = {
   facility_name: string;
   upstream: string;
   nta_final_entry: NTAEntry[];
-  slp_final_entry: SLPAggregate[];
+  slp_final_entry: SLPAggregate;
 };
 
 export type NTAEntry = {
@@ -19,24 +19,29 @@ export type NTAEntry = {
   new_icd10?: SuggestedICD10[];
 };
 export type SLPAggregate = {
-  condition: string;
+  cognitive_impairment: SLPItem_General;
+  comorbidities_present: SLPItem_comorbidities_present;
+  acute_neurologic_condition: SLPItem_General;
+  mechanically_altered_diet: SLPItem_General;
+  swallowing_disorder: SLPItem_General;
+};
+
+export type SLPItem_General = {
+  condition:
+    | 'Cognitive Impairment'
+    | 'Acute Neurologic Condition'
+    | 'Mechanically Altered Diet'
+    | 'Swallowing Disorder';
+  is_mds: boolean;
+  is_suggest: boolean;
+  slp_entry: ProgressNoteAndSummary[];
+};
+
+export type SLPItem_comorbidities_present = {
+  condition: 'Comorbidities Present';
   is_mds: boolean;
   is_suggest: boolean;
   slp_entry: SLPEntry[];
-};
-
-export type SLPItem = {
-  condition: string;
-  is_mds: boolean;
-  is_suggest: boolean;
-  slp_entry: SLPEntry[];
-};
-
-export type SLPEntry = {
-  source_category: string;
-  source_id: number;
-  explanation: string;
-  update_time: Date;
 };
 
 export type SuggestedICD10 = {
@@ -44,6 +49,13 @@ export type SuggestedICD10 = {
   progress_note: ProgressNoteAndSummary[];
   is_thumb_up?: boolean;
   comment?: string;
+};
+
+export type SLPEntry = {
+  comorbidity: string;
+  is_slp_table: boolean;
+  new_icd10: SuggestedICD10[];
+  update_time: Date;
 };
 
 export type ProgressNoteAndSummary = {
