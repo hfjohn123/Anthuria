@@ -7,9 +7,9 @@ export default function NTAProgressNote({
 }: {
   progress_note: ProgressNoteAndSummary;
 }) {
-  const searchTerms = progress_note.highlights.split('|').filter(Boolean);
+  const searchTerms = progress_note.highlights?.split('|').filter(Boolean);
 
-  if (!searchTerms.length) {
+  if (!searchTerms?.length) {
     return <div className="p-4">{progress_note.progress_note}</div>;
   }
 

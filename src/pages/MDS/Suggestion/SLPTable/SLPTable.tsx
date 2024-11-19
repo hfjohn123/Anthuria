@@ -1,9 +1,4 @@
-import {
-  ProgressNoteAndSummary,
-  SLPAggregate,
-  SLPItem,
-  SuggestedICD10,
-} from '../../../../types/MDSFinal.ts';
+import { SLPAggregate, SLPEntry } from '../../../../types/MDSFinal.ts';
 import { Fragment, useState } from 'react';
 import {
   ColumnDef,
@@ -16,10 +11,7 @@ import {
   TableState,
   useReactTable,
 } from '@tanstack/react-table';
-import ProgressNoteModal from '../ProgressNoteModal.tsx';
-import { Tooltip } from 'react-tooltip';
-import { ThumbsUp } from '@phosphor-icons/react';
-import MDSCommentModal from '../MDSCommentModal.tsx';
+import { ThumbsDown, ThumbsUp } from '@phosphor-icons/react';
 import getFacetedUniqueValues from '../../../../common/getFacetedUniqueValues.ts';
 import getFacetedMinMaxValues from '../../../../common/getFacetedMinMaxValues.ts';
 import Select from 'react-select';
@@ -29,110 +21,72 @@ import CheckboxOption from '../../../../components/Select/CheckboxOption.tsx';
 import handleFilterChange from '../../../../components/Tables/handleFilterChange.ts';
 import { Button } from '@headlessui/react';
 import clsx from 'clsx';
-import objIsEmpty from '../../../../common/objIsEmpty.ts';
 import EvidenceModal from '../EvidenceModal.tsx';
 import SLPDetail from './SLPDetail.tsx';
+import objIsEmpty from '../../../../common/objIsEmpty.ts';
 
-const permanentColumnFilters = ['icd10'];
+const permanentColumnFilters = ['comorbidity', 'is_mds_table'];
 
 export default function SLPTable({ data }: { data: SLPAggregate }) {
-  const [expanded, setExpanded] = useState<boolean>(false);
-  const columns: ColumnDef<SuggestedICD10>[] = [
+  const columns: ColumnDef<SLPEntry>[] = [
     {
-      accessorKey: 'icd10',
-      header: 'Potential ICD-10 Code',
+      accessorKey: 'comorbidity',
+      header: 'Comorbidity',
       filterFn: 'arrIncludesSome',
       cell: (info) => {
-        return <p className="whitespace-nowrap">{info.getValue() as string}</p>;
+        return (
+          <p className="whitespace-normal max-w-[30vw]">
+            {info.getValue() as string}
+          </p>
+        );
       },
       meta: {
         type: 'categorical',
       },
     },
     {
-      accessorKey: 'progress_note',
-      accessorFn: (row) => row.progress_note,
+      accessorKey: 'is_mds_table',
+      accessorFn: (row) => (row.is_slp_table ? 'Yes' : 'No'),
+      header: 'Is Already in MDS Table',
+      cell: (info) => {
+        return <p className="whitespace-nowrap">{info.getValue() as string}</p>;
+      },
+      filterFn: 'arrIncludesSome',
+      meta: {
+        type: 'categorical',
+      },
+    },
+    {
+      accessorKey: 'new_icd10',
+      accessorFn: (row) => row.new_icd10?.map((d) => d.icd10) || [],
       cell: (info) => {
         return (
-          <div className="max-w-[30vw]">
-            <p className="line-clamp-3 whitespace-normal">
-              {(info.getValue() as ProgressNoteAndSummary[]).map(
-                ({ highlights, explanation }, index) => (
-                  <Fragment key={index}>
-                    <span
-                      data-tooltip-id="explanation-tooltip"
-                      data-tooltip-content={explanation}
-                      className="whitespace-normal"
-                    >
-                      Highlights: {highlights}
-                    </span>
-                    {index <
-                      (info.getValue() as ProgressNoteAndSummary[]).length -
-                        1 && <br />}
-                  </Fragment>
-                ),
-              )}
-            </p>
-            <ProgressNoteModal
-              progressNoteAndSummary={
-                info.getValue() as ProgressNoteAndSummary[]
-              }
-            />
-            <Tooltip
-              id="explanation-tooltip"
-              className="whitespace-normal sm:max-w-[40vw] max-w-[95vw] z-99"
-            />
-          </div>
+          <p className="whitespace-nowrap">
+            {info.row.original.new_icd10?.map((d, index, array) => {
+              return (
+                <Fragment key={d.icd10}>
+                  <EvidenceModal icd10={d} />
+                  {index < array.length - 1 && ', '}
+                </Fragment>
+              );
+            })}
+          </p>
         );
       },
-      header: 'Progress Note/Explanation',
+      header: 'AI Suggested Conditions',
     },
     {
       accessorKey: 'review',
-      accessorFn: (row) => {
-        return {
-          is_thumb_up: row.is_thumb_up,
-          comment: row.comment,
-        };
-      },
       header: 'Review',
-      cell: (info) => {
-        const { is_thumb_up, comment } = info.getValue() as {
-          is_thumb_up: boolean;
-          comment: string;
-        };
+      cell: () => {
         return (
-          <div className=" flex items-center flex-nowrap gap-2 ">
-            {is_thumb_up ? (
-              <ThumbsUp
-                className="size-4 text-meta-3 cursor-pointer"
-                weight="fill"
-              />
-            ) : (
-              <ThumbsUp
-                className="size-4 cursor-pointer"
-                // onClick={() =>
-                //   putComment.mutate({
-                //     progress_note_id: row.original.progress_note_id,
-                //     trigger_word: trigger_word,
-                //     comment: '',
-                //     is_thumb_up: true,
-                //   })
-                // }
-              />
-            )}
-            <MDSCommentModal comment={comment} is_thumb_up={is_thumb_up} />
+          <div className="flex items-center gap-2">
+            <ThumbsUp className="size-5" />
+            <ThumbsDown className="size-5" />
           </div>
         );
       },
     },
-    // {
-    //   accessorKey: 'action',
-    //   header: 'Actions',
-    //   cell: () => {
-    //     return <p className="whitespace-nowrap">Coming Soon</p>;
-    //   },
-    // },
   ];
   const [tableState, setTableState] = useState<TableState>({
     globalFilter: '',
@@ -171,21 +125,22 @@ export default function SLPTable({ data }: { data: SLPAggregate }) {
       pageSize: 30,
     },
   });
-  // const table = useReactTable({
-  //   data: data,
-  //   columns,
-  //   state: tableState,
-  //   onStateChange: setTableState,
-  //   autoResetExpanded: false,
-  //   getRowCanExpand: () => true,
-  //   getFacetedUniqueValues: getFacetedUniqueValues(),
-  //   getCoreRowModel: getCoreRowModel(),
-  //   getExpandedRowModel: getExpandedRowModel(),
-  //   getFilteredRowModel: getFilteredRowModel(),
-  //   getFacetedRowModel: getFacetedRowModel(), // client-side faceting
-  //   getFacetedMinMaxValues: getFacetedMinMaxValues(), // generate min/max values for numeric range filter
-  //   getSortedRowModel: getSortedRowModel(),
-  // });
+  const table = useReactTable({
+    data: data.comorbidities_present.slp_entry,
+    columns,
+    state: tableState,
+    onStateChange: setTableState,
+    autoResetExpanded: false,
+    getRowCanExpand: () => true,
+    getFacetedUniqueValues: getFacetedUniqueValues(),
+    getCoreRowModel: getCoreRowModel(),
+    getExpandedRowModel: getExpandedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getFacetedRowModel: getFacetedRowModel(), // client-side faceting
+    getFacetedMinMaxValues: getFacetedMinMaxValues(), // generate min/max values for numeric range filter
+    getSortedRowModel: getSortedRowModel(),
+  });
+
   return (
     <div className="flex flex-col gap-5 px-5 py-5">
       <div className="flex justify-between">
@@ -198,131 +153,133 @@ export default function SLPTable({ data }: { data: SLPAggregate }) {
           <SLPDetail data={data.acute_neurologic_condition} />
         </div>
         <div>
+          <h3 className="font-bold">Mechanically Altered Diet</h3>
+
           <SLPDetail data={data.mechanically_altered_diet} />
         </div>
         <div>
+          <h3 className="font-bold">Swallowing Disorder</h3>
           <SLPDetail data={data.swallowing_disorder} />
         </div>
       </div>
-      {/*<div>*/}
-      {/*  <div className="w-full flex items-center mt-1 gap-3">*/}
-      {/*    {permanentColumnFilters.map((filter) => (*/}
-      {/*      <Select*/}
-      {/*        classNames={{ ...filterSelectStyles }}*/}
-      {/*        key={filter}*/}
-      {/*        placeholder={table.getColumn(filter)?.columnDef.header as string}*/}
-      {/*        closeMenuOnSelect={false}*/}
-      {/*        hideSelectedOptions={false}*/}
-      {/*        components={{*/}
-      {/*          IndicatorSeparator: () => null,*/}
-      {/*          ValueContainer: FilterValueContainer,*/}
-      {/*          Option: CheckboxOption,*/}
-      {/*        }}*/}
-      {/*        isClearable={true}*/}
-      {/*        isMulti={true}*/}
-      {/*        value={*/}
-      {/*          tableState.columnFilters.find((f) => f.id === filter)*/}
-      {/*            ? (*/}
-      {/*                tableState.columnFilters.find((f) => f.id === filter)*/}
-      {/*                  ?.value as string[]*/}
-      {/*              ).map((s) => ({*/}
-      {/*                label: s,*/}
-      {/*                value: s,*/}
-      {/*              }))*/}
-      {/*            : []*/}
-      {/*        }*/}
-      {/*        name={filter}*/}
-      {/*        options={Array.from(*/}
-      {/*          table?.getColumn(filter)?.getFacetedUniqueValues()?.keys() ??*/}
-      {/*            [],*/}
-      {/*        ).map((key) => ({*/}
-      {/*          label: key,*/}
-      {/*          value: key,*/}
-      {/*        }))}*/}
-      {/*        onChange={(selected, action) => {*/}
-      {/*          handleFilterChange(selected, action, setTableState);*/}
-      {/*        }}*/}
-      {/*      />*/}
-      {/*    ))}*/}
-      {/*    {tableState.columnFilters.length > 0 && (*/}
-      {/*      <Button*/}
-      {/*        color="secondary"*/}
-      {/*        onClick={() =>*/}
-      {/*          setTableState((prev) => ({*/}
-      {/*            ...prev,*/}
-      {/*            columnFilters: [],*/}
-      {/*          }))*/}
-      {/*        }*/}
-      {/*      >*/}
-      {/*        Clear all*/}
-      {/*      </Button>*/}
-      {/*    )}*/}
-      {/*  </div>*/}
-      {/*  <table className="mt-3 w-full">*/}
-      {/*    <thead>*/}
-      {/*      {table.getHeaderGroups().map((headerGroup) => (*/}
-      {/*        <tr key={headerGroup.id}>*/}
-      {/*          {headerGroup.headers.map((header) => {*/}
-      {/*            return (*/}
-      {/*              <th*/}
-      {/*                key={header.id}*/}
-      {/*                colSpan={header.colSpan}*/}
-      {/*                className="py-2 border-y-[1.5px] border-stroke dark:border-strokedark text-left select-none group whitespace-nowrap text-body-2"*/}
-      {/*              >*/}
-      {/*                {header.isPlaceholder ? null : (*/}
-      {/*                  <span>*/}
-      {/*                    {flexRender(*/}
-      {/*                      header.column.columnDef.header,*/}
-      {/*                      header.getContext(),*/}
-      {/*                    )}*/}
-      {/*                  </span>*/}
-      {/*                )}*/}
-      {/*              </th>*/}
-      {/*            );*/}
-      {/*          })}*/}
-      {/*        </tr>*/}
-      {/*      ))}*/}
-      {/*    </thead>*/}
-      {/*    <tbody className="w-full">*/}
-      {/*      {table.getRowModel().rows.map((row, index) => {*/}
-      {/*        return (*/}
-      {/*          <tr*/}
-      {/*            key={row.id}*/}
-      {/*            className={clsx(index > 2 && !expanded && 'hidden')}*/}
-      {/*          >*/}
-      {/*            {row.getVisibleCells().map((cell) => {*/}
-      {/*              return (*/}
-      {/*                <td*/}
-      {/*                  key={cell.id}*/}
-      {/*                  className={clsx(*/}
-      {/*                    'py-2 border-b-[1.5px] border-stroke dark:border-strokedark',*/}
-      {/*                    cell.column.columnDef.meta?.wrap,*/}
-      {/*                  )}*/}
-      {/*                >*/}
-      {/*                  {*/}
-      {/*                    flexRender(*/}
-      {/*                      cell.column.columnDef.cell,*/}
-      {/*                      cell.getContext(),*/}
-      {/*                    ) as string*/}
-      {/*                  }*/}
-      {/*                </td>*/}
-      {/*              );*/}
-      {/*            })}*/}
-      {/*          </tr>*/}
-      {/*        );*/}
-      {/*      })}*/}
-      {/*    </tbody>*/}
-      {/*  </table>*/}
-      {/*  {data.length == 0 && <p>No ICD-10 Codes</p>}*/}
-      {/*  {data.length > 3 && (*/}
-      {/*    <Button*/}
-      {/*      className="text-primary self-start"*/}
-      {/*      onClick={() => setExpanded((prev) => !prev)}*/}
-      {/*    >*/}
-      {/*      {expanded ? 'Show Less' : 'Show More'}*/}
-      {/*    </Button>*/}
-      {/*  )}*/}
-      {/*</div>*/}
+      <div>
+        <h3 className="font-bold">Comorbidities Present</h3>
+        {!objIsEmpty(data.comorbidities_present) ? (
+          <>
+            <div className="w-full flex items-center gap-3 mt-1">
+              {permanentColumnFilters.map((filter) => (
+                <Select
+                  classNames={{ ...filterSelectStyles }}
+                  key={filter}
+                  placeholder={
+                    table.getColumn(filter)?.columnDef.header as string
+                  }
+                  closeMenuOnSelect={false}
+                  hideSelectedOptions={false}
+                  components={{
+                    IndicatorSeparator: () => null,
+                    ValueContainer: FilterValueContainer,
+                    Option: CheckboxOption,
+                  }}
+                  isClearable={true}
+                  isMulti={true}
+                  value={
+                    tableState.columnFilters.find((f) => f.id === filter)
+                      ? (
+                          tableState.columnFilters.find((f) => f.id === filter)
+                            ?.value as string[]
+                        ).map((s) => ({
+                          label: s,
+                          value: s,
+                        }))
+                      : []
+                  }
+                  name={filter}
+                  options={Array.from(
+                    table
+                      ?.getColumn(filter)
+                      ?.getFacetedUniqueValues()
+                      ?.keys() ?? [],
+                  ).map((key) => ({
+                    label: key,
+                    value: key,
+                  }))}
+                  onChange={(selected, action) => {
+                    handleFilterChange(selected, action, setTableState);
+                  }}
+                />
+              ))}
+              {tableState.columnFilters.length > 0 && (
+                <Button
+                  color="secondary"
+                  onClick={() =>
+                    setTableState((prev) => ({ ...prev, columnFilters: [] }))
+                  }
+                >
+                  Clear all
+                </Button>
+              )}
+            </div>
+            <table className="mt-3 w-full">
+              <thead>
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <tr key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => {
+                      return (
+                        <th
+                          key={header.id}
+                          colSpan={header.colSpan}
+                          className="py-2 border-y-[1.5px] border-stroke dark:border-strokedark text-left select-none group whitespace-nowrap text-body-2"
+                        >
+                          {header.isPlaceholder ? null : (
+                            <span>
+                              {flexRender(
+                                header.column.columnDef.header,
+                                header.getContext(),
+                              )}
+                            </span>
+                          )}
+                        </th>
+                      );
+                    })}
+                  </tr>
+                ))}
+              </thead>
+              <tbody className="w-full">
+                {table.getRowModel().rows.map((row) => {
+                  return (
+                    <tr key={row.id}>
+                      {row.getVisibleCells().map((cell) => {
+                        return (
+                          <td
+                            key={cell.id}
+                            className={clsx(
+                              'py-2 border-b-[1.5px] border-stroke dark:border-strokedark',
+                              cell.column.columnDef.meta?.wrap,
+                            )}
+                          >
+                            {
+                              flexRender(
+                                cell.column.columnDef.cell,
+                                cell.getContext(),
+                              ) as string
+                            }
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+            {data.comorbidities_present.slp_entry?.length === 0 && (
+              <p>No ICD-10 Codes</p>
+            )}
+          </>
+        ) : (
+          <p>No Record</p>
+        )}
+      </div>
     </div>
   );
 }

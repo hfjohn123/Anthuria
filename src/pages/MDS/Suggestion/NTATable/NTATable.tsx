@@ -79,7 +79,7 @@ export default function NTATable({ data }: { data: NTAEntry[] }) {
           </p>
         );
       },
-      header: 'Progress Note Suggest ICD-10 Codes',
+      header: 'AI Suggested Conditions',
     },
     {
       accessorKey: 'review',

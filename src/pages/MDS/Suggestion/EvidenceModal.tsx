@@ -150,7 +150,7 @@ export default function EvidenceModal({ icd10 }: { icd10: SuggestedICD10 }) {
             <div>
               <h3 className="font-bold text-md">Explanation and Evidence:</h3>
               {icd10.progress_note.map((item, index) => {
-                if (item.source_category !== 'P' && item.highlights)
+                if (item.source_category === 'P' && item.highlights)
                   return (
                     <div
                       key={item.highlights}

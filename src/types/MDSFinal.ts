@@ -6,6 +6,7 @@ export type MDSFinal = {
   internal_facility_id: string;
   facility_name: string;
   upstream: string;
+  update_time: Date;
   nta_final_entry: NTAEntry[];
   slp_final_entry: SLPAggregate;
 };
