@@ -229,6 +229,6 @@ export default function MDSTable({ data }: { data: MDSFinal[] }) {
       setTableState={setTableState}
       permanentColumnFilters={PERMANENT_COLUMN_FILTERS}
       renderExpandedRow={MDSDetail}
-    ></TableWrapper>
+    />
   );
 }

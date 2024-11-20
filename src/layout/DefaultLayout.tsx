@@ -20,7 +20,7 @@ const DefaultLayout = ({
         {/* <!-- ===== Sidebar End ===== --> */}
 
         {/* <!-- ===== Content Area Start ===== --> */}
-        <div className="relative flex flex-1 flex-col overflo-hidden">
+        <div className="relative flex flex-1 flex-col overflow-hidden">
           {/* <!-- ===== Header Start ===== --> */}
           <Header
             sidebarOpen={sidebarOpen}
@@ -30,7 +30,7 @@ const DefaultLayout = ({
           {/* <!-- ===== Header End ===== --> */}
 
           {/* <!-- ===== Main Content Start ===== --> */}
-          <main className="flex-grow overflow-y-auto">{children}</main>
+          <main className="flex-grow overflow-auto">{children}</main>
           {/* <!-- ===== Main Content End ===== --> */}
         </div>
         {/* <!-- ===== Content Area End ===== --> */}
