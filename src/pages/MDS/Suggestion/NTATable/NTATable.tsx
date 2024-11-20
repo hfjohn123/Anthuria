@@ -25,6 +25,25 @@ import { ThumbsDown, ThumbsUp } from '@phosphor-icons/react';
 
 const permanentColumnFilters = ['comorbidity', 'is_mds_table'];
 
+function getNTACategory(score: number) {
+  if (score === 0) {
+    return 'NF';
+  }
+  if (score < 3) {
+    return 'NE';
+  }
+  if (score < 6) {
+    return 'ND';
+  }
+  if (score < 9) {
+    return 'NC';
+  }
+  if (score < 12) {
+    return 'NB';
+  }
+  return 'NA';
+}
+
 export default function NTATable({ data }: { data: NTAEntry[] }) {
   const columns: ColumnDef<NTAEntry>[] = [
     {
@@ -80,6 +99,17 @@ export default function NTATable({ data }: { data: NTAEntry[] }) {
         );
       },
       header: 'AI Suggested Conditions',
+      footer: (info) => {
+        const total = info.table
+          .getRowModel()
+          .rows.filter((row) => row.original.is_mds_table)
+          .reduce((sum, row) => sum + row.original.score, 0);
+        return (
+          <p className="whitespace-nowrap text-left">
+            Current score: {total} ({getNTACategory(total)})
+          </p>
+        );
+      },
     },
     {
       accessorKey: 'review',
@@ -90,6 +120,28 @@ export default function NTATable({ data }: { data: NTAEntry[] }) {
             <ThumbsUp className="size-5" />
             <ThumbsDown className="size-5" />
           </div>
+        );
+      },
+      footer: (info) => {
+        const total = info.table
+          .getRowModel()
+          .rows.filter((row) => !row.original.is_mds_table)
+          .reduce((sum, row) => sum + row.original.score, 0);
+        return <p className="whitespace-nowrap text-left">+ {total}</p>;
+      },
+    },
+    {
+      accessorKey: 'score',
+      header: 'Score',
+
+      footer: (info) => {
+        const total = info.table
+          .getRowModel()
+          .rows.reduce((sum, row) => sum + row.original.score, 0);
+        return (
+          <p className="whitespace-nowrap text-left">
+            Projected score: {total} ({getNTACategory(total)})
+          </p>
         );
       },
     },
@@ -250,6 +302,24 @@ export default function NTATable({ data }: { data: NTAEntry[] }) {
               );
             })}
           </tbody>
+
+          <tfoot>
+            {data.length > 0 &&
+              table.getFooterGroups().map((footerGroup) => (
+                <tr key={footerGroup.id}>
+                  {footerGroup.headers.map((header) => (
+                    <th key={header.id}>
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.footer,
+                            header.getContext(),
+                          )}
+                    </th>
+                  ))}
+                </tr>
+              ))}
+          </tfoot>
         </table>
         {data.length === 0 && <p>No ICD-10 Codes</p>}
       </div>
