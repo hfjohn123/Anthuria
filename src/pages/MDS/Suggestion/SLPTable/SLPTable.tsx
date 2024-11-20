@@ -280,6 +280,7 @@ export default function SLPTable({ data }: { data: SLPAggregate }) {
           <p>No Record</p>
         )}
       </div>
+      <div></div>
     </div>
   );
 }

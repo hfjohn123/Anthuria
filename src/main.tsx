@@ -33,6 +33,7 @@ import PrimaryButton from './components/Basic/PrimaryButton.tsx';
 import MDS from './pages/MDS/Suggestion/MDS.tsx';
 import MDSChatBot from './pages/MDS/ChatBot/ChatBot.tsx';
 import { datadogRum } from '@datadog/browser-rum';
+import { PrimeReactProvider } from 'primereact/api';
 
 const queryClient = new QueryClient();
 datadogRum.init({
@@ -260,7 +261,9 @@ const router = createRouter({
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <QueryClientProvider client={queryClient}>
     <SuperTokensWrapper>
-      <RouterProvider router={router} />
+      <PrimeReactProvider>
+        <RouterProvider router={router} />
+      </PrimeReactProvider>
     </SuperTokensWrapper>
   </QueryClientProvider>,
 );

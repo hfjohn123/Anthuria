@@ -35,6 +35,7 @@
     "flatpickr": "^4.6.13",
     "jsvectormap": "^1.6.0",
     "lucide-react": "^0.454.0",
+    "primereact": "^10.8.4",
     "react": "^18.3.1",
     "react-18-input-autosize": "^3.0.0",
     "react-apexcharts": "^1.5.0",
