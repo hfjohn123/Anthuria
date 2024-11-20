@@ -37,7 +37,6 @@ export default function EvidenceModal({ icd10 }: { icd10: SuggestedICD10 }) {
       }
     };
   }, [scrollContainerRef.current]);
-
   useEffect(() => {
     setTimeout(() => {
       if (scrollContainerRef.current) {
@@ -99,13 +98,16 @@ export default function EvidenceModal({ icd10 }: { icd10: SuggestedICD10 }) {
     }
   };
 
-  // Rest of your component remains the same
   return (
     <Modal
       isOpen={open}
       setIsOpen={setOpen}
       button={<span className="text-primary">{icd10.icd10}</span>}
-      title={'Suggestion for ' + icd10.icd10}
+      title={
+        icd10.icd10 === 'Suggestion'
+          ? 'Suggestion'
+          : 'Suggestion for ' + icd10.icd10
+      }
     >
       <div className="relative">
         <div className="absolute right-5 top-1/2 -translate-y-1/2 flex flex-col items-end gap-2 z-10">
