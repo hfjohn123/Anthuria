@@ -153,7 +153,7 @@ export default function EvidenceModal({ icd10 }: { icd10: SuggestedICD10 }) {
                 if (item.source_category === 'P' && item.highlights)
                   return (
                     <div
-                      key={item.highlights}
+                      key={item.source_category + item.source_id}
                       ref={(el) => (itemRefs.current[index] = el)}
                       className={clsx(
                         'flex flex-col gap-3 border-b border-stroke dark:border-strokedark last:border-b-0 pr-4 py-4',
@@ -190,7 +190,7 @@ export default function EvidenceModal({ icd10 }: { icd10: SuggestedICD10 }) {
                 if (item.source_category !== 'P')
                   return (
                     <div
-                      key={item.highlights}
+                      key={item.source_category + item.source_id}
                       ref={(el) => (itemRefs.current[index] = el)}
                       className={clsx(
                         'flex flex-col gap-3 border-b border-stroke dark:border-strokedark last:border-b-0 pr-4 py-4',

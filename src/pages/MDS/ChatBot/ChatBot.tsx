@@ -69,7 +69,7 @@ export default function MDSChatBot() {
     scrollToBottom();
   }, [messages]);
 
-  const [sessionId, setSessionId] = useState(uuidv7);
+  const [sessionId, setSessionId] = useState(uuidv7());
   const [isPending, setIsPending] = useState(false);
   const { route, user_data } = useContext(AuthContext);
   const mutation = useMutation({

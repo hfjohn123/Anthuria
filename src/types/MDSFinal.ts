@@ -12,11 +12,11 @@ export type MDSFinal = {
 };
 
 export type NTAEntry = {
-  comorbidity?: string;
-  is_mds_table?: boolean;
-  mds_item?: string;
-  score?: number;
-  update_time?: Date;
+  comorbidity: string;
+  is_mds_table: boolean;
+  mds_item: string;
+  score: number;
+  update_time: Date;
   new_icd10?: SuggestedICD10[];
 };
 export type SLPAggregate = {
@@ -48,8 +48,8 @@ export type SLPItem_comorbidities_present = {
 export type SuggestedICD10 = {
   icd10: string;
   progress_note: ProgressNoteAndSummary[];
-  is_thumb_up?: boolean;
-  comment?: string;
+  is_thumb_up: boolean | null;
+  comment: string | null;
 };
 
 export type SLPEntry = {
@@ -64,7 +64,7 @@ export type ProgressNoteAndSummary = {
   source_category: string;
   update_time: Date;
   highlights?: string;
-  progress_note?: string;
+  progress_note: string;
   explanation: string;
 };
 

@@ -24,7 +24,7 @@ export default function NTAProgressNote({
         text: progress_note.progress_note,
         isMatch: false,
         term: null,
-        termIndex: 0 || undefined,
+        termIndex: 0,
       },
     ];
 
@@ -32,7 +32,7 @@ export default function NTAProgressNote({
       if (!term.trim()) return;
 
       const regex = new RegExp(`(${term})`, 'gi');
-      let newSegments: {
+      const newSegments: {
         text: string;
         isMatch: boolean;
         term: string | null;

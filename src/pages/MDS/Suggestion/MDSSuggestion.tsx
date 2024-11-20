@@ -12,6 +12,15 @@ import NTATable from './NTATable/NTATable.tsx';
 import SLPTable from './SLPTable/SLPTable.tsx';
 
 export default function MDSSuggestion({ row }: { row: Row<MDSFinal> }) {
+  const nta_count = row.original.nta_final_entry
+    .flatMap((d) => d.new_icd10)
+    .flatMap((d) => d?.progress_note)
+    .reduce((acc: { [key: string]: number }, item) => {
+      if (!item || !item.source_category) return acc;
+      acc[item.source_category] = (acc[item.source_category] || 0) + 1;
+      return acc;
+    }, {});
+
   return (
     <div className="flex flex-col gap-3 py-4 px-3 w-full ">
       <div className="flex items-center gap-2">
@@ -28,20 +37,21 @@ export default function MDSSuggestion({ row }: { row: Row<MDSFinal> }) {
           <DisclosureButton className="group">
             <div className="flex items-center py-2 gap-2 hover:bg-[#E6F3FF] ">
               <CaretRight className="ease-in-out transition-all duration-200  group-data-[open]:rotate-90" />
-              <h3 className="text-base font-semibold">
-                NTA
-                {/*<span className="text-xs">*/}
-                {/*  (*/}
-                {/*  {row.original*/}
-                {/*    .map((d) => d.existing_icd10.length)*/}
-                {/*    .reduce((a, b) => a + b, 0)}{' '}*/}
-                {/*  existing diagnosis,{' '}*/}
-                {/*  {row.original.new_nta_icd10*/}
-                {/*    .flatMap((d) => d.new_icd10)*/}
-                {/*    .reduce((sum, c) => sum + c.progress_note.length, 0)}{' '}*/}
-                {/*  progress notes detected)*/}
-                {/*</span>*/}
-              </h3>
+              <h3 className="text-base font-semibold">NTA</h3>
+              <span className="text-sm text-gray-600">
+                {((): string => {
+                  const parts = [];
+                  if (nta_count.P > 0) {
+                    parts.push(`${nta_count.P} Progress Notes`);
+                  }
+                  if (nta_count.D > 0) {
+                    parts.push(`${nta_count.D} Diagnosis`);
+                  }
+                  return parts.length > 0
+                    ? `(${parts.join(' and ')} Detected)`
+                    : '';
+                })()}
+              </span>
             </div>
           </DisclosureButton>
           <DisclosurePanel
