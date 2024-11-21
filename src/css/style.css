@@ -1,18 +1,21 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@layer tailwind-base, primereact, tailwind-utilities;
+@import 'primereact/resources/themes/lara-light-blue/theme.css';
 
-@layer base {
+
+
+@layer tailwind-base {
+  @tailwind base;
   body {
     @apply font-inter font-normal text-base text-body bg-whiten relative z-1;
   }
 }
 
-@layer components {
-}
 
-@layer utilities {
+
+@layer tailwind-utilities {
   /* Chrome, Safari and Opera */
+  @tailwind components;
+  @tailwind utilities;
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }
@@ -32,6 +35,9 @@
   }
   .inbox-height {
     @apply h-[calc(100vh_-_8.125rem)] lg:h-[calc(100vh_-_5.625rem)];
+  }
+  .p-datepicker-inline	{
+    @apply !w-max;
   }
 }
 

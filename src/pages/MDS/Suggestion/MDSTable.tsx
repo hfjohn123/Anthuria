@@ -19,7 +19,7 @@ import { MDSFinal } from '../../../types/MDSFinal.ts';
 import TableWrapper from '../../../components/Tables/TableWrapper.tsx';
 import MDSDetail from './MDSDetail.tsx';
 
-const PERMANENT_COLUMN_FILTERS = ['facility_name'];
+const PERMANENT_COLUMN_FILTERS = ['facility_name', 'update_time'];
 
 export default function MDSTable({ data }: { data: MDSFinal[] }) {
   const columns: ColumnDef<MDSFinal>[] = [

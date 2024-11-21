@@ -55,7 +55,13 @@ export default function TableWrapper({
 
     Object.entries(search).forEach(([key, value]) => {
       if (value) {
-        if (
+        if (value === 'yesterday') {
+          value = [new Date(Date.now() - 1000 * 60 * 60 * 24), new Date()];
+        } else if (value === 'last_3_days') {
+          value = [new Date(Date.now() - 1000 * 60 * 60 * 24 * 3), new Date()];
+        } else if (value === 'last_7_days') {
+          value = [new Date(Date.now() - 1000 * 60 * 60 * 24 * 7), new Date()];
+        } else if (
           (value as string).startsWith('[') &&
           (value as string).endsWith(']')
         ) {

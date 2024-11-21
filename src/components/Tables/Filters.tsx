@@ -4,12 +4,11 @@ import filterValueContainer from '../Select/FilterValueContainer.tsx';
 import CheckboxOption from '../Select/CheckboxOption.tsx';
 import handleFilterChange from './handleFilterChange.ts';
 import AutosizeInput from 'react-18-input-autosize';
-import DatePicker from 'react-datepicker';
 import { Button } from '@headlessui/react';
 import { Table, TableState } from '@tanstack/react-table';
 import FilterValueContainer from '../Select/FilterValueContainer.tsx';
-import clsx from 'clsx';
 import { useNavigate, useSearch } from '@tanstack/react-router';
+import DateTimeFilter from './DateTimeFilter.tsx';
 
 // Base interface with common props
 type FilterProps = {
@@ -86,7 +85,10 @@ export default function Filters({
               }}
             />
           ) : table.getColumn(filter)?.columnDef.meta?.type === 'text' ? (
-            <div className="text-sm has-[:focus]:!shadow-filter has-[:focus]:!shadow-blue-500 flex flex-nowrap items-center gap-1 px-2 rounded-lg border border-stroke dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary">
+            <div
+              key={filter}
+              className="text-sm has-[:focus]:!shadow-filter has-[:focus]:!shadow-blue-500 flex flex-nowrap items-center gap-1 px-2 rounded-lg border border-stroke dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+            >
               <span className="text-nowrap">
                 {table.getColumn(filter)?.columnDef.header as string}{' '}
                 {tableState.columnFilters.find((f) => f.id === filter) &&
@@ -156,106 +158,59 @@ export default function Filters({
               )}
             </div>
           ) : table.getColumn(filter)?.columnDef.meta?.type === 'daterange' ? (
-            <div className="text-sm has-[:focus]:!shadow-filter has-[:focus]:!shadow-blue-500 flex flex-nowrap items-center gap-1 px-2 py-0.5 rounded-lg border border-stroke outline-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary">
-              <span className="text-nowrap">
-                {table.getColumn(filter)?.columnDef.header as string}
-              </span>
-              <DatePicker
-                className={clsx(
-                  'outline-0 bg-transparent w-10',
-                  tableState.columnFilters.find((f) => f.id === filter) &&
-                    'w-full',
-                )}
-                selectsRange
-                startDate={
-                  (
-                    tableState as {
-                      columnFilters: { id: string; value: any }[];
-                    }
-                  ).columnFilters.find((f) => f.id === filter)?.value[0]
-                }
-                endDate={
-                  (
-                    tableState as {
-                      columnFilters: { id: string; value: any }[];
-                    }
-                  ).columnFilters.find((f) => f.id === filter)?.value[1]
-                }
-                onChange={([start, end]: [Date | null, Date | null]) => {
-                  end && end.setHours(23, 59, 59, 999);
-                  setTableState((prev) => ({
-                    ...prev,
-                    columnFilters: prev.columnFilters
-                      .filter((f) => f.id !== filter)
-                      .concat({
-                        id: filter,
-                        value: [start, end],
-                      }),
-                  }));
-                }}
-                minDate={
-                  new Date(
-                    table
+            <DateTimeFilter
+              key={filter}
+              id={table.getColumn(filter)?.columnDef.header as string}
+              autoFocus={false}
+              value={
+                tableState.columnFilters.find((f) => f.id === filter)
+                  ?.value as [Date, Date]
+              }
+              setValue={([start, end]: [Date | null, Date | null]) => {
+                end && end.setHours(23, 59, 59, 999);
+                setTableState((prev) => ({
+                  ...prev,
+                  columnFilters: prev.columnFilters
+                    .filter((f) => f.id !== filter)
+                    .concat({
+                      id: filter,
+                      value: [start, end],
+                    }),
+                }));
+              }}
+              clearFilter={() =>
+                setTableState((prev) => ({
+                  ...prev,
+                  columnFilters: prev.columnFilters.filter(
+                    (f) => f.id !== filter,
+                  ),
+                }))
+              }
+              minDate={
+                new Date(
+                  table
+                    .getColumn(filter)
+                    ?.getFacetedMinMaxValues()
+                    ?.flat()
+                    ?.filter((d) => d !== null)[0] ?? '',
+                )
+              }
+              maxDate={
+                new Date(
+                  table
+                    .getColumn(filter)
+                    ?.getFacetedMinMaxValues()
+                    ?.flat()
+                    ?.filter((d) => d !== null)[
+                    (table
                       .getColumn(filter)
                       ?.getFacetedMinMaxValues()
                       ?.flat()
-                      ?.filter((d) => d !== null)[0] ?? '',
-                  )
-                }
-                maxDate={
-                  new Date(
-                    table
-                      .getColumn(filter)
-                      ?.getFacetedMinMaxValues()
-                      ?.flat()
-                      ?.filter((d) => d !== null)[
-                      (table
-                        .getColumn(filter)
-                        ?.getFacetedMinMaxValues()
-                        ?.flat()
-                        ?.filter((d) => d !== null)?.length ?? 1) - 1
-                    ] ?? '',
-                  )
-                }
-                onBlur={() => {
-                  (
-                    tableState.columnFilters.find((f) => f.id === filter) as {
-                      id: string;
-                      value: any;
-                    }
-                  )?.value.length === 0 &&
-                    setTableState((prev) => ({
-                      ...prev,
-                      columnFilters: prev.columnFilters.filter(
-                        (f) => f.id !== filter,
-                      ),
-                    }));
-                }}
-              />
-              {tableState.columnFilters.find((f) => f.id === filter) && (
-                <button
-                  onClick={() =>
-                    setTableState((prev) => ({
-                      ...prev,
-                      columnFilters: prev.columnFilters.filter(
-                        (f) => f.id !== filter,
-                      ),
-                    }))
-                  }
-                  className="fill-[rgb(204,204,204)]"
-                >
-                  <svg
-                    height="20"
-                    width="20"
-                    viewBox="0 0 20 20"
-                    aria-hidden="true"
-                    focusable="false"
-                  >
-                    <path d="M14.348 14.849c-0.469 0.469-1.229 0.469-1.697 0l-2.651-3.030-2.651 3.029c-0.469 0.469-1.229 0.469-1.697 0-0.469-0.469-0.469-1.229 0-1.697l2.758-3.15-2.759-3.152c-0.469-0.469-0.469-1.228 0-1.697s1.228-0.469 1.697 0l2.652 3.031 2.651-3.031c0.469-0.469 1.228-0.469 1.697 0s0.469 1.229 0 1.697l-2.758 3.152 2.758 3.15c0.469 0.469 0.469 1.229 0 1.698z"></path>
-                  </svg>
-                </button>
-              )}
-            </div>
+                      ?.filter((d) => d !== null)?.length ?? 1) - 1
+                  ] ?? '',
+                )
+              }
+            />
           ) : null,
         )}{' '}
         {tableState.columnFilters
@@ -319,7 +274,10 @@ export default function Filters({
               />
             ) : (table.getColumn(filter.id)?.columnDef?.meta?.type || '') ===
               'text' ? (
-              <div className="text-sm has-[:focus]:!shadow-filter has-[:focus]:!shadow-blue-500 flex flex-nowrap items-center gap-1 px-2 rounded-lg border border-stroke dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary">
+              <div
+                key={filter.id}
+                className="text-sm has-[:focus]:!shadow-filter has-[:focus]:!shadow-blue-500 flex flex-nowrap items-center gap-1 px-2 rounded-lg border border-stroke dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+              >
                 <span className="text-nowrap">
                   {table.getColumn(filter.id)?.columnDef.header as string}{' '}
                   includes
@@ -386,102 +344,132 @@ export default function Filters({
               </div>
             ) : table.getColumn(filter.id)?.columnDef.meta?.type ===
               'daterange' ? (
-              <div className="text-sm has-[:focus]:!shadow-filter has-[:focus]:!shadow-blue-500 flex flex-nowrap items-center gap-1 px-2 py-0.5 rounded-lg border border-stroke outline-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary">
-                <span className="text-nowrap">
-                  {table.getColumn(filter.id)?.columnDef.header as string}
-                </span>
-                <DatePicker
-                  className="outline-0 w-full bg-transparent "
-                  autoFocus={true}
-                  selectsRange
-                  startDate={
-                    (
-                      tableState as {
-                        columnFilters: { id: string; value: any }[];
-                      }
-                    ).columnFilters.find((f) => f.id === filter.id)?.value[0]
-                  }
-                  endDate={
-                    (
-                      tableState as {
-                        columnFilters: { id: string; value: any }[];
-                      }
-                    ).columnFilters.find((f) => f.id === filter.id)?.value[1]
-                  }
-                  onChange={([start, end]: [Date | null, Date | null]) => {
-                    end && end.setHours(23, 59, 59, 999);
-                    setTableState((prev) => ({
-                      ...prev,
-                      columnFilters: prev.columnFilters.map((f) =>
-                        f.id === filter.id
-                          ? {
-                              ...f,
-                              value: [start || null, end || null],
-                            }
-                          : f,
-                      ),
-                    }));
-                  }}
-                  minDate={
-                    new Date(
-                      table
+              <DateTimeFilter
+                key={filter.id}
+                id={table.getColumn(filter.id)?.columnDef.header as string}
+                value={
+                  tableState.columnFilters.filter((f) => f.id === filter.id)[0]
+                    .value as [Date, Date]
+                }
+                setValue={([start, end]: [Date | null, Date | null]) => {
+                  end && end.setHours(23, 59, 59, 999);
+                  setTableState((prev) => ({
+                    ...prev,
+                    columnFilters: prev.columnFilters.map((f) =>
+                      f.id === filter.id
+                        ? {
+                            ...f,
+                            value: [start || null, end || null],
+                          }
+                        : f,
+                    ),
+                  }));
+                }}
+                clearFilter={() =>
+                  setTableState((prev) => ({
+                    ...prev,
+                    columnFilters: prev.columnFilters.filter(
+                      (f) => f.id !== filter.id,
+                    ),
+                  }))
+                }
+                minDate={
+                  new Date(
+                    table
+                      .getColumn(filter.id)
+                      ?.getFacetedMinMaxValues()
+                      ?.flat()
+                      ?.filter((d) => d !== null)[0] ?? '',
+                  )
+                }
+                maxDate={
+                  new Date(
+                    table
+                      .getColumn(filter.id)
+                      ?.getFacetedMinMaxValues()
+                      ?.flat()
+                      ?.filter((d) => d !== null)[
+                      (table
                         .getColumn(filter.id)
                         ?.getFacetedMinMaxValues()
                         ?.flat()
-                        ?.filter((d) => d !== null)[0] ?? '',
-                    )
-                  }
-                  maxDate={
-                    new Date(
-                      table
-                        .getColumn(filter.id)
-                        ?.getFacetedMinMaxValues()
-                        ?.flat()
-                        ?.filter((d) => d !== null)[
-                        (table
-                          .getColumn(filter.id)
-                          ?.getFacetedMinMaxValues()
-                          ?.flat()
-                          ?.filter((d) => d !== null)?.length ?? 1) - 1
-                      ] ?? '',
-                    )
-                  }
-                  onBlur={() => {
-                    (
-                      tableState.columnFilters.find(
-                        (f) => f.id === filter.id,
-                      ) as { id: string; value: any }
-                    )?.value.length === 0 &&
-                      setTableState((prev) => ({
-                        ...prev,
-                        columnFilters: prev.columnFilters.filter(
-                          (f) => f.id !== filter.id,
-                        ),
-                      }));
-                  }}
-                />
-                <Button
-                  onClick={() =>
-                    setTableState((prev) => ({
-                      ...prev,
-                      columnFilters: prev.columnFilters.filter(
-                        (f) => f.id !== filter.id,
-                      ),
-                    }))
-                  }
-                  className="fill-[rgb(204,204,204)]"
-                >
-                  <svg
-                    height="20"
-                    width="20"
-                    viewBox="0 0 20 20"
-                    aria-hidden="true"
-                    focusable="false"
-                  >
-                    <path d="M14.348 14.849c-0.469 0.469-1.229 0.469-1.697 0l-2.651-3.030-2.651 3.029c-0.469 0.469-1.229 0.469-1.697 0-0.469-0.469-0.469-1.229 0-1.697l2.758-3.15-2.759-3.152c-0.469-0.469-0.469-1.228 0-1.697s1.228-0.469 1.697 0l2.652 3.031 2.651-3.031c0.469-0.469 1.228-0.469 1.697 0s0.469 1.229 0 1.697l-2.758 3.152 2.758 3.15c0.469 0.469 0.469 1.229 0 1.698z"></path>
-                  </svg>
-                </Button>
-              </div>
+                        ?.filter((d) => d !== null)?.length ?? 1) - 1
+                    ] ?? '',
+                  )
+                }
+              >
+                {/*<span className="text-nowrap">*/}
+                {/*  {table.getColumn(filter.id)?.columnDef.header as string}*/}
+                {/*</span>*/}
+                {/*<DatePicker*/}
+                {/*  className="outline-0 w-full bg-transparent "*/}
+                {/*  autoFocus={true}*/}
+                {/*  selectsRange*/}
+                {/*  startDate={*/}
+                {/*    (*/}
+                {/*      tableState as {*/}
+                {/*        columnFilters: { id: string; value: any }[];*/}
+                {/*      }*/}
+                {/*    ).columnFilters.find((f) => f.id === filter.id)?.value[0]*/}
+                {/*  }*/}
+                {/*  endDate={*/}
+                {/*    (*/}
+                {/*      tableState as {*/}
+                {/*        columnFilters: { id: string; value: any }[];*/}
+                {/*      }*/}
+                {/*    ).columnFilters.find((f) => f.id === filter.id)?.value[1]*/}
+                {/*  }*/}
+                {/*  onChange={([start, end]: [Date | null, Date | null]) => {*/}
+                {/*    end && end.setHours(23, 59, 59, 999);*/}
+                {/*    setTableState((prev) => ({*/}
+                {/*      ...prev,*/}
+                {/*      columnFilters: prev.columnFilters.map((f) =>*/}
+                {/*        f.id === filter.id*/}
+                {/*          ? {*/}
+                {/*              ...f,*/}
+                {/*              value: [start || null, end || null],*/}
+                {/*            }*/}
+                {/*          : f,*/}
+                {/*      ),*/}
+                {/*    }));*/}
+                {/*  }}*/}
+
+                {/*  onBlur={() => {*/}
+                {/*    (*/}
+                {/*      tableState.columnFilters.find(*/}
+                {/*        (f) => f.id === filter.id,*/}
+                {/*      ) as { id: string; value: any }*/}
+                {/*    )?.value.length === 0 &&*/}
+                {/*      setTableState((prev) => ({*/}
+                {/*        ...prev,*/}
+                {/*        columnFilters: prev.columnFilters.filter(*/}
+                {/*          (f) => f.id !== filter.id,*/}
+                {/*        ),*/}
+                {/*      }));*/}
+                {/*  }}*/}
+                {/*/>*/}
+                {/*<Button*/}
+                {/*  onClick={() =>*/}
+                {/*    setTableState((prev) => ({*/}
+                {/*      ...prev,*/}
+                {/*      columnFilters: prev.columnFilters.filter(*/}
+                {/*        (f) => f.id !== filter.id,*/}
+                {/*      ),*/}
+                {/*    }))*/}
+                {/*  }*/}
+                {/*  className="fill-[rgb(204,204,204)]"*/}
+                {/*>*/}
+                {/*  <svg*/}
+                {/*    height="20"*/}
+                {/*    width="20"*/}
+                {/*    viewBox="0 0 20 20"*/}
+                {/*    aria-hidden="true"*/}
+                {/*    focusable="false"*/}
+                {/*  >*/}
+                {/*    <path d="M14.348 14.849c-0.469 0.469-1.229 0.469-1.697 0l-2.651-3.030-2.651 3.029c-0.469 0.469-1.229 0.469-1.697 0-0.469-0.469-0.469-1.229 0-1.697l2.758-3.15-2.759-3.152c-0.469-0.469-0.469-1.228 0-1.697s1.228-0.469 1.697 0l2.652 3.031 2.651-3.031c0.469-0.469 1.228-0.469 1.697 0s0.469 1.229 0 1.697l-2.758 3.152 2.758 3.15c0.469 0.469 0.469 1.229 0 1.698z"></path>*/}
+                {/*  </svg>*/}
+                {/*</Button>*/}
+              </DateTimeFilter>
             ) : null,
           )}
         <Select
