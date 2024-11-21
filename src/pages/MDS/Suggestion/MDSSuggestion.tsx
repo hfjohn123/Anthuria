@@ -41,10 +41,16 @@ export default function MDSSuggestion({ row }: { row: Row<MDSFinal> }) {
               <span className="text-sm text-gray-600">
                 {((): string => {
                   const parts = [];
-                  if (nta_count.P > 0) {
+                  if (nta_count.P > 1) {
                     parts.push(`${nta_count.P} Progress Notes`);
                   }
-                  if (nta_count.D > 0) {
+                  if (nta_count.P === 1) {
+                    parts.push(`${nta_count.P} Progress Note`);
+                  }
+                  if (nta_count.D > 1) {
+                    parts.push(`${nta_count.D} Diagnoses`);
+                  }
+                  if (nta_count.D === 1) {
                     parts.push(`${nta_count.D} Diagnosis`);
                   }
                   return parts.length > 0
