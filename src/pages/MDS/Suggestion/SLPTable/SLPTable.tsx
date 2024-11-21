@@ -80,7 +80,7 @@ export default function SLPTable({
                   {value.map((entry, index) => {
                     entry = entry as SLPEntry;
                     return (
-                      <Fragment key={index}>
+                      <Fragment key={entry.comorbidity}>
                         {entry.new_icd10 && entry.new_icd10.length > 0 ? (
                           <EvidenceModal
                             icd10={{
