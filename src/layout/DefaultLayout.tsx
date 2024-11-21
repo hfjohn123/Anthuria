@@ -30,7 +30,9 @@ const DefaultLayout = ({
           {/* <!-- ===== Header End ===== --> */}
 
           {/* <!-- ===== Main Content Start ===== --> */}
-          <main className="flex-grow overflow-auto">{children}</main>
+          <main className="flex-grow overflow-y-auto overflow-x-hidden">
+            {children}
+          </main>
           {/* <!-- ===== Main Content End ===== --> */}
         </div>
         {/* <!-- ===== Content Area End ===== --> */}

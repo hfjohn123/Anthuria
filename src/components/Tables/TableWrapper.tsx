@@ -9,7 +9,7 @@ import { Button, Input } from '@headlessui/react';
 
 import SortUpIcon from '../../images/icon/sort-up.svg';
 import SortDownIcon from '../../images/icon/sort-down.svg';
-import { Fragment, useEffect } from 'react';
+import { Fragment, useEffect, useRef } from 'react';
 import PageNavigation from './PageNavigation.tsx';
 import SearchParams from '../../types/SearchParams.ts';
 import { useNavigate, useSearch } from '@tanstack/react-router';
@@ -49,6 +49,7 @@ export default function TableWrapper({
 }) {
   const navigate = useNavigate();
   const search = useSearch({ strict: false });
+  const filterRef = useRef(null);
 
   useEffect(() => {
     const initialFilters: ColumnFiltersState = [];
@@ -88,6 +89,21 @@ export default function TableWrapper({
       ...prev,
       columnFilters: initialFilters,
     }));
+
+    if (!filterRef.current) return;
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        // Update CSS variable with current filter height
+        document.documentElement.style.setProperty(
+          '--filter-height',
+          `${entry.contentRect.height}px`,
+        );
+      }
+    });
+
+    resizeObserver.observe(filterRef.current);
+
+    return () => resizeObserver.disconnect();
   }, []);
 
   useEffect(() => {
@@ -128,8 +144,11 @@ export default function TableWrapper({
   }, [tableState.columnFilters, tableState.globalFilter]);
 
   return (
-    <div className=" bg-white dark:bg-boxdark shadow-default h-full flex-col flex ">
-      <div className="sticky top-0 flex-none bg-white dark:bg-boxdark z-30">
+    <div className=" bg-white dark:bg-boxdark shadow-default h-full flex-col flex overflow-x-auto ">
+      <div
+        ref={filterRef}
+        className="sticky  top-0 left-0 flex-none bg-white dark:bg-boxdark z-30"
+      >
         <div className="flex items-center border-b border-stroke">
           <MagnifyingGlassIcon className="size-5 text-body dark:text-bodydark mx-1" />
           <Input
@@ -177,9 +196,12 @@ export default function TableWrapper({
           setIncludeCreatedDate={setIncludeCreatedDate}
         />
       </div>
-      <div className="relative flex-1">
+      <div className="flex-1 relative">
         <table className="w-full border-b-2 border-b-stroke ">
-          <thead className="bg-slate-50 dark:bg-graydark sticky top-18 z-20">
+          <thead
+            className="bg-slate-50 dark:bg-graydark sticky z-20"
+            style={{ top: 'var(--filter-height, 0px)' }}
+          >
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
