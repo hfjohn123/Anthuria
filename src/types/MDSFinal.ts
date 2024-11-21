@@ -8,7 +8,7 @@ export type MDSFinal = {
   upstream: string;
   update_time: Date;
   nta_final_entry: NTAEntry[];
-  slp_final_entry: SLPAggregate;
+  slp_final_entry: (SLPItem_General | SLPItem_comorbidities_present)[];
 };
 
 export type NTAEntry = {
@@ -19,13 +19,6 @@ export type NTAEntry = {
   update_time: Date;
   new_icd10?: SuggestedICD10[];
 };
-export type SLPAggregate = {
-  cognitive_impairment: SLPItem_General;
-  comorbidities_present: SLPItem_comorbidities_present;
-  acute_neurologic_condition: SLPItem_General;
-  mechanically_altered_diet: SLPItem_General;
-  swallowing_disorder: SLPItem_General;
-};
 
 export type SLPItem_General = {
   condition:
@@ -33,16 +26,16 @@ export type SLPItem_General = {
     | 'Acute Neurologic Condition'
     | 'Mechanically Altered Diet'
     | 'Swallowing Disorder';
-  is_mds: boolean;
-  is_suggest: boolean;
-  slp_entry: ProgressNoteAndSummary[];
+  is_mds?: boolean;
+  is_suggest?: boolean;
+  slp_entry?: ProgressNoteAndSummary[];
 };
 
 export type SLPItem_comorbidities_present = {
   condition: 'Comorbidities Present';
-  is_mds: boolean;
-  is_suggest: boolean;
-  slp_entry: SLPEntry[];
+  is_mds?: boolean;
+  is_suggest?: boolean;
+  slp_entry?: SLPEntry[];
 };
 
 export type SuggestedICD10 = {

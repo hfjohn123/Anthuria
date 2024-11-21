@@ -16,7 +16,7 @@ export default function SLPDetail({ data }: { data: SLPItem_General }) {
               <EvidenceModal
                 icd10={{
                   icd10: 'Suggestion',
-                  progress_note: data.slp_entry,
+                  progress_note: data.slp_entry ?? [],
                   is_thumb_up: null, // or some default value
                   comment: null, // or some default value
                 }}

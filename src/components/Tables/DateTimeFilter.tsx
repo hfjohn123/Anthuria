@@ -7,6 +7,7 @@ import {
 import { Button } from 'primereact/button';
 import { Calendar } from 'primereact/calendar';
 import SelectCaretDown from '../../images/icon/SelectCaretDown.tsx';
+import clsx from 'clsx';
 
 export default function DateTimeFilter({
   id,
@@ -25,7 +26,6 @@ export default function DateTimeFilter({
   minDate?: Date;
   maxDate?: Date;
 }) {
-  console.log(minDate, maxDate);
   return (
     <Popover>
       {({ open, close }) => (
@@ -34,7 +34,10 @@ export default function DateTimeFilter({
             ref={(e) => {
               if (autoFocus) e?.click();
             }}
-            className="text-sm data-[open]:!shadow-filter data-[open]:!shadow-blue-500 flex flex-nowrap items-center gap-1 px-2 py-0.5 rounded-lg border border-stroke outline-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+            className={clsx(
+              'text-sm data-[open]:!shadow-filter data-[open]:!shadow-blue-500 flex flex-nowrap items-center gap-1 px-2 py-0.5 rounded-lg border border-stroke outline-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary',
+              value && value.length > 0 && 'border-body',
+            )}
           >
             <span className="">
               {id}
