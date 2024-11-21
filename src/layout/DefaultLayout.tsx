@@ -14,7 +14,7 @@ const DefaultLayout = ({
   return (
     <div className="dark:bg-boxdark-2 dark:text-bodydark">
       {/* <!-- ===== Page Wrapper Start ===== --> */}
-      <div className="flex h-screen overflow-hidden">
+      <div className="flex h-screen overflow-clip">
         {/* <!-- ===== Sidebar Start ===== --> */}
         <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
         {/* <!-- ===== Sidebar End ===== --> */}
@@ -30,7 +30,7 @@ const DefaultLayout = ({
           {/* <!-- ===== Header End ===== --> */}
 
           {/* <!-- ===== Main Content Start ===== --> */}
-          <main className="flex-grow overflow-y-auto overflow-x-hidden">
+          <main className="flex-grow overflow-y-auto overflow-x-clip">
             {children}
           </main>
           {/* <!-- ===== Main Content End ===== --> */}
