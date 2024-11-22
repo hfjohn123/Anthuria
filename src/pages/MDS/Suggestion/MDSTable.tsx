@@ -96,57 +96,6 @@ export default function MDSTable({ data }: { data: MDSFinal[] }) {
         type: 'daterange',
       },
     },
-    // {
-    //   accessorKey: 'existing_icd10',
-    //   header: 'Existing ICD-10 Related to NTA and SLP',
-    //   accessorFn: (row) => row.existing_slp_icd10,
-    //   cell: (info) => {
-    //     return (
-    //       <p className="line-clamp-2">
-    //         {info.row.original.existing_slp_icd10.join(', ')}
-    //       </p>
-    //     );
-    //   },
-    //   filterFn: 'arrIncludesSome',
-    //   sortingFn: (rowA, rowB) => {
-    //     return (rowA.getValue('existing_icd10') as string[]).length <
-    //       (rowB.getValue('existing_icd10') as string[]).length
-    //       ? -1
-    //       : 1;
-    //   },
-    //   meta: {
-    //     wrap: 'whitespace-normal',
-    //     type: 'categorical',
-    //   },
-    // },
-    // {
-    //   accessorKey: 'new_icd10',
-    //   accessorFn: (row) =>
-    //     row.new_nta_icd10
-    //       .map((d) => d.new_icd10.map((x) => x.icd10))
-    //       .concat(row.new_slp_icd10.map((d) => d.icd10)),
-    //   header: 'New ICD-10',
-    //   cell: (info) => {
-    //     return (
-    //       <p className="line-clamp-2">
-    //         {(info.getValue() as string[]).join(', ')}
-    //       </p>
-    //     );
-    //   },
-    //   sortingFn: (rowA, rowB) => {
-    //     return rowA.original.new_nta_icd10.length +
-    //       rowA.original.new_slp_icd10.length <
-    //       rowB.original.new_nta_icd10.length +
-    //         rowB.original.new_slp_icd10.length
-    //       ? -1
-    //       : 1;
-    //   },
-    //   filterFn: 'arrIncludesSome',
-    //   meta: {
-    //     wrap: 'whitespace-normal',
-    //     type: 'categorical',
-    //   },
-    // },
   ];
 
   const [tableState, setTableState] = useState<TableState>({

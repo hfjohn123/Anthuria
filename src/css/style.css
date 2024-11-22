@@ -39,6 +39,9 @@
   .p-datepicker-inline	{
     @apply !w-max;
   }
+  .p-multiselect-label{
+    @apply  flex flex-wrap gap-1.5
+  }
 }
 
 /* third-party libraries CSS */

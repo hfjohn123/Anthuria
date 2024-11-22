@@ -463,7 +463,7 @@ export default function ReviewTriggers() {
   }, []);
 
   const table = useReactTable({
-    data: data,
+    data: data && data.data,
     columns,
     state: tableState,
 
@@ -585,6 +585,19 @@ export default function ReviewTriggers() {
         <div className="grid xl:grid-cols-4 grid-cols-3 sm:gap-3 ">
           {predefinedTriggerWords.map((word) => (
             <NumberCards
+              keywordList={
+                data &&
+                data.keywords
+                  .filter(
+                    (kw: { trigger_word: string; key_word: string }) =>
+                      kw.trigger_word.toLowerCase() === word.toLowerCase(),
+                  )
+                  .map(
+                    (kw: { trigger_word: string; key_word: string }) =>
+                      kw.key_word,
+                  )
+              }
+              keywordModal={true}
               key={word}
               className={clsx(
                 'col-span-1',
