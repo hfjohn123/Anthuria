@@ -30,6 +30,45 @@ import EvidenceModal from '../EvidenceModal.tsx';
 
 const permanentColumnFilters = ['condition', 'is_mds'];
 
+function getSLPCategory(total_general: number, total_diet: number) {
+  if (total_general === 3 && total_diet === 2) {
+    return 'SL';
+  }
+  if (total_general === 3 && total_diet === 1) {
+    return 'SK';
+  }
+  if (total_general === 3 && total_diet === 0) {
+    return 'SJ';
+  }
+  if (total_general === 2 && total_diet === 2) {
+    return 'SI';
+  }
+  if (total_general === 2 && total_diet === 1) {
+    return 'SH';
+  }
+  if (total_general === 2 && total_diet === 0) {
+    return 'SG';
+  }
+  if (total_general === 1 && total_diet === 2) {
+    return 'SF';
+  }
+  if (total_general === 1 && total_diet === 1) {
+    return 'SE';
+  }
+  if (total_general === 1 && total_diet === 0) {
+    return 'SD';
+  }
+  if (total_general === 0 && total_diet === 2) {
+    return 'SC';
+  }
+  if (total_general === 0 && total_diet === 1) {
+    return 'SB';
+  }
+  if (total_general === 0 && total_diet === 0) {
+    return 'SA';
+  }
+}
+
 export default function SLPTable({
   data,
 }: {
@@ -64,6 +103,36 @@ export default function SLPTable({
         filterFn: 'arrIncludesSome',
         meta: {
           type: 'categorical',
+        },
+        footer: (info) => {
+          const total_general = info.table.getRowModel().rows.filter((row) => {
+            return (
+              row.original.is_mds &&
+              row.original.condition !== 'Mechanically Altered Diet' &&
+              row.original.condition !== 'Swallowing Disorder'
+            );
+          }).length;
+          const total_diet = info.table.getRowModel().rows.filter((row) => {
+            return (
+              row.original.is_mds &&
+              (row.original.condition === 'Mechanically Altered Diet' ||
+                row.original.condition === 'Swallowing Disorder')
+            );
+          }).length;
+          return (
+            <>
+              <p className="whitespace-nowrap text-left">
+                Current Presence of SLP Conditions: {total_general}
+              </p>
+              <p className="whitespace-nowrap text-left">
+                Current Presence of Diet Conditions: {total_diet}
+              </p>
+              <p className="whitespace-nowrap text-left">
+                Current Case Mix Group:{' '}
+                {getSLPCategory(total_general, total_diet)}
+              </p>
+            </>
+          );
         },
       },
       {
@@ -117,6 +186,31 @@ export default function SLPTable({
           return null;
         },
         header: 'AI Suggested Conditions',
+        footer: (info) => {
+          const total_general = info.table.getRowModel().rows.filter((row) => {
+            return (
+              !row.original.is_mds &&
+              row.original.is_suggest &&
+              row.original.condition !== 'Mechanically Altered Diet' &&
+              row.original.condition !== 'Swallowing Disorder'
+            );
+          }).length;
+          const total_diet = info.table.getRowModel().rows.filter((row) => {
+            return (
+              !row.original.is_mds &&
+              row.original.is_suggest &&
+              (row.original.condition === 'Mechanically Altered Diet' ||
+                row.original.condition === 'Swallowing Disorder')
+            );
+          }).length;
+          return (
+            <>
+              <p className="whitespace-nowrap text-left ">+ {total_general}</p>
+              <p className="whitespace-nowrap text-left">+ {total_diet}</p>
+              <br />
+            </>
+          );
+        },
       },
       {
         accessorKey: 'review',
@@ -127,6 +221,32 @@ export default function SLPTable({
               <ThumbsUp className="size-5" />
               <ThumbsDown className="size-5" />
             </div>
+          );
+        },
+        footer: (info) => {
+          const total_general = info.table.getRowModel().rows.filter((row) => {
+            return (
+              (row.original.is_mds || row.original.is_suggest) &&
+              row.original.condition !== 'Mechanically Altered Diet' &&
+              row.original.condition !== 'Swallowing Disorder'
+            );
+          }).length;
+          const total_diet = info.table.getRowModel().rows.filter((row) => {
+            return (
+              (row.original.is_mds || row.original.is_suggest) &&
+              (row.original.condition === 'Mechanically Altered Diet' ||
+                row.original.condition === 'Swallowing Disorder')
+            );
+          }).length;
+          return (
+            <>
+              <p className="whitespace-nowrap text-left">= {total_general}</p>
+              <p className="whitespace-nowrap text-left">= {total_diet}</p>
+              <p className="whitespace-nowrap text-left">
+                Projected Case Mix Group:{' '}
+                {getSLPCategory(total_general, total_diet)}
+              </p>
+            </>
           );
         },
       },
@@ -312,14 +432,25 @@ export default function SLPTable({
                 );
               })}
             </tbody>
+            <tfoot>
+              {data.length > 0 &&
+                table.getFooterGroups().map((footerGroup) => (
+                  <tr key={footerGroup.id}>
+                    {footerGroup.headers.map((header) => (
+                      <th key={header.id}>
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.footer,
+                              header.getContext(),
+                            )}
+                      </th>
+                    ))}
+                  </tr>
+                ))}
+            </tfoot>
           </table>
-          {/*{data.comorbidities_present.slp_entry?.length === 0 && (*/}
-          {/*  <p>No ICD-10 Codes</p>*/}
-          {/*)}*/}
         </>
-        {/*) : (*/}
-        {/*  <p>No Record</p>*/}
-        {/*)}*/}
       </div>
     </div>
   );
