@@ -20,6 +20,20 @@ export default function MDSSuggestion({ row }: { row: Row<MDSFinal> }) {
       acc[item.source_category] = (acc[item.source_category] || 0) + 1;
       return acc;
     }, {});
+  const slp_count = row.original.slp_final_entry
+    .flatMap((d) => {
+      if (d.condition === 'Comorbidities Present') {
+        return d.slp_entry
+          ?.flatMap((d) => d.new_icd10)
+          .flatMap((d) => d?.progress_note);
+      }
+      return d.slp_entry;
+    })
+    .reduce((acc: { [key: string]: number }, item) => {
+      if (!item || !item.source_category) return acc;
+      acc[item.source_category] = (acc[item.source_category] || 0) + 1;
+      return acc;
+    }, {});
 
   return (
     <div className="flex flex-col gap-3 py-4 px-3 w-full ">
@@ -72,6 +86,32 @@ export default function MDSSuggestion({ row }: { row: Row<MDSFinal> }) {
             <div className="flex items-center py-2 gap-2 hover:bg-[#E6F3FF] ">
               <CaretRight className="ease-in-out transition-all duration-200  group-data-[open]:rotate-90" />
               <h3 className="text-base font-semibold">SLP</h3>
+              <span className="text-sm text-gray-600">
+                {((): string => {
+                  const parts = [];
+                  if (slp_count.P > 1) {
+                    parts.push(`${slp_count.P} Progress Notes`);
+                  }
+                  if (slp_count.P === 1) {
+                    parts.push(`${slp_count.P} Progress Note`);
+                  }
+                  if (slp_count.D > 1) {
+                    parts.push(`${slp_count.D} Diagnoses`);
+                  }
+                  if (slp_count.D === 1) {
+                    parts.push(`${slp_count.D} Diagnosis`);
+                  }
+                  if (slp_count.PO > 1) {
+                    parts.push(`${slp_count.PO} Orders`);
+                  }
+                  if (slp_count.PO === 1) {
+                    parts.push(`${slp_count.PO} Order`);
+                  }
+                  return parts.length > 0
+                    ? `(${parts.join(' and ')} Detected)`
+                    : '';
+                })()}
+              </span>
             </div>
           </DisclosureButton>
           <DisclosurePanel
