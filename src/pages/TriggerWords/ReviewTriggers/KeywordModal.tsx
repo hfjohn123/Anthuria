@@ -52,6 +52,9 @@ export default function KeywordModal({
             display="chip"
             placeholder="Select Keywords"
             className="w-full mt-2 md:w-20rem"
+            pt={{
+              label: () => 'flex flex-wrap gap-1.5',
+            }}
           />
         </Dialog>
       </div>
