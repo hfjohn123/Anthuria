@@ -1,7 +1,7 @@
 import ReactDOM from 'react-dom/client';
 import './css/style.css';
 import 'flatpickr/dist/flatpickr.min.css';
-import 'primereact/resources/themes/lara-dark-blue/theme.css';
+import 'primereact/resources/themes/lara-light-blue/theme.css';
 import Home from './pages/Home';
 import NHQI from './pages/Dashboard/NHQI';
 import ErrorPage from './common/ErrorPage.tsx';
