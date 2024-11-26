@@ -167,40 +167,6 @@ export default function NewTriggerWordModal() {
                 }}
               />
             </Field>
-            {/*<Field>*/}
-            {/*  <Label className="block text-sm dark:text-bodydark2">*/}
-            {/*    Date Range*/}
-            {/*  </Label>*/}
-            {/*  <DatePicker*/}
-            {/*    startDate={newTriggerWord.date_range[0] ?? undefined}*/}
-            {/*    endDate={newTriggerWord.date_range[1] ?? undefined}*/}
-            {/*    maxDate={*/}
-            {/*      newTriggerWord.date_range[1]*/}
-            {/*        ? new Date()*/}
-            {/*        : new Date(*/}
-            {/*            Math.min(*/}
-            {/*              new Date().getTime(),*/}
-            {/*              newTriggerWord.date_range[0]*/}
-            {/*                ? new Date(newTriggerWord.date_range[0]).setDate(*/}
-            {/*                    new Date(*/}
-            {/*                      newTriggerWord.date_range[0],*/}
-            {/*                    ).getDate() + 7,*/}
-            {/*                  )*/}
-            {/*                : new Date().getTime(),*/}
-            {/*            ),*/}
-            {/*          )*/}
-            {/*    }*/}
-            {/*    onChange={(e) => {*/}
-            {/*      setNewTriggerWord((prev) => ({*/}
-            {/*        ...prev,*/}
-            {/*        date_range: e,*/}
-            {/*      }));*/}
-            {/*    }}*/}
-            {/*    selectsRange*/}
-            {/*    wrapperClassName="w-full"*/}
-            {/*    className="dark:bg-boxdark indent-2.5 py-1.5 border border-stroke rounded w-full outline-none focus:shadow-filter focus:shadow-blue-400 dark:text-bodydark1"*/}
-            {/*  />*/}
-            {/*</Field>*/}
             <div className="flex gap-4 justify-end">
               <button
                 type="reset"

@@ -31,13 +31,8 @@ export default function ProgressNote({ row }: { row: Row<EventFinal> }) {
             </tr>
           </thead>
           <tbody>
-            {row.original.progress_notes.map((s) => (
-              <Fragment
-                key={
-                  row.original.event_id.toString() +
-                  s.progress_note_id.toString()
-                }
-              >
+            {row.original.progress_notes.map((s, index) => (
+              <Fragment key={index}>
                 <tr
                   className={`${
                     row.original.progress_notes.indexOf(s) === 0 || open
@@ -62,14 +57,16 @@ export default function ProgressNote({ row }: { row: Row<EventFinal> }) {
                     </span>
                   </td>
                   <td className="pr-10 ">
-                    <ShowMoreText
-                      anchorClass="text-primary cursor-pointer block dark:text-secondary "
-                      className="whitespace-pre-line"
-                      keepNewLines
-                      lines={4}
-                    >
-                      {s.note}
-                    </ShowMoreText>
+                    {s.note && (
+                      <ShowMoreText
+                        anchorClass="text-primary cursor-pointer block dark:text-secondary "
+                        className="whitespace-pre-line"
+                        keepNewLines
+                        lines={4}
+                      >
+                        {s.note}
+                      </ShowMoreText>
+                    )}
                   </td>
                   <td className="pr-10">{s.created_by}</td>
                   <td className="">
