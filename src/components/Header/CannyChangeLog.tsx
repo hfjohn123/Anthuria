@@ -2,20 +2,19 @@ import { useEffect } from 'react';
 import { MegaphoneIcon } from '@heroicons/react/24/outline';
 import { Button } from '@headlessui/react';
 
-export default function CannyChangeLog({ colorMode }: { colorMode: string }) {
+export default function CannyChangeLog() {
   useEffect(() => {
     // @ts-expect-error Canny integration
     Canny('initChangelog', {
       appID: '66577caeac17c62e53e3940f',
       position: 'bottom',
       align: window.innerWidth > 1024 ? 'left' : 'right',
-      theme: colorMode, // options: light [default], dark, auto
     });
     return () => {
       // @ts-expect-error Canny integration
       Canny('closeChangelog');
     };
-  }, [colorMode]);
+  }, []);
   return (
     <Button
       data-canny-changelog

@@ -1,8 +1,8 @@
 import { Dialog } from 'primereact/dialog';
 import { Button } from 'primereact/button';
 import { useState } from 'react';
-import { MultiSelect } from 'primereact/multiselect';
 import { Info } from '@phosphor-icons/react';
+import { Chips } from 'primereact/chips';
 
 export default function KeywordModal({
   header,
@@ -38,22 +38,15 @@ export default function KeywordModal({
             setVisible(false);
           }}
         >
-          <MultiSelect
-            value={keywordList.map((keyword) => ({
-              name: keyword,
-              code: keyword,
-            }))}
-            options={keywordList.map((keyword) => ({
-              name: keyword,
-              code: keyword,
-            }))}
-            optionLabel="name"
+          <Chips
+            value={keywordList}
+            allowDuplicate={false}
+            separator=","
+            placeholder={keywordList?.length > 0 ? '' : 'No keywords found'}
             disabled
-            display="chip"
-            placeholder="Select Keywords"
             className="w-full mt-2 md:w-20rem"
             pt={{
-              label: () => 'flex flex-wrap gap-1.5',
+              container: () => 'flex flex-wrap gap-1.5 w-full',
             }}
           />
         </Dialog>

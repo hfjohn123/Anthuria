@@ -1,6 +1,6 @@
 import DefaultLayout from '../../../layout/DefaultLayout.tsx';
 import axios from 'axios';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import { Cog6ToothIcon } from '@heroicons/react/24/outline';
 import SortDownIcon from '../../../images/icon/sort-down.svg';
@@ -13,6 +13,7 @@ import CheckboxOption from '../../../components/Select/CheckboxOption.tsx';
 import Select, { MultiValue } from 'react-select';
 import handleFilterChange from '../../../components/Tables/handleFilterChange.ts';
 import FilterValueContainer from '../../../components/Select/FilterValueContainer.tsx';
+import stemmedFilter from '../../../components/Tables/stemmedFilter.ts';
 import {
   ColumnDef,
   ColumnDefTemplate,
@@ -31,12 +32,10 @@ import {
 import getFacetedUniqueValues from '../../../common/getFacetedUniqueValues.ts';
 import getFacetedMinMaxValues from '../../../common/getFacetedMinMaxValues.ts';
 import { AuthContext } from '../../../components/AuthWrapper.tsx';
-import DatePicker from 'react-datepicker';
 import NumberCards from '../../../components/Cards/NumberCards.tsx';
 import clsx from 'clsx';
 import Modal from '../../../components/Modal/Modal.tsx';
-import { createToast } from '../../../hooks/fireToast.tsx';
-import { Button, Field, Input, Label } from '@headlessui/react';
+import { Button, Input } from '@headlessui/react';
 import filterSelectStyles from '../../../components/Select/filterSelectStyles.ts';
 import dateRangeFilterFn from '../../../common/dateRangeFilterFn.ts';
 import HyperLink from '../../../components/Basic/HyerLink.tsx';
@@ -47,7 +46,8 @@ import exportExcel from '../../../common/excelExport.ts';
 import TriggerNoteDetail from './TriggerNoteDetail.tsx';
 import { useNavigate, useSearch } from '@tanstack/react-router';
 import SearchParams from '../../../types/SearchParams.ts';
-import DateTimeFilter from '../../../components/Tables/DateTimeFilter.tsx';
+import DateTimeDropdown from '../../../components/Tables/DateTimeFilter/DateTimeDropdown.tsx';
+import NewTriggerWordModal from './NewTriggerWordModal.tsx';
 
 const predefinedTriggerWords = [
   'Fall',
@@ -133,21 +133,9 @@ const initialTableState: TableState = {
   },
 };
 
-const initialNewTrigger: {
-  trigger_word: string;
-  internal_facility_id: string[];
-  date_range: [Date, Date];
-} = {
-  trigger_word: '',
-  internal_facility_id: [],
-  date_range: [new Date(), new Date()],
-};
 export default function ReviewTriggers() {
-  const { route, user_applications_locations, user_data } =
-    useContext(AuthContext);
-  const { locations } = user_applications_locations.find(
-    (d) => d['id'] === 'trigger_words',
-  ) || { locations: [] };
+  const { route } = useContext(AuthContext);
+
   const [additionalFilters, setAdditionalFilters] = useState<{
     label: string;
     value: string;
@@ -159,7 +147,6 @@ export default function ReviewTriggers() {
     from: '/trigger-words/review-triggers',
   });
 
-  const [isOpen, setIsOpen] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [includeCreatedDate, setIncludeCreatedDate] = useState(
     search['history'] ? search['history'] === 'false' : true,
@@ -183,44 +170,6 @@ export default function ReviewTriggers() {
     queryKey: ['trigger_word_view_trigger_word_detail_final', route],
     queryFn: fetchTriggerWord,
   });
-
-  const addTemporary = useMutation({
-    mutationFn: ({
-      trigger_word,
-      user_id,
-      facilities,
-      from_to,
-    }: {
-      trigger_word: string;
-      user_id: string;
-      facilities: string[];
-      from_to: [Date | null, Date | null];
-    }) =>
-      axios.post(
-        `https://triggerword_temporary_api.triedgesandbox.com/create_trigger`,
-        {
-          trigger_word,
-          facilities,
-          user_id,
-          from_to,
-          status: 'temporary',
-        },
-      ),
-    onSuccess: () => {
-      createToast(
-        'Success',
-        'Trigger Word Creation in Progress',
-        0,
-        'new trigger',
-      );
-    },
-  });
-
-  const [newTriggerWord, setNewTriggerWord] = useState<{
-    trigger_word: string;
-    internal_facility_id: string[];
-    date_range: [Date | null, Date | null];
-  }>(initialNewTrigger);
 
   const columns = useMemo<ColumnDef<TriggerFinal>[]>(
     () => [
@@ -470,7 +419,10 @@ export default function ReviewTriggers() {
     onStateChange: setTableState,
     getRowCanExpand: () => true,
     autoResetPageIndex: false,
-
+    filterFns: {
+      stemmed: stemmedFilter,
+    },
+    globalFilterFn: stemmedFilter,
     getFacetedUniqueValues: getFacetedUniqueValues(),
     autoResetExpanded: false,
     getCoreRowModel: getCoreRowModel(),
@@ -655,151 +607,7 @@ export default function ReviewTriggers() {
         </div>
         <div className="grid grid-cols-12 ">
           <div className="col-span-12 sm:col-span-9 flex items-center"></div>
-          <Modal
-            isOpen={isOpen}
-            setIsOpen={setIsOpen}
-            title="Create a New Trigger Word"
-            button={<p>+ Add a New Trigger Word</p>}
-            classNameses={{
-              title: 'dark:text-bodydark1',
-              button:
-                'text-primary dark:text-secondary col-span-12 lg:col-span-3 lg:justify-self-end justify-self-start self-center',
-            }}
-          >
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                addTemporary.mutate({
-                  trigger_word: newTriggerWord.trigger_word,
-                  facilities: newTriggerWord.internal_facility_id,
-                  user_id: user_data.email,
-                  from_to: newTriggerWord.date_range,
-                });
-                setIsOpen(false);
-                setNewTriggerWord(initialNewTrigger);
-              }}
-              className="px-4"
-            >
-              <div className="flex flex-col gap-4">
-                <Field>
-                  <Label className="text-sm dark:text-bodydark2">
-                    New Trigger Word
-                  </Label>
-                  <Input
-                    required
-                    value={newTriggerWord.trigger_word}
-                    onChange={(e) => {
-                      setNewTriggerWord((prev) => ({
-                        ...prev,
-                        trigger_word: e.target.value,
-                      }));
-                    }}
-                    className="block py-1.5 border border-stroke rounded outline-none indent-2.5 w-full focus:shadow-filter focus:shadow-blue-400 dark:bg-boxdark dark:text-bodydark1"
-                    type="text"
-                  />
-                </Field>
-                <Field>
-                  <Label className="text-sm dark:text-bodydark2">
-                    Facility
-                  </Label>
-                  <Select
-                    required
-                    isMulti
-                    closeMenuOnSelect={false}
-                    hideSelectedOptions={false}
-                    components={{ Option: CheckboxOption }}
-                    value={newTriggerWord.internal_facility_id
-                      .filter((value) =>
-                        locations.some(
-                          ({ internal_facility_id }) =>
-                            internal_facility_id === value,
-                        ),
-                      )
-                      .map((value) => ({
-                        label:
-                          locations.find(
-                            ({ internal_facility_id }) =>
-                              internal_facility_id === value,
-                          )?.facility_name || '',
-                        value,
-                      }))}
-                    onChange={(e) => {
-                      setNewTriggerWord((prev) => ({
-                        ...prev,
-                        internal_facility_id: e.map(({ value }) => value),
-                      }));
-                    }}
-                    options={locations.map(
-                      ({ internal_facility_id, facility_name }) => ({
-                        label: facility_name,
-                        value: internal_facility_id,
-                      }),
-                    )}
-                    classNames={{
-                      control: () =>
-                        '!border-stroke dark:bg-boxdark dark:text-bodydark1',
-                      menu: () => 'dark:bg-form-input min-w-max',
-                      option: () => 'text-body dark:!text-bodydark',
-                    }}
-                  />
-                </Field>
-                <Field>
-                  <Label className="block text-sm dark:text-bodydark2">
-                    Date Range
-                  </Label>
-                  <DatePicker
-                    startDate={newTriggerWord.date_range[0] ?? undefined}
-                    endDate={newTriggerWord.date_range[1] ?? undefined}
-                    maxDate={
-                      newTriggerWord.date_range[1]
-                        ? new Date()
-                        : new Date(
-                            Math.min(
-                              new Date().getTime(),
-                              newTriggerWord.date_range[0]
-                                ? new Date(
-                                    newTriggerWord.date_range[0],
-                                  ).setDate(
-                                    new Date(
-                                      newTriggerWord.date_range[0],
-                                    ).getDate() + 7,
-                                  )
-                                : new Date().getTime(),
-                            ),
-                          )
-                    }
-                    onChange={(e) => {
-                      setNewTriggerWord((prev) => ({
-                        ...prev,
-                        date_range: e,
-                      }));
-                    }}
-                    selectsRange
-                    wrapperClassName="w-full"
-                    className="dark:bg-boxdark indent-2.5 py-1.5 border border-stroke rounded w-full outline-none focus:shadow-filter focus:shadow-blue-400 dark:text-bodydark1"
-                  />
-                </Field>
-                <div className="flex gap-4">
-                  <button
-                    type="reset"
-                    className="dark:text-bodydark1"
-                    onClick={() => {
-                      setIsOpen(false);
-                      setNewTriggerWord(initialNewTrigger);
-                    }}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="bg-primary text-white dark:text-bodydark1 rounded p-2"
-                  >
-                    Submit
-                  </button>
-                </div>
-              </div>
-            </form>
-          </Modal>
+          <NewTriggerWordModal />
 
           <div className=" mt-5 col-span-12 bg-white dark:bg-boxdark shadow-default  ">
             <div className="sticky top-0 z-30 bg-white dark:bg-boxdark">
@@ -1028,7 +836,7 @@ export default function ReviewTriggers() {
                       </div>
                     ) : table.getColumn(filter)?.columnDef.meta?.type ===
                       'daterange' ? (
-                      <DateTimeFilter
+                      <DateTimeDropdown
                         key={filter}
                         id={table.getColumn(filter)?.columnDef.header as string}
                         autoFocus={false}
@@ -1207,7 +1015,7 @@ export default function ReviewTriggers() {
                         </div>
                       ) : table.getColumn(filter.id)?.columnDef.meta?.type ===
                         'daterange' ? (
-                        <DateTimeFilter
+                        <DateTimeDropdown
                           key={filter.id}
                           id={
                             table.getColumn(filter.id)?.columnDef

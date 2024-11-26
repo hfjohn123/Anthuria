@@ -9,7 +9,6 @@ import {
   TableState,
   useReactTable,
 } from '@tanstack/react-table';
-
 import { useState, useEffect } from 'react';
 import getFacetedUniqueValues from '../../../common/getFacetedUniqueValues.ts';
 import getFacetedMinMaxValues from '../../../common/getFacetedMinMaxValues.ts';
@@ -19,6 +18,7 @@ import { MDSFinal } from '../../../types/MDSFinal.ts';
 import TableWrapper from '../../../components/Tables/TableWrapper.tsx';
 import MDSDetail from './MDSDetail.tsx';
 
+import NewFilter from '../../../components/Tables/NewFilter.tsx';
 const PERMANENT_COLUMN_FILTERS = ['facility_name', 'update_time'];
 
 export default function MDSTable({ data }: { data: MDSFinal[] }) {
@@ -30,6 +30,7 @@ export default function MDSTable({ data }: { data: MDSFinal[] }) {
         wrap: 'whitespace-nowrap',
         type: 'categorical',
       },
+      enableColumnFilter: false,
       filterFn: 'arrIncludesSome',
     },
     {
@@ -172,12 +173,25 @@ export default function MDSTable({ data }: { data: MDSFinal[] }) {
   }, [tableState.columnVisibility]);
 
   return (
-    <TableWrapper
-      table={table}
-      tableState={tableState}
-      setTableState={setTableState}
-      permanentColumnFilters={PERMANENT_COLUMN_FILTERS}
-      renderExpandedRow={MDSDetail}
-    />
+    <div className="flex flex-col gap-6">
+      <NewFilter
+        options={[
+          ...new Map(
+            data.map((d: MDSFinal) => [d.facility_name, d.facility_name]),
+          ).values(),
+        ]}
+        table={table}
+        tableState={tableState}
+        setTableState={setTableState}
+      />
+      <TableWrapper
+        filters={false}
+        table={table}
+        tableState={tableState}
+        setTableState={setTableState}
+        permanentColumnFilters={PERMANENT_COLUMN_FILTERS}
+        renderExpandedRow={MDSDetail}
+      />
+    </div>
   );
 }

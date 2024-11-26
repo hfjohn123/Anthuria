@@ -5,11 +5,11 @@ import {
   Transition,
 } from '@headlessui/react';
 import { Button } from 'primereact/button';
-import { Calendar } from 'primereact/calendar';
-import SelectCaretDown from '../../images/icon/SelectCaretDown.tsx';
+import SelectCaretDown from '../../../images/icon/SelectCaretDown.tsx';
 import clsx from 'clsx';
+import DateTimeFilter from './DateTimeFilter.tsx';
 
-export default function DateTimeFilter({
+export default function DateTimeDropdown({
   id,
   value,
   autoFocus = true,
@@ -77,68 +77,13 @@ export default function DateTimeFilter({
               anchor={{ to: 'bottom start', gap: 10 }}
               className="origin-top-right p-2 bg-white dark:bg-form-input rounded-md min-w-max max-w-max border shadow border-stroke transition duration-100 ease-out [--anchor-gap:var(--spacing-3)] focus:outline-none data-[closed]:scale-95 data-[closed]:opacity-0 z-999"
             >
-              <div
-                className="flex flex-col gap-2"
-                onClick={(e) => {
-                  e.preventDefault();
-                }}
-              >
-                <div className="flex gap-2 min-w-max items-center justify-center">
-                  <Button
-                    onClick={() => {
-                      setValue([
-                        new Date(Date.now() - 1000 * 60 * 60 * 24),
-                        new Date(),
-                      ]);
-                      close();
-                    }}
-                    size="small"
-                    className="p-2 text-xs"
-                    outlined
-                  >
-                    Last 24h
-                  </Button>
-                  <Button
-                    onClick={() => {
-                      setValue([
-                        new Date(Date.now() - 1000 * 60 * 60 * 72),
-                        new Date(),
-                      ]);
-                      close();
-                    }}
-                    size="small"
-                    className="p-2 text-xs"
-                    outlined
-                  >
-                    Last 3 days
-                  </Button>
-                  <Button
-                    onClick={() => {
-                      setValue([
-                        new Date(Date.now() - 1000 * 60 * 60 * 24 * 7),
-                        new Date(),
-                      ]);
-                      close();
-                    }}
-                    size="small"
-                    className="p-2 text-xs	"
-                    outlined
-                  >
-                    Last week
-                  </Button>
-                </div>
-                <Calendar
-                  selectionMode="range"
-                  selectOtherMonths
-                  value={value}
-                  onChange={(e) => {
-                    setValue(e.value as [Date, Date | null]);
-                  }}
-                  minDate={minDate}
-                  maxDate={maxDate}
-                  inline
-                />
-              </div>
+              <DateTimeFilter
+                setValue={setValue}
+                close={close}
+                value={value}
+                maxDate={maxDate}
+                minDate={minDate}
+              />
             </PopoverPanel>
           </Transition>
         </>

@@ -31,6 +31,7 @@ export default function TableWrapper({
   setIsRefetching,
   includeCreatedDate,
   setIncludeCreatedDate,
+  filters = true,
   ...rest
 }: {
   table: Table<any>;
@@ -45,6 +46,7 @@ export default function TableWrapper({
   setIsRefetching?: React.Dispatch<React.SetStateAction<boolean>>;
   includeCreatedDate?: boolean;
   setIncludeCreatedDate?: React.Dispatch<React.SetStateAction<boolean>>;
+  filters?: boolean;
   [key: string]: any;
 }) {
   const navigate = useNavigate();
@@ -145,62 +147,65 @@ export default function TableWrapper({
 
   return (
     <div className=" bg-white dark:bg-boxdark shadow-default h-full flex-col flex overflow-x-auto sm:overflow-clip ">
-      <div
-        ref={filterRef}
-        className="sticky  top-0 left-0 flex-none bg-white dark:bg-boxdark z-30"
-      >
-        <div className="flex items-center border-b border-stroke">
-          <MagnifyingGlassIcon className="size-5 text-body dark:text-bodydark mx-1" />
-          <Input
-            onChange={(e) => {
-              setTableState((prev) => ({
-                ...prev,
-                globalFilter: e.target.value,
-              }));
-            }}
-            value={tableState.globalFilter}
-            placeholder="Global Search"
-            className=" w-full py-2 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-          />
-          {download && (
-            <Button
-              type="button"
-              className="hover:text-primary"
-              onClick={() =>
-                exportExcel(
-                  table,
-                  'review_triggers_' + new Date().toLocaleString(),
-                )
-              }
-            >
-              <DownloadSimple size={22} />
-            </Button>
-          )}
-          {tableSetting && initialTableState && (
-            <TableSettingModal
-              table={table}
-              tableState={tableState}
-              setTableState={setTableState}
-              initialTableState={initialTableState}
+      {filters && (
+        <div
+          ref={filterRef}
+          className="sticky  top-0 left-0 flex-none bg-white dark:bg-boxdark z-30"
+        >
+          <div className="flex items-center border-b border-stroke">
+            <MagnifyingGlassIcon className="size-5 text-body dark:text-bodydark mx-1" />
+            <Input
+              onChange={(e) => {
+                setTableState((prev) => ({
+                  ...prev,
+                  globalFilter: e.target.value,
+                }));
+              }}
+              value={tableState.globalFilter}
+              placeholder="Global Search"
+              className=" w-full py-2 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
             />
-          )}
+            {download && (
+              <Button
+                type="button"
+                className="hover:text-primary"
+                onClick={() =>
+                  exportExcel(
+                    table,
+                    'review_triggers_' + new Date().toLocaleString(),
+                  )
+                }
+              >
+                <DownloadSimple size={22} />
+              </Button>
+            )}
+            {tableSetting && initialTableState && (
+              <TableSettingModal
+                table={table}
+                tableState={tableState}
+                setTableState={setTableState}
+                initialTableState={initialTableState}
+              />
+            )}
+          </div>
+          <Filters
+            permanentColumnFilters={permanentColumnFilters}
+            table={table}
+            tableState={tableState}
+            setTableState={setTableState}
+            hasHistory={hasHistory}
+            setIsRefetching={setIsRefetching}
+            includeCreatedDate={includeCreatedDate}
+            setIncludeCreatedDate={setIncludeCreatedDate}
+          />
         </div>
-        <Filters
-          permanentColumnFilters={permanentColumnFilters}
-          table={table}
-          tableState={tableState}
-          setTableState={setTableState}
-          hasHistory={hasHistory}
-          setIsRefetching={setIsRefetching}
-          includeCreatedDate={includeCreatedDate}
-          setIncludeCreatedDate={setIncludeCreatedDate}
-        />
-      </div>
+      )}
+
       <div className="flex-1 relative">
         <table className="w-full border-b-2 border-b-stroke ">
           <thead
             className="bg-slate-50 dark:bg-graydark sticky z-20"
-            style={{ top: 'var(--filter-height, 0px)' }}
+            style={filters ? { top: 'var(--filter-height, 0px)' } : { top: 0 }}
           >
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>

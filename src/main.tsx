@@ -1,7 +1,6 @@
 import ReactDOM from 'react-dom/client';
 import './css/style.css';
 import 'flatpickr/dist/flatpickr.min.css';
-import 'primereact/resources/themes/lara-light-blue/theme.css';
 import Home from './pages/Home';
 import NHQI from './pages/Dashboard/NHQI';
 import ErrorPage from './common/ErrorPage.tsx';
@@ -261,6 +260,11 @@ const router = createRouter({
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <QueryClientProvider client={queryClient}>
+    <link
+      id="theme-link"
+      rel="stylesheet"
+      href="/themes/lara-light-blue/theme.css"
+    />
     <SuperTokensWrapper>
       <PrimeReactProvider>
         <RouterProvider router={router} />

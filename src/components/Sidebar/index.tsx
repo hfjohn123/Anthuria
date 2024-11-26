@@ -415,7 +415,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
           </ul>
         </div>
         {/* <!-- Others Group --> */}
-        <div className="shrink-0 ">
+        <div className="shrink-0">
           <h3
             className={clsx(
               'mb-4 ml-4 text-sm font-semibold text-bodydark2',

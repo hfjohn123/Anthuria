@@ -1,10 +1,8 @@
-const DarkModeSwitcher = ({
-  colorMode,
-  setColorMode,
-}: {
-  colorMode: string;
-  setColorMode: (arg0: string) => void;
-}) => {
+import useColorMode from '../../hooks/useColorMode.tsx';
+
+const DarkModeSwitcher = () => {
+  const [colorMode, setColorMode] = useColorMode();
+
   return (
     <li>
       <label

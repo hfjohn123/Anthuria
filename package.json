@@ -19,6 +19,7 @@
     "@intercom/messenger-js-sdk": "^0.0.14",
     "@phosphor-icons/react": "^2.1.7",
     "@re-dev/react-truncate": "^0.4.3",
+    "@tanstack/match-sorter-utils": "^8.19.4",
     "@tanstack/react-query": "^5.61.0",
     "@tanstack/react-table": "^8.20.5",
     "@tanstack/react-virtual": "^3.10.9",
@@ -35,6 +36,7 @@
     "flatpickr": "^4.6.13",
     "jsvectormap": "^1.6.0",
     "lucide-react": "^0.454.0",
+    "primeicons": "^7.0.0",
     "primereact": "^10.8.4",
     "react": "^18.3.1",
     "react-18-input-autosize": "^3.0.0",
@@ -51,6 +53,7 @@
     "react-stars": "^2.2.5",
     "react-tooltip": "^5.28.0",
     "reshaped": "^3.2.7",
+    "stemmer": "^2.0.1",
     "supertokens-auth-react": "^0.48.0",
     "uuid": "^11.0.3"
   },
