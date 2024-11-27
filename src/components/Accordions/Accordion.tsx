@@ -1,8 +1,6 @@
 import { useState, useCallback } from 'react';
 import ReactStars from 'react-stars';
 import * as d3 from 'd3';
-import arrow_right from '../../images/icon/arrow-right-circle.svg';
-import arrow_down from '../../images/icon/arrow-down-circle.svg';
 const category = {
   qualityOfCare: [
     'Percent of long stay high risk residents with pressure ulcers',

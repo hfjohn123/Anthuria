@@ -1,15 +1,11 @@
 import { FilterFn } from '@tanstack/react-table';
-import { stemmer } from 'stemmer';
-
+import stemFiltering from '../../common/stemFiltering.ts';
 const stemmedFilter: FilterFn<any> = (row, columnId, filterValue) => {
   const value = row.getValue(columnId);
   if (!value) return false;
 
-  // Convert both the filter value and cell value to stems
-  const stemmedFilter = stemmer(filterValue.toLowerCase());
-  const stemmedValue = stemmer(String(value).toLowerCase());
-
-  return stemmedValue.includes(stemmedFilter);
+  // Split both the filter value and cell value into words
+  return stemFiltering(String(value), filterValue);
 };
 
 export default stemmedFilter;

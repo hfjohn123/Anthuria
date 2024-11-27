@@ -136,6 +136,19 @@ const EventTrackerRoute = createRoute({
   },
 });
 
+const IncidentTrackerRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/trigger-words/incident-tracker',
+  component: () => {
+    return (
+      <SessionAuth>
+        <PageTitle id="trigger_words" />
+        <IncidentTracker />
+      </SessionAuth>
+    );
+  },
+});
+
 const CashflowForecastRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/cashflow-forecast',
@@ -199,14 +212,6 @@ const ClinicalPulseRoute = createRoute({
   path: '/trigger-words',
   component: () => {
     return <Navigate to={'/trigger-words/review-triggers'} />;
-  },
-});
-
-const IncidentTrackerRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/trigger-words/incident-tracker',
-  component: () => {
-    return <IncidentTracker />;
   },
 });
 

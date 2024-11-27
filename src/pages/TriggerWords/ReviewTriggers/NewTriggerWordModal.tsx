@@ -1,7 +1,7 @@
 import { Field, Label } from '@headlessui/react';
-import { useContext, useState } from 'react';
+import { useContext, useRef, useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { createToast } from '../../../hooks/fireToast.tsx';
 import { AuthContext } from '../../../components/AuthWrapper.tsx';
 import { Dialog } from 'primereact/dialog';
@@ -9,6 +9,13 @@ import { Button } from 'primereact/button';
 import { MultiSelect } from 'primereact/multiselect';
 import { InputText } from 'primereact/inputtext';
 import { Chips } from 'primereact/chips';
+import { Column } from 'primereact/column';
+import { TriggerFinal } from '../../../types/TriggerFinal.ts';
+import { stemmer } from 'stemmer';
+import ShowMoreText from 'react-show-more-text';
+import { Toast } from 'primereact/toast';
+import stemFiltering from '../../../common/stemFiltering.ts';
+import { DataTable } from 'primereact/datatable';
 
 const initialNewTrigger: {
   trigger_word: string;
@@ -20,8 +27,35 @@ const initialNewTrigger: {
   keyword_list: [],
   // date_range: [new Date(), new Date()],
 };
+const patientNameTemplate = (d: TriggerFinal) => {
+  return (
+    <div>
+      <p>{d.patient_name}</p>
+      <p className="text-body-2">{d.facility_name}</p>
+    </div>
+  );
+};
 
-export default function NewTriggerWordModal() {
+const progressNoteTemplate = (d: TriggerFinal) => {
+  return (
+    <ShowMoreText
+      className="whitespace-pre-line"
+      keepNewLines
+      anchorClass="text-primary cursor-pointer block dark:text-secondary "
+    >
+      {d.progress_note}
+    </ShowMoreText>
+  );
+};
+
+export default function NewTriggerWordModal({
+  data,
+  trigger_words,
+}: {
+  data: TriggerFinal[];
+  trigger_words: string[];
+}) {
+  const toast = useRef<Toast>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [newTriggerWord, setNewTriggerWord] = useState<{
     trigger_word: string;
@@ -30,45 +64,63 @@ export default function NewTriggerWordModal() {
     // date_range: [Date | null, Date | null];
   }>(initialNewTrigger);
 
+  const { user_applications_locations, route } = useContext(AuthContext);
+  const { locations } = user_applications_locations.find(
+    (d) => d['id'] === 'trigger_words',
+  ) || { locations: [] };
   const addTemporary = useMutation({
     mutationFn: ({
       trigger_word,
-      user_id,
+      // user_id,
       facilities,
       // from_to,
     }: {
       trigger_word: string;
-      user_id: string;
+      // user_id: string;
       facilities: string[];
       // from_to: [Date | null, Date | null];
     }) =>
-      axios.post(
-        `https://triggerword_temporary_api.triedgesandbox.com/create_trigger`,
-        {
-          trigger_word,
-          facilities,
-          user_id,
-          // from_to,
-          status: 'temporary',
-        },
-      ),
+      axios.put(`${route}/create_trigger`, {
+        trigger_word,
+        facilities,
+        // from_to,
+      }),
     onSuccess: () => {
       createToast(
         'Success',
-        'Trigger Word Creation in Progress',
+        'Trigger Word Creation in Progress, It would appear tomorrow',
         0,
         'new trigger',
       );
     },
+    onError: (error: AxiosError) => {
+      createToast(
+        'Something went wrong',
+        (error.response?.data as { detail: string }).detail,
+        1,
+        'new trigger',
+      );
+    },
   });
+  const show = () => {
+    toast.current?.show({
+      severity: 'error',
+      summary: 'Error',
+      detail: 'Trigger word already exists',
+    });
+  };
 
-  const { user_applications_locations, user_data } = useContext(AuthContext);
-  const { locations } = user_applications_locations.find(
-    (d) => d['id'] === 'trigger_words',
-  ) || { locations: [] };
-  // console.log(newTriggerWord);
+  const filteredData =
+    data &&
+    data.filter((d) =>
+      newTriggerWord.keyword_list.some(
+        (keyword) => d.progress_note && stemFiltering(d.progress_note, keyword),
+      ),
+    );
   return (
     <>
+      <Toast ref={toast} position="bottom-center" />
+
       <Button
         label="Add a New Trigger Word"
         icon="pi pi-plus"
@@ -78,9 +130,11 @@ export default function NewTriggerWordModal() {
       <Dialog
         header="Create a New Trigger Word"
         visible={isOpen}
+        dismissableMask
         style={{ width: '50vw' }}
         onHide={() => {
           if (!isOpen) return;
+          setNewTriggerWord(initialNewTrigger);
           setIsOpen(false);
         }}
         maximizable
@@ -88,10 +142,20 @@ export default function NewTriggerWordModal() {
         <form
           onSubmit={(e) => {
             e.preventDefault();
+            if (
+              trigger_words.some(
+                (d) =>
+                  stemmer(d.toLowerCase().trim()) ===
+                  stemmer(newTriggerWord.trigger_word.toLowerCase().trim()),
+              )
+            ) {
+              show();
+              return;
+            }
             addTemporary.mutate({
               trigger_word: newTriggerWord.trigger_word,
               facilities: newTriggerWord.internal_facility_id,
-              user_id: user_data.email,
+              // user_id: user_data.email,
               // from_to: newTriggerWord.date_range,
             });
             setIsOpen(false);
@@ -156,7 +220,8 @@ export default function NewTriggerWordModal() {
                 onChange={(e) => {
                   setNewTriggerWord((prev) => ({
                     ...prev,
-                    keyword_list: e.value || [],
+                    keyword_list:
+                      e.value?.map((d) => d.toLowerCase().trim()) || [],
                   }));
                 }}
                 allowDuplicate={false}
@@ -167,6 +232,31 @@ export default function NewTriggerWordModal() {
                 }}
               />
             </Field>
+            {newTriggerWord.keyword_list.length > 0 &&
+              filteredData.length > 0 && (
+                <>
+                  <p>{filteredData.length} Results Found</p>
+                  <DataTable
+                    value={filteredData}
+                    paginator
+                    rows={5}
+                    rowsPerPageOptions={[5, 10, 25, 50]}
+                  >
+                    <Column
+                      field="patient_name"
+                      header="Patient Name"
+                      body={patientNameTemplate}
+                    />
+                    <Column
+                      field="progress_note"
+                      header="Progress Note"
+                      body={progressNoteTemplate}
+                    />
+                  </DataTable>
+                </>
+              )}
+            {newTriggerWord.keyword_list.length > 0 &&
+              filteredData.length === 0 && <p>No Results Found</p>}
             <div className="flex gap-4 justify-end">
               <button
                 type="reset"

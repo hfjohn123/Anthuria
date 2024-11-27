@@ -1,7 +1,6 @@
 import DefaultLayout from '../../../layout/DefaultLayout.tsx';
 import axios from 'axios';
 import { useQuery } from '@tanstack/react-query';
-import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import { Cog6ToothIcon } from '@heroicons/react/24/outline';
 import SortDownIcon from '../../../images/icon/sort-down.svg';
 import SortUpIcon from '../../../images/icon/sort-up.svg';
@@ -35,7 +34,7 @@ import { AuthContext } from '../../../components/AuthWrapper.tsx';
 import NumberCards from '../../../components/Cards/NumberCards.tsx';
 import clsx from 'clsx';
 import Modal from '../../../components/Modal/Modal.tsx';
-import { Button, Input } from '@headlessui/react';
+import { Button } from '@headlessui/react';
 import filterSelectStyles from '../../../components/Select/filterSelectStyles.ts';
 import dateRangeFilterFn from '../../../common/dateRangeFilterFn.ts';
 import HyperLink from '../../../components/Basic/HyerLink.tsx';
@@ -48,6 +47,9 @@ import { useNavigate, useSearch } from '@tanstack/react-router';
 import SearchParams from '../../../types/SearchParams.ts';
 import DateTimeDropdown from '../../../components/Tables/DateTimeFilter/DateTimeDropdown.tsx';
 import NewTriggerWordModal from './NewTriggerWordModal.tsx';
+import DebouncedInputText from '../../../components/Forms/Input/DebouncedInputText.tsx';
+import { IconField } from 'primereact/iconfield';
+import { InputIcon } from 'primereact/inputicon';
 
 const predefinedTriggerWords = [
   'Fall',
@@ -607,23 +609,33 @@ export default function ReviewTriggers() {
         </div>
         <div className="grid grid-cols-12 ">
           <div className="col-span-12 sm:col-span-9 flex items-center"></div>
-          <NewTriggerWordModal />
+          <NewTriggerWordModal
+            data={data.data}
+            trigger_words={Array.from(
+              table
+                .getColumn('trigger_word')
+                ?.getFacetedUniqueValues()
+                .keys() ?? [],
+            ).map((v: string) => v.toLowerCase().trim())}
+          />
 
           <div className=" mt-5 col-span-12 bg-white dark:bg-boxdark shadow-default  ">
             <div className="sticky top-0 z-30 bg-white dark:bg-boxdark">
               <div className="flex items-center border-b border-stroke">
-                <MagnifyingGlassIcon className="size-5 text-body dark:text-bodydark mx-1" />
-                <Input
-                  onChange={(e) => {
-                    setTableState((prev) => ({
-                      ...prev,
-                      globalFilter: e.target.value,
-                    }));
-                  }}
-                  value={tableState.globalFilter}
-                  placeholder="Global Search"
-                  className=" w-full py-2 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                />
+                <IconField iconPosition="left" className=" flex-1">
+                  <InputIcon className="pi pi-search" />
+                  <DebouncedInputText
+                    setValue={(e) => {
+                      setTableState((prev) => ({
+                        ...prev,
+                        globalFilter: e.target.value,
+                      }));
+                    }}
+                    value={tableState.globalFilter}
+                    placeholder="Global Search..."
+                    className="w-full"
+                  />
+                </IconField>
                 <Button
                   type="button"
                   className="hover:text-primary"
