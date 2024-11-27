@@ -240,10 +240,10 @@ export default function NewTriggerWordModal({
                   }));
                 }}
                 allowDuplicate={false}
-                className="w-full mt-2 md:w-20rem"
+                className="w-full"
                 separator=","
                 pt={{
-                  container: () => 'flex flex-wrap gap-1.5 w-full',
+                  container: () => 'flex flex-wrap gap-1.5 w-full ',
                   token: () =>
                     clsx(highlightColors.map((d) => `has-[.${d}]:${d}`)),
                 }}
