@@ -16,6 +16,8 @@ import ShowMoreText from 'react-show-more-text';
 import { Toast } from 'primereact/toast';
 import stemFiltering from '../../../common/stemFiltering.ts';
 import { DataTable } from 'primereact/datatable';
+import highlightColors from '../../../common/highlightColors.ts';
+import clsx from 'clsx';
 
 const initialNewTrigger: {
   trigger_word: string;
@@ -46,6 +48,15 @@ const progressNoteTemplate = (d: TriggerFinal) => {
       {d.progress_note}
     </ShowMoreText>
   );
+};
+
+const getColorClass = (index: number) => {
+  return highlightColors[index % highlightColors.length];
+};
+
+const customTemplate = (item: string, result: string[]) => {
+  const index = result.indexOf(item);
+  return <span className={`${getColorClass(index)}`}>{item}</span>;
 };
 
 export default function NewTriggerWordModal({
@@ -164,6 +175,10 @@ export default function NewTriggerWordModal({
           className="px-4"
         >
           <div className="flex flex-col gap-6">
+            <p className="text-sm italic">
+              Info: Keywords search will be implemented in 20 minutes, semantic
+              search will be implemented tomorrow.
+            </p>
             <Field>
               <Label className="text-sm dark:text-bodydark2">
                 New Trigger Word
@@ -229,7 +244,12 @@ export default function NewTriggerWordModal({
                 separator=","
                 pt={{
                   container: () => 'flex flex-wrap gap-1.5 w-full',
+                  token: () =>
+                    clsx(highlightColors.map((d) => `has-[.${d}]:${d}`)),
                 }}
+                itemTemplate={(item) =>
+                  customTemplate(item, newTriggerWord.keyword_list)
+                }
               />
             </Field>
             {newTriggerWord.keyword_list.length > 0 &&

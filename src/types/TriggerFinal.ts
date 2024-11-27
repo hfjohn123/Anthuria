@@ -11,7 +11,7 @@ export type TriggerFinal = {
   revision_date: Date;
   progress_note: string;
   trigger_words: {
-    trigger_word: string;
+    trigger_word: string | null;
     summary: string;
     is_thumb_up?: boolean;
     update_time: Date;
