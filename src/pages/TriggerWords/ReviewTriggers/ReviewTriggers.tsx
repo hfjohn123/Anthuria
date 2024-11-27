@@ -1144,7 +1144,10 @@ export default function ReviewTriggers() {
             </div>
             <div className="relative flex-1 ">
               <table className="w-full border-b-2 border-b-stroke">
-                <thead className="bg-slate-50 dark:bg-graydark sticky top-18">
+                <thead
+                  className="bg-slate-50 dark:bg-graydark sticky "
+                  style={{ top: 'var(--filter-height, 0px)' }}
+                >
                   {table.getHeaderGroups().map((headerGroup) => (
                     <tr key={headerGroup.id}>
                       {headerGroup.headers.map((header) => {
