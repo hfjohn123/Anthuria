@@ -32,7 +32,8 @@ export default function KeywordModal({
           header={header}
           visible={visible}
           maximizable
-          style={{ width: '50vw' }}
+          resizable
+          className="w-[60rem]"
           dismissableMask
           onHide={() => {
             setVisible(false);

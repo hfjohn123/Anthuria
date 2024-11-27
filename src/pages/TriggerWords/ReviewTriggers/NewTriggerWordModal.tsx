@@ -142,7 +142,8 @@ export default function NewTriggerWordModal({
         header="Create a New Trigger Word"
         visible={isOpen}
         dismissableMask
-        style={{ width: '50vw' }}
+        resizable
+        className="w-[60rem]"
         onHide={() => {
           if (!isOpen) return;
           setNewTriggerWord(initialNewTrigger);
