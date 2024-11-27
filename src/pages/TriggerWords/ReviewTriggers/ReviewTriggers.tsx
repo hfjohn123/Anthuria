@@ -534,7 +534,7 @@ export default function ReviewTriggers() {
   }
   return (
     <DefaultLayout title={'Clinical Pulse'}>
-      <div className="flex flex-col gap-7 my-3 sm:my-9 max-w-screen-3xl sm:px-9 mx-auto ">
+      <div className="flex flex-col gap-7 my-3 sm:my-9 max-w-screen-3xl sm:px-9 mx-auto">
         <h1 className="text-2xl font-bold">Review Triggers</h1>
         <div className="grid xl:grid-cols-4 grid-cols-3 sm:gap-3 ">
           {predefinedTriggerWords.map((word) => (
@@ -619,10 +619,10 @@ export default function ReviewTriggers() {
             ).map((v: string) => v.toLowerCase().trim())}
           />
 
-          <div className=" mt-5 col-span-12 bg-white dark:bg-boxdark shadow-default  ">
-            <div className="sticky top-0 z-30 bg-white dark:bg-boxdark">
+          <div className=" mt-5 col-span-12 bg-white dark:bg-boxdark shadow-default  overflow-x-auto sm:overflow-clip  ">
+            <div className="sticky top-0 left-0 z-30 bg-white dark:bg-boxdark">
               <div className="flex items-center border-b border-stroke">
-                <IconField iconPosition="left" className=" flex-1">
+                <IconField iconPosition="left" className=" flex-1 py-1 px-1">
                   <InputIcon className="pi pi-search" />
                   <DebouncedInputText
                     setValue={(e) => {
