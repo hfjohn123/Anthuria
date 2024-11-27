@@ -4,8 +4,7 @@ import {
   Table,
   TableState,
 } from '@tanstack/react-table';
-import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
-import { Button, Input } from '@headlessui/react';
+import { Button } from '@headlessui/react';
 
 import SortUpIcon from '../../images/icon/sort-up.svg';
 import SortDownIcon from '../../images/icon/sort-down.svg';
@@ -17,6 +16,9 @@ import exportExcel from '../../common/excelExport.ts';
 import { DownloadSimple } from '@phosphor-icons/react';
 import TableSettingModal from './TableSettingModal.tsx';
 import Filters from './Filters.tsx';
+import { IconField } from 'primereact/iconfield';
+import { InputIcon } from 'primereact/inputicon';
+import DebouncedInputText from '../Forms/Input/DebouncedInputText.tsx';
 
 export default function TableWrapper({
   table,
@@ -150,21 +152,23 @@ export default function TableWrapper({
       {filters && (
         <div
           ref={filterRef}
-          className="sticky  top-0 left-0 flex-none bg-white dark:bg-boxdark z-30"
+          className="sticky  top-0 left-0 flex-none bg-white dark:bg-boxdark z-30 "
         >
-          <div className="flex items-center border-b border-stroke">
-            <MagnifyingGlassIcon className="size-5 text-body dark:text-bodydark mx-1" />
-            <Input
-              onChange={(e) => {
-                setTableState((prev) => ({
-                  ...prev,
-                  globalFilter: e.target.value,
-                }));
-              }}
-              value={tableState.globalFilter}
-              placeholder="Global Search"
-              className=" w-full py-2 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-            />
+          <div className="flex items-center border-b border-stroke py-1 px-1 ">
+            <IconField iconPosition="left" className=" flex-1 ">
+              <InputIcon className="pi pi-search" />
+              <DebouncedInputText
+                setValue={(e) => {
+                  setTableState((prev) => ({
+                    ...prev,
+                    globalFilter: e.target.value,
+                  }));
+                }}
+                value={tableState.globalFilter}
+                placeholder="Global Search..."
+                className="w-full "
+              />
+            </IconField>
             {download && (
               <Button
                 type="button"
