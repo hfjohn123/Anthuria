@@ -19,3 +19,18 @@ export type TriggerFinal = {
     event_ids: number[];
   }[];
 };
+
+export type TriggerAPI = {
+  data: TriggerFinal[];
+  keywords: {
+    trigger_word: string;
+    key_word: string;
+  }[];
+  self_defined_keywords?:
+    | {
+        trigger_word: string;
+        keyword_list: string[];
+        internal_facility_id: string[];
+      }[]
+    | null;
+};

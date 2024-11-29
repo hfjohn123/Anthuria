@@ -1,4 +1,5 @@
 import KeywordModal from '../../pages/TriggerWords/ReviewTriggers/KeywordModal.tsx';
+import UpdateKeywordModal from '../../pages/TriggerWords/ReviewTriggers/UpdateKeywordModal.tsx';
 
 export default function NumberCards({
   className,
@@ -7,6 +8,10 @@ export default function NumberCards({
   onClick,
   keywordModal = false,
   keywordList = [],
+  editable = false,
+  data,
+  trigger_words = [],
+  initialNewTrigger,
   ...props
 }: {
   className?: string;
@@ -16,7 +21,28 @@ export default function NumberCards({
   keywordList?: string[];
   onClick?: () => void;
   [key: string]: any;
-}) {
+} & (
+  | {
+      editable: true;
+      data: any;
+      trigger_words: string[];
+      initialNewTrigger: {
+        trigger_word: string;
+        internal_facility_id: string[];
+        keyword_list: string[];
+      };
+    }
+  | {
+      editable?: false;
+      data?: any;
+      trigger_words?: string[];
+      initialNewTrigger?: {
+        trigger_word: string;
+        internal_facility_id: string[];
+        keyword_list: string[];
+      };
+    }
+)) {
   return (
     <div
       className={
@@ -27,9 +53,17 @@ export default function NumberCards({
       {...props}
       onClick={onClick}
     >
-      {keywordModal && (
+      {keywordModal && !editable && (
         <KeywordModal
           keywordList={keywordList}
+          header={'Keywords for ' + title}
+        />
+      )}
+      {keywordModal && editable && initialNewTrigger && (
+        <UpdateKeywordModal
+          data={data}
+          trigger_words={trigger_words}
+          initialNewTrigger={initialNewTrigger}
           header={'Keywords for ' + title}
         />
       )}

@@ -1,6 +1,6 @@
 import DefaultLayout from '../../../layout/DefaultLayout.tsx';
 import axios from 'axios';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, UseQueryResult } from '@tanstack/react-query';
 import { Cog6ToothIcon } from '@heroicons/react/24/outline';
 import SortDownIcon from '../../../images/icon/sort-down.svg';
 import SortUpIcon from '../../../images/icon/sort-up.svg';
@@ -39,7 +39,7 @@ import filterSelectStyles from '../../../components/Select/filterSelectStyles.ts
 import dateRangeFilterFn from '../../../common/dateRangeFilterFn.ts';
 import HyperLink from '../../../components/Basic/HyerLink.tsx';
 import { DownloadSimple } from '@phosphor-icons/react';
-import { TriggerFinal } from '../../../types/TriggerFinal.ts';
+import { TriggerAPI, TriggerFinal } from '../../../types/TriggerFinal.ts';
 import PageNavigation from '../../../components/Tables/PageNavigation.tsx';
 import exportExcel from '../../../common/excelExport.ts';
 import TriggerNoteDetail from './TriggerNoteDetail.tsx';
@@ -110,7 +110,7 @@ const initialTableState: TableState = {
           trigger_word: true,
           progress_note: false,
           summary: false,
-          update_time: false,
+          // update_time: false,
           has_events: false,
           has_reviewed: false,
         }
@@ -125,7 +125,7 @@ const initialTableState: TableState = {
           trigger_word: true,
           progress_note: false,
           summary: false,
-          update_time: false,
+          // update_time: false,
           has_events: false,
           has_reviewed: false,
         },
@@ -136,7 +136,10 @@ const initialTableState: TableState = {
 };
 
 export default function ReviewTriggers() {
-  const { route } = useContext(AuthContext);
+  const { route, user_applications_locations } = useContext(AuthContext);
+  const { locations } = user_applications_locations.find(
+    (d) => d['id'] === 'trigger_words',
+  ) || { locations: [] };
 
   const [additionalFilters, setAdditionalFilters] = useState<{
     label: string;
@@ -158,17 +161,23 @@ export default function ReviewTriggers() {
     let params: { [key: string]: any } = {};
     if (includeCreatedDate) {
       const today = new Date();
-      const twoWeeksAgo = new Date(today.getTime() - 1000 * 60 * 60 * 24 * 14);
-      twoWeeksAgo.setHours(0, 0, 0, 0);
+      const twentyFourhAgo = new Date(today.getTime() - 1000 * 60 * 60 * 24);
+      // twentyFourhAgo.setHours(0, 0, 0, 0);
       today.setHours(23, 59, 59, 999);
-      params = { from_date: twoWeeksAgo, to_date: today };
+      params = { from_date: twentyFourhAgo, to_date: today };
     }
 
     const response = await axios.get(`${route}/trigger_final`, { params });
     return response.data;
   };
 
-  const { isPending, isError, data, error, refetch } = useQuery({
+  const {
+    isPending,
+    isError,
+    data,
+    error,
+    refetch,
+  }: UseQueryResult<TriggerAPI, unknown> = useQuery({
     queryKey: ['trigger_word_view_trigger_word_detail_final', route],
     queryFn: fetchTriggerWord,
   });
@@ -335,31 +344,31 @@ export default function ReviewTriggers() {
           excelWidth: 80,
         },
       },
-      {
-        accessorKey: 'update_time',
-        accessorFn: (row) =>
-          new Date(
-            Math.max(
-              ...row.trigger_words.map((d) =>
-                new Date(d.update_time).getTime(),
-              ),
-            ),
-          ).toISOString(),
-        header: 'Update Time',
-        meta: { type: 'daterange', wrap: false },
-        cell: (info) => {
-          const date = new Date(info.getValue() as string | number | Date);
-          return `${date.toLocaleDateString()} ${date.toLocaleTimeString(
-            navigator.language,
-            {
-              hour: '2-digit',
-              minute: '2-digit',
-            },
-          )}`;
-        },
-        sortingFn: 'datetime',
-        filterFn: dateRangeFilterFn,
-      },
+      // {
+      //   accessorKey: 'update_time',
+      //   accessorFn: (row) =>
+      //     new Date(
+      //       Math.max(
+      //         ...row.trigger_words.map((d) =>
+      //           new Date(d.update_time).getTime(),
+      //         ),
+      //       ),
+      //     ).toISOString(),
+      //   header: 'Update Time',
+      //   meta: { type: 'daterange', wrap: false },
+      //   cell: (info) => {
+      //     const date = new Date(info.getValue() as string | number | Date);
+      //     return `${date.toLocaleDateString()} ${date.toLocaleTimeString(
+      //       navigator.language,
+      //       {
+      //         hour: '2-digit',
+      //         minute: '2-digit',
+      //       },
+      //     )}`;
+      //   },
+      //   sortingFn: 'datetime',
+      //   filterFn: dateRangeFilterFn,
+      // },
       {
         accessorKey: 'has_events',
         header: 'Events Associated',
@@ -414,7 +423,7 @@ export default function ReviewTriggers() {
   }, []);
 
   const table = useReactTable({
-    data: data && data.data,
+    data: data?.data ?? [],
     columns,
     state: tableState,
 
@@ -489,6 +498,7 @@ export default function ReviewTriggers() {
 
   useEffect(() => {
     const searchParams: SearchParams = {};
+
     tableState.columnFilters.forEach((filter) => {
       if (filter.id !== 'patient_name') {
         if (filter.value) {
@@ -530,7 +540,11 @@ export default function ReviewTriggers() {
     return <Loader />;
   }
   if (isError) {
-    return <div>Error: {error.message}</div>;
+    if (error instanceof Error) {
+      return <div>Error: {error.message}</div>;
+    } else {
+      return <div>Error: Unknown error</div>;
+    }
   }
   return (
     <DefaultLayout title={'Clinical Pulse'}>
@@ -606,17 +620,96 @@ export default function ReviewTriggers() {
               }}
             />
           ))}
+          {data?.self_defined_keywords &&
+            data.self_defined_keywords
+              .filter((kw) =>
+                kw.internal_facility_id.some((id) =>
+                  locations.map((loc) => loc.internal_facility_id).includes(id),
+                ),
+              )
+              .map((kw) => {
+                const new_kw = {
+                  trigger_word: kw.trigger_word,
+                  internal_facility_id: kw.internal_facility_id.filter((id) =>
+                    locations
+                      .map((loc) => loc.internal_facility_id)
+                      .includes(id),
+                  ),
+                  keyword_list: kw.keyword_list,
+                };
+                return (
+                  <NumberCards
+                    keywordModal
+                    editable
+                    title={kw.trigger_word}
+                    value={
+                      table
+                        .getColumn('trigger_word')
+                        ?.getFacetedUniqueValues()
+                        .get(kw.trigger_word) || 0
+                    }
+                    key={kw.trigger_word}
+                    className={clsx(
+                      'col-span-1',
+                      'cursor-pointer',
+                      (
+                        (tableState.columnFilters.find(
+                          ({ id }) => id === 'trigger_word',
+                        )?.value as string[]) || []
+                      ).includes(kw.trigger_word)
+                        ? 'bg-slate-200 dark:bg-slate-600 '
+                        : 'bg-white dark:bg-boxdark hover:bg-slate-100 hover:dark:bg-slate-700',
+                    )}
+                    onClick={() => {
+                      let filter =
+                        (tableState.columnFilters.find(
+                          ({ id }) => id === 'trigger_word',
+                        )?.value as string[]) || [];
+                      if (filter.includes(kw.trigger_word)) {
+                        filter = filter.filter((f) => f !== kw.trigger_word);
+                      } else {
+                        filter.push(kw.trigger_word);
+                      }
+                      if (filter.length === 0) {
+                        setTableState((prev) => ({
+                          ...prev,
+                          columnFilters: prev.columnFilters.filter(
+                            ({ id }) => id !== 'trigger_word',
+                          ),
+                        }));
+                        return;
+                      }
+                      setTableState((prev) => ({
+                        ...prev,
+                        columnFilters: [
+                          ...prev.columnFilters.filter(
+                            ({ id }) => id !== 'trigger_word',
+                          ),
+                          {
+                            id: 'trigger_word',
+                            value: filter,
+                          },
+                        ],
+                      }));
+                    }}
+                    initialNewTrigger={new_kw}
+                    trigger_words={predefinedTriggerWords.concat(
+                      data.self_defined_keywords?.map(
+                        (kw) => kw.trigger_word,
+                      ) ?? [],
+                    )}
+                    data={data.data}
+                  />
+                );
+              })}
         </div>
         <div className="grid grid-cols-12 ">
           <div className="col-span-12 sm:col-span-9 flex items-center"></div>
           <NewTriggerWordModal
             data={data.data}
-            trigger_words={Array.from(
-              table
-                .getColumn('trigger_word')
-                ?.getFacetedUniqueValues()
-                .keys() ?? [],
-            ).map((v: string) => v.toLowerCase().trim())}
+            trigger_words={predefinedTriggerWords.concat(
+              data.self_defined_keywords?.map((kw) => kw.trigger_word) ?? [],
+            )}
           />
 
           <div className=" mt-5 col-span-12 bg-white dark:bg-boxdark shadow-default  overflow-x-auto sm:overflow-clip  ">
@@ -879,6 +972,30 @@ export default function ReviewTriggers() {
                             ),
                           }))
                         }
+                        minDate={
+                          new Date(
+                            table
+                              .getColumn(filter)
+                              ?.getFacetedMinMaxValues()
+                              ?.flat()
+                              ?.filter((d) => d !== null)[0] ?? '',
+                          )
+                        }
+                        maxDate={
+                          new Date(
+                            table
+                              .getColumn(filter)
+                              ?.getFacetedMinMaxValues()
+                              ?.flat()
+                              ?.filter((d) => d !== null)[
+                              (table
+                                .getColumn(filter)
+                                ?.getFacetedMinMaxValues()
+                                ?.flat()
+                                ?.filter((d) => d !== null)?.length ?? 1) - 1
+                            ] ?? '',
+                          )
+                        }
                       />
                     ) : null,
                   )}
@@ -1062,6 +1179,30 @@ export default function ReviewTriggers() {
                                 (f) => f.id !== filter.id,
                               ),
                             }))
+                          }
+                          minDate={
+                            new Date(
+                              table
+                                .getColumn(filter.id)
+                                ?.getFacetedMinMaxValues()
+                                ?.flat()
+                                ?.filter((d) => d !== null)[0] ?? '',
+                            )
+                          }
+                          maxDate={
+                            new Date(
+                              table
+                                .getColumn(filter.id)
+                                ?.getFacetedMinMaxValues()
+                                ?.flat()
+                                ?.filter((d) => d !== null)[
+                                (table
+                                  .getColumn(filter.id)
+                                  ?.getFacetedMinMaxValues()
+                                  ?.flat()
+                                  ?.filter((d) => d !== null)?.length ?? 1) - 1
+                              ] ?? '',
+                            )
                           }
                         />
                       ) : null,
