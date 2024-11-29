@@ -189,7 +189,7 @@ export default function EvidenceModal({ icd10 }: { icd10: SuggestedICD10 }) {
                       <NTAProgressNote progress_note={item} />
                     </div>
                   );
-                if (item.source_category !== 'P')
+                if (item.source_category !== 'P' || !item.highlights)
                   return (
                     <div
                       key={item.source_category + item.source_id}
