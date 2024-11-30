@@ -51,7 +51,7 @@ export default function UpdateKeywordModal({
           visible={isOpen}
           dismissableMask
           resizable
-          className="w-[60rem]"
+          className="w-[60rem] overflow-hidden"
           onHide={() => {
             if (!isOpen) return;
             setIsOpen(false);
