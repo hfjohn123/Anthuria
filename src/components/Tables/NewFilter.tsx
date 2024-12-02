@@ -170,7 +170,6 @@ export default function NewFilter({
                               )?.value as string) || ''
                             }
                             onChange={(e: { target: { value: string } }) => {
-                              console.log(tableState.columnFilters);
                               setTableState((prev) => ({
                                 ...prev,
                                 columnFilters: prev.columnFilters

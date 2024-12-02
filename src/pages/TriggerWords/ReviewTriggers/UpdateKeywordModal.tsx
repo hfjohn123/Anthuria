@@ -57,7 +57,6 @@ export default function UpdateKeywordModal({
             setIsOpen(false);
           }}
           onClick={(event) => {
-            console.log(event);
             if (
               !(event.target as HTMLElement).className.includes('p-multiselect')
             ) {

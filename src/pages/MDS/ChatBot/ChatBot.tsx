@@ -63,7 +63,6 @@ export default function MDSChatBot() {
       handleSubmit(formEvent as unknown as FormEvent<HTMLFormElement>);
     }
   };
-  console.log(messages);
 
   useEffect(() => {
     scrollToBottom();
