@@ -7,7 +7,6 @@ import 'react-datepicker/dist/react-datepicker.css';
 import stemmedFilter from '../../../components/Tables/stemmedFilter.ts';
 import {
   ColumnDef,
-  ColumnFiltersState,
   getCoreRowModel,
   getExpandedRowModel,
   getFacetedRowModel,
@@ -26,8 +25,7 @@ import dateRangeFilterFn from '../../../common/dateRangeFilterFn.ts';
 import HyperLink from '../../../components/Basic/HyerLink.tsx';
 import { TriggerAPI, TriggerFinal } from '../../../types/TriggerFinal.ts';
 import TriggerNoteDetail from './TriggerNoteDetail.tsx';
-import { useNavigate, useSearch } from '@tanstack/react-router';
-import SearchParams from '../../../types/SearchParams.ts';
+import { useSearch } from '@tanstack/react-router';
 import NewTriggerWordModal from './NewTriggerWordModal.tsx';
 import TableWrapper from '../../../components/Tables/TableWrapper.tsx';
 
@@ -120,9 +118,7 @@ export default function ReviewTriggers() {
   const { locations } = user_applications_locations.find(
     (d) => d['id'] === 'trigger_words',
   ) || { locations: [] };
-  const navigate = useNavigate({
-    from: '/trigger-words/review-triggers',
-  });
+
   const search = useSearch({
     from: '/trigger-words/review-triggers',
   });
@@ -139,8 +135,13 @@ export default function ReviewTriggers() {
       // twentyFourhAgo.setHours(0, 0, 0, 0);
       today.setHours(23, 59, 59, 999);
       params = { from_date: twentyFourhAgo, to_date: today };
+    } else {
+      const today = new Date();
+      const twoWeeksAgo = new Date(today.getTime() - 1000 * 60 * 60 * 24 * 14);
+      twoWeeksAgo.setHours(0, 0, 0, 0);
+      today.setHours(23, 59, 59, 999);
+      params = { from_date: twoWeeksAgo, to_date: today };
     }
-
     const response = await axios.get(`${route}/trigger_final`, { params });
     return response.data;
   };
@@ -392,6 +393,7 @@ export default function ReviewTriggers() {
     getFacetedMinMaxValues: getFacetedMinMaxValues(), // generate min/max values for numeric range filter
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    manualFiltering: includeCreatedDate,
   });
 
   useEffect(() => {
@@ -404,86 +406,6 @@ export default function ReviewTriggers() {
   useEffect(() => {
     refetch().finally(() => setIsRefetching(false));
   }, [includeCreatedDate, refetch]);
-
-  useEffect(() => {
-    const initialFilters: ColumnFiltersState = [];
-
-    Object.entries(search).forEach(([key, value]) => {
-      if (value && key !== 'history') {
-        if (value === 'yesterday') {
-          value = [new Date(Date.now() - 1000 * 60 * 60 * 24), new Date()];
-        } else if (value === 'last_3_days') {
-          value = [new Date(Date.now() - 1000 * 60 * 60 * 24 * 3), new Date()];
-        } else if (value === 'last_7_days') {
-          value = [new Date(Date.now() - 1000 * 60 * 60 * 24 * 7), new Date()];
-        } else if (
-          (value as string).startsWith('[') &&
-          (value as string).endsWith(']')
-        ) {
-          value = (value as string)
-            .substring(1, (value as string).length - 1)
-            .split(',');
-          if (
-            !isNaN(parseInt((value as string[])[0])) &&
-            new Date(parseInt((value as string[])[0])).getTime() > 0
-          ) {
-            value = (value as string[]).map(
-              (v) => new Date(parseInt(v as string)),
-            );
-          }
-        }
-        initialFilters.push({
-          id: key,
-          value: value,
-        });
-      }
-    });
-
-    setTableState((prev) => ({
-      ...prev,
-      columnFilters: initialFilters,
-    }));
-  }, []);
-
-  useEffect(() => {
-    const searchParams: SearchParams = {};
-
-    tableState.columnFilters.forEach((filter) => {
-      if (filter.id !== 'patient_name') {
-        if (filter.value) {
-          // Handle array values
-          if (Array.isArray(filter.value)) {
-            searchParams[filter.id] = `[${filter.value
-              .map((v) => {
-                if (v instanceof Date) {
-                  return v.getTime();
-                } else {
-                  return v;
-                }
-              })
-              .toString()}]`;
-          } else {
-            searchParams[filter.id] = filter.value.toString();
-          }
-        }
-      }
-    });
-
-    navigate({
-      search: {
-        ...searchParams,
-        history: search['history'],
-      },
-      replace: true,
-    });
-    setTableState((prev) => ({
-      ...prev,
-      pagination: {
-        pageIndex: 0,
-        pageSize: prev.pagination.pageSize,
-      },
-    }));
-  }, [tableState.columnFilters, tableState.globalFilter]);
 
   if (isPending || isRefetching) {
     return <Loader />;
@@ -673,7 +595,7 @@ export default function ReviewTriggers() {
               initialTableState={initialTableState}
               hasHistory={true}
               setIsRefetching={setIsRefetching}
-              includeCreatedDate={true}
+              includeCreatedDate={includeCreatedDate}
               setIncludeCreatedDate={setIncludeCreatedDate}
             />
           </div>

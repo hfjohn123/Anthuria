@@ -59,7 +59,7 @@ export default function TableWrapper({
     const initialFilters: ColumnFiltersState = [];
 
     Object.entries(search).forEach(([key, value]) => {
-      if (value) {
+      if (value && value instanceof String) {
         if (value === 'yesterday') {
           value = [new Date(Date.now() - 1000 * 60 * 60 * 24), new Date()];
         } else if (value === 'last_3_days') {
@@ -134,8 +134,11 @@ export default function TableWrapper({
     });
 
     navigate({
-      // @ts-expect-error TS2339: Property 'search' does not exist on type 'SearchParams'.
-      search: searchParams,
+      search: {
+        ...searchParams,
+        // @ts-expect-error TS2339: Property 'search' does not exist on type 'SearchParams'.
+        history: search['history'],
+      },
       replace: true,
     });
     setTableState((prev) => ({
