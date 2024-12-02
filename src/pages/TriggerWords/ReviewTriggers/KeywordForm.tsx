@@ -12,7 +12,6 @@ import { Field, Label } from '@headlessui/react';
 import { InputText } from 'primereact/inputtext';
 import { MultiSelect } from 'primereact/multiselect';
 import { Chips } from 'primereact/chips';
-import clsx from 'clsx';
 import highlightColors from '../../../common/highlightColors.ts';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
@@ -285,7 +284,8 @@ const KeywordForm = forwardRef<
             separator=","
             pt={{
               container: () => 'flex flex-wrap gap-1.5 w-full ',
-              token: () => clsx(highlightColors.map((d) => `has-[.${d}]:${d}`)),
+              token: () =>
+                'has-[.bg-yellow-200]:bg-yellow-200 has-[.bg-green-200]:bg-green-200 has-[.bg-blue-200]:bg-blue-200 has-[.bg-pink-200]:bg-pink-200 has-[.bg-purple-200]:bg-purple-200 has-[.bg-orange-200]:bg-orange-200',
             }}
             itemTemplate={(item) =>
               customTemplate(item, newTriggerWord.keyword_list)
