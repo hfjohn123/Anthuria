@@ -3,6 +3,8 @@ import { useContext, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { AuthContext } from '../AuthWrapper.tsx';
 import usePutComment from '../../hooks/interface/usePutComment.ts';
+import { InputTextarea } from 'primereact/inputtextarea';
+import { FloatLabel } from 'primereact/floatlabel';
 
 export default function CommentForm({
   comment,
@@ -21,7 +23,7 @@ export default function CommentForm({
   const putComment = usePutComment(route, queryClient);
   return (
     <form
-      className="flex flex-col gap-5 justify-center w-full sm:w-[480px] px-4"
+      className="flex flex-col gap-5 justify-center w-full px-4"
       autoFocus
       onSubmit={(e) => {
         e.preventDefault();
@@ -36,9 +38,8 @@ export default function CommentForm({
         setIsOpen(false);
       }}
     >
-      <Field>
-        <Label className="mb-1">Comment</Label>
-        <Textarea
+      <FloatLabel className="mt-7">
+        <InputTextarea
           className="w-full border border-stroke rounded-md focus:outline-primary p-2 dark:bg-boxdark dark:border-strokedark dark:outline-secondary"
           value={commentState.comment}
           onChange={(e) => {
@@ -47,9 +48,12 @@ export default function CommentForm({
               comment: e.target.value,
             }));
           }}
+          autoResize
+          rows={5}
           placeholder="Please Enter Your Comment Here"
         />
-      </Field>
+        <label>Comment</label>
+      </FloatLabel>
       <div className="flex gap-4 justify-end">
         <button
           type="reset"

@@ -208,7 +208,7 @@ export default function TableWrapper({
       <div className="flex-1 relative">
         <table className="w-full border-b-2 border-b-stroke ">
           <thead
-            className="bg-slate-50 dark:bg-graydark sticky z-20"
+            className="bg-slate-50 dark:bg-graydark sticky z-1"
             style={filters ? { top: 'var(--filter-height, 0px)' } : { top: 0 }}
           >
             {table.getHeaderGroups().map((headerGroup) => (
@@ -218,7 +218,7 @@ export default function TableWrapper({
                     <th
                       key={header.id}
                       colSpan={header.colSpan}
-                      className="py-3 shadow-table_header  shadow-stroke z-20 px-3  text-left select-none group whitespace-nowrap "
+                      className="py-3 shadow-table_header  shadow-stroke z-1 px-3  text-left select-none group whitespace-nowrap "
                       onClick={header.column.getToggleSortingHandler()}
                       role="button"
                     >

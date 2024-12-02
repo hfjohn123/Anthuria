@@ -25,8 +25,8 @@ export default function HyperLink({
           data-tooltip-content={tooltip_content}
           onClick={(event) => event.stopPropagation()}
           className={
-            className +
-            ' flex gap-1 items-center flex-nowrap underline HyperLink'
+            ' flex gap-1 items-center flex-nowrap underline HyperLink p-button bg-transparent border-none text-body dark:text-bodydark p-0 text-sm' +
+            className
           }
           {...props}
         >

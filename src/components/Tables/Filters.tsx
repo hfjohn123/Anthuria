@@ -54,6 +54,7 @@ export default function Filters({
               placeholder={table.getColumn(filter)?.columnDef.header as string}
               closeMenuOnSelect={false}
               hideSelectedOptions={false}
+              menuPortalTarget={document.body}
               components={{
                 IndicatorSeparator: () => null,
                 ValueContainer: FilterValueContainer,
@@ -223,6 +224,7 @@ export default function Filters({
                 placeholder={
                   table.getColumn(filter.id)?.columnDef?.header as string
                 }
+                menuPortalTarget={document.body}
                 closeMenuOnSelect={false}
                 hideSelectedOptions={false}
                 defaultMenuIsOpen={true}
@@ -405,6 +407,7 @@ export default function Filters({
           isMulti={false}
           closeMenuOnSelect={true}
           hideSelectedOptions={true}
+          menuPortalTarget={document.body}
           components={{ IndicatorSeparator: () => null }}
           value={null}
           options={table
