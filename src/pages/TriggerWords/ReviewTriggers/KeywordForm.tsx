@@ -7,7 +7,6 @@ import { forwardRef, RefObject, useContext, useState } from 'react';
 import { AuthContext } from '../../../components/AuthWrapper.tsx';
 import { Toast } from 'primereact/toast';
 import { TriggerFinal } from '../../../types/TriggerFinal.ts';
-import ShowMoreText from 'react-show-more-text';
 import { Field, Label } from '@headlessui/react';
 import { InputText } from 'primereact/inputtext';
 import { MultiSelect } from 'primereact/multiselect';
@@ -15,6 +14,8 @@ import { Chips } from 'primereact/chips';
 import highlightColors from '../../../common/highlightColors.ts';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
+import highlightGenerator from '../../../common/highlightGenerator.ts';
+import LineClampShowMore from '../../../common/LineClampShowMore.tsx';
 
 const getColorClass = (index: number) => {
   return highlightColors[index % highlightColors.length];
@@ -24,6 +25,33 @@ const customTemplate = (item: string, result: string[]) => {
   const index = result.indexOf(item);
   return <span className={`${getColorClass(index)}`}>{item}</span>;
 };
+const progressNoteTemplate = ({
+  d,
+  keywordList,
+}: {
+  d: TriggerFinal;
+  keywordList: string[];
+}) => {
+  return (
+    <LineClampShowMore className="whitespace-pre-line">
+      {highlightGenerator(d.progress_note, keywordList).map(
+        (segment, index) => (
+          <span
+            key={index}
+            className={
+              segment.isMatch && segment.termIndex !== undefined
+                ? `${highlightColors[segment.termIndex % highlightColors.length]} px-1 rounded`
+                : ''
+            }
+            title={segment.isMatch ? `Match: ${segment.term}` : undefined}
+          >
+            {segment.text}
+          </span>
+        ),
+      )}
+    </LineClampShowMore>
+  );
+};
 
 const patientNameTemplate = (d: TriggerFinal) => {
   return (
@@ -31,18 +59,6 @@ const patientNameTemplate = (d: TriggerFinal) => {
       <p>{d.patient_name}</p>
       <p className="text-body-2">{d.facility_name}</p>
     </div>
-  );
-};
-
-const progressNoteTemplate = (d: TriggerFinal) => {
-  return (
-    <ShowMoreText
-      className="whitespace-pre-line"
-      keepNewLines
-      anchorClass="text-primary cursor-pointer block dark:text-secondary "
-    >
-      {d.progress_note}
-    </ShowMoreText>
   );
 };
 
@@ -309,7 +325,12 @@ const KeywordForm = forwardRef<
               <Column
                 field="progress_note"
                 header="Progress Note"
-                body={progressNoteTemplate}
+                body={(d) =>
+                  progressNoteTemplate({
+                    keywordList: newTriggerWord.keyword_list,
+                    d,
+                  })
+                }
               />
             </DataTable>
           </>
