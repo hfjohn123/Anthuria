@@ -188,6 +188,14 @@ const KeywordForm = forwardRef<
           callback?.();
           return;
         }
+        if (newTriggerWord.internal_facility_id.length === 0) {
+          toast.current?.show({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Please add at least one facility',
+          });
+          return;
+        }
         if (
           trigger_words
             .filter((d) => d !== initialNewTrigger.trigger_word)
@@ -258,7 +266,6 @@ const KeywordForm = forwardRef<
         <Field className="flex flex-col">
           <Label className="text-sm dark:text-bodydark2">Facility</Label>
           <MultiSelect
-            required
             value={newTriggerWord.internal_facility_id}
             optionLabel="label"
             optionValue="value"
