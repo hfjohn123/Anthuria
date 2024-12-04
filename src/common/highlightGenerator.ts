@@ -35,24 +35,18 @@ export default function highlightGenerator(
           return;
         }
 
-        // Create regex pattern from search term
-        const escapedTerm = searchTerm
-          .replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')
-          .replace(/\s+/g, '[\\s\\n]+');
-
-        // Modified regex to match only the containing sentence
-        const regex = new RegExp(
-          `(?<=^|[.!?]\\s+)([^.!?\\n]+?${escapedTerm}[^.!?\\n]*[.!?])`,
-          'gi',
-        );
+        // Split text into segments at sentence boundaries or line breaks
+        const regex = new RegExp('([^.!?\n]+(?:[.!?](?=\\s|$)|\\n|$))', 'gi');
 
         const text = segment.text;
         let lastIndex = 0;
         let match;
 
         while ((match = regex.exec(text)) !== null) {
-          // Verify match with stemming
-          if (stemFiltering(match[1].trim(), searchTerm)) {
+          const matchedText = match[1];
+
+          // Use stemFiltering to check for matches
+          if (stemFiltering(matchedText, searchTerm)) {
             // Add non-matching text before match
             if (match.index > lastIndex) {
               newSegments.push({
@@ -64,17 +58,28 @@ export default function highlightGenerator(
 
             // Add matching text
             newSegments.push({
-              text: match[1],
+              text: matchedText,
               isMatch: true,
               term: searchTerm,
               termIndex,
             });
 
-            lastIndex = match.index + match[1].length;
-          }
-          // Prevent infinite loop for zero-length matches
-          if (match.index === regex.lastIndex) {
-            regex.lastIndex++;
+            lastIndex = match.index + matchedText.length;
+          } else {
+            // If no match, add as non-matching segment
+            if (match.index > lastIndex) {
+              newSegments.push({
+                text: text.slice(lastIndex, match.index),
+                isMatch: false,
+                term: null,
+              });
+            }
+            newSegments.push({
+              text: matchedText,
+              isMatch: false,
+              term: null,
+            });
+            lastIndex = match.index + matchedText.length;
           }
         }
 
