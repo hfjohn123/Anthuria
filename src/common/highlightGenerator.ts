@@ -38,8 +38,13 @@ export default function highlightGenerator(
         // Create regex pattern from search term
         const escapedTerm = searchTerm
           .replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')
-          .replace(/\s+/g, '\\s+');
-        const regex = new RegExp(`(${escapedTerm})`, 'gi');
+          .replace(/\s+/g, '[\\s\\n]+');
+
+        // Modified regex to match only the containing sentence
+        const regex = new RegExp(
+          `(?<=^|[.!?]\\s+)([^.!?\\n]+?${escapedTerm}[^.!?\\n]*[.!?])`,
+          'gi',
+        );
 
         const text = segment.text;
         let lastIndex = 0;
@@ -47,7 +52,7 @@ export default function highlightGenerator(
 
         while ((match = regex.exec(text)) !== null) {
           // Verify match with stemming
-          if (stemFiltering(match[0], searchTerm)) {
+          if (stemFiltering(match[1].trim(), searchTerm)) {
             // Add non-matching text before match
             if (match.index > lastIndex) {
               newSegments.push({
@@ -59,13 +64,13 @@ export default function highlightGenerator(
 
             // Add matching text
             newSegments.push({
-              text: match[0],
+              text: match[1],
               isMatch: true,
               term: searchTerm,
               termIndex,
             });
 
-            lastIndex = match.index + match[0].length;
+            lastIndex = match.index + match[1].length;
           }
           // Prevent infinite loop for zero-length matches
           if (match.index === regex.lastIndex) {

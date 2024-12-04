@@ -1,4 +1,4 @@
-import { ReactNode, useState } from 'react';
+import { ReactNode, useState, useRef, useEffect } from 'react';
 
 export default function LineClampShowMore({
   maxLines = 6,
@@ -10,23 +10,54 @@ export default function LineClampShowMore({
   children: ReactNode;
 }) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [showButton, setShowButton] = useState(false);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const checkOverflow = () => {
+      const content = contentRef.current;
+      if (content) {
+        // Calculate line height and compare with content scroll height
+        const style = window.getComputedStyle(content);
+        const lineHeight = parseInt(style.lineHeight);
+        const maxHeight = lineHeight * maxLines;
+
+        setShowButton(content.scrollHeight > maxHeight);
+      }
+    };
+
+    checkOverflow();
+    // Re-check on window resize
+    window.addEventListener('resize', checkOverflow);
+    return () => window.removeEventListener('resize', checkOverflow);
+  }, [maxLines, children]);
 
   return (
-    <div className={`relative `}>
+    <div className="relative">
       <div
-        className={`${
-          !isExpanded ? `overflow-hidden line-clamp-6 ` : ''
+        ref={contentRef}
+        className={`relative transition-all duration-300 ease-in-out ${
+          !isExpanded ? `overflow-hidden line-clamp-${maxLines}` : ''
         } ${className}`}
+        aria-expanded={isExpanded}
       >
         {children}
       </div>
 
-      <button
-        onClick={() => setIsExpanded(!isExpanded)}
-        className="mt-2 text-blue-600 hover:text-blue-800 focus:outline-none font-medium"
-      >
-        {isExpanded ? 'Show Less' : 'Show More'}
-      </button>
+      {showButton && (
+        <button
+          onClick={(event) => {
+            event.preventDefault();
+            setIsExpanded(!isExpanded);
+          }}
+          className="mt-2 text-blue-600 hover:text-blue-800 focus:ring-2 focus:ring-blue-500
+                     focus:outline-none font-medium rounded-md px-1 py-1 transition-colors
+                     bg-white bg-opacity-90"
+          aria-label={isExpanded ? 'Show less content' : 'Show more content'}
+        >
+          {isExpanded ? 'Show Less' : 'Show More'}
+        </button>
+      )}
     </div>
   );
 }

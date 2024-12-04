@@ -192,6 +192,14 @@ const KeywordForm = forwardRef<
           callback?.();
           return;
         }
+        if (newTriggerWord.group_name.trim() === '') {
+          toast.current?.show({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Please enter group name',
+          });
+          return;
+        }
         if (newTriggerWord.internal_facility_id.length === 0) {
           toast.current?.show({
             severity: 'error',
@@ -254,7 +262,6 @@ const KeywordForm = forwardRef<
         <Field>
           <Label className="text-sm dark:text-bodydark2">Group Name</Label>
           <InputText
-            required
             value={newTriggerWord.group_name}
             onChange={(e) => {
               setNewTriggerWord((prev) => ({
