@@ -83,7 +83,6 @@ const initialTableState: TableState = {
           trigger_word: true,
           progress_note: false,
           summary: false,
-          // update_time: false,
           has_events: false,
           has_reviewed: false,
         }
@@ -98,7 +97,6 @@ const initialTableState: TableState = {
           trigger_word: true,
           progress_note: false,
           summary: false,
-          // update_time: false,
           has_events: false,
           has_reviewed: false,
         },
@@ -283,7 +281,7 @@ export default function ReviewTriggers() {
       },
       {
         accessorKey: 'trigger_word',
-        header: 'Trigger Words',
+        header: 'Group Name',
         accessorFn: (row) => row.trigger_words.map((d) => d.trigger_word),
         cell: (info) => {
           const value = info.getValue() as string[];
@@ -506,6 +504,7 @@ export default function ReviewTriggers() {
                 )
                 .map((kw) => {
                   const new_kw = {
+                    group_name: kw.group_name,
                     trigger_word: kw.trigger_word,
                     internal_facility_id: kw.internal_facility_id.filter((id) =>
                       locations
@@ -518,14 +517,14 @@ export default function ReviewTriggers() {
                     <NumberCards
                       keywordModal
                       editable
-                      title={kw.trigger_word}
+                      title={kw.group_name}
                       value={
                         table
                           .getColumn('trigger_word')
                           ?.getFacetedUniqueValues()
-                          .get(kw.trigger_word) || 0
+                          .get(kw.group_name) || 0
                       }
-                      key={kw.trigger_word}
+                      key={kw.group_name}
                       className={clsx(
                         'col-span-1',
                         'cursor-pointer',
@@ -533,7 +532,7 @@ export default function ReviewTriggers() {
                           (tableState.columnFilters.find(
                             ({ id }) => id === 'trigger_word',
                           )?.value as string[]) || []
-                        ).includes(kw.trigger_word)
+                        ).includes(kw.group_name)
                           ? 'bg-slate-200 dark:bg-slate-600 '
                           : 'bg-white dark:bg-boxdark hover:bg-slate-100 hover:dark:bg-slate-700',
                       )}
@@ -542,10 +541,10 @@ export default function ReviewTriggers() {
                           (tableState.columnFilters.find(
                             ({ id }) => id === 'trigger_word',
                           )?.value as string[]) || [];
-                        if (filter.includes(kw.trigger_word)) {
-                          filter = filter.filter((f) => f !== kw.trigger_word);
+                        if (filter.includes(kw.group_name)) {
+                          filter = filter.filter((f) => f !== kw.group_name);
                         } else {
-                          filter.push(kw.trigger_word);
+                          filter.push(kw.group_name);
                         }
                         if (filter.length === 0) {
                           setTableState((prev) => ({
@@ -572,7 +571,7 @@ export default function ReviewTriggers() {
                       initialNewTrigger={new_kw}
                       trigger_words={predefinedTriggerWords.concat(
                         data.self_defined_keywords?.map(
-                          (kw) => kw.trigger_word,
+                          (kw) => kw.group_name,
                         ) ?? [],
                       )}
                       data={data.data}
@@ -584,7 +583,7 @@ export default function ReviewTriggers() {
             <NewTriggerWordModal
               data={data.data}
               trigger_words={predefinedTriggerWords.concat(
-                data.self_defined_keywords?.map((kw) => kw.trigger_word) ?? [],
+                data.self_defined_keywords?.map((kw) => kw.group_name) ?? [],
               )}
             />
           </div>

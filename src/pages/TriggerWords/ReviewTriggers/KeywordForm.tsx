@@ -1,4 +1,3 @@
-import { stemmer } from 'stemmer';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios, { AxiosError } from 'axios';
 import { createToast } from '../../../hooks/fireToast.tsx';
@@ -69,6 +68,7 @@ const KeywordForm = forwardRef<
     toast: RefObject<Toast>;
     data: TriggerFinal[];
     initialNewTrigger: {
+      group_name: string;
       trigger_word: string;
       internal_facility_id: string[];
       keyword_list: string[];
@@ -84,6 +84,7 @@ const KeywordForm = forwardRef<
   const queryClient = useQueryClient();
 
   const [newTriggerWord, setNewTriggerWord] = useState<{
+    group_name: string;
     trigger_word: string;
     internal_facility_id: string[];
     keyword_list: string[];
@@ -92,11 +93,13 @@ const KeywordForm = forwardRef<
 
   const addTemporary = useMutation({
     mutationFn: ({
+      group_name,
       trigger_word,
       facilities,
       key_words,
       // from_to,
     }: {
+      group_name: string;
       trigger_word: string;
       facilities: string[];
       key_words: string[];
@@ -105,6 +108,7 @@ const KeywordForm = forwardRef<
       axios.post(
         `https://triggerword_temporary_api.triedgesandbox.com/create_key_words`,
         {
+          group_name,
           trigger_word,
           facilities,
           key_words,
@@ -146,7 +150,7 @@ const KeywordForm = forwardRef<
       axios.post(
         `https://triggerword_temporary_api.triedgesandbox.com/deactive_trigger_word`,
         {
-          trigger_word: initialNewTrigger.trigger_word,
+          group_name: initialNewTrigger.group_name,
           facilities,
         },
       ),
@@ -198,17 +202,17 @@ const KeywordForm = forwardRef<
         }
         if (
           trigger_words
-            .filter((d) => d !== initialNewTrigger.trigger_word)
+            .filter((d) => d !== initialNewTrigger.group_name)
             .some(
               (d) =>
-                stemmer(d.toLowerCase().trim()) ===
-                stemmer(newTriggerWord.trigger_word.toLowerCase().trim()),
+                d.toLowerCase().trim() ===
+                newTriggerWord.group_name.toLowerCase().trim(),
             )
         ) {
           toast.current?.show({
             severity: 'error',
             summary: 'Error',
-            detail: 'Trigger word already exists',
+            detail: 'Group name already exists',
           });
           return;
         }
@@ -222,6 +226,7 @@ const KeywordForm = forwardRef<
             ),
           });
           addTemporary.mutate({
+            group_name: newTriggerWord.group_name,
             trigger_word: newTriggerWord.trigger_word,
             facilities: newTriggerWord.internal_facility_id,
             key_words: newTriggerWord.keyword_list,
@@ -231,6 +236,7 @@ const KeywordForm = forwardRef<
           return;
         }
         addTemporary.mutate({
+          group_name: newTriggerWord.group_name,
           trigger_word: newTriggerWord.trigger_word,
           facilities: newTriggerWord.internal_facility_id,
           key_words: newTriggerWord.keyword_list,
@@ -246,11 +252,24 @@ const KeywordForm = forwardRef<
           search will be implemented tomorrow.
         </p>
         <Field>
-          <Label className="text-sm dark:text-bodydark2">
-            New Trigger Word
-          </Label>
+          <Label className="text-sm dark:text-bodydark2">Group Name</Label>
           <InputText
             required
+            value={newTriggerWord.group_name}
+            onChange={(e) => {
+              setNewTriggerWord((prev) => ({
+                ...prev,
+                group_name: e.target.value,
+              }));
+            }}
+            size="large"
+            className="w-full"
+            type="text"
+          />
+        </Field>
+        <Field>
+          <Label className="text-sm dark:text-bodydark2">Trigger Word</Label>
+          <InputText
             value={newTriggerWord.trigger_word}
             onChange={(e) => {
               setNewTriggerWord((prev) => ({

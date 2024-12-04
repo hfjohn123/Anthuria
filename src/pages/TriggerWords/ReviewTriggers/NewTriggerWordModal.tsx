@@ -9,10 +9,12 @@ import { Toast } from 'primereact/toast';
 import KeywordForm from './KeywordForm.tsx';
 
 const initialNewTrigger: {
+  group_name: string;
   trigger_word: string;
   internal_facility_id: string[];
   keyword_list: string[];
 } = {
+  group_name: '',
   trigger_word: '',
   internal_facility_id: [],
   keyword_list: [],

@@ -27,6 +27,7 @@ export default function NumberCards({
       data: any;
       trigger_words: string[];
       initialNewTrigger: {
+        group_name: string;
         trigger_word: string;
         internal_facility_id: string[];
         keyword_list: string[];
@@ -37,6 +38,7 @@ export default function NumberCards({
       data?: any;
       trigger_words?: string[];
       initialNewTrigger?: {
+        group_name: string;
         trigger_word: string;
         internal_facility_id: string[];
         keyword_list: string[];
