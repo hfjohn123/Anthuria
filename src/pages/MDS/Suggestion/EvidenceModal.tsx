@@ -120,8 +120,8 @@ export default function EvidenceModal({
         visible={open}
         dismissableMask
         maximized={isMaximized}
-        resizable
-        maximizable
+        // resizable
+        // maximizable
         onHide={() => setOpen(false)}
         header={'Evidence for ' + icd10.icd10}
         className="w-[60rem] "
