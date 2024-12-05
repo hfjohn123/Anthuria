@@ -160,6 +160,7 @@ export default function SLPTable({
                               is_thumb_up: null,
                               comment: null,
                             }}
+                            button={<span>{entry.comorbidity}</span>}
                           />
                         ) : (
                           <span>{entry.comorbidity}</span>
@@ -171,10 +172,12 @@ export default function SLPTable({
                 </>
               );
             } else {
+              const count = (value as ProgressNoteAndSummary[]).length;
               return (
                 <EvidenceModal
+                  button={<span>{count} evidences found</span>}
                   icd10={{
-                    icd10: 'Suggestion',
+                    icd10: info.row.original.condition,
                     progress_note: value as ProgressNoteAndSummary[],
                     is_thumb_up: null, // or some default value
                     comment: null, // or some default value

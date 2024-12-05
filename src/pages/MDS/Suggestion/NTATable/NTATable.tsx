@@ -90,7 +90,7 @@ export default function NTATable({ data }: { data: NTAEntry[] }) {
             {info.row.original.new_icd10?.map((d, index, array) => {
               return (
                 <Fragment key={d.icd10}>
-                  <EvidenceModal icd10={d} />
+                  <EvidenceModal icd10={d} button={<span>{d.icd10}</span>} />
                   {index < array.length - 1 && ', '}
                 </Fragment>
               );

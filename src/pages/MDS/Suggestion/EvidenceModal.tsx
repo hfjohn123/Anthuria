@@ -1,12 +1,19 @@
 import { useState, useRef, useEffect } from 'react';
-import Modal from '../../../components/Modal/Modal.tsx';
 import { SuggestedICD10 } from '../../../types/MDSFinal.ts';
 import { CaretUp, CaretDown } from '@phosphor-icons/react';
 import NTAProgressNote from './NTATable/NTAProgressNote.tsx';
 import clsx from 'clsx';
 import highlightColors from '../../../common/highlightColors.ts';
+import { Dialog } from 'primereact/dialog';
+import { Button } from 'primereact/button';
 
-export default function EvidenceModal({ icd10 }: { icd10: SuggestedICD10 }) {
+export default function EvidenceModal({
+  icd10,
+  button,
+}: {
+  icd10: SuggestedICD10;
+  button: JSX.Element;
+}) {
   const [open, setOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -14,6 +21,7 @@ export default function EvidenceModal({ icd10 }: { icd10: SuggestedICD10 }) {
   const observerRef = useRef<IntersectionObserver | null>(null);
   const lastScrollTop = useRef(0);
   const scrollDirection = useRef<'up' | 'down'>('down');
+
   useEffect(() => {
     const scrollContainer = scrollContainerRef.current;
 
@@ -37,6 +45,7 @@ export default function EvidenceModal({ icd10 }: { icd10: SuggestedICD10 }) {
       }
     };
   }, [scrollContainerRef.current]);
+
   useEffect(() => {
     setTimeout(() => {
       if (scrollContainerRef.current) {
@@ -99,18 +108,28 @@ export default function EvidenceModal({ icd10 }: { icd10: SuggestedICD10 }) {
   };
 
   return (
-    <Modal
-      isOpen={open}
-      setIsOpen={setOpen}
-      button={<span className="text-primary">{icd10.icd10}</span>}
-      title={
-        icd10.icd10 === 'Suggestion'
-          ? 'Suggestion'
-          : 'Suggestion for ' + icd10.icd10
-      }
-    >
-      <div className="relative">
-        <div className="absolute right-5 top-1/2 -translate-y-1/2 flex flex-col items-end gap-2 z-10">
+    <>
+      <Button
+        onClick={() => setOpen(true)}
+        className="bg-transparent border-0 text-primary p-0"
+      >
+        {button}
+      </Button>
+      <Dialog
+        visible={open}
+        dismissableMask
+        resizable
+        maximizable
+        onHide={() => setOpen(false)}
+        header={'Evidence for ' + icd10.icd10}
+        className="w-[60rem] "
+        contentClassName="relative"
+        pt={{
+          content: () => 'pr-0 pb-0',
+        }}
+      >
+        {/* Navigation buttons */}
+        <div className="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col items-end gap-2 z-50">
           <button
             onClick={() => scrollToItem('prev')}
             disabled={currentIndex === 0}
@@ -144,9 +163,10 @@ export default function EvidenceModal({ icd10 }: { icd10: SuggestedICD10 }) {
           </button>
         </div>
 
+        {/* Scrollable content */}
         <div
           ref={scrollContainerRef}
-          className="flex py-3 pl-6 flex-col sm:max-w-[60vw] max-h-[80vh] overflow-y-auto pr-12"
+          className="flex py-3 pl-6 pr-16 flex-col max-h-[70vh] overflow-y-auto"
         >
           <div className="flex flex-col gap-3 border-b border-stroke dark:border-strokedark last:border-b-0">
             <div>
@@ -211,7 +231,7 @@ export default function EvidenceModal({ icd10 }: { icd10: SuggestedICD10 }) {
             </div>
           </div>
         </div>
-      </div>
-    </Modal>
+      </Dialog>
+    </>
   );
 }
