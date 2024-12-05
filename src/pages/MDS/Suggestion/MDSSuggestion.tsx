@@ -10,6 +10,7 @@ import {
 import { Row } from '@tanstack/react-table';
 import NTATable from './NTATable/NTATable.tsx';
 import SLPTable from './SLPTable/SLPTable.tsx';
+import PTOTTable from './PTOTTable/PTOTTable.tsx';
 
 export default function MDSSuggestion({ row }: { row: Row<MDSFinal> }) {
   const nta_count = row.original.nta_final_entry
@@ -151,7 +152,9 @@ export default function MDSSuggestion({ row }: { row: Row<MDSFinal> }) {
           <DisclosurePanel
             transition
             className="origin-top transition duration-200 ease-out data-[closed]:-translate-y-3 data-[closed]:opacity-0"
-          ></DisclosurePanel>
+          >
+            <PTOTTable />
+          </DisclosurePanel>
         </Disclosure>
       </div>
     </div>
