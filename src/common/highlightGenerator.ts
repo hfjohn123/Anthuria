@@ -36,14 +36,17 @@ export default function highlightGenerator(
         }
 
         // Split text into segments at sentence boundaries or line breaks
-        const regex = new RegExp('([^.!?\n]+(?:[.!?](?=\\s|$)|\\n|$))', 'gi');
+        const regex = new RegExp(
+          '([^.\\n]+(?:\\.(?!\\s*[A-Z])[^.\\n]*)*[^.\\n]*(?:\\.|$|\\n))',
+          'gi',
+        );
 
         const text = segment.text;
         let lastIndex = 0;
         let match;
 
         while ((match = regex.exec(text)) !== null) {
-          const matchedText = match[1];
+          const matchedText = match[0]; // Changed from match[1] to match[0]
 
           // Use stemFiltering to check for matches
           if (stemFiltering(matchedText, searchTerm)) {
