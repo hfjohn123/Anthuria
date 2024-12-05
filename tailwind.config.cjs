@@ -1,5 +1,4 @@
 const defaultTheme = require('tailwindcss/defaultTheme');
-const { getTheme } = require('reshaped/config/tailwind');
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {

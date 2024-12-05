@@ -1,4 +1,4 @@
-import { ReactNode, useState, useRef, useEffect } from 'react';
+import { ReactNode, useState, useRef, useEffect, CSSProperties } from 'react';
 
 export default function LineClampShowMore({
   maxLines = 6,
@@ -17,7 +17,6 @@ export default function LineClampShowMore({
     const checkOverflow = () => {
       const content = contentRef.current;
       if (content) {
-        // Calculate line height and compare with content scroll height
         const style = window.getComputedStyle(content);
         const lineHeight = parseInt(style.lineHeight);
         const maxHeight = lineHeight * maxLines;
@@ -27,18 +26,25 @@ export default function LineClampShowMore({
     };
 
     checkOverflow();
-    // Re-check on window resize
     window.addEventListener('resize', checkOverflow);
     return () => window.removeEventListener('resize', checkOverflow);
   }, [maxLines, children]);
+
+  const lineClampStyle: CSSProperties = !isExpanded
+    ? ({
+        display: '-webkit-box',
+        WebkitLineClamp: maxLines,
+        WebkitBoxOrient: 'vertical',
+        overflow: 'hidden',
+      } as CSSProperties)
+    : {};
 
   return (
     <div className="relative">
       <div
         ref={contentRef}
-        className={`relative transition-all duration-300 ease-in-out ${
-          !isExpanded ? `overflow-hidden line-clamp-${maxLines}` : ''
-        } ${className}`}
+        style={lineClampStyle}
+        className={`relative transition-all duration-300 ease-in-out ${className}`}
         aria-expanded={isExpanded}
       >
         {children}
