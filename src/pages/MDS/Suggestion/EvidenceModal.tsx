@@ -16,6 +16,7 @@ export default function EvidenceModal({
 }) {
   const [open, setOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isMaximized, setIsMaximized] = useState(false);
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const observerRef = useRef<IntersectionObserver | null>(null);
@@ -118,6 +119,7 @@ export default function EvidenceModal({
       <Dialog
         visible={open}
         dismissableMask
+        maximized={isMaximized}
         resizable
         maximizable
         onHide={() => setOpen(false)}
@@ -127,6 +129,7 @@ export default function EvidenceModal({
         pt={{
           content: () => 'pr-0 pb-0',
         }}
+        onMaximize={(e) => setIsMaximized(e.maximized)}
       >
         {/* Navigation buttons */}
         <div className="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col items-end gap-2 z-50">
@@ -166,7 +169,10 @@ export default function EvidenceModal({
         {/* Scrollable content */}
         <div
           ref={scrollContainerRef}
-          className="flex py-3 pl-6 pr-16 flex-col max-h-[70vh] overflow-y-auto"
+          className={clsx(
+            'flex py-3 pl-6 pr-16 flex-col ',
+            !isMaximized && 'max-h-[70vh] overflow-y-auto',
+          )}
         >
           <div className="flex flex-col gap-3 border-b border-stroke dark:border-strokedark last:border-b-0">
             <div>
