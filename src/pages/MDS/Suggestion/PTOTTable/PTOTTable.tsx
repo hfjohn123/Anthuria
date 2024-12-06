@@ -25,6 +25,17 @@ import clsx from 'clsx';
 
 const permanentColumnFilters = ['function_area', 'mds_item'];
 
+const isFirstInGroup = (
+  rows: FunctionalScore[],
+  rowIndex: number,
+  id: string,
+) => {
+  if (rowIndex === 0) return true;
+  const prevRow = rows[rowIndex - 1];
+  const currentRow = rows[rowIndex];
+  return prevRow[id] !== currentRow[id];
+};
+
 export default function PTOTTable({ data }: { data: PTOTFinal }) {
   console.log(data);
   const [tableData] = useState(data.function_score_all || []);
@@ -34,7 +45,18 @@ export default function PTOTTable({ data }: { data: PTOTFinal }) {
       header: 'Function Area',
       filterFn: 'arrIncludesSome',
       cell: (info) => {
-        return <p className="whitespace-normal">{info.getValue() as string}</p>;
+        const rowIndex = info.row.index;
+        if (
+          !isFirstInGroup(data.function_score_all, rowIndex, 'function_area')
+        ) {
+          return null;
+        }
+
+        return (
+          <p className="whitespace-normal with-border">
+            {info.getValue() as string}
+          </p>
+        );
       },
       meta: {
         type: 'categorical',
@@ -81,7 +103,16 @@ export default function PTOTTable({ data }: { data: PTOTFinal }) {
       accessorKey: 'average_function_score',
       header: 'Average Score',
       cell: (info) => {
-        return <p className="whitespace-nowrap">{info.getValue() as string}</p>;
+        const rowIndex = info.row.index;
+        if (
+          !isFirstInGroup(data.function_score_all, rowIndex, 'function_area')
+        ) {
+          return null;
+        }
+
+        return (
+          <td className="whitespace-normal ">{info.getValue() as string}</td>
+        );
       },
       // footer: (info) => {
       //   const total = info.table
@@ -259,16 +290,15 @@ export default function PTOTTable({ data }: { data: PTOTFinal }) {
                       <td
                         key={cell.id}
                         className={clsx(
-                          'py-2 border-b-[1.5px] border-stroke dark:border-strokedark',
+                          'py-2',
                           cell.column.columnDef.meta?.wrap,
+                          ' has-[with-border]:border-b-[1.5px] border-stroke dark:border-strokedark',
                         )}
                       >
-                        {
-                          flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext(),
-                          ) as string
-                        }
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
                       </td>
                     );
                   })}
