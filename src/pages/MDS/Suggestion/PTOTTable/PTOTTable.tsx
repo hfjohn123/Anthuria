@@ -1,4 +1,3 @@
-import { FunctionalScore, PTOTFinal } from '../../../../types/MDSFinal.ts';
 import {
   ColumnDef,
   flexRender,
@@ -7,38 +6,63 @@ import {
   getFacetedRowModel,
   getFilteredRowModel,
   getSortedRowModel,
+  Table,
   TableState,
   useReactTable,
 } from '@tanstack/react-table';
-
 import { ThumbsDown, ThumbsUp } from '@phosphor-icons/react';
-import getFacetedUniqueValues from '../../../../common/getFacetedUniqueValues.ts';
-import getFacetedMinMaxValues from '../../../../common/getFacetedMinMaxValues.ts';
 import { useState } from 'react';
 import Select from 'react-select';
-import filterSelectStyles from '../../../../components/Select/filterSelectStyles.ts';
+import { Button } from '@headlessui/react';
+import { FunctionalScore, PTOTFinal } from '../../../../types/MDSFinal.ts';
 import FilterValueContainer from '../../../../components/Select/FilterValueContainer.tsx';
 import CheckboxOption from '../../../../components/Select/CheckboxOption.tsx';
 import handleFilterChange from '../../../../components/Tables/handleFilterChange.ts';
-import { Button } from '@headlessui/react';
-import clsx from 'clsx';
+import filterSelectStyles from '../../../../components/Select/filterSelectStyles.ts';
 
-const permanentColumnFilters = ['function_area', 'mds_item'];
+// Helper Functions
+const getRowSpan = (rowIndex: number, data?: FunctionalScore[]): number => {
+  const currentArea = data?.[rowIndex].function_area;
+  let span = 1;
+
+  for (let i = rowIndex + 1; i < (data?.length ?? 0); i++) {
+    if (data?.[i].function_area === currentArea) {
+      span++;
+    } else {
+      break;
+    }
+  }
+
+  return span;
+};
+
+const hasFooterContent = (table: Table<any>) => {
+  return table
+    .getFooterGroups()
+    .some((group) =>
+      group.headers.some(
+        (header) => header.column.columnDef.footer !== undefined,
+      ),
+    );
+};
 
 const isFirstInGroup = (
-  rows: FunctionalScore[],
   rowIndex: number,
-  id: string,
+  id: keyof FunctionalScore,
+  rows?: FunctionalScore[],
 ) => {
   if (rowIndex === 0) return true;
-  const prevRow = rows[rowIndex - 1];
-  const currentRow = rows[rowIndex];
+  const prevRow = rows?.[rowIndex - 1];
+  const currentRow = rows?.[rowIndex];
+  if (!prevRow || !currentRow) return false;
   return prevRow[id] !== currentRow[id];
 };
 
+const permanentColumnFilters = ['function_area', 'mds_item'];
+
 export default function PTOTTable({ data }: { data: PTOTFinal }) {
-  console.log(data);
   const [tableData] = useState(data.function_score_all || []);
+
   const columns: ColumnDef<FunctionalScore>[] = [
     {
       accessorKey: 'function_area',
@@ -47,15 +71,20 @@ export default function PTOTTable({ data }: { data: PTOTFinal }) {
       cell: (info) => {
         const rowIndex = info.row.index;
         if (
-          !isFirstInGroup(data.function_score_all, rowIndex, 'function_area')
+          !isFirstInGroup(rowIndex, 'function_area', data.function_score_all)
         ) {
           return null;
         }
 
+        const rowSpan = getRowSpan(rowIndex, data.function_score_all);
+
         return (
-          <p className="whitespace-normal with-border">
+          <td
+            rowSpan={rowSpan}
+            className="py-2 px-4 border  align-top bg-white"
+          >
             {info.getValue() as string}
-          </p>
+          </td>
         );
       },
       meta: {
@@ -66,6 +95,9 @@ export default function PTOTTable({ data }: { data: PTOTFinal }) {
       accessorKey: 'mds_item',
       header: 'MDS Item',
       filterFn: 'arrIncludesSome',
+      cell: (info) => (
+        <td className="py-2 px-4 border">{info.getValue() as string}</td>
+      ),
       meta: {
         type: 'categorical',
       },
@@ -73,9 +105,11 @@ export default function PTOTTable({ data }: { data: PTOTFinal }) {
     {
       accessorKey: 'individual_function_score',
       header: 'Function Score',
-      cell: (info) => {
-        return <p className="whitespace-nowrap">{info.getValue() as string}</p>;
-      },
+      cell: (info) => (
+        <td className="py-2 px-4 border whitespace-nowrap">
+          {info.getValue() as string}
+        </td>
+      ),
       filterFn: 'arrIncludesSome',
       meta: {
         type: 'categorical',
@@ -83,21 +117,12 @@ export default function PTOTTable({ data }: { data: PTOTFinal }) {
     },
     {
       accessorKey: 'suggestion',
-      cell: (info) => {
-        return <p className="whitespace-nowrap"></p>;
-      },
       header: 'AI Suggested Conditions',
-      // footer: (info) => {
-      //   const total = info.table
-      //     .getRowModel()
-      //     .rows.filter((row) => row.original.is_mds_table)
-      //     .reduce((sum, row) => sum + row.original.score, 0);
-      //   return (
-      //     <p className="whitespace-nowrap text-left">
-      //       Current score: {total} ({getNTACategory(total)})
-      //     </p>
-      //   );
-      // },
+      cell: (info) => (
+        <td className="py-2 px-4 border ">
+          {(info.getValue() as string[])?.join(', ') || ''}
+        </td>
+      ),
     },
     {
       accessorKey: 'average_function_score',
@@ -105,46 +130,49 @@ export default function PTOTTable({ data }: { data: PTOTFinal }) {
       cell: (info) => {
         const rowIndex = info.row.index;
         if (
-          !isFirstInGroup(data.function_score_all, rowIndex, 'function_area')
+          !isFirstInGroup(rowIndex, 'function_area', data.function_score_all)
         ) {
           return null;
         }
 
+        const rowSpan = getRowSpan(rowIndex, data.function_score_all);
+
         return (
-          <td className="whitespace-normal ">{info.getValue() as string}</td>
+          <td
+            rowSpan={rowSpan}
+            className="py-2 px-4 border bg-blue-50 align-top"
+          >
+            {info.getValue() as string}
+          </td>
         );
       },
-      // footer: (info) => {
-      //   const total = info.table
-      //     .getRowModel()
-      //     .rows.reduce((sum, row) => sum + row.original.score, 0);
-      //   return (
-      //     <p className="whitespace-nowrap text-left">
-      //       Projected score: {total} ({getNTACategory(total)})
-      //     </p>
-      //   );
-      // },
+      footer: () => {
+        return (
+          <td className="py-2 px-4 border bg-blue-50">
+            Total Score: {data.final_score}
+          </td>
+        );
+      },
     },
     {
       accessorKey: 'review',
       header: 'Review',
-      cell: () => {
-        return (
+      cell: () => (
+        <td className="py-2 px-4 border">
           <div className="flex items-center gap-2">
-            <ThumbsUp className="size-5" />
-            <ThumbsDown className="size-5" />
+            <ThumbsUp className="size-5 cursor-pointer hover:text-blue-500" />
+            <ThumbsDown className="size-5 cursor-pointer hover:text-red-500" />
           </div>
+        </td>
+      ),
+      footer: () => {
+        return (
+          <td className="py-2 px-4 border">Case Mix Group: {data.mix_group}</td>
         );
       },
-      // footer: (info) => {
-      //   const total = info.table
-      //     .getRowModel()
-      //     .rows.filter((row) => !row.original.is_mds_table)
-      //     .reduce((sum, row) => sum + row.original.score, 0);
-      //   return <p className="whitespace-nowrap text-left">+ {total}</p>;
-      // },
     },
   ];
+
   const [tableState, setTableState] = useState<TableState>({
     globalFilter: '',
     columnSizing: {},
@@ -190,12 +218,10 @@ export default function PTOTTable({ data }: { data: PTOTFinal }) {
     onStateChange: setTableState,
     autoResetExpanded: false,
     getRowCanExpand: () => true,
-    getFacetedUniqueValues: getFacetedUniqueValues(),
     getCoreRowModel: getCoreRowModel(),
     getExpandedRowModel: getExpandedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    getFacetedRowModel: getFacetedRowModel(), // client-side faceting
-    getFacetedMinMaxValues: getFacetedMinMaxValues(), // generate min/max values for numeric range filter
+    getFacetedRowModel: getFacetedRowModel(),
     getSortedRowModel: getSortedRowModel(),
   });
 
@@ -205,6 +231,7 @@ export default function PTOTTable({ data }: { data: PTOTFinal }) {
         <span className="font-bold">Clinical Category:</span>
         <p>{data.clinical_category}</p>
       </div>
+
       <div>
         <div className="w-full flex items-center gap-3 mt-1">
           {permanentColumnFilters.map((filter) => (
@@ -245,6 +272,7 @@ export default function PTOTTable({ data }: { data: PTOTFinal }) {
               }}
             />
           ))}
+
           {tableState.columnFilters.length > 0 && (
             <Button
               color="secondary"
@@ -256,16 +284,17 @@ export default function PTOTTable({ data }: { data: PTOTFinal }) {
             </Button>
           )}
         </div>
-        <table className="mt-3 w-full">
-          <thead>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
+
+        <div className="overflow-x-auto shadow-sm border rounded-lg mt-3">
+          <table className="w-full border-collapse">
+            <thead>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <tr key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => (
                     <th
                       key={header.id}
                       colSpan={header.colSpan}
-                      className="py-2 border-y-[1.5px] border-stroke dark:border-strokedark text-left select-none group whitespace-nowrap text-body-2"
+                      className="py-2 px-4 border  text-left select-none group whitespace-nowrap text-body-2"
                     >
                       {header.isPlaceholder ? null : (
                         <span>
@@ -276,55 +305,54 @@ export default function PTOTTable({ data }: { data: PTOTFinal }) {
                         </span>
                       )}
                     </th>
-                  );
-                })}
-              </tr>
-            ))}
-          </thead>
-          <tbody className="w-full">
-            {table.getRowModel().rows.map((row) => {
-              return (
-                <tr key={row.id}>
-                  {row.getVisibleCells().map((cell) => {
-                    return (
-                      <td
-                        key={cell.id}
-                        className={clsx(
-                          'py-2 has-[with-border]:border-b-[1.5px] border-stroke dark:border-strokedark',
-                          cell.column.columnDef.meta?.wrap,
-                        )}
-                      >
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext(),
-                        )}
-                      </td>
-                    );
-                  })}
+                  ))}
                 </tr>
-              );
-            })}
-          </tbody>
+              ))}
+            </thead>
 
-          <tfoot>
-            {tableData.length > 0 &&
-              table.getFooterGroups().map((footerGroup) => (
-                <tr key={footerGroup.id}>
-                  {footerGroup.headers.map((header) => (
-                    <th key={header.id}>
-                      {header.isPlaceholder
+            <tbody>
+              {table.getRowModel().rows.map((row) => {
+                return (
+                  <tr key={row.id}>
+                    {row.getVisibleCells().map((cell) => {
+                      // If the cell's render returns null (for grouped cells), don't render the td
+                      const renderedCell = flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      );
+                      return renderedCell;
+                    })}
+                  </tr>
+                );
+              })}
+            </tbody>
+            {tableData.length > 0 && hasFooterContent(table) && (
+              <tfoot>
+                {table.getFooterGroups().map((footerGroup) => (
+                  <tr key={footerGroup.id}>
+                    {footerGroup.headers.map((header) => {
+                      // If there's no footer content for this column, render empty cell with proper spacing
+                      if (!header.column.columnDef.footer) {
+                        return (
+                          <td key={header.id} className="py-2 px-4 border"></td>
+                        );
+                      }
+
+                      return header.isPlaceholder
                         ? null
                         : flexRender(
                             header.column.columnDef.footer,
                             header.getContext(),
-                          )}
-                    </th>
-                  ))}
-                </tr>
-              ))}
-          </tfoot>
-        </table>
-        {tableData.length === 0 && <p>No ICD-10 Codes</p>}
+                          );
+                    })}
+                  </tr>
+                ))}
+              </tfoot>
+            )}
+          </table>
+        </div>
+
+        {tableData.length === 0 && <p>No data available</p>}
       </div>
     </div>
   );

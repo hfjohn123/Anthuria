@@ -175,7 +175,7 @@ export default function SLPTable({
               const count = (value as ProgressNoteAndSummary[]).length;
               return (
                 <EvidenceModal
-                  button={<span>{count} evidences found</span>}
+                  button={<span>{count} evidence found</span>}
                   icd10={{
                     icd10: info.row.original.condition,
                     progress_note: value as ProgressNoteAndSummary[],
