@@ -81,7 +81,7 @@ export default function PTOTTable({ data }: { data: PTOTFinal }) {
         return (
           <td
             rowSpan={rowSpan}
-            className="py-2 px-4 border  align-top bg-white"
+            className="py-2 px-4 border-b border-r border-gray-200 first:border-l-0 align-top bg-white"
           >
             {info.getValue() as string}
           </td>
@@ -96,7 +96,9 @@ export default function PTOTTable({ data }: { data: PTOTFinal }) {
       header: 'MDS Item',
       filterFn: 'arrIncludesSome',
       cell: (info) => (
-        <td className="py-2 px-4 border">{info.getValue() as string}</td>
+        <td className="py-2 px-4 border-b border-r border-gray-200">
+          {info.getValue() as string}
+        </td>
       ),
       meta: {
         type: 'categorical',
@@ -106,7 +108,7 @@ export default function PTOTTable({ data }: { data: PTOTFinal }) {
       accessorKey: 'individual_function_score',
       header: 'Function Score',
       cell: (info) => (
-        <td className="py-2 px-4 border whitespace-nowrap">
+        <td className="py-2 px-4 border-b border-r border-gray-200 whitespace-nowrap">
           {info.getValue() as string}
         </td>
       ),
@@ -119,7 +121,7 @@ export default function PTOTTable({ data }: { data: PTOTFinal }) {
       accessorKey: 'suggestion',
       header: 'AI Suggested Conditions',
       cell: (info) => (
-        <td className="py-2 px-4 border ">
+        <td className="py-2 px-4 border-b border-r border-gray-200">
           {(info.getValue() as string[])?.join(', ') || ''}
         </td>
       ),
@@ -140,7 +142,7 @@ export default function PTOTTable({ data }: { data: PTOTFinal }) {
         return (
           <td
             rowSpan={rowSpan}
-            className="py-2 px-4 border bg-blue-50 align-top"
+            className="py-2 px-4 border-b border-r border-gray-200 bg-blue-50 align-top"
           >
             {info.getValue() as string}
           </td>
@@ -148,7 +150,7 @@ export default function PTOTTable({ data }: { data: PTOTFinal }) {
       },
       footer: () => {
         return (
-          <td className="py-2 px-4 border bg-blue-50">
+          <td className="py-2 px-4  border-r border-gray-200 bg-blue-50 font-medium">
             Total Score: {data.final_score}
           </td>
         );
@@ -158,7 +160,7 @@ export default function PTOTTable({ data }: { data: PTOTFinal }) {
       accessorKey: 'review',
       header: 'Review',
       cell: () => (
-        <td className="py-2 px-4 border">
+        <td className="py-2 px-4 border-b border-r border-gray-200 last:border-r-0">
           <div className="flex items-center gap-2">
             <ThumbsUp className="size-5 cursor-pointer hover:text-blue-500" />
             <ThumbsDown className="size-5 cursor-pointer hover:text-red-500" />
@@ -167,7 +169,9 @@ export default function PTOTTable({ data }: { data: PTOTFinal }) {
       ),
       footer: () => {
         return (
-          <td className="py-2 px-4 border">Case Mix Group: {data.mix_group}</td>
+          <td className="py-2 px-4  border-r border-gray-200 last:border-r-0 font-medium">
+            Case Mix Group: {data.mix_group}
+          </td>
         );
       },
     },
@@ -285,7 +289,7 @@ export default function PTOTTable({ data }: { data: PTOTFinal }) {
           )}
         </div>
 
-        <div className="overflow-x-auto shadow-sm border rounded-lg mt-3">
+        <div className="overflow-x-auto shadow-sm border border-gray-200 rounded-lg mt-3">
           <table className="w-full border-collapse">
             <thead>
               {table.getHeaderGroups().map((headerGroup) => (
@@ -294,7 +298,7 @@ export default function PTOTTable({ data }: { data: PTOTFinal }) {
                     <th
                       key={header.id}
                       colSpan={header.colSpan}
-                      className="py-2 px-4 border  text-left select-none group whitespace-nowrap text-body-2"
+                      className="py-2 px-4 border-b border-r border-gray-200 first:border-l-0 last:border-r-0 text-left select-none group whitespace-nowrap text-body-2 bg-gray-50"
                     >
                       {header.isPlaceholder ? null : (
                         <span>
@@ -315,7 +319,6 @@ export default function PTOTTable({ data }: { data: PTOTFinal }) {
                 return (
                   <tr key={row.id}>
                     {row.getVisibleCells().map((cell) => {
-                      // If the cell's render returns null (for grouped cells), don't render the td
                       const renderedCell = flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext(),
@@ -326,15 +329,18 @@ export default function PTOTTable({ data }: { data: PTOTFinal }) {
                 );
               })}
             </tbody>
+
             {tableData.length > 0 && hasFooterContent(table) && (
               <tfoot>
                 {table.getFooterGroups().map((footerGroup) => (
                   <tr key={footerGroup.id}>
                     {footerGroup.headers.map((header) => {
-                      // If there's no footer content for this column, render empty cell with proper spacing
                       if (!header.column.columnDef.footer) {
                         return (
-                          <td key={header.id} className="py-2 px-4 border"></td>
+                          <td
+                            key={header.id}
+                            className="py-2 px-4 border-r border-gray-200 first:border-l-0 last:border-r-0"
+                          />
                         );
                       }
 
