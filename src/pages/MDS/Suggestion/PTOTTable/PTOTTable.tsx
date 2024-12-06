@@ -290,9 +290,8 @@ export default function PTOTTable({ data }: { data: PTOTFinal }) {
                       <td
                         key={cell.id}
                         className={clsx(
-                          'py-2',
+                          'py-2 has-[with-border]:border-b-[1.5px] border-stroke dark:border-strokedark',
                           cell.column.columnDef.meta?.wrap,
-                          ' has-[with-border]:border-b-[1.5px] border-stroke dark:border-strokedark',
                         )}
                       >
                         {flexRender(
