@@ -9,6 +9,7 @@ export type MDSFinal = {
   update_time: Date;
   nta_final_entry: NTAEntry[];
   slp_final_entry: (SLPItem_General | SLPItem_comorbidities_present)[];
+  ptot_final_entry: PTOTFinal;
 };
 
 export type NTAEntry = {
@@ -59,6 +60,31 @@ export type ProgressNoteAndSummary = {
   highlights?: string;
   progress_note: string;
   explanation: string;
+};
+
+export type PTOTFinal = {
+  clinical_category?: string;
+} & (
+  | {
+      mix_group: string;
+      final_score: string;
+      function_score_all: FunctionalScore[];
+    }
+  | {
+      mix_group?: never;
+      final_score?: never;
+      function_score_all?: never;
+    }
+);
+
+export type FunctionalScore = {
+  function_area: string;
+  mds_item: string;
+  individual_function_score: string;
+  suggestion: [];
+  average_function_score: string;
+  is_thumb_up: boolean;
+  comment: string;
 };
 
 // function generateRandomICD10(): MDSFinal {
