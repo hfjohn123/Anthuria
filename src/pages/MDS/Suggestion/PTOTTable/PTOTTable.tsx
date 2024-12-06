@@ -19,6 +19,8 @@ import FilterValueContainer from '../../../../components/Select/FilterValueConta
 import CheckboxOption from '../../../../components/Select/CheckboxOption.tsx';
 import handleFilterChange from '../../../../components/Tables/handleFilterChange.ts';
 import filterSelectStyles from '../../../../components/Select/filterSelectStyles.ts';
+import getFacetedUniqueValues from '../../../../common/getFacetedUniqueValues.ts';
+import getFacetedMinMaxValues from '../../../../common/getFacetedMinMaxValues.ts';
 
 // Helper Functions
 const getRowSpan = (rowIndex: number, data?: FunctionalScore[]): number => {
@@ -222,10 +224,12 @@ export default function PTOTTable({ data }: { data: PTOTFinal }) {
     onStateChange: setTableState,
     autoResetExpanded: false,
     getRowCanExpand: () => true,
+    getFacetedUniqueValues: getFacetedUniqueValues(),
     getCoreRowModel: getCoreRowModel(),
     getExpandedRowModel: getExpandedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    getFacetedRowModel: getFacetedRowModel(),
+    getFacetedRowModel: getFacetedRowModel(), // client-side faceting
+    getFacetedMinMaxValues: getFacetedMinMaxValues(), // generate min/max values for numeric range filter
     getSortedRowModel: getSortedRowModel(),
   });
 
