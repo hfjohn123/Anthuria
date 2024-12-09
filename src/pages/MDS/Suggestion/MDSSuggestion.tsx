@@ -11,6 +11,7 @@ import { Row } from '@tanstack/react-table';
 import NTATable from './NTATable/NTATable.tsx';
 import SLPTable from './SLPTable/SLPTable.tsx';
 import PTOTTable from './PTOTTable/PTOTTable.tsx';
+import NursingTable from './NursingTable/NursingTable.tsx';
 
 export default function MDSSuggestion({ row }: { row: Row<MDSFinal> }) {
   const nta_count = row.original.nta_final_entry
@@ -128,26 +129,6 @@ export default function MDSSuggestion({ row }: { row: Row<MDSFinal> }) {
               <div className="flex items-center py-2 gap-2 hover:bg-[#E6F3FF] ">
                 <CaretRight className="ease-in-out transition-all duration-200  group-data-[open]:rotate-90" />
                 <h3 className="text-base font-semibold">PT/OT</h3>
-                {/*<span className="text-sm text-gray-600">*/}
-                {/*  {((): string => {*/}
-                {/*    const parts = [];*/}
-                {/*    if (nta_count.P > 1) {*/}
-                {/*      parts.push(`${nta_count.P} Progress Notes`);*/}
-                {/*    }*/}
-                {/*    if (nta_count.P === 1) {*/}
-                {/*      parts.push(`${nta_count.P} Progress Note`);*/}
-                {/*    }*/}
-                {/*    if (nta_count.D > 1) {*/}
-                {/*      parts.push(`${nta_count.D} Diagnoses`);*/}
-                {/*    }*/}
-                {/*    if (nta_count.D === 1) {*/}
-                {/*      parts.push(`${nta_count.D} Diagnosis`);*/}
-                {/*    }*/}
-                {/*    return parts.length > 0*/}
-                {/*      ? `(${parts.join(' and ')} Detected)`*/}
-                {/*      : '';*/}
-                {/*  })()}*/}
-                {/*</span>*/}
               </div>
             </DisclosureButton>
             <DisclosurePanel
@@ -158,6 +139,20 @@ export default function MDSSuggestion({ row }: { row: Row<MDSFinal> }) {
             </DisclosurePanel>
           </Disclosure>
         )}
+        <Disclosure>
+          <DisclosureButton className="group ">
+            <div className="flex items-center py-2 gap-2 hover:bg-[#E6F3FF] ">
+              <CaretRight className="ease-in-out transition-all duration-200  group-data-[open]:rotate-90" />
+              <h3 className="text-base font-semibold">Nursing</h3>
+            </div>
+          </DisclosureButton>
+          <DisclosurePanel
+            transition
+            className="origin-top transition duration-200 ease-out data-[closed]:-translate-y-3 data-[closed]:opacity-0"
+          >
+            <NursingTable />
+          </DisclosurePanel>
+        </Disclosure>
       </div>
     </div>
   );
