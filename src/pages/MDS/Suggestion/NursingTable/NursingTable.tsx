@@ -7,8 +7,11 @@ import SpecialCareHigh from './SpecialCareHigh.tsx';
 import SpecialCareLow from './SpecialCareLow.tsx';
 import ClinicallyComplex from './ClinicallyComplex.tsx';
 import FunctionalScoreTable from './FunctionalScoreTable.tsx';
+import RestorativeNursingTable from './RestorativeNursingTable.tsx';
+import { Row } from '@tanstack/react-table';
+import { MDSFinal } from '../../../../types/MDSFinal.ts';
 
-export default function NursingTable() {
+export default function NursingTable({ data }: { data: Row<MDSFinal> }) {
   const stepperRef = useRef<StepperRefAttributes>(null);
 
   return (
@@ -29,7 +32,7 @@ export default function NursingTable() {
         >
           <div className="flex flex-col gap-7">
             <ExtensiveServices />
-            <FunctionalScoreTable />
+            <FunctionalScoreTable data={data.original.nursing_fa_final_entry} />
           </div>
           <div className="flex pt-4 justify-end">
             <Button
@@ -50,7 +53,12 @@ export default function NursingTable() {
         >
           <div className="flex flex-col gap-7">
             <SpecialCareHigh />
-            <FunctionalScoreTable />
+            <FunctionalScoreTable data={data.original.nursing_fa_final_entry} />
+
+            <div>
+              <p className="font-bold">Depression Indicator:</p>
+              <p>Yes/No</p>
+            </div>
           </div>
           <div className="flex pt-4 justify-between">
             <Button
@@ -77,7 +85,12 @@ export default function NursingTable() {
         >
           <div className="flex flex-col gap-7">
             <SpecialCareLow />
-            <FunctionalScoreTable />
+            <FunctionalScoreTable data={data.original.nursing_fa_final_entry} />
+
+            <div>
+              <p className="font-bold">Depression Indicator:</p>
+              <p>Yes/No</p>
+            </div>
           </div>
           <div className="flex pt-4 justify-between">
             <Button
@@ -102,8 +115,12 @@ export default function NursingTable() {
           }}
           header="Clinically Complex"
         >
-          <div className="flex flex-col">
+          <div className="flex flex-col gap-7">
             <ClinicallyComplex />
+            <div>
+              <p className="font-bold">Depression Indicator:</p>
+              <p>Yes/No</p>
+            </div>
           </div>
           <div className="flex pt-4 justify-between">
             <Button
@@ -128,8 +145,24 @@ export default function NursingTable() {
           }}
           header="Behavioral Symptoms And Cognitive Performance"
         >
-          <div className="flex flex-col">
-            <FunctionalScoreTable />
+          <div className="flex flex-col gap-7">
+            <FunctionalScoreTable data={data.original.nursing_fa_final_entry} />
+
+            <div>
+              <p className="font-bold">Resident interview cognitive status:</p>
+              <p>Yes/No</p>
+            </div>
+            <div>
+              <p className="font-bold">Staff assessment cognitive status:</p>
+              <p>Yes/No</p>
+            </div>
+            <div>
+              <p className="font-bold">Behavioral symptoms:</p>
+              <p>Yes/No</p>
+            </div>
+            <RestorativeNursingTable
+              data={data.original.nursing_re_final_entry}
+            />
           </div>
           <div className="flex pt-4 justify-between">
             <Button
@@ -154,8 +187,11 @@ export default function NursingTable() {
           }}
           header="Reduced Physical Function"
         >
-          <div className="flex flex-col">
-            <FunctionalScoreTable />
+          <div className="flex flex-col gap-7">
+            <FunctionalScoreTable data={data.original.nursing_fa_final_entry} />
+            <RestorativeNursingTable
+              data={data.original.nursing_re_final_entry}
+            />
           </div>
           <div className="flex pt-4 ">
             <Button

@@ -10,6 +10,8 @@ export type MDSFinal = {
   nta_final_entry: NTAEntry[];
   slp_final_entry: (SLPItem_General | SLPItem_comorbidities_present)[];
   ptot_final_entry: PTOTFinal;
+  nursing_fa_final_entry: NursingFunctionalScore;
+  nursing_re_final_entry: RestorativeNursing;
 };
 
 export type NTAEntry = {
@@ -87,6 +89,32 @@ export type FunctionalScore = {
   comment: string;
 };
 
+export type NursingFunctionalScore =
+  | {
+      final_score: string;
+      function_score_all: FunctionalScore[];
+    }
+  | {
+      final_score?: undefined;
+      function_score_all?: never;
+    };
+
+export type RestorativeNursing =
+  | {
+      final_count?: undefined;
+      restorative_count_all?: never;
+    }
+  | {
+      final_count: number;
+      restorative_count_all: RestorativeCountAll[];
+    };
+
+export type RestorativeCountAll = {
+  mds_item: string;
+  suggestion: [];
+  is_thumb_up: boolean;
+  comment: string;
+};
 // function generateRandomICD10(): MDSFinal {
 //   const icd10 = [
 //     'A00-A09',

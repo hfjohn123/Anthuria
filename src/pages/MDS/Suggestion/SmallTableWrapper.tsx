@@ -129,7 +129,7 @@ export default function SmallTableWrapper({
                       return (
                         <td
                           key={header.id}
-                          className="py-2 px-4 border-r border-gray-200 first:border-l-0 last:border-r-0"
+                          className="py-2 px-4 border-l border-t first:border-l-0 last:border-r-0"
                         />
                       );
                     }

@@ -7,50 +7,14 @@ import {
   TableState,
   useReactTable,
 } from '@tanstack/react-table';
-import { FunctionalScore } from '../../../../types/MDSFinal.ts';
+import {
+  FunctionalScore,
+  NursingFunctionalScore,
+} from '../../../../types/MDSFinal.ts';
 import { ThumbsDown, ThumbsUp } from '@phosphor-icons/react';
 import { useState } from 'react';
 import getFacetedUniqueValues from '../../../../common/getFacetedUniqueValues.ts';
 import getFacetedMinMaxValues from '../../../../common/getFacetedMinMaxValues.ts';
-
-type NursingFunctionalScore = {
-  function_area: string;
-  mds_item: string;
-  mds_code?: string;
-  individual_function_score?: string;
-  average_function_score?: string;
-};
-
-const functionalScore: NursingFunctionalScore[] = [
-  {
-    function_area: 'Eating',
-    mds_item: 'GG0130A',
-  },
-  {
-    function_area: 'Toileting Hygiene',
-    mds_item: 'GG0130C',
-  },
-  {
-    function_area: 'Mobility',
-    mds_item: 'GG0170B',
-  },
-  {
-    function_area: 'Mobility',
-    mds_item: 'GG0170C',
-  },
-  {
-    function_area: 'Transfer',
-    mds_item: 'GG0170D',
-  },
-  {
-    function_area: 'Transfer',
-    mds_item: 'GG0170E',
-  },
-  {
-    function_area: 'Transfer',
-    mds_item: 'GG0170F',
-  },
-];
 
 // Helper Functions
 const getRowSpan = (rowIndex: number, data?: FunctionalScore[]): number => {
@@ -81,7 +45,11 @@ const isFirstInGroup = (
 };
 
 const permanentColumnFilters = ['function_area', 'mds_item'];
-export default function FunctionalScoreTable() {
+export default function FunctionalScoreTable({
+  data,
+}: {
+  data: NursingFunctionalScore;
+}) {
   const columns: ColumnDef<FunctionalScore>[] = [
     {
       accessorKey: 'function_area',
@@ -89,11 +57,13 @@ export default function FunctionalScoreTable() {
       filterFn: 'arrIncludesSome',
       cell: (info) => {
         const rowIndex = info.row.index;
-        if (!isFirstInGroup(rowIndex, 'function_area', functionalScore)) {
+        if (
+          !isFirstInGroup(rowIndex, 'function_area', data.function_score_all)
+        ) {
           return null;
         }
 
-        const rowSpan = getRowSpan(rowIndex, functionalScore);
+        const rowSpan = getRowSpan(rowIndex, data.function_score_all);
 
         return (
           <td
@@ -148,11 +118,13 @@ export default function FunctionalScoreTable() {
       header: 'Average Score',
       cell: (info) => {
         const rowIndex = info.row.index;
-        if (!isFirstInGroup(rowIndex, 'function_area', functionalScore)) {
+        if (
+          !isFirstInGroup(rowIndex, 'function_area', data.function_score_all)
+        ) {
           return null;
         }
 
-        const rowSpan = getRowSpan(rowIndex, functionalScore);
+        const rowSpan = getRowSpan(rowIndex, data.function_score_all);
 
         return (
           <td
@@ -163,13 +135,13 @@ export default function FunctionalScoreTable() {
           </td>
         );
       },
-      // footer: () => {
-      //   return (
-      //     <td className="py-2 px-4  border-r  bg-blue-50 font-medium">
-      //       Total Score: {data.final_score}
-      //     </td>
-      //   );
-      // },
+      footer: () => {
+        return (
+          <td className="py-2 px-4  border-t  border-l  bg-blue-50 font-medium">
+            Total Score: {data.final_score}
+          </td>
+        );
+      },
     },
     {
       accessorKey: 'review',
@@ -231,7 +203,7 @@ export default function FunctionalScoreTable() {
   });
 
   const table = useReactTable({
-    data: functionalScore,
+    data: data.function_score_all || [],
     columns,
     state: tableState,
     onStateChange: setTableState,
@@ -244,11 +216,18 @@ export default function FunctionalScoreTable() {
   });
 
   return (
-    <SmallTableWrapper
-      permanentColumnFilters={permanentColumnFilters}
-      table={table}
-      tableState={tableState}
-      setTableState={setTableState}
-    />
+    <div className="flex flex-col gap-3">
+      <p className="font-semibold">Functional Score: {data.final_score}</p>
+      {data.function_score_all ? (
+        <SmallTableWrapper
+          permanentColumnFilters={permanentColumnFilters}
+          table={table}
+          tableState={tableState}
+          setTableState={setTableState}
+        />
+      ) : (
+        <p>No Functional Score Available</p>
+      )}
+    </div>
   );
 }

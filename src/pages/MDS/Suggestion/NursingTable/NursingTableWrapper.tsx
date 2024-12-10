@@ -36,6 +36,16 @@ export default function NursingTableWrapper({ data }: { data: any }) {
         </td>
       ),
     },
+    // {
+    //   accessorKey: 'is_in_mds',
+    //   header: 'Is Already in MDS Table',
+    //   cell: (info) => (
+    //     <td className="py-2 px-4 border-t border-l whitespace-nowrap">
+    //       {info.row.original.suggestion ? 'Yes' : 'No'}
+    //     </td>
+    //   ),
+    // },
+
     {
       accessorKey: 'suggestion',
       header: 'AI Suggested Conditions',

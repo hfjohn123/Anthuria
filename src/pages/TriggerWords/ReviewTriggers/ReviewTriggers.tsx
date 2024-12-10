@@ -125,7 +125,7 @@ export default function ReviewTriggers() {
     if (includeCreatedDate) {
       const today = new Date();
       const twentyFourhAgo = new Date(today.getTime() - 1000 * 60 * 60 * 24);
-      // twentyFourhAgo.setHours(0, 0, 0, 0);
+      twentyFourhAgo.setHours(0, 0, 0, 0);
       today.setHours(23, 59, 59, 999);
       params = { from_date: twentyFourhAgo, to_date: today };
     } else {

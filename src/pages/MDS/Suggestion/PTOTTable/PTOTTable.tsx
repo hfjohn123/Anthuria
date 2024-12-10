@@ -133,7 +133,7 @@ export default function PTOTTable({ data }: { data: PTOTFinal }) {
       },
       footer: () => {
         return (
-          <td className="py-2 px-4  border-r  bg-blue-50 font-medium">
+          <td className="py-2 px-4  border-l  bg-blue-50 font-medium">
             Total Score: {data.final_score}
           </td>
         );
@@ -152,7 +152,7 @@ export default function PTOTTable({ data }: { data: PTOTFinal }) {
       ),
       footer: () => {
         return (
-          <td className="py-2 px-4  border-r  last:border-r-0 font-medium">
+          <td className="py-2 px-4  border-l  last:border-r-0 font-medium">
             Case Mix Group: {data.mix_group}
           </td>
         );

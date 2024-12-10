@@ -150,7 +150,7 @@ export default function MDSSuggestion({ row }: { row: Row<MDSFinal> }) {
             transition
             className="origin-top transition duration-200 ease-out data-[closed]:-translate-y-3 data-[closed]:opacity-0"
           >
-            <NursingTable />
+            <NursingTable data={row} />
           </DisclosurePanel>
         </Disclosure>
       </div>
