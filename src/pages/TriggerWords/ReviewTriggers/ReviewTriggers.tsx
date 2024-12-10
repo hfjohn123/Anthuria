@@ -281,7 +281,7 @@ export default function ReviewTriggers() {
       },
       {
         accessorKey: 'trigger_word',
-        header: 'Group Name',
+        header: 'Category Name',
         accessorFn: (row) => row.trigger_words.map((d) => d.trigger_word),
         cell: (info) => {
           const value = info.getValue() as string[];

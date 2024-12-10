@@ -196,7 +196,7 @@ const KeywordForm = forwardRef<
           toast.current?.show({
             severity: 'error',
             summary: 'Error',
-            detail: 'Please enter group name',
+            detail: 'Please enter category name',
           });
           return;
         }
@@ -220,7 +220,7 @@ const KeywordForm = forwardRef<
           toast.current?.show({
             severity: 'error',
             summary: 'Error',
-            detail: 'Group name already exists',
+            detail: 'Category name already exists',
           });
           return;
         }
@@ -260,7 +260,7 @@ const KeywordForm = forwardRef<
           search will be implemented tomorrow.
         </p>
         <Field>
-          <Label className="text-sm dark:text-bodydark2">Group Name</Label>
+          <Label className="text-sm dark:text-bodydark2">Category Name</Label>
           <InputText
             value={newTriggerWord.group_name}
             onChange={(e) => {

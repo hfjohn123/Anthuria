@@ -17,7 +17,7 @@ export default function NursingTable() {
         ref={stepperRef}
         pt={{ panelContainer: () => 'bg-transparent' }}
         headerPosition="bottom"
-        // orientation="vertical"
+        orientation={window.innerWidth < 1500 ? 'vertical' : 'horizontal'}
       >
         <StepperPanel
           pt={{
