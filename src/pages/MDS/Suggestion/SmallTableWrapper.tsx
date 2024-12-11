@@ -5,6 +5,7 @@ import CheckboxOption from '../../../components/Select/CheckboxOption.tsx';
 import handleFilterChange from '../../../components/Tables/handleFilterChange.ts';
 import { Button } from '@headlessui/react';
 import { flexRender, Table, TableState } from '@tanstack/react-table';
+import { Fragment } from 'react';
 
 export default function SmallTableWrapper({
   permanentColumnFilters,
@@ -110,9 +111,13 @@ export default function SmallTableWrapper({
               return (
                 <tr key={row.id}>
                   {row.getVisibleCells().map((cell) => {
-                    return flexRender(
-                      cell.column.columnDef.cell,
-                      cell.getContext(),
+                    return (
+                      <Fragment key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </Fragment>
                     );
                   })}
                 </tr>
@@ -134,12 +139,14 @@ export default function SmallTableWrapper({
                       );
                     }
 
-                    return header.isPlaceholder
-                      ? null
-                      : flexRender(
+                    return header.isPlaceholder ? null : (
+                      <Fragment key={header.id}>
+                        {flexRender(
                           header.column.columnDef.footer,
                           header.getContext(),
-                        );
+                        )}
+                      </Fragment>
+                    );
                   })}
                 </tr>
               ))}

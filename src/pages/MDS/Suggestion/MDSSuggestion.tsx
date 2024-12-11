@@ -123,22 +123,28 @@ export default function MDSSuggestion({ row }: { row: Row<MDSFinal> }) {
             <SLPTable data={row.original.slp_final_entry} />
           </DisclosurePanel>
         </Disclosure>
-        {row.original.ptot_final_entry.clinical_category && (
-          <Disclosure>
-            <DisclosureButton className="group ">
-              <div className="flex items-center py-2 gap-2 hover:bg-[#E6F3FF] ">
-                <CaretRight className="ease-in-out transition-all duration-200  group-data-[open]:rotate-90" />
-                <h3 className="text-base font-semibold">PT/OT</h3>
-              </div>
-            </DisclosureButton>
-            <DisclosurePanel
-              transition
-              className="origin-top transition duration-200 ease-out data-[closed]:-translate-y-3 data-[closed]:opacity-0"
-            >
+
+        <Disclosure>
+          <DisclosureButton className="group ">
+            <div className="flex items-center py-2 gap-2 hover:bg-[#E6F3FF] ">
+              <CaretRight className="ease-in-out transition-all duration-200  group-data-[open]:rotate-90" />
+              <h3 className="text-base font-semibold">PT/OT</h3>
+            </div>
+          </DisclosureButton>
+          <DisclosurePanel
+            transition
+            className="origin-top transition duration-200 ease-out data-[closed]:-translate-y-3 data-[closed]:opacity-0"
+          >
+            {row.original.ptot_final_entry.clinical_category ? (
               <PTOTTable data={row.original.ptot_final_entry} />
-            </DisclosurePanel>
-          </Disclosure>
-        )}
+            ) : (
+              <div className="flex items-center justify-center h-40">
+                <p className="font-bold text-lg">No Data Found</p>
+              </div>
+            )}
+          </DisclosurePanel>
+        </Disclosure>
+
         <Disclosure>
           <DisclosureButton className="group ">
             <div className="flex items-center py-2 gap-2 hover:bg-[#E6F3FF] ">

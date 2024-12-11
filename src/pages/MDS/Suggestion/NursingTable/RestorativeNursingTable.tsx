@@ -1,5 +1,8 @@
 import NursingTableWrapper from './NursingTableWrapper.tsx';
 import { RestorativeNursing } from '../../../../types/MDSFinal.ts';
+import { useState } from 'react';
+import _ from 'lodash';
+
 const restorative_nursing = [
   {
     mds_item: 'H0200C, H0500',
@@ -44,8 +47,15 @@ export default function RestorativeNursingTable({
 }: {
   data: RestorativeNursing;
 }) {
-  // const joined = useState(
-  //   merge(restorative_nursing, data.restorative_count_all),
-  // );
-  return <NursingTableWrapper data={restorative_nursing} />;
+  const [joined] = useState(
+    _.merge(restorative_nursing, data.restorative_count_all),
+  );
+  return (
+    <div className="flex flex-col gap-3">
+      <p className="font-semibold">
+        Restorative Nurse Count: {data.final_count}
+      </p>
+      <NursingTableWrapper data={joined} />
+    </div>
+  );
 }
