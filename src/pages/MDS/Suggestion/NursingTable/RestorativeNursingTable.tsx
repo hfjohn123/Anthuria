@@ -53,8 +53,9 @@ export default function RestorativeNursingTable({
   return (
     <div className="flex flex-col gap-3">
       <p className="font-semibold">
-        Restorative Nurse Count: {data.final_count}
+        Restorative Nurse Count: {data.final_count || 0}
       </p>
+
       <NursingTableWrapper data={joined} />
     </div>
   );

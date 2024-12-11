@@ -1,7 +1,6 @@
 import { NTAEntry } from '../../../../types/MDSFinal.ts';
 import {
   ColumnDef,
-  flexRender,
   getCoreRowModel,
   getExpandedRowModel,
   getFacetedRowModel,
@@ -13,15 +12,10 @@ import {
 import { Fragment, useState } from 'react';
 import getFacetedUniqueValues from '../../../../common/getFacetedUniqueValues.ts';
 import getFacetedMinMaxValues from '../../../../common/getFacetedMinMaxValues.ts';
-import Select from 'react-select';
-import filterSelectStyles from '../../../../components/Select/filterSelectStyles.ts';
-import FilterValueContainer from '../../../../components/Select/FilterValueContainer.tsx';
-import CheckboxOption from '../../../../components/Select/CheckboxOption.tsx';
-import handleFilterChange from '../../../../components/Tables/handleFilterChange.ts';
-import { Button } from '@headlessui/react';
-import clsx from 'clsx';
 import EvidenceModal from '../EvidenceModal.tsx';
 import { ThumbsDown, ThumbsUp } from '@phosphor-icons/react';
+import SmallTableWrapper from '../SmallTableWrapper.tsx';
+import { NTAMapping } from '../../cmiMapping.ts';
 
 const permanentColumnFilters = ['comorbidity', 'is_mds_table'];
 
@@ -52,9 +46,9 @@ export default function NTATable({ data }: { data: NTAEntry[] }) {
       filterFn: 'arrIncludesSome',
       cell: (info) => {
         return (
-          <p className="whitespace-normal max-w-[30vw]">
+          <td className="whitespace-normal max-w-[30vw] py-2 px-4 border-t  ">
             {info.getValue() as string}
-          </p>
+          </td>
         );
       },
       meta: {
@@ -68,13 +62,24 @@ export default function NTATable({ data }: { data: NTAEntry[] }) {
       meta: {
         type: 'categorical',
       },
+      cell: (info) => {
+        return (
+          <td className="whitespace-nowrap py-2 px-4 border-t border-l ">
+            {info.getValue() as string}
+          </td>
+        );
+      },
     },
     {
       accessorKey: 'is_mds_table',
       accessorFn: (row) => (row.is_mds_table ? 'Yes' : 'No'),
       header: 'Is Already in MDS Table',
       cell: (info) => {
-        return <p className="whitespace-nowrap">{info.getValue() as string}</p>;
+        return (
+          <td className="whitespace-nowrap py-2 px-4 border-t border-l ">
+            {info.getValue() as string}
+          </td>
+        );
       },
       filterFn: 'arrIncludesSome',
       meta: {
@@ -86,7 +91,7 @@ export default function NTATable({ data }: { data: NTAEntry[] }) {
       accessorFn: (row) => row.new_icd10?.map((d) => d.icd10) || [],
       cell: (info) => {
         return (
-          <p className="whitespace-nowrap">
+          <td className="whitespace-nowrap  px-4 border-t border-l ">
             {info.row.original.new_icd10?.map((d, index, array) => {
               return (
                 <Fragment key={d.icd10}>
@@ -95,7 +100,7 @@ export default function NTATable({ data }: { data: NTAEntry[] }) {
                 </Fragment>
               );
             })}
-          </p>
+          </td>
         );
       },
       header: 'AI Suggested Conditions',
@@ -105,9 +110,10 @@ export default function NTATable({ data }: { data: NTAEntry[] }) {
           .rows.filter((row) => row.original.is_mds_table)
           .reduce((sum, row) => sum + row.original.score, 0);
         return (
-          <p className="whitespace-nowrap text-left">
-            Current score: {total} ({getNTACategory(total)})
-          </p>
+          <td className="whitespace-nowrap text-left py-2 px-4 border-t border-l ">
+            Current score: {total} ({getNTACategory(total)}, CMI:{' '}
+            {NTAMapping[getNTACategory(total)]})
+          </td>
         );
       },
     },
@@ -116,10 +122,12 @@ export default function NTATable({ data }: { data: NTAEntry[] }) {
       header: 'Review',
       cell: () => {
         return (
-          <div className="flex items-center gap-2">
-            <ThumbsUp className="size-5" />
-            <ThumbsDown className="size-5" />
-          </div>
+          <td className="py-2 px-4 border-t border-l">
+            <div className="flex items-center gap-2">
+              <ThumbsUp className="size-5 cursor-pointer hover:text-blue-500" />
+              <ThumbsDown className="size-5 cursor-pointer hover:text-red-500" />
+            </div>
+          </td>
         );
       },
       footer: (info) => {
@@ -127,21 +135,33 @@ export default function NTATable({ data }: { data: NTAEntry[] }) {
           .getRowModel()
           .rows.filter((row) => !row.original.is_mds_table)
           .reduce((sum, row) => sum + row.original.score, 0);
-        return <p className="whitespace-nowrap text-left">+ {total}</p>;
+        return (
+          <td className="whitespace-nowrap text-left py-2 px-4 border-t border-l ">
+            + {total}
+          </td>
+        );
       },
     },
     {
       accessorKey: 'score',
       header: 'Score',
+      cell: (info) => {
+        return (
+          <td className="whitespace-nowrap py-2 px-4 border-t border-l  ">
+            {info.getValue() as string}
+          </td>
+        );
+      },
 
       footer: (info) => {
         const total = info.table
           .getRowModel()
           .rows.reduce((sum, row) => sum + row.original.score, 0);
         return (
-          <p className="whitespace-nowrap text-left">
-            Projected score: {total} ({getNTACategory(total)})
-          </p>
+          <td className="whitespace-nowrap text-left py-2 px-4 border-t border-l ">
+            Projected score: {total} ({getNTACategory(total)}, CMI:{' '}
+            {NTAMapping[getNTACategory(total)]})
+          </td>
         );
       },
     },
@@ -199,130 +219,11 @@ export default function NTATable({ data }: { data: NTAEntry[] }) {
     getSortedRowModel: getSortedRowModel(),
   });
   return (
-    <div className="py-5 px-5 flex flex-col gap-5 ">
-      <div>
-        <div className="w-full flex items-center gap-3 mt-1">
-          {permanentColumnFilters.map((filter) => (
-            <Select
-              classNames={{ ...filterSelectStyles }}
-              key={filter}
-              placeholder={table.getColumn(filter)?.columnDef.header as string}
-              closeMenuOnSelect={false}
-              hideSelectedOptions={false}
-              components={{
-                IndicatorSeparator: () => null,
-                ValueContainer: FilterValueContainer,
-                Option: CheckboxOption,
-              }}
-              isClearable={true}
-              isMulti={true}
-              value={
-                tableState.columnFilters.find((f) => f.id === filter)
-                  ? (
-                      tableState.columnFilters.find((f) => f.id === filter)
-                        ?.value as string[]
-                    ).map((s) => ({
-                      label: s,
-                      value: s,
-                    }))
-                  : []
-              }
-              name={filter}
-              options={Array.from(
-                table?.getColumn(filter)?.getFacetedUniqueValues()?.keys() ??
-                  [],
-              ).map((key) => ({
-                label: key,
-                value: key,
-              }))}
-              onChange={(selected, action) => {
-                handleFilterChange(selected, action, setTableState);
-              }}
-            />
-          ))}
-          {tableState.columnFilters.length > 0 && (
-            <Button
-              color="secondary"
-              onClick={() =>
-                setTableState((prev) => ({ ...prev, columnFilters: [] }))
-              }
-            >
-              Clear all
-            </Button>
-          )}
-        </div>
-        <table className="mt-3 w-full">
-          <thead>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <th
-                      key={header.id}
-                      colSpan={header.colSpan}
-                      className="py-2 border-y-[1.5px] border-stroke dark:border-strokedark text-left select-none group whitespace-nowrap text-body-2"
-                    >
-                      {header.isPlaceholder ? null : (
-                        <span>
-                          {flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
-                        </span>
-                      )}
-                    </th>
-                  );
-                })}
-              </tr>
-            ))}
-          </thead>
-          <tbody className="w-full">
-            {table.getRowModel().rows.map((row) => {
-              return (
-                <tr key={row.id}>
-                  {row.getVisibleCells().map((cell) => {
-                    return (
-                      <td
-                        key={cell.id}
-                        className={clsx(
-                          'py-2 border-b-[1.5px] border-stroke dark:border-strokedark',
-                          cell.column.columnDef.meta?.wrap,
-                        )}
-                      >
-                        {
-                          flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext(),
-                          ) as string
-                        }
-                      </td>
-                    );
-                  })}
-                </tr>
-              );
-            })}
-          </tbody>
-
-          <tfoot>
-            {data.length > 0 &&
-              table.getFooterGroups().map((footerGroup) => (
-                <tr key={footerGroup.id}>
-                  {footerGroup.headers.map((header) => (
-                    <th key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.footer,
-                            header.getContext(),
-                          )}
-                    </th>
-                  ))}
-                </tr>
-              ))}
-          </tfoot>
-        </table>
-        {data.length === 0 && <p>No ICD-10 Codes</p>}
-      </div>
-    </div>
+    <SmallTableWrapper
+      permanentColumnFilters={permanentColumnFilters}
+      table={table}
+      tableState={tableState}
+      setTableState={setTableState}
+    />
   );
 }

@@ -151,7 +151,7 @@ export default function TableWrapper({
   }, [tableState.columnFilters, tableState.globalFilter]);
 
   return (
-    <div className=" bg-white dark:bg-boxdark shadow-default h-full flex-col flex overflow-x-auto sm:overflow-clip ">
+    <div className=" bg-white dark:bg-boxdark shadow-default h-full flex-col flex overflow-x-auto lg:overflow-clip ">
       {filters && (
         <div
           ref={filterRef}

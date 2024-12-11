@@ -463,7 +463,7 @@ export default function Filters({
             });
           }}
         >
-          {includeCreatedDate ? 'Show all Historical' : 'Show Two Weeks'}
+          {includeCreatedDate ? 'Show Historical' : 'Show Today'}
         </Button>
       )}
     </div>

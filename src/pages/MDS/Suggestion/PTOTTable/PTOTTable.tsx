@@ -12,6 +12,7 @@ import { FunctionalScore, PTOTFinal } from '../../../../types/MDSFinal.ts';
 import getFacetedUniqueValues from '../../../../common/getFacetedUniqueValues.ts';
 import getFacetedMinMaxValues from '../../../../common/getFacetedMinMaxValues.ts';
 import SmallTableWrapper from '../SmallTableWrapper.tsx';
+import { PTOTMapping } from '../../cmiMapping.ts';
 
 // Helper Functions
 const getRowSpan = (rowIndex: number, data?: FunctionalScore[]): number => {
@@ -64,7 +65,7 @@ export default function PTOTTable({ data }: { data: PTOTFinal }) {
         return (
           <td
             rowSpan={rowSpan}
-            className="py-2 px-4 border-b border-r  first:border-l-0 align-top bg-white"
+            className="py-2 px-4 border-t border-l  first:border-l-0 align-top bg-white"
           >
             {info.getValue() as string}
           </td>
@@ -79,7 +80,7 @@ export default function PTOTTable({ data }: { data: PTOTFinal }) {
       header: 'MDS Item',
       filterFn: 'arrIncludesSome',
       cell: (info) => (
-        <td className="py-2 px-4 border-b border-r ">
+        <td className="py-2 px-4 border-t border-l ">
           {info.getValue() as string}
         </td>
       ),
@@ -91,7 +92,7 @@ export default function PTOTTable({ data }: { data: PTOTFinal }) {
       accessorKey: 'individual_function_score',
       header: 'Function Score',
       cell: (info) => (
-        <td className="py-2 px-4 border-b border-r  whitespace-nowrap">
+        <td className="py-2 px-4 border-t border-l  whitespace-nowrap">
           {info.getValue() as string}
         </td>
       ),
@@ -104,7 +105,7 @@ export default function PTOTTable({ data }: { data: PTOTFinal }) {
       accessorKey: 'suggestion',
       header: 'AI Suggested Conditions',
       cell: (info) => (
-        <td className="py-2 px-4 border-b border-r ">
+        <td className="py-2 px-4 border-t border-l ">
           {(info.getValue() as string[])?.join(', ') || ''}
         </td>
       ),
@@ -125,7 +126,7 @@ export default function PTOTTable({ data }: { data: PTOTFinal }) {
         return (
           <td
             rowSpan={rowSpan}
-            className="py-2 px-4 border-b border-r  bg-blue-50 align-top"
+            className="py-2 px-4 border-t border-l  bg-blue-50 align-top"
           >
             {info.getValue() as string}
           </td>
@@ -133,7 +134,7 @@ export default function PTOTTable({ data }: { data: PTOTFinal }) {
       },
       footer: () => {
         return (
-          <td className="py-2 px-4  border-l  bg-blue-50 font-medium">
+          <td className="py-2 px-4  border-t border-l  bg-blue-50 font-medium">
             Total Score: {data.final_score}
           </td>
         );
@@ -143,7 +144,7 @@ export default function PTOTTable({ data }: { data: PTOTFinal }) {
       accessorKey: 'review',
       header: 'Review',
       cell: () => (
-        <td className="py-2 px-4 border-b border-r  last:border-r-0">
+        <td className="py-2 px-4 border-t border-l  last:border-r-0">
           <div className="flex items-center gap-2">
             <ThumbsUp className="size-5 cursor-pointer hover:text-blue-500" />
             <ThumbsDown className="size-5 cursor-pointer hover:text-red-500" />
@@ -152,8 +153,14 @@ export default function PTOTTable({ data }: { data: PTOTFinal }) {
       ),
       footer: () => {
         return (
-          <td className="py-2 px-4  border-l  last:border-r-0 font-medium">
-            Case Mix Group: {data.mix_group}
+          <td className="py-2 px-4  border-t border-l  last:border-r-0 font-medium">
+            Case Mix Group: {data.mix_group}{' '}
+            {data.mix_group &&
+              '(PT CMI:' +
+                PTOTMapping[data.mix_group].PT_CMI +
+                ', OT CMI:' +
+                PTOTMapping[data.mix_group].OT_CMI +
+                ')'}
           </td>
         );
       },
