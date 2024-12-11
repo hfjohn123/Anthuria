@@ -157,9 +157,9 @@ export default function PTOTTable({ data }: { data: PTOTFinal }) {
             Case Mix Group: {data.mix_group}{' '}
             {data.mix_group &&
               '(PT CMI:' +
-                PTOTMapping[data.mix_group].PT_CMI +
+                PTOTMapping[data.mix_group as keyof typeof PTOTMapping].PT_CMI +
                 ', OT CMI:' +
-                PTOTMapping[data.mix_group].OT_CMI +
+                PTOTMapping[data.mix_group as keyof typeof PTOTMapping].OT_CMI +
                 ')'}
           </td>
         );
