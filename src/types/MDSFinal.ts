@@ -14,6 +14,7 @@ export type MDSFinal = {
   nursing_re_final_entry: RestorativeNursing;
   operation_name: string;
   url_header: string;
+  nursing_d_final_entry: NursingDepreation;
 };
 
 export type NTAEntry = {
@@ -117,6 +118,19 @@ export type RestorativeCountAll = {
   is_thumb_up: boolean;
   comment: string;
 };
+
+export type NursingDepreation =
+  | {
+      is_mds: boolean;
+      is_suggest: boolean;
+      slp_entry: ProgressNoteAndSummary[];
+      data?: NursingDepreation;
+    }
+  | {
+      is_mds?: undefined;
+      is_suggest?: undefined;
+      slp_entry?: undefined;
+    };
 // function generateRandomICD10(): MDSFinal {
 //   const icd10 = [
 //     'A00-A09',

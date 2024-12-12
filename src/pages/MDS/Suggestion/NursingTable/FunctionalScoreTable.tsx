@@ -15,6 +15,7 @@ import { ThumbsDown, ThumbsUp } from '@phosphor-icons/react';
 import { useState } from 'react';
 import getFacetedUniqueValues from '../../../../common/getFacetedUniqueValues.ts';
 import getFacetedMinMaxValues from '../../../../common/getFacetedMinMaxValues.ts';
+import clsx from 'clsx';
 
 // Helper Functions
 const getRowSpan = (rowIndex: number, data?: FunctionalScore[]): number => {
@@ -216,7 +217,7 @@ export default function FunctionalScoreTable({
   });
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className={clsx('flex flex-col', data.function_score_all && 'gap-3')}>
       <p className="font-semibold">Functional Score: {data.final_score}</p>
       {data.function_score_all ? (
         <SmallTableWrapper

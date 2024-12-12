@@ -228,7 +228,7 @@ export default function EvidenceModal({
                       )}
                     >
                       <h3 className="font-bold text-xl">
-                        Diagnosis {icd10.icd10}
+                        Diagnosis about {icd10.icd10}
                       </h3>
                       <p className="italic">{item.explanation}</p>
                     </div>
