@@ -155,7 +155,7 @@ export default function SmallTableWrapper({
         </table>
       </div>
 
-      {table.getRowModel().rows.length === 0 && <p>No data available</p>}
+      {table.getRowModel().rows.length === 0 && <p>No record found</p>}
     </div>
   );
 }

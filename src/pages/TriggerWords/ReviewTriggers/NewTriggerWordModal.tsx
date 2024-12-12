@@ -57,6 +57,7 @@ export default function NewTriggerWordModal({
           trigger_words={trigger_words}
           toast={toast}
           data={data}
+          isNew
           initialNewTrigger={initialNewTrigger}
           callback={() => setIsOpen(false)}
         />

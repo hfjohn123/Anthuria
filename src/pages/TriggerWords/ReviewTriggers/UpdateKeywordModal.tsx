@@ -69,6 +69,7 @@ export default function UpdateKeywordModal({
           <KeywordForm
             trigger_words={trigger_words}
             toast={toast}
+            isNew={false}
             data={data}
             initialNewTrigger={initialNewTrigger}
             ref={formRef}

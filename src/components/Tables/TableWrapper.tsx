@@ -156,7 +156,7 @@ export default function TableWrapper({
     <div>
       <p className="bg-transparent">
         {table.getFilteredRowModel().rows.length} of{' '}
-        {table.getCoreRowModel().rows.length} Data is displayed
+        {table.getCoreRowModel().rows.length} Records is displayed
       </p>
       <div className=" bg-white dark:bg-boxdark shadow-default h-full flex-col flex overflow-x-auto lg:overflow-clip ">
         {filters && (
@@ -284,9 +284,9 @@ export default function TableWrapper({
                 </tr>
               ))}
             </thead>
-            {table.getCoreRowModel().rows.length === 0 && <div>No Data</div>}
+            {table.getCoreRowModel().rows.length === 0 && <div>No Record</div>}
             {table.getRowModel().rows.length === 0 && (
-              <div>No Data matches your filter</div>
+              <div>No Record matches your filter</div>
             )}
             <tbody>
               {table.getRowModel().rows.map((row) => {

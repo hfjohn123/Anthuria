@@ -139,7 +139,7 @@ export default function MDSSuggestion({ row }: { row: Row<MDSFinal> }) {
               <PTOTTable data={row.original.ptot_final_entry} />
             ) : (
               <div className="flex items-center justify-center h-40">
-                <p className="font-bold text-lg">No Data Found</p>
+                <p className="font-bold text-lg">No Record Found</p>
               </div>
             )}
           </DisclosurePanel>

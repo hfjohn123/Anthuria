@@ -10,7 +10,7 @@ export default function DepressionIndicator({
     <div>
       <p className="font-bold">Depression Indicator:</p>
       {data.is_mds === undefined ? (
-        <p>No Data Avaliable</p>
+        <p>No Record Found</p>
       ) : (
         <p>
           {data.is_mds ? 'Yes' : 'No'}{' '}

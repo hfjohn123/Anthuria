@@ -36,7 +36,7 @@ export default function CommentModal({
         />
       </Button>
       <Dialog
-        header="What goes wrong?"
+        header="What was inaccurate about this suggestion?"
         visible={showModal}
         dismissableMask
         resizable
@@ -47,7 +47,10 @@ export default function CommentModal({
         }}
         maximizable
       >
-        <CommentForm comment={data} setIsOpen={setShowModal} />
+        <div>
+          <p className="italic">Please help correct this trigger assignment.</p>
+          <CommentForm comment={data} setIsOpen={setShowModal} />
+        </div>
       </Dialog>
     </>
   );

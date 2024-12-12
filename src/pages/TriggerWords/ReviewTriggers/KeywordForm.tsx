@@ -74,14 +74,16 @@ const KeywordForm = forwardRef<
       keyword_list: string[];
     };
     callback?: () => void;
+    isNew?: boolean;
   }
->(({ trigger_words, toast, data, initialNewTrigger, callback }, ref) => {
+>(({ trigger_words, toast, data, initialNewTrigger, callback, isNew }, ref) => {
   const { user_applications_locations, user_data, route } =
     useContext(AuthContext);
   const { locations } = user_applications_locations.find(
     (d) => d['id'] === 'trigger_words',
   ) || { locations: [] };
   const queryClient = useQueryClient();
+  const new_keyword = initialNewTrigger.keyword_list.filter((d) => d !== '');
 
   const [newTriggerWord, setNewTriggerWord] = useState<{
     group_name: string;
@@ -89,7 +91,10 @@ const KeywordForm = forwardRef<
     internal_facility_id: string[];
     keyword_list: string[];
     // date_range: [Date | null, Date | null];
-  }>(initialNewTrigger);
+  }>({
+    ...initialNewTrigger,
+    keyword_list: new_keyword,
+  });
 
   const addTemporary = useMutation({
     mutationFn: ({
@@ -374,23 +379,27 @@ const KeywordForm = forwardRef<
           <button
             type="reset"
             className="dark:text-bodydark1"
-            onClick={() => {
+            onClick={(event) => {
+              event.preventDefault();
               callback?.();
               setNewTriggerWord(initialNewTrigger);
             }}
           >
             Cancel
           </button>
-          <button
-            onClick={() => {
-              removeTemporary.mutate({
-                facilities: initialNewTrigger.internal_facility_id,
-              });
-              callback?.();
-            }}
-          >
-            Delete
-          </button>
+          {!isNew && (
+            <button
+              onClick={(event) => {
+                event.preventDefault();
+                removeTemporary.mutate({
+                  facilities: initialNewTrigger.internal_facility_id,
+                });
+                callback?.();
+              }}
+            >
+              Delete
+            </button>
+          )}
           <button
             type="submit"
             className="bg-primary text-white dark:text-bodydark1 rounded p-2"
