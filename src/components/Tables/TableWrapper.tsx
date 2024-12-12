@@ -5,6 +5,7 @@ import {
   TableState,
 } from '@tanstack/react-table';
 import { Button } from '@headlessui/react';
+import 'primeicons/primeicons.css';
 
 import SortUpIcon from '../../images/icon/sort-up.svg';
 import SortDownIcon from '../../images/icon/sort-down.svg';
@@ -19,6 +20,7 @@ import Filters from './Filters.tsx';
 import { IconField } from 'primereact/iconfield';
 import { InputIcon } from 'primereact/inputicon';
 import DebouncedInputText from '../Forms/Input/DebouncedInputText.tsx';
+import { isBoolean } from 'lodash';
 
 export default function TableWrapper({
   table,
@@ -59,7 +61,7 @@ export default function TableWrapper({
     const initialFilters: ColumnFiltersState = [];
 
     Object.entries(search).forEach(([key, value]) => {
-      if (value && value instanceof String) {
+      if (value !== undefined && value !== null && !isBoolean(value)) {
         if (value === 'yesterday') {
           value = [new Date(Date.now() - 1000 * 60 * 60 * 24), new Date()];
         } else if (value === 'last_3_days') {
@@ -151,164 +153,178 @@ export default function TableWrapper({
   }, [tableState.columnFilters, tableState.globalFilter]);
 
   return (
-    <div className=" bg-white dark:bg-boxdark shadow-default h-full flex-col flex overflow-x-auto lg:overflow-clip ">
-      {filters && (
-        <div
-          ref={filterRef}
-          className="sticky  top-0 left-0 flex-none bg-white dark:bg-boxdark z-30 "
-        >
-          <div className="flex items-center border-b border-stroke py-1 px-1 ">
-            <IconField iconPosition="left" className=" flex-1 ">
-              <InputIcon className="pi pi-search" />
-              <DebouncedInputText
-                setValue={(e) => {
-                  setTableState((prev) => ({
-                    ...prev,
-                    globalFilter: e.target.value,
-                  }));
-                }}
-                value={tableState.globalFilter}
-                placeholder="Global Search..."
-                className="w-full "
-              />
-            </IconField>
-            {download && (
-              <Button
-                type="button"
-                className="hover:text-primary"
-                onClick={() =>
-                  exportExcel(
-                    table,
-                    'review_triggers_' + new Date().toLocaleString(),
-                  )
-                }
-              >
-                <DownloadSimple size={22} />
-              </Button>
-            )}
-            {tableSetting && initialTableState && (
-              <TableSettingModal
-                table={table}
-                tableState={tableState}
-                setTableState={setTableState}
-                initialTableState={initialTableState}
-              />
-            )}
-          </div>
-          <Filters
-            permanentColumnFilters={permanentColumnFilters}
-            table={table}
-            tableState={tableState}
-            setTableState={setTableState}
-            hasHistory={hasHistory}
-            setIsRefetching={setIsRefetching}
-            includeCreatedDate={includeCreatedDate}
-            setIncludeCreatedDate={setIncludeCreatedDate}
-          />
-        </div>
-      )}
-
-      <div className="flex-1 relative">
-        <table className="w-full border-b-2 border-b-stroke ">
-          <thead
-            className="bg-slate-50 dark:bg-graydark sticky z-1"
-            style={filters ? { top: 'var(--filter-height, 0px)' } : { top: 0 }}
+    <div>
+      <p className="bg-transparent">
+        {table.getFilteredRowModel().rows.length} of{' '}
+        {table.getCoreRowModel().rows.length} Data is displayed
+      </p>
+      <div className=" bg-white dark:bg-boxdark shadow-default h-full flex-col flex overflow-x-auto lg:overflow-clip ">
+        {filters && (
+          <div
+            ref={filterRef}
+            className="sticky  top-0 left-0 flex-none bg-white dark:bg-boxdark z-30 "
           >
-            {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <th
-                      key={header.id}
-                      colSpan={header.colSpan}
-                      className="py-3 shadow-table_header  shadow-stroke z-1 px-3  text-left select-none group whitespace-nowrap "
-                      onClick={header.column.getToggleSortingHandler()}
-                      role="button"
-                    >
-                      {header.isPlaceholder ? null : (
-                        <span>
-                          {flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
-                          {{
-                            asc: (
-                              <img
-                                src={SortUpIcon}
-                                alt="Sort Up Icon"
-                                className="inline size-5"
-                              />
-                            ),
-                            desc: (
-                              <img
-                                src={SortDownIcon}
-                                alt="Sort Down Icon"
-                                className="inline size-5"
-                              />
-                            ),
-                          }[header.column.getIsSorted() as string] ??
-                            null ??
-                            {
+            <div className="flex items-center border-b border-stroke py-1 px-1 ">
+              <IconField iconPosition="left" className=" flex-1 ">
+                <InputIcon className="pi pi-search" />
+                <DebouncedInputText
+                  setValue={(e) => {
+                    setTableState((prev) => ({
+                      ...prev,
+                      globalFilter: e.target.value,
+                    }));
+                  }}
+                  value={tableState.globalFilter}
+                  placeholder="Global Search..."
+                  className="w-full "
+                />
+              </IconField>
+              {download && (
+                <Button
+                  type="button"
+                  className="hover:text-primary"
+                  onClick={() =>
+                    exportExcel(
+                      table,
+                      'review_triggers_' + new Date().toLocaleString(),
+                    )
+                  }
+                >
+                  <DownloadSimple size={22} />
+                </Button>
+              )}
+              {tableSetting && initialTableState && (
+                <TableSettingModal
+                  table={table}
+                  tableState={tableState}
+                  setTableState={setTableState}
+                  initialTableState={initialTableState}
+                />
+              )}
+            </div>
+            <Filters
+              permanentColumnFilters={permanentColumnFilters}
+              table={table}
+              tableState={tableState}
+              setTableState={setTableState}
+              hasHistory={hasHistory}
+              setIsRefetching={setIsRefetching}
+              includeCreatedDate={includeCreatedDate}
+              setIncludeCreatedDate={setIncludeCreatedDate}
+            />
+          </div>
+        )}
+
+        <div className="flex-1 relative">
+          <table className="w-full border-b-2 border-b-stroke ">
+            <thead
+              className="bg-slate-50 dark:bg-graydark sticky z-1"
+              style={
+                filters ? { top: 'var(--filter-height, 0px)' } : { top: 0 }
+              }
+            >
+              {table.getHeaderGroups().map((headerGroup) => (
+                <tr key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => {
+                    return (
+                      <th
+                        key={header.id}
+                        colSpan={header.colSpan}
+                        className="py-3 shadow-table_header  shadow-stroke z-1 px-3  text-left select-none group whitespace-nowrap "
+                        onClick={header.column.getToggleSortingHandler()}
+                        role="button"
+                      >
+                        {header.isPlaceholder ? null : (
+                          <span>
+                            {flexRender(
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
+                            {{
                               asc: (
                                 <img
                                   src={SortUpIcon}
                                   alt="Sort Up Icon"
-                                  className=" size-5 hidden group-hover:inline "
+                                  className="inline size-5"
                                 />
                               ),
                               desc: (
                                 <img
                                   src={SortDownIcon}
                                   alt="Sort Down Icon"
-                                  className=" size-5 hidden group-hover:inline"
+                                  className="inline size-5"
                                 />
                               ),
-                            }[header.column.getNextSortingOrder() as string] ??
-                            null}
-                        </span>
-                      )}
-                    </th>
-                  );
-                })}
-              </tr>
-            ))}
-          </thead>
-          <tbody>
-            {table.getRowModel().rows.map((row) => {
-              return (
-                <Fragment key={row.id}>
-                  <tr className="border-t-stroke border-t ">
-                    {row.getVisibleCells().map((cell) => {
-                      return (
-                        <td
-                          key={cell.id}
-                          className={`py-2 px-3 w-[${cell.column.getSize() || 'auto'}] text-sm ${cell.column.columnDef.meta?.wrap} ${row.getIsExpanded() && 'bg-slate-100 dark:bg-slate-700'} `}
-                          role="button"
-                          onClick={row.getToggleExpandedHandler()}
-                        >
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext(),
-                          )}
-                        </td>
-                      );
-                    })}
-                  </tr>
-                  {row.getIsExpanded() && (
-                    <tr>
-                      <td colSpan={row.getVisibleCells().length}>
-                        {renderExpandedRow({ row, ...rest })}
-                      </td>
+                            }[header.column.getIsSorted() as string] ??
+                              null ??
+                              {
+                                asc: (
+                                  <img
+                                    src={SortUpIcon}
+                                    alt="Sort Up Icon"
+                                    className=" size-5 hidden group-hover:inline "
+                                  />
+                                ),
+                                desc: (
+                                  <img
+                                    src={SortDownIcon}
+                                    alt="Sort Down Icon"
+                                    className=" size-5 hidden group-hover:inline"
+                                  />
+                                ),
+                              }[
+                                header.column.getNextSortingOrder() as string
+                              ] ??
+                              null}
+                          </span>
+                        )}
+                      </th>
+                    );
+                  })}
+                </tr>
+              ))}
+            </thead>
+            {table.getCoreRowModel().rows.length === 0 && <div>No Data</div>}
+            {table.getRowModel().rows.length === 0 && (
+              <div>No Data matches your filter</div>
+            )}
+            <tbody>
+              {table.getRowModel().rows.map((row) => {
+                return (
+                  <Fragment key={row.id}>
+                    <tr className="border-t-stroke border-t ">
+                      {row.getVisibleCells().map((cell) => {
+                        return (
+                          <td
+                            key={cell.id}
+                            className={`py-2 px-3 w-[${cell.column.getSize() || 'auto'}] text-sm ${cell.column.columnDef.meta?.wrap} ${row.getIsExpanded() && 'bg-slate-100 dark:bg-slate-700'} `}
+                            role="button"
+                            onClick={row.getToggleExpandedHandler()}
+                          >
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext(),
+                            )}
+                          </td>
+                        );
+                      })}
                     </tr>
-                  )}
-                </Fragment>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-      <div className="flex-none">
-        <PageNavigation table={table} tableState={tableState} />
+                    {row.getIsExpanded() && (
+                      <tr>
+                        <td colSpan={row.getVisibleCells().length}>
+                          {renderExpandedRow({ row, ...rest })}
+                        </td>
+                      </tr>
+                    )}
+                  </Fragment>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+        <div className="flex-none">
+          <PageNavigation table={table} tableState={tableState} />
+        </div>
       </div>
     </div>
   );

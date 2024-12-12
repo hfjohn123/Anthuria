@@ -17,8 +17,6 @@ import dateRangeFilterFn from '../../../common/dateRangeFilterFn.ts';
 import { MDSFinal } from '../../../types/MDSFinal.ts';
 import TableWrapper from '../../../components/Tables/TableWrapper.tsx';
 import MDSDetail from './MDSDetail.tsx';
-
-import NewFilter from '../../../components/Tables/NewFilter.tsx';
 const PERMANENT_COLUMN_FILTERS = [
   'facility_name',
   'update_time',
@@ -178,6 +176,10 @@ export default function MDSTable({ data }: { data: MDSFinal[] }) {
 
   return (
     <div className="flex flex-col gap-6">
+      <p className="italic">
+        Patients below include all eligible PDPM patients as well as any
+        patients who were PDPM eligible in the past 30 days.
+      </p>
       {/*<NewFilter*/}
       {/*  options={[*/}
       {/*    ...new Map(*/}

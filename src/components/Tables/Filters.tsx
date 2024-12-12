@@ -172,6 +172,7 @@ export default function Filters({
                   ?.value as [Date, Date]
               }
               setValue={([start, end]: [Date | null, Date | null]) => {
+                start && start.setHours(0, 0, 0, 0);
                 end && end.setHours(23, 59, 59, 999);
                 setTableState((prev) => ({
                   ...prev,
@@ -358,6 +359,7 @@ export default function Filters({
                     .value as [Date, Date]
                 }
                 setValue={([start, end]: [Date | null, Date | null]) => {
+                  start && start.setHours(0, 0, 0, 0);
                   end && end.setHours(23, 59, 59, 999);
                   setTableState((prev) => ({
                     ...prev,

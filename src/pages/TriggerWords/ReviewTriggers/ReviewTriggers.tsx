@@ -108,6 +108,10 @@ const initialTableState: TableState = {
 
 export default function ReviewTriggers() {
   const { route, user_applications_locations } = useContext(AuthContext);
+  const [initialFacetedCounts, setInitialFacetedCounts] = useState<
+    Map<any, number>
+  >(new Map());
+
   const { locations } = user_applications_locations.find(
     (d) => d['id'] === 'trigger_words',
   ) || { locations: [] };
@@ -139,7 +143,6 @@ export default function ReviewTriggers() {
         to_date: today,
         // pagelimit: tableState.pagination.pageSize,
         // page: tableState.pagination.pageIndex + 1,
-        ...search,
       };
     }
     const response = await axios.get(`${route}/trigger_final`, {
@@ -396,6 +399,13 @@ export default function ReviewTriggers() {
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
   });
+  useEffect(() => {
+    const triggerWordColumn = table.getColumn('trigger_word');
+    if (triggerWordColumn) {
+      const facetedValues = triggerWordColumn.getFacetedUniqueValues();
+      setInitialFacetedCounts(facetedValues);
+    }
+  }, [data?.data]);
 
   useEffect(() => {
     localStorage.setItem(
@@ -458,6 +468,7 @@ export default function ReviewTriggers() {
                     ?.getFacetedUniqueValues()
                     .get(word) || 0
                 }
+                initialValue={initialFacetedCounts.get(word) || 0}
                 title={word}
                 onClick={() => {
                   let filter =
@@ -589,7 +600,7 @@ export default function ReviewTriggers() {
           </div>
         </>
 
-        <div className=" mt-5 col-span-12 bg-white dark:bg-boxdark shadow-default  overflow-x-auto sm:overflow-clip  ">
+        <div className=" mt-5 col-span-12 shadow-default  overflow-x-auto sm:overflow-clip  ">
           <TableWrapper
             table={table}
             tableState={tableState}

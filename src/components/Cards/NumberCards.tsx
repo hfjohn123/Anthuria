@@ -4,6 +4,7 @@ import UpdateKeywordModal from '../../pages/TriggerWords/ReviewTriggers/UpdateKe
 export default function NumberCards({
   className,
   value,
+  initialValue,
   title,
   onClick,
   keywordModal = false,
@@ -16,6 +17,7 @@ export default function NumberCards({
 }: {
   className?: string;
   value: number;
+  initialValue?: number;
   title: string;
   keywordModal?: boolean;
   keywordList?: string[];
@@ -72,7 +74,10 @@ export default function NumberCards({
       <h3 className="sm:whitespace-nowrap text-sm sm:text-base text-center">
         {title}
       </h3>
-      <p className="text-xl font-bold">{value}</p>
+      <p className="text-xl font-bold">
+        {value}{' '}
+        {initialValue && value !== initialValue ? `of ${initialValue} ` : ''}
+      </p>
     </div>
   );
 }

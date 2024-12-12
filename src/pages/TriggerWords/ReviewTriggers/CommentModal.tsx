@@ -36,7 +36,7 @@ export default function CommentModal({
         />
       </Button>
       <Dialog
-        header="Create a New Trigger Word"
+        header="What goes wrong?"
         visible={showModal}
         dismissableMask
         resizable
