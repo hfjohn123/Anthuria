@@ -156,7 +156,9 @@ export default function TableWrapper({
     <div>
       <p className="bg-transparent">
         {table.getFilteredRowModel().rows.length} of{' '}
-        {table.getCoreRowModel().rows.length} Records is displayed
+        {table.getCoreRowModel().rows.length}{' '}
+        {table.getCoreRowModel().rows.length >= 1 ? 'records' : 'record'} are
+        displayed
       </p>
       <div className=" bg-white dark:bg-boxdark shadow-default h-full flex-col flex overflow-x-auto lg:overflow-clip ">
         {filters && (
