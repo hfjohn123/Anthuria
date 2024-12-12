@@ -49,9 +49,11 @@ export default function DetailWithProgressNote({
             <th className="text-left  w-2/12">
               <p>Review</p>
             </th>
-            <th className="text-left w-2/12">
-              <p>Actions</p>
-            </th>
+            {row.original.upstream !== 'PCC' && (
+              <th className="text-left w-2/12">
+                <p>Actions</p>
+              </th>
+            )}
           </tr>
         </thead>
         <tbody>
@@ -111,9 +113,9 @@ export default function DetailWithProgressNote({
                     )}
                   </div>
                 </td>
-                <td className="align-top ">
-                  {row.original.upstream === 'MTX' ? (
-                    event_ids && event_ids.length > 0 ? (
+                {row.original.upstream !== 'PCC' && (
+                  <td className="align-top ">
+                    {event_ids && event_ids.length > 0 ? (
                       event_ids.map((event_id) => (
                         <HyperLink
                           key={event_id}
@@ -140,7 +142,7 @@ export default function DetailWithProgressNote({
                         Create Event
                       </HyperLink>
                     ) : trigger_word === 'Weight Change' ? (
-                      <p>Comming Soon</p>
+                      <p></p>
                     ) : (
                       <HyperLink
                         tooltip_content={'Create an Event in MatrixCare'}
@@ -149,11 +151,9 @@ export default function DetailWithProgressNote({
                       >
                         Create Event
                       </HyperLink>
-                    )
-                  ) : (
-                    row.original.upstream === 'PCC' && <p>Comming Soon</p>
-                  )}
-                </td>
+                    )}
+                  </td>
+                )}
               </tr>
             ),
           )}
