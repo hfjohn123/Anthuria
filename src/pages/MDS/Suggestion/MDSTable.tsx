@@ -9,7 +9,7 @@ import {
   TableState,
   useReactTable,
 } from '@tanstack/react-table';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import getFacetedUniqueValues from '../../../common/getFacetedUniqueValues.ts';
 import getFacetedMinMaxValues from '../../../common/getFacetedMinMaxValues.ts';
 import HyperLink from '../../../components/Basic/HyerLink.tsx';
@@ -17,14 +17,14 @@ import dateRangeFilterFn from '../../../common/dateRangeFilterFn.ts';
 import { MDSFinal } from '../../../types/MDSFinal.ts';
 import TableWrapper from '../../../components/Tables/TableWrapper.tsx';
 import MDSDetail from './MDSDetail.tsx';
-const PERMANENT_COLUMN_FILTERS = [
-  'operation_name',
-  'facility_name',
-  'update_time',
-  'patient_name',
-];
+import { AuthContext } from '../../../components/AuthWrapper.tsx';
 
 export default function MDSTable({ data }: { data: MDSFinal[] }) {
+  const { user_data } = useContext(AuthContext);
+  const PERMANENT_COLUMN_FILTERS =
+    user_data.organization_id === 'the_triedge_lab'
+      ? ['operation_name', 'facility_name', 'update_time', 'patient_name']
+      : ['facility_name', 'update_time', 'patient_name'];
   const columns: ColumnDef<MDSFinal>[] = [
     {
       accessorKey: 'operation_name',
@@ -145,12 +145,14 @@ export default function MDSTable({ data }: { data: MDSFinal[] }) {
             patient_name: true,
             update_time: true,
             existing_icd10: true,
+            operation_name: false,
           }
         : {
             facility_name: false,
             patient_name: true,
             update_time: true,
             existing_icd10: true,
+            operation_name: false,
           },
     pagination: {
       pageIndex: 0,

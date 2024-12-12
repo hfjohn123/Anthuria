@@ -38,13 +38,6 @@ const predefinedTriggerWords = [
   'Wound/Ulcer',
   'Weight Change',
 ];
-const PERMANENT_COLUMN_FILTERS = [
-  'operation_name',
-  'facility_name',
-  'patient_name',
-  'trigger_word',
-  'revision_date',
-];
 
 const initialTableState: TableState = {
   globalFilter: '',
@@ -86,6 +79,7 @@ const initialTableState: TableState = {
           summary: false,
           has_events: false,
           has_reviewed: false,
+          operation_name: false,
         }
       : {
           facility_name: true,
@@ -100,6 +94,7 @@ const initialTableState: TableState = {
           summary: false,
           has_events: false,
           has_reviewed: false,
+          operation_name: false,
         },
   pagination: {
     pageIndex: 0,
@@ -108,10 +103,21 @@ const initialTableState: TableState = {
 };
 
 export default function ReviewTriggers() {
-  const { route, user_applications_locations } = useContext(AuthContext);
+  const { route, user_applications_locations, user_data } =
+    useContext(AuthContext);
   const [initialFacetedCounts, setInitialFacetedCounts] = useState<
     Map<any, number>
   >(new Map());
+  const PERMANENT_COLUMN_FILTERS =
+    user_data.organization_id === 'the_triedge_lab'
+      ? [
+          'operation_name',
+          'facility_name',
+          'patient_name',
+          'trigger_word',
+          'revision_date',
+        ]
+      : ['facility_name', 'patient_name', 'trigger_word', 'revision_date'];
 
   const { locations } = user_applications_locations.find(
     (d) => d['id'] === 'trigger_words',

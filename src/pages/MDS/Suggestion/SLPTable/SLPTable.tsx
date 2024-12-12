@@ -172,7 +172,7 @@ export default function SLPTable({
               return (
                 <td className="py-2 px-4 border-t border-l">
                   <EvidenceModal
-                    button={<span>{count} evidence found</span>}
+                    button={<span>{count} potentials found</span>}
                     icd10={{
                       icd10: info.row.original.condition,
                       progress_note: value as ProgressNoteAndSummary[],

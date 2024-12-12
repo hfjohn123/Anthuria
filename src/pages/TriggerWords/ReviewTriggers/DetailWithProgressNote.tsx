@@ -10,6 +10,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import usePutComment from '../../../hooks/interface/usePutComment.ts';
 import { useContext } from 'react';
 import { AuthContext } from '../../../components/AuthWrapper.tsx';
+import clsx from 'clsx';
 
 export default function DetailWithProgressNote({
   row,
@@ -35,7 +36,12 @@ export default function DetailWithProgressNote({
                 <Tooltip id="bot-tooltip" className="z-99" />
               </div>
             </th>
-            <th className="text-left pr-10 w-6/12">
+            <th
+              className={clsx(
+                'text-left pr-10 ',
+                row.original.upstream === 'PCC' ? 'w-8/12' : 'w-6/12',
+              )}
+            >
               <div className="flex gap-1.5">
                 <p>Explanations</p>
                 <Bot

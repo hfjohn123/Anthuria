@@ -123,7 +123,7 @@ export default function EvidenceModal({
         // resizable
         // maximizable
         onHide={() => setOpen(false)}
-        header={'Evidence for ' + icd10.icd10}
+        header={'Suggestion for ' + icd10.icd10}
         className="w-[60rem] "
         contentClassName="relative"
         pt={{
