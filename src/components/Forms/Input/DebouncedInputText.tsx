@@ -35,6 +35,7 @@ export default function DebouncedInputText({
 
   return (
     <InputText
+      type="search"
       value={debouncedValue}
       placeholder={placeholder}
       onChange={(e) => setDebouncedValue(e.target.value)}
