@@ -28,6 +28,7 @@ import TriggerNoteDetail from './TriggerNoteDetail.tsx';
 import { useSearch } from '@tanstack/react-router';
 import NewTriggerWordModal from './NewTriggerWordModal.tsx';
 import TableWrapper from '../../../components/Tables/TableWrapper.tsx';
+import _, { Dictionary } from 'lodash';
 
 const predefinedTriggerWords = [
   'Fall',
@@ -106,8 +107,8 @@ export default function ReviewTriggers() {
   const { route, user_applications_locations, user_data } =
     useContext(AuthContext);
   const [initialFacetedCounts, setInitialFacetedCounts] = useState<
-    Map<any, number>
-  >(new Map());
+    Dictionary<number>
+  >({});
   const PERMANENT_COLUMN_FILTERS =
     user_data.organization_id === 'the_triedge_lab'
       ? [
@@ -128,7 +129,7 @@ export default function ReviewTriggers() {
   });
 
   const [includeCreatedDate, setIncludeCreatedDate] = useState(
-    search['history'] ? search['history'] === 'false' : true,
+    !search['history'],
   );
 
   const fetchTriggerWord = async () => {
@@ -413,11 +414,13 @@ export default function ReviewTriggers() {
     getPaginationRowModel: getPaginationRowModel(),
   });
   useEffect(() => {
-    const triggerWordColumn = table.getColumn('trigger_word');
-    if (triggerWordColumn) {
-      const facetedValues = triggerWordColumn.getFacetedUniqueValues();
-      setInitialFacetedCounts(facetedValues);
-    }
+    const result = _(data?.data)
+      .flatMap('trigger_words') // Flatten the arrays of trigger word objects
+      .map('trigger_word') // Get just the trigger_word field
+      .compact() // Remove any undefined/null values
+      .countBy() // Count occurrences
+      .value();
+    setInitialFacetedCounts(result);
   }, [data?.data]);
 
   useEffect(() => {
@@ -481,7 +484,7 @@ export default function ReviewTriggers() {
                     ?.getFacetedUniqueValues()
                     .get(word) || 0
                 }
-                initialValue={initialFacetedCounts.get(word) || 0}
+                initialValue={initialFacetedCounts[word] || 0}
                 title={word}
                 onClick={() => {
                   let filter =

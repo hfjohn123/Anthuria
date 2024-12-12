@@ -4,7 +4,6 @@ import {
   PopoverPanel,
   Transition,
 } from '@headlessui/react';
-import { Button } from 'primereact/button';
 import SelectCaretDown from '../../../images/icon/SelectCaretDown.tsx';
 import clsx from 'clsx';
 import DateTimeFilter from './DateTimeFilter.tsx';
@@ -17,6 +16,7 @@ export default function DateTimeDropdown({
   clearFilter,
   minDate,
   maxDate,
+  callback,
 }: {
   id: string;
   autoFocus?: boolean;
@@ -25,6 +25,7 @@ export default function DateTimeDropdown({
   clearFilter: () => void;
   minDate?: Date;
   maxDate?: Date;
+  callback?: () => void;
 }) {
   return (
     <Popover>
@@ -44,8 +45,7 @@ export default function DateTimeDropdown({
               {value && ': ' + value?.map((d) => d?.toDateString()).join(' - ')}
             </span>
             {value && value.filter((d) => d).length > 0 ? (
-              <Button
-                unstyled
+              <div
                 onClick={() => clearFilter()}
                 className="fill-[rgb(204,204,204)]"
               >
@@ -58,7 +58,7 @@ export default function DateTimeDropdown({
                 >
                   <path d="M14.348 14.849c-0.469 0.469-1.229 0.469-1.697 0l-2.651-3.030-2.651 3.029c-0.469 0.469-1.229 0.469-1.697 0-0.469-0.469-0.469-1.229 0-1.697l2.758-3.15-2.759-3.152c-0.469-0.469-0.469-1.228 0-1.697s1.228-0.469 1.697 0l2.652 3.031 2.651-3.031c0.469-0.469 1.228-0.469 1.697 0s0.469 1.229 0 1.697l-2.758 3.152 2.758 3.15c0.469 0.469 0.469 1.229 0 1.698z"></path>
                 </svg>
-              </Button>
+              </div>
             ) : (
               <SelectCaretDown className="fill-[rgb(204,204,204)] hover:fill-[rgb(153,153,153)] data-[open]:fill-[rgb(153,153,153)]" />
             )}
@@ -67,9 +67,12 @@ export default function DateTimeDropdown({
             show={open}
             afterLeave={() => {
               // Your onClose handler here
-              if (value && value.filter((d) => d).length < 2) {
+              if (!value || (value && value.filter((d) => d).length < 2)) {
+                console.log('test');
                 clearFilter();
+                return;
               }
+              callback?.();
             }}
           >
             <PopoverPanel

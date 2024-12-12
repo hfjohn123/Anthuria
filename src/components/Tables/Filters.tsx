@@ -163,60 +163,118 @@ export default function Filters({
               )}
             </div>
           ) : table.getColumn(filter)?.columnDef.meta?.type === 'daterange' ? (
-            <DateTimeDropdown
-              key={filter}
-              id={table.getColumn(filter)?.columnDef.header as string}
-              autoFocus={false}
-              value={
-                tableState.columnFilters.find((f) => f.id === filter)
-                  ?.value as [Date, Date]
-              }
-              setValue={([start, end]: [Date | null, Date | null]) => {
-                start && start.setHours(0, 0, 0, 0);
-                end && end.setHours(23, 59, 59, 999);
-                setTableState((prev) => ({
-                  ...prev,
-                  columnFilters: prev.columnFilters
-                    .filter((f) => f.id !== filter)
-                    .concat({
-                      id: filter,
-                      value: [start, end],
-                    }),
-                }));
-              }}
-              clearFilter={() =>
-                setTableState((prev) => ({
-                  ...prev,
-                  columnFilters: prev.columnFilters.filter(
-                    (f) => f.id !== filter,
-                  ),
-                }))
-              }
-              minDate={
-                new Date(
-                  table
-                    .getColumn(filter)
-                    ?.getFacetedMinMaxValues()
-                    ?.flat()
-                    ?.filter((d) => d !== null)[0] ?? '',
-                )
-              }
-              maxDate={
-                new Date(
-                  table
-                    .getColumn(filter)
-                    ?.getFacetedMinMaxValues()
-                    ?.flat()
-                    ?.filter((d) => d !== null)[
-                    (table
+            filter !== 'revision_date' ? (
+              <DateTimeDropdown
+                key={filter}
+                id={table.getColumn(filter)?.columnDef.header as string}
+                autoFocus={false}
+                value={
+                  tableState.columnFilters.find((f) => f.id === filter)
+                    ?.value as [Date, Date]
+                }
+                setValue={([start, end]: [Date | null, Date | null]) => {
+                  start && start.setHours(0, 0, 0, 0);
+                  end && end.setHours(23, 59, 59, 999);
+                  setTableState((prev) => ({
+                    ...prev,
+                    columnFilters: prev.columnFilters
+                      .filter((f) => f.id !== filter)
+                      .concat({
+                        id: filter,
+                        value: [start, end],
+                      }),
+                  }));
+                }}
+                clearFilter={() =>
+                  setTableState((prev) => ({
+                    ...prev,
+                    columnFilters: prev.columnFilters.filter(
+                      (f) => f.id !== filter,
+                    ),
+                  }))
+                }
+                minDate={
+                  new Date(
+                    table
                       .getColumn(filter)
                       ?.getFacetedMinMaxValues()
                       ?.flat()
-                      ?.filter((d) => d !== null)?.length ?? 1) - 1
-                  ] ?? '',
-                )
-              }
-            />
+                      ?.filter((d) => d !== null)[0] ?? '',
+                  )
+                }
+                maxDate={
+                  new Date(
+                    table
+                      .getColumn(filter)
+                      ?.getFacetedMinMaxValues()
+                      ?.flat()
+                      ?.filter((d) => d !== null)[
+                      (table
+                        .getColumn(filter)
+                        ?.getFacetedMinMaxValues()
+                        ?.flat()
+                        ?.filter((d) => d !== null)?.length ?? 1) - 1
+                    ] ?? '',
+                  )
+                }
+              />
+            ) : (
+              <DateTimeDropdown
+                key={filter}
+                id={table.getColumn(filter)?.columnDef.header as string}
+                autoFocus={false}
+                value={
+                  tableState.columnFilters.find((f) => f.id === filter)
+                    ?.value as [Date, Date]
+                }
+                setValue={([start, end]: [Date | null, Date | null]) => {
+                  start && start.setHours(0, 0, 0, 0);
+                  end && end.setHours(23, 59, 59, 999);
+                  setTableState((prev) => ({
+                    ...prev,
+                    columnFilters: prev.columnFilters
+                      .filter((f) => f.id !== filter)
+                      .concat({
+                        id: filter,
+                        value: [start, end],
+                      }),
+                  }));
+                }}
+                clearFilter={() =>
+                  setTableState((prev) => ({
+                    ...prev,
+                    columnFilters: prev.columnFilters.filter(
+                      (f) => f.id !== filter,
+                    ),
+                  }))
+                }
+                maxDate={
+                  new Date(
+                    table
+                      .getColumn(filter)
+                      ?.getFacetedMinMaxValues()
+                      ?.flat()
+                      ?.filter((d) => d !== null)[
+                      (table
+                        .getColumn(filter)
+                        ?.getFacetedMinMaxValues()
+                        ?.flat()
+                        ?.filter((d) => d !== null)?.length ?? 1) - 1
+                    ] ?? '',
+                  )
+                }
+                callback={() => {
+                  if (includeCreatedDate === true) {
+                    setIsRefetching(true);
+                    setIncludeCreatedDate(false);
+                    navigate({
+                      search: { ...search, history: true },
+                      replace: true,
+                    });
+                  }
+                }}
+              />
+            )
           ) : null,
         )}{' '}
         {tableState.columnFilters

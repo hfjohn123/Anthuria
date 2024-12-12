@@ -286,9 +286,9 @@ export default function TableWrapper({
                 </tr>
               ))}
             </thead>
-            {table.getCoreRowModel().rows.length === 0 && <div>No Record</div>}
+            {table.getCoreRowModel().rows.length === 0 && <p>No Record</p>}
             {table.getRowModel().rows.length === 0 && (
-              <div>No Record matches your filter</div>
+              <p>No Record matches your filter</p>
             )}
             <tbody>
               {table.getRowModel().rows.map((row) => {
