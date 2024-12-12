@@ -9,6 +9,7 @@ import { Table, TableState } from '@tanstack/react-table';
 import FilterValueContainer from '../Select/FilterValueContainer.tsx';
 import { useNavigate, useSearch } from '@tanstack/react-router';
 import DateTimeDropdown from './DateTimeFilter/DateTimeDropdown.tsx';
+import { useRef } from 'react';
 
 // Base interface with common props
 type FilterProps = {
@@ -42,6 +43,8 @@ export default function Filters({
   setIncludeCreatedDate,
 }: FilterProps) {
   const navigate = useNavigate();
+  const inputRef = useRef<HTMLInputElement>(null);
+
   const search = useSearch({ strict: false });
   return (
     <div className="flex justify-between pr-3 gap-3 items-center">
@@ -88,7 +91,8 @@ export default function Filters({
           ) : table.getColumn(filter)?.columnDef.meta?.type === 'text' ? (
             <div
               key={filter}
-              className="text-sm has-[:focus]:!shadow-filter has-[:focus]:!shadow-blue-500 flex flex-nowrap items-center gap-1 px-2 rounded-lg border border-stroke dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+              onClick={() => inputRef.current?.focus()}
+              className="cursor-pointer text-sm has-[:focus]:!shadow-filter has-[:focus]:!shadow-blue-500 flex flex-nowrap items-center gap-1 px-2 rounded-lg border border-stroke dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
             >
               <span className="text-nowrap">
                 {table.getColumn(filter)?.columnDef.header as string}{' '}
@@ -100,6 +104,7 @@ export default function Filters({
                   outline: 'none',
                   background: 'transparent',
                 }}
+                ref={inputRef}
                 className="text-sm"
                 onChange={(e: { target: { value: string } }) => {
                   setTableState((prev) => ({
@@ -277,7 +282,7 @@ export default function Filters({
               'text' ? (
               <div
                 key={filter.id}
-                className="text-sm has-[:focus]:!shadow-filter has-[:focus]:!shadow-blue-500 flex flex-nowrap items-center gap-1 px-2 rounded-lg border border-stroke dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                className="cursor-pointer text-sm has-[:focus]:!shadow-filter has-[:focus]:!shadow-blue-500 flex flex-nowrap items-center gap-1 px-2 rounded-lg border border-stroke dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
               >
                 <span className="text-nowrap">
                   {table.getColumn(filter.id)?.columnDef.header as string}{' '}
@@ -401,45 +406,53 @@ export default function Filters({
               />
             ) : null,
           )}
-        <Select
-          classNames={{ ...filterSelectStyles }}
-          placeholder="Add Filter"
-          isMulti={false}
-          closeMenuOnSelect={true}
-          hideSelectedOptions={true}
-          menuPortalTarget={document.body}
-          components={{ IndicatorSeparator: () => null }}
-          value={null}
-          options={table
-            .getAllColumns()
-            .filter(
-              (c) =>
-                !tableState.columnFilters.find((f) => f.id === c.id) &&
-                !permanentColumnFilters.includes(c.id),
-            )
-            .map((c) => ({
-              label: c.columnDef.header as string,
-              value: c.id,
-            }))}
-          onChange={(newValue) => {
-            setTableState((prev) => ({
-              ...prev,
-              columnFilters: [
-                ...prev.columnFilters,
-                {
-                  id: (newValue?.value as string) ?? '',
-                  value:
-                    table.getColumn(newValue?.value as string)?.columnDef.meta
-                      ?.type === 'categorical' ||
-                    table.getColumn(newValue?.value as string)?.columnDef.meta
-                      ?.type === 'daterange'
-                      ? []
-                      : '',
-                },
-              ],
-            }));
-          }}
-        />
+        {table
+          .getAllColumns()
+          .filter(
+            (c) =>
+              !tableState.columnFilters.find((f) => f.id === c.id) &&
+              !permanentColumnFilters.includes(c.id),
+          ).length > 0 && (
+          <Select
+            classNames={{ ...filterSelectStyles }}
+            placeholder="Add Filter"
+            isMulti={false}
+            closeMenuOnSelect={true}
+            hideSelectedOptions={true}
+            menuPortalTarget={document.body}
+            components={{ IndicatorSeparator: () => null }}
+            value={null}
+            options={table
+              .getAllColumns()
+              .filter(
+                (c) =>
+                  !tableState.columnFilters.find((f) => f.id === c.id) &&
+                  !permanentColumnFilters.includes(c.id),
+              )
+              .map((c) => ({
+                label: c.columnDef.header as string,
+                value: c.id,
+              }))}
+            onChange={(newValue) => {
+              setTableState((prev) => ({
+                ...prev,
+                columnFilters: [
+                  ...prev.columnFilters,
+                  {
+                    id: (newValue?.value as string) ?? '',
+                    value:
+                      table.getColumn(newValue?.value as string)?.columnDef.meta
+                        ?.type === 'categorical' ||
+                      table.getColumn(newValue?.value as string)?.columnDef.meta
+                        ?.type === 'daterange'
+                        ? []
+                        : '',
+                  },
+                ],
+              }));
+            }}
+          />
+        )}
         {tableState.columnFilters.length > 0 && (
           <button
             className="text-sm"

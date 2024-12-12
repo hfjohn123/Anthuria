@@ -19,7 +19,11 @@ import TableWrapper from '../../../components/Tables/TableWrapper.tsx';
 import MDSDetail from './MDSDetail.tsx';
 
 import NewFilter from '../../../components/Tables/NewFilter.tsx';
-const PERMANENT_COLUMN_FILTERS = ['facility_name', 'update_time'];
+const PERMANENT_COLUMN_FILTERS = [
+  'facility_name',
+  'update_time',
+  'patient_name',
+];
 
 export default function MDSTable({ data }: { data: MDSFinal[] }) {
   const columns: ColumnDef<MDSFinal>[] = [
@@ -174,18 +178,18 @@ export default function MDSTable({ data }: { data: MDSFinal[] }) {
 
   return (
     <div className="flex flex-col gap-6">
-      <NewFilter
-        options={[
-          ...new Map(
-            data.map((d: MDSFinal) => [d.facility_name, d.facility_name]),
-          ).values(),
-        ]}
-        table={table}
-        tableState={tableState}
-        setTableState={setTableState}
-      />
+      {/*<NewFilter*/}
+      {/*  options={[*/}
+      {/*    ...new Map(*/}
+      {/*      data.map((d: MDSFinal) => [d.facility_name, d.facility_name]),*/}
+      {/*    ).values(),*/}
+      {/*  ]}*/}
+      {/*  table={table}*/}
+      {/*  tableState={tableState}*/}
+      {/*  setTableState={setTableState}*/}
+      {/*/>*/}
       <TableWrapper
-        filters={false}
+        filters={true}
         table={table}
         tableState={tableState}
         setTableState={setTableState}
