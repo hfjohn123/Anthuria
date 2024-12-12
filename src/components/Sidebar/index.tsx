@@ -267,8 +267,10 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                 Review Triggers
                               </Link>
                             </li>
-                            {user_data.organization_id !==
-                              'oxford_valley_health' && (
+                            {(user_data.organization_id ===
+                              'clearview_healthcare_management' ||
+                              user_data.organization_id ===
+                                'the_triedge_labs') && (
                               <li>
                                 <Link
                                   to="/trigger-words/event-tracker"
@@ -281,8 +283,10 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                 </Link>
                               </li>
                             )}
-                            {user_data.organization_id !==
-                              'clearview_healthcare_management' && (
+                            {(user_data.organization_id ===
+                              'oxford_valley_health' ||
+                              user_data.organization_id ===
+                                'the_triedge_labs') && (
                               <li>
                                 <Link
                                   to="/trigger-words/incident-tracker"
