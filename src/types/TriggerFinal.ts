@@ -18,6 +18,8 @@ export type TriggerFinal = {
     comment?: string;
     event_ids: number[];
   }[];
+  operation_name: string;
+  url_header?: string;
 };
 
 export type TriggerAPI = {

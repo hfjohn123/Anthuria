@@ -39,6 +39,7 @@ const predefinedTriggerWords = [
   'Weight Change',
 ];
 const PERMANENT_COLUMN_FILTERS = [
+  'operation_name',
   'facility_name',
   'patient_name',
   'trigger_word',
@@ -165,6 +166,12 @@ export default function ReviewTriggers() {
   const columns = useMemo<ColumnDef<TriggerFinal>[]>(
     () => [
       {
+        accessorKey: 'operation_name',
+        header: 'Operator',
+        meta: { wrap: 'whitespace-nowrap', type: 'categorical' },
+        filterFn: 'arrIncludesSome',
+      },
+      {
         accessorKey: 'facility_name',
         header: 'Facility',
         meta: {
@@ -194,7 +201,7 @@ export default function ReviewTriggers() {
               <HyperLink
                 className="patient_link"
                 tooltip_content={'View Patient in PCC'}
-                href={`https://www19.pointclickcare.com/admin/client/clientlist.jsp?ESOLtabtype=C&ESOLglobalclientsearch=Y&ESOLclientid=${info.row.original.patient_id}&ESOLfacid=${info.row.original.internal_facility_id.split('_').pop()}&ESOLsave=P`}
+                href={`https://${info.row.original.url_header}.pointclickcare.com/admin/client/clientlist.jsp?ESOLtabtype=C&ESOLglobalclientsearch=Y&ESOLclientid=${info.row.original.patient_id}&ESOLfacid=${info.row.original.internal_facility_id.split('_').pop()}&ESOLsave=P`}
               >
                 {info.row.getValue('patient_name')}
               </HyperLink>

@@ -18,6 +18,7 @@ import { MDSFinal } from '../../../types/MDSFinal.ts';
 import TableWrapper from '../../../components/Tables/TableWrapper.tsx';
 import MDSDetail from './MDSDetail.tsx';
 const PERMANENT_COLUMN_FILTERS = [
+  'operation_name',
   'facility_name',
   'update_time',
   'patient_name',
@@ -25,6 +26,12 @@ const PERMANENT_COLUMN_FILTERS = [
 
 export default function MDSTable({ data }: { data: MDSFinal[] }) {
   const columns: ColumnDef<MDSFinal>[] = [
+    {
+      accessorKey: 'operation_name',
+      header: 'Operator',
+      meta: { wrap: 'whitespace-nowrap', type: 'categorical' },
+      filterFn: 'arrIncludesSome',
+    },
     {
       accessorKey: 'facility_name',
       header: 'Facility',
@@ -60,7 +67,7 @@ export default function MDSTable({ data }: { data: MDSFinal[] }) {
               <HyperLink
                 tooltip_content={'View Patient in PCC'}
                 className="patient_link"
-                href={`https://www19.pointclickcare.com/admin/client/clientlist.jsp?ESOLtabtype=C&ESOLglobalclientsearch=Y&ESOLclientid=${info.row.original.patient_id}&ESOLfacid=${info.row.original.internal_facility_id.split('_').pop()}&ESOLsave=P`}
+                href={`https://${info.row.original.url_header}.pointclickcare.com/admin/client/clientlist.jsp?ESOLtabtype=C&ESOLglobalclientsearch=Y&ESOLclientid=${info.row.original.patient_id}&ESOLfacid=${info.row.original.internal_facility_id.split('_').pop()}&ESOLsave=P`}
               >
                 {info.row.getValue('patient_name')}
               </HyperLink>

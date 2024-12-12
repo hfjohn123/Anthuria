@@ -12,6 +12,8 @@ export type MDSFinal = {
   ptot_final_entry: PTOTFinal;
   nursing_fa_final_entry: NursingFunctionalScore;
   nursing_re_final_entry: RestorativeNursing;
+  operation_name: string;
+  url_header: string;
 };
 
 export type NTAEntry = {

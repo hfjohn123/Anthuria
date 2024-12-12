@@ -20,7 +20,7 @@ export default function PatientInfo({ row }: { row: Row<MDSFinal> }) {
             ) : row.original.upstream === 'PCC' ? (
               <HyperLink
                 tooltip_content="View Patient in PCC"
-                href={`https://www19.pointclickcare.com/admin/client/clientlist.jsp?ESOLtabtype=C&ESOLglobalclientsearch=Y&ESOLclientid=${row.original.patient_id}&ESOLfacid=${row.original.internal_facility_id.split('_').pop()}&ESOLsave=P`}
+                href={`https://${row.original.url_header}.pointclickcare.com/admin/client/clientlist.jsp?ESOLtabtype=C&ESOLglobalclientsearch=Y&ESOLclientid=${row.original.patient_id}&ESOLfacid=${row.original.internal_facility_id.split('_').pop()}&ESOLsave=P`}
               >
                 {row.getValue('patient_name')}
               </HyperLink>
