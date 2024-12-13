@@ -78,7 +78,7 @@ const SelectGroupOne = forwardRef(function SelectGroupOne(
             })}
         </select>
 
-        <span className="absolute top-1/2 right-4 z-30 -translate-y-1/2 hidden group-hover:block sm:block pointer-events-none">
+        <span className="absolute top-1/2 right-4 z-20 -translate-y-1/2 hidden group-hover:block sm:block pointer-events-none">
           <svg
             className="fill-current"
             width="20"

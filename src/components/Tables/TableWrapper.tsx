@@ -164,7 +164,7 @@ export default function TableWrapper({
         {filters && (
           <div
             ref={filterRef}
-            className="sticky  top-0 left-0 flex-none bg-white dark:bg-boxdark z-30 "
+            className="sticky  top-0 left-0 flex-none bg-white dark:bg-boxdark z-1 "
           >
             <div className="flex items-center border-b border-stroke py-1 px-1 ">
               <IconField iconPosition="left" className=" flex-1 ">

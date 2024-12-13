@@ -20,7 +20,7 @@ const filterSelectStyles: ClassNamesConfig<{
   clearIndicator: (state) =>
     state.isFocused ? 'dark:text-white dark:hover:text-white !p-0' : '!p-0',
   input: () => '!py-0',
-  menu: () => 'dark:bg-form-input min-w-max max-w-max',
+  menu: () => 'dark:bg-form-input min-w-max max-w-max z-999',
   option: () => '!bg-transparent !text-body dark:!text-bodydark',
 };
 

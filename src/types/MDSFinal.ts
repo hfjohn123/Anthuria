@@ -86,7 +86,7 @@ export type FunctionalScore = {
   function_area: string;
   mds_item: string;
   individual_function_score: string;
-  suggestion: [];
+  suggestion: ProgressNoteAndSummary[];
   average_function_score: string;
   is_thumb_up: boolean;
   comment: string;
