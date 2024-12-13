@@ -22,7 +22,7 @@ import { AuthContext } from '../../../components/AuthWrapper.tsx';
 export default function MDSTable({ data }: { data: MDSFinal[] }) {
   const { user_data } = useContext(AuthContext);
   const PERMANENT_COLUMN_FILTERS =
-    user_data.organization_id === 'the_triedge_lab'
+    user_data.organization_id === 'the_triedge_labs'
       ? ['operation_name', 'facility_name', 'update_time', 'patient_name']
       : ['facility_name', 'update_time', 'patient_name'];
   const columns: ColumnDef<MDSFinal>[] = [
@@ -145,14 +145,14 @@ export default function MDSTable({ data }: { data: MDSFinal[] }) {
             patient_name: true,
             update_time: true,
             existing_icd10: true,
-            operation_name: false,
+            operation_name: user_data.organization_id === 'the_triedge_labs',
           }
         : {
             facility_name: false,
             patient_name: true,
             update_time: true,
             existing_icd10: true,
-            operation_name: false,
+            operation_name: user_data.organization_id === 'the_triedge_labs',
           },
     pagination: {
       pageIndex: 0,

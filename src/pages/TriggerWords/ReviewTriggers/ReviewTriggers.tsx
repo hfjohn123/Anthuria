@@ -110,7 +110,7 @@ export default function ReviewTriggers() {
     Dictionary<number>
   >({});
   const PERMANENT_COLUMN_FILTERS =
-    user_data.organization_id === 'the_triedge_lab'
+    user_data.organization_id === 'the_triedge_labs'
       ? [
           'operation_name',
           'facility_name',
