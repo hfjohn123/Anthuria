@@ -12,7 +12,8 @@ import NTATable from './NTATable/NTATable.tsx';
 import SLPTable from './SLPTable/SLPTable.tsx';
 import PTOTTable from './PTOTTable/PTOTTable.tsx';
 import NursingTable from './NursingTable/NursingTable.tsx';
-
+import formatCounts from './formatCounts.ts';
+import _ from 'lodash';
 export default function MDSSuggestion({ row }: { row: Row<MDSFinal> }) {
   const nta_count = row.original.nta_final_entry
     .flatMap((d) => d.new_icd10)
@@ -49,30 +50,13 @@ export default function MDSSuggestion({ row }: { row: Row<MDSFinal> }) {
       </div>
       <Tooltip id="bot-tooltip" className="z-99" />
       <div className="flex flex-col">
-        <Disclosure defaultOpen={true}>
+        <Disclosure defaultOpen={_.size(nta_count) > 0}>
           <DisclosureButton className="group">
             <div className="flex items-center py-2 gap-2 hover:bg-[#E6F3FF] ">
               <CaretRight className="ease-in-out transition-all duration-200  group-data-[open]:rotate-90" />
               <h3 className="text-base font-semibold">NTA</h3>
               <span className="text-sm text-gray-600">
-                {((): string => {
-                  const parts = [];
-                  if (nta_count.P > 1) {
-                    parts.push(`${nta_count.P} Progress Notes`);
-                  }
-                  if (nta_count.P === 1) {
-                    parts.push(`${nta_count.P} Progress Note`);
-                  }
-                  if (nta_count.D > 1) {
-                    parts.push(`${nta_count.D} Diagnoses`);
-                  }
-                  if (nta_count.D === 1) {
-                    parts.push(`${nta_count.D} Diagnosis`);
-                  }
-                  return parts.length > 0
-                    ? `(${parts.join(' and ')} Detected)`
-                    : '';
-                })()}
+                {formatCounts(nta_count)}
               </span>
             </div>
           </DisclosureButton>
@@ -83,36 +67,13 @@ export default function MDSSuggestion({ row }: { row: Row<MDSFinal> }) {
             <NTATable data={row.original.nta_final_entry} />
           </DisclosurePanel>
         </Disclosure>
-        <Disclosure>
+        <Disclosure defaultOpen={_.size(slp_count) > 0}>
           <DisclosureButton className="group ">
             <div className="flex items-center py-2 gap-2 hover:bg-[#E6F3FF] ">
               <CaretRight className="ease-in-out transition-all duration-200  group-data-[open]:rotate-90" />
               <h3 className="text-base font-semibold">SLP</h3>
               <span className="text-sm text-gray-600">
-                {((): string => {
-                  const parts = [];
-                  if (slp_count.P > 1) {
-                    parts.push(`${slp_count.P} Progress Notes`);
-                  }
-                  if (slp_count.P === 1) {
-                    parts.push(`${slp_count.P} Progress Note`);
-                  }
-                  if (slp_count.D > 1) {
-                    parts.push(`${slp_count.D} Diagnoses`);
-                  }
-                  if (slp_count.D === 1) {
-                    parts.push(`${slp_count.D} Diagnosis`);
-                  }
-                  if (slp_count.PO > 1) {
-                    parts.push(`${slp_count.PO} Orders`);
-                  }
-                  if (slp_count.PO === 1) {
-                    parts.push(`${slp_count.PO} Order`);
-                  }
-                  return parts.length > 0
-                    ? `(${parts.join(' and ')} Detected)`
-                    : '';
-                })()}
+                {formatCounts(slp_count)}
               </span>
             </div>
           </DisclosureButton>
