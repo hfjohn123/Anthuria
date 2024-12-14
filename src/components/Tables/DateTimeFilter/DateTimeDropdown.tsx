@@ -68,7 +68,6 @@ export default function DateTimeDropdown({
             afterLeave={() => {
               // Your onClose handler here
               if (!value || (value && value.filter((d) => d).length < 2)) {
-                console.log('test');
                 clearFilter();
                 return;
               }

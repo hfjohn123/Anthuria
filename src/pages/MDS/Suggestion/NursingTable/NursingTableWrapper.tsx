@@ -11,6 +11,8 @@ import { ThumbsDown, ThumbsUp } from '@phosphor-icons/react';
 import { useState } from 'react';
 import getFacetedUniqueValues from '../../../../common/getFacetedUniqueValues.ts';
 import getFacetedMinMaxValues from '../../../../common/getFacetedMinMaxValues.ts';
+import { ProgressNoteAndSummary } from '../../../../types/MDSFinal.ts';
+import EvidenceModal from '../EvidenceModal.tsx';
 
 const permanentColumnFilters = ['mds_item'];
 
@@ -37,23 +39,47 @@ export default function NursingTableWrapper({ data }: { data: any }) {
       ),
     },
     {
-      accessorKey: 'is_in_mds',
+      accessorKey: 'is_mds',
       header: 'Is Already in MDS Table',
       cell: (info) => (
         <td className="py-2 px-4 border-t border-l whitespace-nowrap bg-blue-50">
-          {info.row.original.suggestion ? 'Yes' : 'No'}
+          {info.getValue()
+            ? 'Yes'
+            : info.row.original.suggestion
+              ? 'Yes'
+              : 'No'}
         </td>
       ),
     },
 
     {
-      accessorKey: 'suggestion',
+      accessorKey: 'nursing_mds_suggestion',
       header: 'AI Suggested Conditions',
-      cell: (info) => (
-        <td className="py-2 px-4 border-t border-l ">
-          {(info.getValue() as string[])?.join(', ') || ''}
-        </td>
-      ),
+      cell: (info) => {
+        if (!info.getValue())
+          return <td className="py-2 px-4 border-t border-l"></td>;
+        const count = (info.getValue() as ProgressNoteAndSummary[]).length;
+        if (count === 0)
+          return <td className="py-2 px-4 border-t border-l"></td>;
+        return (
+          <td className="py-2 px-4 border-t border-l">
+            <EvidenceModal
+              button={
+                <span>
+                  {count} {count === 1 ? 'potential ' : 'potentials '}
+                  found
+                </span>
+              }
+              icd10={{
+                icd10: info.row.original.condition,
+                progress_note: info.getValue() as ProgressNoteAndSummary[],
+                is_thumb_up: null, // or some default value
+                comment: null, // or some default value
+              }}
+            />
+          </td>
+        );
+      },
     },
     {
       accessorKey: 'review',

@@ -50,7 +50,9 @@ export default function NursingTable({ data }: { data: Row<MDSFinal> }) {
           header="Extensive Services"
         >
           <div className="flex flex-col gap-7">
-            <ExtensiveServices />
+            <ExtensiveServices
+              data={data.original.nursing_cc_final_entry.nursing_mds_item_es}
+            />
             <FunctionalScoreTable data={data.original.nursing_fa_final_entry} />
           </div>
           <div className="flex pt-4 justify-end">

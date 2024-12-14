@@ -48,7 +48,10 @@ export default function RestorativeNursingTable({
   data: RestorativeNursing;
 }) {
   const [joined] = useState(
-    _.merge(restorative_nursing, data.restorative_count_all),
+    _.merge(
+      _.keyBy(restorative_nursing, 'mds_item'),
+      _.keyBy(data.restorative_count_all, 'mds_item'),
+    ),
   );
   return (
     <div className="flex flex-col gap-3">
@@ -56,7 +59,7 @@ export default function RestorativeNursingTable({
         Restorative Nurse Count: {data.final_count || 0}
       </p>
 
-      <NursingTableWrapper data={joined} />
+      <NursingTableWrapper data={_.values(joined)} />
     </div>
   );
 }

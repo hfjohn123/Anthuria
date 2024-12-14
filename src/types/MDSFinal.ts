@@ -15,6 +15,12 @@ export type MDSFinal = {
   operation_name: string;
   url_header: string;
   nursing_d_final_entry: NursingDepreation;
+  nursing_cc_final_entry: {
+    nursing_mds_item_sch?: NursingCC[];
+    nursing_mds_item_cc?: NursingCC[];
+    nursing_mds_item_scl?: NursingCC[];
+    nursing_mds_item_es?: NursingCC[];
+  };
 };
 
 export type NTAEntry = {
@@ -63,7 +69,7 @@ export type ProgressNoteAndSummary = {
   source_category: string;
   update_time: Date;
   highlights?: string;
-  progress_note: string;
+  progress_note?: string;
   explanation: string;
 };
 
@@ -131,6 +137,15 @@ export type NursingDepreation =
       is_suggest?: undefined;
       slp_entry?: undefined;
     };
+
+export type NursingCC = {
+  mds_item: string;
+  is_mds: boolean;
+  nursing_mds_suggestion: ProgressNoteAndSummary[];
+  is_thumb_up: boolean | null;
+  comment: string | null;
+};
+
 // function generateRandomICD10(): MDSFinal {
 //   const icd10 = [
 //     'A00-A09',
