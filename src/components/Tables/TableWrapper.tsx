@@ -287,10 +287,15 @@ export default function TableWrapper({
               ))}
             </thead>
             {table.getCoreRowModel().rows.length === 0 && <p>No Record</p>}
-            {table.getRowModel().rows.length === 0 && (
-              <p>No Record matches your filter</p>
-            )}
+
             <tbody>
+              {table.getRowModel().rows.length === 0 && (
+                <tr>
+                  <td className="whitespace-nowrap">
+                    No Record matches your filter
+                  </td>
+                </tr>
+              )}
               {table.getRowModel().rows.map((row) => {
                 return (
                   <Fragment key={row.id}>
