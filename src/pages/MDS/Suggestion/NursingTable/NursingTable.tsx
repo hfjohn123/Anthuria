@@ -8,6 +8,7 @@ import RestorativeNursingTable from './RestorativeNursingTable.tsx';
 import { Row } from '@tanstack/react-table';
 import { MDSFinal } from '../../../../types/MDSFinal.ts';
 import DepressionIndicator from './DepressionIndicator.tsx';
+import clsx from 'clsx';
 
 export default function NursingTable({ data }: { data: Row<MDSFinal> }) {
   const stepperRef = useRef<StepperRefAttributes>(null);
@@ -29,6 +30,68 @@ export default function NursingTable({ data }: { data: Row<MDSFinal> }) {
     resizeObserver.observe(container);
     return () => resizeObserver.disconnect();
   }, []);
+  const extensiveServices =
+    data.original.nursing_cc_final_entry.nursing_mds_item_es;
+  const specialCareHigh =
+    data.original.nursing_cc_final_entry.nursing_mds_item_sch;
+  const specialCareLow =
+    data.original.nursing_cc_final_entry.nursing_mds_item_scl;
+  const clinicalComplex =
+    data.original.nursing_cc_final_entry.nursing_mds_item_cc;
+  const functionalScore = data.original.nursing_fa_final_entry;
+  const depressionIndicator = data.original.nursing_d_final_entry;
+  const boolFuncScore14 = !!(
+    functionalScore.final_score && parseInt(functionalScore.final_score) <= 14
+  );
+  const boolFuncScore11 = !!(
+    functionalScore.final_score && parseInt(functionalScore.final_score) <= 11
+  );
+  const es_recommended = !!(
+    boolFuncScore14 &&
+    (depressionIndicator.is_suggest || depressionIndicator.is_mds) &&
+    extensiveServices
+  );
+  const sch_recommended = !!(
+    !es_recommended &&
+    boolFuncScore14 &&
+    (depressionIndicator.is_suggest || depressionIndicator.is_mds) &&
+    specialCareHigh
+  );
+  const scl_recommended = !!(
+    !es_recommended &&
+    !sch_recommended &&
+    boolFuncScore14 &&
+    (depressionIndicator.is_suggest || depressionIndicator.is_mds) &&
+    specialCareLow
+  );
+  const cc_recommended = !!(
+    !es_recommended &&
+    !sch_recommended &&
+    !scl_recommended &&
+    (depressionIndicator.is_suggest || depressionIndicator.is_mds) &&
+    clinicalComplex
+  );
+  const bsac_recommended = !!(
+    (
+      !es_recommended &&
+      !sch_recommended &&
+      !scl_recommended &&
+      !cc_recommended &&
+      !boolFuncScore11
+    )
+    //todo: BMIS Score and Cog
+  );
+  const rpf_recommended = !!(
+    (
+      !es_recommended &&
+      !sch_recommended &&
+      !scl_recommended &&
+      !cc_recommended &&
+      !bsac_recommended
+    )
+    //todo: BMIS Score and Cog
+  );
+  //todo: BMIS Score and Cog
 
   return (
     <div ref={containerRef} className="flex flex-col gap-5 px-5 py-5">
@@ -40,6 +103,12 @@ export default function NursingTable({ data }: { data: Row<MDSFinal> }) {
       >
         <StepperPanel
           pt={{
+            number: (props) =>
+              clsx(
+                'p-stepper-number',
+                // eslint-disable-next-line react/prop-types
+                props.context.active || !es_recommended ? '' : 'bg-yellow-500',
+              ),
             action: () => 'p-stepper-action p-component bg-transparent',
             toggleableContent: () =>
               'p-stepper-toggleable-content bg-transparent',
@@ -64,6 +133,12 @@ export default function NursingTable({ data }: { data: Row<MDSFinal> }) {
         </StepperPanel>
         <StepperPanel
           pt={{
+            number: (props) =>
+              clsx(
+                'p-stepper-number',
+                // eslint-disable-next-line react/prop-types
+                props.context.active || !sch_recommended ? '' : 'bg-yellow-500',
+              ),
             action: () => 'p-stepper-action p-component bg-transparent',
             toggleableContent: () =>
               'p-stepper-toggleable-content bg-transparent',
@@ -95,6 +170,12 @@ export default function NursingTable({ data }: { data: Row<MDSFinal> }) {
         </StepperPanel>
         <StepperPanel
           pt={{
+            number: (props) =>
+              clsx(
+                'p-stepper-number',
+                // eslint-disable-next-line react/prop-types
+                props.context.active || !scl_recommended ? '' : 'bg-yellow-500',
+              ),
             action: () => 'p-stepper-action p-component bg-transparent',
             toggleableContent: () =>
               'p-stepper-toggleable-content bg-transparent',
@@ -126,6 +207,12 @@ export default function NursingTable({ data }: { data: Row<MDSFinal> }) {
         </StepperPanel>
         <StepperPanel
           pt={{
+            number: (props) =>
+              clsx(
+                'p-stepper-number',
+                // eslint-disable-next-line react/prop-types
+                props.context.active || !cc_recommended ? '' : 'bg-yellow-500',
+              ),
             action: () => 'p-stepper-action p-component bg-transparent',
             toggleableContent: () =>
               'p-stepper-toggleable-content bg-transparent',
@@ -156,6 +243,14 @@ export default function NursingTable({ data }: { data: Row<MDSFinal> }) {
         </StepperPanel>
         <StepperPanel
           pt={{
+            number: (props) =>
+              clsx(
+                'p-stepper-number',
+                // eslint-disable-next-line react/prop-types
+                props.context.active || !bsac_recommended
+                  ? ''
+                  : 'bg-yellow-500',
+              ),
             action: () => 'p-stepper-action p-component bg-transparent',
             toggleableContent: () =>
               'p-stepper-toggleable-content bg-transparent',
@@ -194,6 +289,12 @@ export default function NursingTable({ data }: { data: Row<MDSFinal> }) {
         </StepperPanel>
         <StepperPanel
           pt={{
+            number: (props) =>
+              clsx(
+                'p-stepper-number',
+                // eslint-disable-next-line react/prop-types
+                props.context.active || !rpf_recommended ? '' : 'bg-yellow-500',
+              ),
             action: () => 'p-stepper-action p-component bg-transparent',
             toggleableContent: () =>
               'p-stepper-toggleable-content bg-transparent',
