@@ -160,14 +160,20 @@ export default function NursingTable({ data }: { data: Row<MDSFinal> }) {
               ),
             header: (props) =>
               clsx(
-                'p-stepper-header p-stepper-header-bottom items-center',
+                'p-stepper-header items-center',
                 // eslint-disable-next-line react/prop-types
                 props.context.active && 'p-highlight',
+                orientation === 'horizontal' && 'p-stepper-header-bottom',
               ),
             action: () =>
               clsx(
-                'p-stepper-action p-component bg-transparent',
-                es_recommended && 'before:content-["Recommended"]',
+                'p-stepper-action p-component bg-transparent gap-1',
+                es_recommended &&
+                  orientation === 'horizontal' &&
+                  'before:content-["Recommended"]',
+                es_recommended &&
+                  orientation === 'vertical' &&
+                  "after:content-['Recommended'] ",
               ),
             toggleableContent: () =>
               'p-stepper-toggleable-content bg-transparent',
@@ -200,14 +206,20 @@ export default function NursingTable({ data }: { data: Row<MDSFinal> }) {
               ),
             header: (props) =>
               clsx(
-                'p-stepper-header p-stepper-header-bottom items-center',
+                'p-stepper-header items-center',
                 // eslint-disable-next-line react/prop-types
                 props.context.active && 'p-highlight',
+                orientation === 'horizontal' && 'p-stepper-header-bottom',
               ),
             action: () =>
               clsx(
-                'p-stepper-action p-component bg-transparent',
-                sch_recommended && 'before:content-["Recommended"]',
+                'p-stepper-action p-component bg-transparent gap-1',
+                sch_recommended &&
+                  orientation === 'horizontal' &&
+                  'before:content-["Recommended"]',
+                sch_recommended &&
+                  orientation === 'vertical' &&
+                  "after:content-['Recommended'] ",
               ),
             toggleableContent: () =>
               'p-stepper-toggleable-content bg-transparent',
@@ -247,14 +259,20 @@ export default function NursingTable({ data }: { data: Row<MDSFinal> }) {
               ),
             header: (props) =>
               clsx(
-                'p-stepper-header p-stepper-header-bottom items-center',
+                'p-stepper-header items-center',
                 // eslint-disable-next-line react/prop-types
                 props.context.active && 'p-highlight',
+                orientation === 'horizontal' && 'p-stepper-header-bottom',
               ),
             action: () =>
               clsx(
-                'p-stepper-action p-component bg-transparent',
-                scl_recommended && 'before:content-["Recommended"]',
+                'p-stepper-action p-component bg-transparent gap-1',
+                scl_recommended &&
+                  orientation === 'horizontal' &&
+                  'before:content-["Recommended"]',
+                scl_recommended &&
+                  orientation === 'vertical' &&
+                  "after:content-['Recommended'] ",
               ),
             toggleableContent: () =>
               'p-stepper-toggleable-content bg-transparent',
@@ -294,14 +312,20 @@ export default function NursingTable({ data }: { data: Row<MDSFinal> }) {
               ),
             header: (props) =>
               clsx(
-                'p-stepper-header p-stepper-header-bottom items-center',
+                'p-stepper-header items-center',
                 // eslint-disable-next-line react/prop-types
                 props.context.active && 'p-highlight',
+                orientation === 'horizontal' && 'p-stepper-header-bottom',
               ),
             action: () =>
               clsx(
-                'p-stepper-action p-component bg-transparent',
-                cc_recommended && 'before:content-["Recommended"]',
+                'p-stepper-action p-component bg-transparent gap-1',
+                cc_recommended &&
+                  orientation === 'horizontal' &&
+                  'before:content-["Recommended"]',
+                cc_recommended &&
+                  orientation === 'vertical' &&
+                  "after:content-['Recommended'] ",
               ),
             toggleableContent: () =>
               'p-stepper-toggleable-content bg-transparent',
@@ -342,14 +366,20 @@ export default function NursingTable({ data }: { data: Row<MDSFinal> }) {
               ),
             header: (props) =>
               clsx(
-                'p-stepper-header p-stepper-header-bottom items-center',
+                'p-stepper-header items-center',
                 // eslint-disable-next-line react/prop-types
                 props.context.active && 'p-highlight',
+                orientation === 'horizontal' && 'p-stepper-header-bottom',
               ),
             action: () =>
               clsx(
-                'p-stepper-action p-component bg-transparent',
-                bsac_recommended && 'before:content-["Recommended"]',
+                'p-stepper-action p-component bg-transparent gap-1',
+                bsac_recommended &&
+                  orientation === 'horizontal' &&
+                  'before:content-["Recommended"]',
+                bsac_recommended &&
+                  orientation === 'vertical' &&
+                  "after:content-['Recommended'] ",
               ),
             toggleableContent: () =>
               'p-stepper-toggleable-content bg-transparent',
@@ -396,14 +426,20 @@ export default function NursingTable({ data }: { data: Row<MDSFinal> }) {
               ),
             header: (props) =>
               clsx(
-                'p-stepper-header p-stepper-header-bottom items-center',
+                'p-stepper-header items-center',
                 // eslint-disable-next-line react/prop-types
                 props.context.active && 'p-highlight',
+                orientation === 'horizontal' && 'p-stepper-header-bottom',
               ),
             action: () =>
               clsx(
-                'p-stepper-action p-component bg-transparent',
-                rpf_recommended && 'before:content-["Recommended"]',
+                'p-stepper-action p-component bg-transparent gap-1',
+                rpf_recommended &&
+                  orientation === 'horizontal' &&
+                  'before:content-["Recommended"]',
+                rpf_recommended &&
+                  orientation === 'vertical' &&
+                  "after:content-['Recommended'] ",
               ),
             toggleableContent: () =>
               'p-stepper-toggleable-content bg-transparent',
