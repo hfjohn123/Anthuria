@@ -38,6 +38,7 @@ export default function NursingTable({ data }: { data: Row<MDSFinal> }) {
     data.original.nursing_cc_final_entry.nursing_mds_item_scl;
   const clinicalComplex =
     data.original.nursing_cc_final_entry.nursing_mds_item_cc;
+
   const functionalScore = data.original.nursing_fa_final_entry;
   const depressionIndicator = data.original.nursing_d_final_entry;
   const boolFuncScore14 = !!(
@@ -46,6 +47,53 @@ export default function NursingTable({ data }: { data: Row<MDSFinal> }) {
   const boolFuncScore11 = !!(
     functionalScore.final_score && parseInt(functionalScore.final_score) <= 11
   );
+  let boolsch = false;
+  if (specialCareHigh) {
+    if (specialCareHigh.length > 1) {
+      boolsch = true;
+    }
+    if (specialCareHigh.length === 1) {
+      if (
+        (specialCareHigh[0].mds_item === 'I5100, Nursing Function Score' &&
+          boolFuncScore11) ||
+        specialCareHigh[0].mds_item !== 'I5100, Nursing Function Score'
+      ) {
+        boolsch = true;
+      }
+    }
+  }
+  let boolscl = false;
+  if (specialCareLow) {
+    if (
+      specialCareLow.filter(
+        (item) =>
+          item.mds_item === 'I4400, Nursing Function Score' ||
+          item.mds_item === 'I5200, Nursing Function Score' ||
+          item.mds_item === 'I5300, Nursing Function Score',
+      ).length === specialCareLow.length
+    ) {
+      if (boolFuncScore11) {
+        boolscl = true;
+      }
+    } else {
+      boolscl = true;
+    }
+  }
+  let boolcc = false;
+  if (clinicalComplex) {
+    if (
+      clinicalComplex[0].mds_item === 'I4900, Nursing Function Score' &&
+      boolFuncScore11
+    ) {
+      boolcc = true;
+    }
+    if (clinicalComplex[0].mds_item !== 'I4900, Nursing Function Score') {
+      boolcc = true;
+    }
+    if (clinicalComplex.length > 1) {
+      boolcc = true;
+    }
+  }
   const es_recommended = !!(
     boolFuncScore14 &&
     (depressionIndicator.is_suggest || depressionIndicator.is_mds) &&
@@ -55,21 +103,21 @@ export default function NursingTable({ data }: { data: Row<MDSFinal> }) {
     !es_recommended &&
     boolFuncScore14 &&
     (depressionIndicator.is_suggest || depressionIndicator.is_mds) &&
-    specialCareHigh
+    boolsch
   );
   const scl_recommended = !!(
     !es_recommended &&
     !sch_recommended &&
     boolFuncScore14 &&
     (depressionIndicator.is_suggest || depressionIndicator.is_mds) &&
-    specialCareLow
+    boolscl
   );
   const cc_recommended = !!(
     !es_recommended &&
     !sch_recommended &&
     !scl_recommended &&
     (depressionIndicator.is_suggest || depressionIndicator.is_mds) &&
-    clinicalComplex
+    boolcc
   );
   const bsac_recommended = !!(
     (
