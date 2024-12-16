@@ -156,8 +156,19 @@ export default function NursingTable({ data }: { data: Row<MDSFinal> }) {
                 'p-stepper-number',
                 // eslint-disable-next-line react/prop-types
                 props.context.active || !es_recommended ? '' : 'bg-yellow-500',
+                '',
               ),
-            action: () => 'p-stepper-action p-component bg-transparent',
+            header: (props) =>
+              clsx(
+                'p-stepper-header p-stepper-header-bottom items-center',
+                // eslint-disable-next-line react/prop-types
+                props.context.active && 'p-highlight',
+              ),
+            action: () =>
+              clsx(
+                'p-stepper-action p-component bg-transparent',
+                es_recommended && 'before:content-["Recommended"]',
+              ),
             toggleableContent: () =>
               'p-stepper-toggleable-content bg-transparent',
           }}
@@ -187,7 +198,17 @@ export default function NursingTable({ data }: { data: Row<MDSFinal> }) {
                 // eslint-disable-next-line react/prop-types
                 props.context.active || !sch_recommended ? '' : 'bg-yellow-500',
               ),
-            action: () => 'p-stepper-action p-component bg-transparent',
+            header: (props) =>
+              clsx(
+                'p-stepper-header p-stepper-header-bottom items-center',
+                // eslint-disable-next-line react/prop-types
+                props.context.active && 'p-highlight',
+              ),
+            action: () =>
+              clsx(
+                'p-stepper-action p-component bg-transparent',
+                sch_recommended && 'before:content-["Recommended"]',
+              ),
             toggleableContent: () =>
               'p-stepper-toggleable-content bg-transparent',
           }}
@@ -224,7 +245,17 @@ export default function NursingTable({ data }: { data: Row<MDSFinal> }) {
                 // eslint-disable-next-line react/prop-types
                 props.context.active || !scl_recommended ? '' : 'bg-yellow-500',
               ),
-            action: () => 'p-stepper-action p-component bg-transparent',
+            header: (props) =>
+              clsx(
+                'p-stepper-header p-stepper-header-bottom items-center',
+                // eslint-disable-next-line react/prop-types
+                props.context.active && 'p-highlight',
+              ),
+            action: () =>
+              clsx(
+                'p-stepper-action p-component bg-transparent',
+                scl_recommended && 'before:content-["Recommended"]',
+              ),
             toggleableContent: () =>
               'p-stepper-toggleable-content bg-transparent',
           }}
@@ -261,7 +292,17 @@ export default function NursingTable({ data }: { data: Row<MDSFinal> }) {
                 // eslint-disable-next-line react/prop-types
                 props.context.active || !cc_recommended ? '' : 'bg-yellow-500',
               ),
-            action: () => 'p-stepper-action p-component bg-transparent',
+            header: (props) =>
+              clsx(
+                'p-stepper-header p-stepper-header-bottom items-center',
+                // eslint-disable-next-line react/prop-types
+                props.context.active && 'p-highlight',
+              ),
+            action: () =>
+              clsx(
+                'p-stepper-action p-component bg-transparent',
+                cc_recommended && 'before:content-["Recommended"]',
+              ),
             toggleableContent: () =>
               'p-stepper-toggleable-content bg-transparent',
           }}
@@ -299,7 +340,17 @@ export default function NursingTable({ data }: { data: Row<MDSFinal> }) {
                   ? ''
                   : 'bg-yellow-500',
               ),
-            action: () => 'p-stepper-action p-component bg-transparent',
+            header: (props) =>
+              clsx(
+                'p-stepper-header p-stepper-header-bottom items-center',
+                // eslint-disable-next-line react/prop-types
+                props.context.active && 'p-highlight',
+              ),
+            action: () =>
+              clsx(
+                'p-stepper-action p-component bg-transparent',
+                bsac_recommended && 'before:content-["Recommended"]',
+              ),
             toggleableContent: () =>
               'p-stepper-toggleable-content bg-transparent',
           }}
@@ -343,7 +394,17 @@ export default function NursingTable({ data }: { data: Row<MDSFinal> }) {
                 // eslint-disable-next-line react/prop-types
                 props.context.active || !rpf_recommended ? '' : 'bg-yellow-500',
               ),
-            action: () => 'p-stepper-action p-component bg-transparent',
+            header: (props) =>
+              clsx(
+                'p-stepper-header p-stepper-header-bottom items-center',
+                // eslint-disable-next-line react/prop-types
+                props.context.active && 'p-highlight',
+              ),
+            action: () =>
+              clsx(
+                'p-stepper-action p-component bg-transparent',
+                rpf_recommended && 'before:content-["Recommended"]',
+              ),
             toggleableContent: () =>
               'p-stepper-toggleable-content bg-transparent',
           }}
