@@ -170,13 +170,9 @@ export default function NursingTable({ data }: { data: Row<MDSFinal> }) {
               <p>Yes/No</p>
             </div>
             <div>
-              <p className="font-bold">Staff assessment cognitive status:</p>
-              <p>Yes/No</p>
+              <ClinicalCategory type={'Staff assessment cognitive status'} />
             </div>
-            <div>
-              <p className="font-bold">Behavioral symptoms:</p>
-              <p>Yes/No</p>
-            </div>
+            <ClinicalCategory type={'Behavioral symptoms'} />
             <RestorativeNursingTable
               data={data.original.nursing_re_final_entry}
             />

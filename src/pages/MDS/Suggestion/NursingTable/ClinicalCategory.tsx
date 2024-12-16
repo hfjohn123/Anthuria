@@ -140,21 +140,97 @@ const clinicallyComplex = [
     description: 'Transfusions while a resident',
   },
 ];
-
+const staffCognitive = [
+  {
+    mds_item: 'B0100',
+    description:
+      'Coma (B0100 = 1) and completely dependent or activity did not occur at admission (GG0130A1, GG0130C1, GG0170B1, GG0170C1, GG0170D1, GG0170E1, and GG0170F1 all equal 01, 09, or 88)',
+  },
+  {
+    mds_item: 'C1000',
+    description:
+      'Severely impaired cognitive skills for daily decision making (C1000 = 3)',
+  },
+  {
+    mds_item: 'B0700-C1000',
+    description: (
+      <span>
+        <b>Both conditions met:</b>
+        <br />
+        <br />
+        <b>
+          Two or more of the following impairment indicators are present (B0700,
+          C0700, C1000):
+        </b>
+        <br />
+        B0700 &gt; 0 Usually, sometimes, or rarely/never understood
+        <br />
+        C0700 = 1 Short-term memory problem
+        <br />
+        C1000 &gt; 0 Impaired cognitive skills for daily decision making
+        <br />
+        <b>
+          One or more of the following severe impairment indicators are present
+          (B0700, C1000):
+        </b>
+        <br />
+        B0700 &gt;= 2 Sometimes or rarely/never makes self understood
+        <br />
+        C1000 &gt;= 2 Moderately or severely impaired cognitive skills for daily
+        decision making
+      </span>
+    ),
+  },
+];
+const behavioralSymptoms = [
+  {
+    mds_item: 'E0100A',
+    description: 'Hallucinations',
+  },
+  {
+    mds_item: 'E0100B',
+    description: 'Delusions',
+  },
+  {
+    mds_item: 'E0200A',
+    description: 'Physical behavioral symptoms directed toward others (2 or 3)',
+  },
+  {
+    mds_item: 'E0200B',
+    description: 'Verbal behavioral symptoms directed toward others (2 or 3)',
+  },
+  {
+    mds_item: 'E0200C',
+    description:
+      'Other behavioral symptoms not directed toward others (2 or 3)',
+  },
+  {
+    mds_item: 'E0800',
+    description: 'Rejection of care (2 or 3)',
+  },
+  {
+    mds_item: 'E0900',
+    description: 'Wandering (2 or 3)',
+  },
+];
 type NursingType =
   | 'extensiveServices'
   | 'specialCareHigh'
   | 'specialCareLow'
-  | 'clinicallyComplex';
+  | 'clinicallyComplex'
+  | 'Staff assessment cognitive status'
+  | 'Behavioral symptoms';
 
 const typeMap: Record<
   NursingType,
-  { mds_item: string; description: string }[]
+  { mds_item: string; description: string | JSX.Element }[]
 > = {
   extensiveServices,
   specialCareHigh,
   specialCareLow,
   clinicallyComplex,
+  'Staff assessment cognitive status': staffCognitive,
+  'Behavioral symptoms': behavioralSymptoms,
 };
 
 export default function ClinicalCategory({
@@ -172,7 +248,13 @@ export default function ClinicalCategory({
 
   return (
     <div className="flex flex-col gap-3">
-      <p className="font-semibold">Clinical Category: {data ? 'Yes' : 'No'}</p>
+      <p className="font-semibold">
+        {type !== 'Staff assessment cognitive status' &&
+        type !== 'Behavioral symptoms'
+          ? 'Clinical Category'
+          : type}
+        : {data ? 'Yes' : 'No'}
+      </p>
       <NursingTableWrapper data={_.values(joined)} />
     </div>
   );
