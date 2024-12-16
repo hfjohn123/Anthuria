@@ -1,4 +1,7 @@
 import NursingTableWrapper from './NursingTableWrapper.tsx';
+import { NursingCC } from '../../../../types/MDSFinal.ts';
+import { useState } from 'react';
+import _ from 'lodash';
 
 const specialCareHigh = [
   {
@@ -40,6 +43,12 @@ const specialCareHigh = [
   },
 ];
 
-export default function SpecialCareHigh() {
-  return <NursingTableWrapper data={specialCareHigh} />;
+export default function SpecialCareHigh({ data }: { data?: NursingCC[] }) {
+  const [joined] = useState(
+    _.merge(_.keyBy(specialCareHigh, 'mds_item'), _.keyBy(data, 'mds_item')),
+  );
+  <div className="flex flex-col gap-3">
+    <p className="font-semibold">Clinical Category: {data ? 'Yes' : 'No'}</p>
+    <NursingTableWrapper data={_.values(joined)} />
+  </div>;
 }

@@ -49,6 +49,7 @@ export default function RestorativeNursingTable({
 }) {
   const [joined] = useState(
     _.merge(
+      {},
       _.keyBy(restorative_nursing, 'mds_item'),
       _.keyBy(data.restorative_count_all, 'mds_item'),
     ),

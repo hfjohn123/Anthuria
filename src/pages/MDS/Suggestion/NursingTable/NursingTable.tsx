@@ -2,10 +2,7 @@ import { Stepper, StepperRefAttributes } from 'primereact/stepper';
 import { StepperPanel } from 'primereact/stepperpanel';
 import { useEffect, useRef, useState } from 'react';
 import { Button } from 'primereact/button';
-import ExtensiveServices from './ExtensiveServices.tsx';
-import SpecialCareHigh from './SpecialCareHigh.tsx';
-import SpecialCareLow from './SpecialCareLow.tsx';
-import ClinicallyComplex from './ClinicallyComplex.tsx';
+import ClinicalCategory from './ClinicalCategory.tsx';
 import FunctionalScoreTable from './FunctionalScoreTable.tsx';
 import RestorativeNursingTable from './RestorativeNursingTable.tsx';
 import { Row } from '@tanstack/react-table';
@@ -50,7 +47,8 @@ export default function NursingTable({ data }: { data: Row<MDSFinal> }) {
           header="Extensive Services"
         >
           <div className="flex flex-col gap-7">
-            <ExtensiveServices
+            <ClinicalCategory
+              type="extensiveServices"
               data={data.original.nursing_cc_final_entry.nursing_mds_item_es}
             />
             <FunctionalScoreTable data={data.original.nursing_fa_final_entry} />
@@ -73,7 +71,10 @@ export default function NursingTable({ data }: { data: Row<MDSFinal> }) {
           header="Special Care High"
         >
           <div className="flex flex-col gap-7">
-            <SpecialCareHigh />
+            <ClinicalCategory
+              type="specialCareHigh"
+              data={data.original.nursing_cc_final_entry.nursing_mds_item_sch}
+            />
             <FunctionalScoreTable data={data.original.nursing_fa_final_entry} />
             <DepressionIndicator data={data.original.nursing_d_final_entry} />
           </div>
@@ -101,7 +102,10 @@ export default function NursingTable({ data }: { data: Row<MDSFinal> }) {
           header="Special Care Low"
         >
           <div className="flex flex-col gap-7">
-            <SpecialCareLow />
+            <ClinicalCategory
+              type="specialCareLow"
+              data={data.original.nursing_cc_final_entry.nursing_mds_item_scl}
+            />
             <FunctionalScoreTable data={data.original.nursing_fa_final_entry} />
             <DepressionIndicator data={data.original.nursing_d_final_entry} />
           </div>
@@ -129,7 +133,10 @@ export default function NursingTable({ data }: { data: Row<MDSFinal> }) {
           header="Clinically Complex"
         >
           <div className="flex flex-col gap-7">
-            <ClinicallyComplex />
+            <ClinicalCategory
+              type="clinicallyComplex"
+              data={data.original.nursing_cc_final_entry.nursing_mds_item_cc}
+            />
             <DepressionIndicator data={data.original.nursing_d_final_entry} />
           </div>
           <div className="flex pt-4 justify-between">
