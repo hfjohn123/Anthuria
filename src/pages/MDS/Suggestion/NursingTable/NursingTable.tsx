@@ -10,6 +10,7 @@ import { MDSFinal } from '../../../../types/MDSFinal.ts';
 import DepressionIndicator from './DepressionIndicator.tsx';
 import clsx from 'clsx';
 import EvidenceModal from '../EvidenceModal.tsx';
+import { NusingMapping } from '../../cmiMapping.ts';
 
 export default function NursingTable({ data }: { data: Row<MDSFinal> }) {
   const stepperRef = useRef<StepperRefAttributes>(null);
@@ -44,6 +45,7 @@ export default function NursingTable({ data }: { data: Row<MDSFinal> }) {
   const depressionIndicator = data.original.nursing_d_final_entry;
   const BIMS = data.original.nursing_bscp_final_entry.nursing_bscp_bims;
   const currentGroup = data.original.nursing_group;
+
   const boolFuncScore14 = !!(
     functionalScore.final_score && parseInt(functionalScore.final_score) <= 14
   );
@@ -185,6 +187,7 @@ export default function NursingTable({ data }: { data: Row<MDSFinal> }) {
       suggestGroup = 'PA1';
     }
   }
+  const suggestCMI = NusingMapping[suggestGroup as keyof typeof NusingMapping];
 
   const es_recommended = !!(boolFuncScore14 && extensiveServices);
   const sch_recommended = !es_recommended && boolFuncScore14 && boolsch;
@@ -271,13 +274,18 @@ export default function NursingTable({ data }: { data: Row<MDSFinal> }) {
             {currentGroup?.startsWith('E') && (
               <div>
                 <p className="font-bold">Current group: </p>
-                <p>{currentGroup}</p>
+                <p>
+                  {currentGroup} (CMI:{' '}
+                  {NusingMapping[currentGroup as keyof typeof NusingMapping]})
+                </p>
               </div>
             )}
             {suggestGroup?.startsWith('E') && (
               <div>
                 <p className="font-bold">Suggested group: </p>
-                <p>{suggestGroup}</p>
+                <p>
+                  {suggestGroup} (CMI: {suggestCMI})
+                </p>
               </div>
             )}
           </div>
@@ -340,13 +348,18 @@ export default function NursingTable({ data }: { data: Row<MDSFinal> }) {
             {currentGroup?.startsWith('H') && (
               <div>
                 <p className="font-bold">Current group: </p>
-                <p>{currentGroup}</p>
+                <p>
+                  {currentGroup} (CMI:{' '}
+                  {NusingMapping[currentGroup as keyof typeof NusingMapping]})
+                </p>
               </div>
             )}
             {suggestGroup?.startsWith('H') && (
               <div>
                 <p className="font-bold">Suggested group: </p>
-                <p>{suggestGroup}</p>
+                <p>
+                  {suggestGroup} (CMI: {suggestCMI})
+                </p>
               </div>
             )}
           </div>
@@ -415,13 +428,18 @@ export default function NursingTable({ data }: { data: Row<MDSFinal> }) {
             {currentGroup?.startsWith('L') && (
               <div>
                 <p className="font-bold">Current group: </p>
-                <p>{currentGroup}</p>
+                <p>
+                  {currentGroup} (CMI:{' '}
+                  {NusingMapping[currentGroup as keyof typeof NusingMapping]})
+                </p>
               </div>
             )}
             {suggestGroup?.startsWith('L') && (
               <div>
                 <p className="font-bold">Suggested group: </p>
-                <p>{suggestGroup}</p>
+                <p>
+                  {suggestGroup} (CMI: {suggestCMI})
+                </p>
               </div>
             )}
           </div>
@@ -489,13 +507,18 @@ export default function NursingTable({ data }: { data: Row<MDSFinal> }) {
             {currentGroup?.startsWith('C') && (
               <div>
                 <p className="font-bold">Current group: </p>
-                <p>{currentGroup}</p>
+                <p>
+                  {currentGroup} (CMI:{' '}
+                  {NusingMapping[currentGroup as keyof typeof NusingMapping]})
+                </p>
               </div>
             )}
             {suggestGroup?.startsWith('C') && (
               <div>
                 <p className="font-bold">Suggested group: </p>
-                <p>{suggestGroup}</p>
+                <p>
+                  {suggestGroup} (CMI: {suggestCMI})
+                </p>
               </div>
             )}
           </div>
@@ -595,13 +618,18 @@ export default function NursingTable({ data }: { data: Row<MDSFinal> }) {
             {currentGroup?.startsWith('B') && (
               <div>
                 <p className="font-bold">Current group: </p>
-                <p>{currentGroup}</p>
+                <p>
+                  {currentGroup} (CMI:{' '}
+                  {NusingMapping[currentGroup as keyof typeof NusingMapping]})
+                </p>
               </div>
             )}
             {suggestGroup?.startsWith('B') && (
               <div>
                 <p className="font-bold">Suggested group: </p>
-                <p>{suggestGroup}</p>
+                <p>
+                  {suggestGroup} (CMI: {suggestCMI})
+                </p>
               </div>
             )}
           </div>
@@ -672,13 +700,18 @@ export default function NursingTable({ data }: { data: Row<MDSFinal> }) {
             {currentGroup?.startsWith('P') && (
               <div>
                 <p className="font-bold">Current group: </p>
-                <p>{currentGroup}</p>
+                <p>
+                  {currentGroup} (CMI:{' '}
+                  {NusingMapping[currentGroup as keyof typeof NusingMapping]})
+                </p>
               </div>
             )}
             {suggestGroup?.startsWith('P') && (
               <div>
                 <p className="font-bold">Suggested group: </p>
-                <p>{suggestGroup}</p>
+                <p>
+                  {suggestGroup} (CMI: {suggestCMI})
+                </p>
               </div>
             )}
           </div>

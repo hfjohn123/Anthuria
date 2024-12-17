@@ -71,7 +71,7 @@ export default function NursingTableWrapper({ data }: { data: any }) {
                 </span>
               }
               icd10={{
-                icd10: info.row.original.condition,
+                icd10: info.row.original.mds_item,
                 progress_note: info.getValue() as ProgressNoteAndSummary[],
                 is_thumb_up: null, // or some default value
                 comment: null, // or some default value
