@@ -14,7 +14,7 @@ export default function DepressionIndicator({
       ) : (
         <p>
           {data.is_mds ? 'Yes' : 'No'}{' '}
-          {data.is_suggest && (
+          {data.is_suggest ? (
             <EvidenceModal
               button={
                 <span>
@@ -29,7 +29,7 @@ export default function DepressionIndicator({
                 comment: null, // or some default value
               }}
             />
-          )}
+          ) : null}
         </p>
       )}
     </div>

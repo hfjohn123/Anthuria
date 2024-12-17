@@ -7,6 +7,7 @@ export type MDSFinal = {
   facility_name: string;
   upstream: string;
   update_time: Date;
+  effective_start_date: Date;
   nta_final_entry: NTAEntry[];
   slp_final_entry: (SLPItem_General | SLPItem_comorbidities_present)[];
   ptot_final_entry: PTOTFinal;
@@ -21,6 +22,13 @@ export type MDSFinal = {
     nursing_mds_item_scl?: NursingCC[];
     nursing_mds_item_es?: NursingCC[];
   };
+  nursing_bscp_final_entry: {
+    nursing_bscp_bims?: NursingBIMS;
+    nursing_bscp_mds_sacs?: NursingBSCP[];
+    nursing_bscp_mds_bs?: NursingBSCP[];
+  };
+  hipps: string | null;
+  nursing_group: string | null;
 };
 
 export type NTAEntry = {
@@ -142,6 +150,22 @@ export type NursingCC = {
   mds_item: string;
   is_mds: boolean;
   nursing_mds_suggestion: ProgressNoteAndSummary[];
+  is_thumb_up: boolean | null;
+  comment: string | null;
+};
+
+export type NursingBIMS = {
+  mds_value: string;
+  suggested_value: string | null;
+  nursing_bscp_suggestion: ProgressNoteAndSummary;
+  is_thumb_up: boolean | null;
+  comment: string | null;
+};
+
+export type NursingBSCP = {
+  mds_item: string;
+  is_mds: boolean;
+  nursing_bscp_suggestion: ProgressNoteAndSummary[];
   is_thumb_up: boolean | null;
   comment: string | null;
 };

@@ -1,5 +1,5 @@
 import NursingTableWrapper from './NursingTableWrapper.tsx';
-import { NursingCC } from '../../../../types/MDSFinal.ts';
+import { NursingBSCP, NursingCC } from '../../../../types/MDSFinal.ts';
 import _ from 'lodash';
 
 const extensiveServices = [
@@ -237,7 +237,7 @@ export default function ClinicalCategory({
   data,
   type,
 }: {
-  data?: NursingCC[];
+  data?: NursingCC[] | NursingBSCP[];
   type: NursingType;
 }) {
   const joined = _.merge(
@@ -253,7 +253,7 @@ export default function ClinicalCategory({
         type !== 'Behavioral symptoms'
           ? 'Clinical Category'
           : type}
-        : {data ? 'Yes' : 'No'}
+        : {data ? 'At least one' : 'None'}
       </p>
       <NursingTableWrapper data={_.values(joined)} />
     </div>

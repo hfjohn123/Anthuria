@@ -87,6 +87,26 @@ export default function MDSTable({ data }: { data: MDSFinal[] }) {
       },
     },
     {
+      accessorKey: 'effective_start_date',
+      header: 'Eligibility Start Date',
+      accessorFn: (row) => new Date(row.effective_start_date),
+      cell: (info) => {
+        const date = info.getValue() as Date;
+        return `${date.toLocaleDateString()} ${date.toLocaleTimeString(
+          navigator.language,
+          {
+            hour: '2-digit',
+            minute: '2-digit',
+          },
+        )}`;
+      },
+      filterFn: dateRangeFilterFn,
+      meta: {
+        wrap: 'whitespace-nowrap',
+        type: 'daterange',
+      },
+    },
+    {
       accessorKey: 'update_time',
       header: 'Update Time',
       accessorFn: (row) => new Date(row.update_time),
@@ -128,7 +148,7 @@ export default function MDSTable({ data }: { data: MDSFinal[] }) {
     grouping: [],
     sorting: [
       {
-        id: 'update_time',
+        id: 'effective_start_date',
         desc: true,
       },
     ],
@@ -143,14 +163,16 @@ export default function MDSTable({ data }: { data: MDSFinal[] }) {
         ? {
             facility_name: false,
             patient_name: true,
-            update_time: true,
+            effective_start_date: true,
+            update_time: false,
             existing_icd10: true,
             operation_name: user_data.organization_id === 'the_triedge_labs',
           }
         : {
             facility_name: false,
             patient_name: true,
-            update_time: true,
+            effective_start_date: true,
+            update_time: false,
             existing_icd10: true,
             operation_name: user_data.organization_id === 'the_triedge_labs',
           },
