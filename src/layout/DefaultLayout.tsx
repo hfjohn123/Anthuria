@@ -12,15 +12,11 @@ const DefaultLayout = ({
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="dark:bg-boxdark-2 dark:text-bodydark flex h-screen w-screen overflow-clip">
-      {/* <!-- ===== Page Wrapper Start ===== --> */}
-
-      {/* <!-- ===== Sidebar Start ===== --> */}
+    <>
       <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
-      {/* <!-- ===== Sidebar End ===== --> */}
 
       {/* <!-- ===== Content Area Start ===== --> */}
-      <div className="relative flex flex-1 flex-col h-screen max-w-[100vw] overflow-clip ">
+      <div className="relative flex flex-auto flex-col h-screen max-w-[100vw] overflow-clip lg:ml-13 ">
         {/* <!-- ===== Header Start ===== --> */}
         <Header
           sidebarOpen={sidebarOpen}
@@ -36,7 +32,7 @@ const DefaultLayout = ({
         {/* <!-- ===== Main Content End ===== --> */}
       </div>
       {/* <!-- ===== Content Area End ===== --> */}
-    </div>
+    </>
   );
 };
 

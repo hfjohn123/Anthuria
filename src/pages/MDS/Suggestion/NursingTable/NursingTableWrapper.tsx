@@ -86,7 +86,7 @@ export default function NursingTableWrapper({ data }: { data: any }) {
       header: 'Review',
       cell: () => (
         <td className="py-2 px-4 border-t border-l">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 h-full">
             <ThumbsUp className="size-5 cursor-pointer hover:text-blue-500" />
             <ThumbsDown className="size-5 cursor-pointer hover:text-red-500" />
           </div>

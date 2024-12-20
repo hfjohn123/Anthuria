@@ -66,7 +66,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   return (
     <aside
       ref={sidebar}
-      className={`absolute left-0 top-20 z-99 flex h-[calc(100vh-5rem)]  flex-col overflow-hidden bg-black duration-300 ease-linear dark:bg-boxdark lg:h-screen lg:static lg:translate-x-0 ${
+      className={`fixed left-0 top-20 z-999 flex h-[calc(100vh-5rem)]  flex-col overflow-clip bg-black duration-300 ease-linear dark:bg-boxdark lg:h-screen lg:top-0 lg:translate-x-0 ${
         sidebarOpen ? 'translate-x-0' : '-translate-x-full'
       } ${expanded || sidebarOpen ? 'w-72.5' : 'w-13'} `}
       onMouseEnter={() => setExpanded(true)}

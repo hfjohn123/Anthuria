@@ -223,9 +223,11 @@ export default function SLPTable({
         header: 'Review',
         cell: () => {
           return (
-            <td className="flex items-center gap-2 py-2 px-4 border-t border-l">
-              <ThumbsUp className="size-5" />
-              <ThumbsDown className="size-5" />
+            <td className=" py-2 px-4 border-t border-l">
+              <div className="h-full flex items-center gap-2">
+                <ThumbsUp className="size-5" />
+                <ThumbsDown className="size-5" />
+              </div>
             </td>
           );
         },
