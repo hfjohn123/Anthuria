@@ -289,13 +289,14 @@ export default function TableWrapper({
             {table.getCoreRowModel().rows.length === 0 && <p>No Record</p>}
 
             <tbody>
-              {table.getRowModel().rows.length === 0 && (
-                <tr>
-                  <td className="whitespace-nowrap">
-                    No Record matches your filter
-                  </td>
-                </tr>
-              )}
+              {table.getRowModel().rows.length === 0 &&
+                table.getCoreRowModel().rows.length !== 0 && (
+                  <tr>
+                    <td className="whitespace-nowrap">
+                      No Record matches your filter
+                    </td>
+                  </tr>
+                )}
               {table.getRowModel().rows.map((row) => {
                 return (
                   <Fragment key={row.id}>
