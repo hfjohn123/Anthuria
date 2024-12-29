@@ -24,7 +24,7 @@ export default function KeywordModal({
       >
         <Info
           weight="fill"
-          className="size-6 text-slate-300 hover:text-slate-400"
+          className="size-6 text-slate-400 hover:text-slate-500"
         />
       </Button>
       <div onClick={(event) => event.stopPropagation()}>

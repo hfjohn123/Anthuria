@@ -560,8 +560,8 @@ export default function ReviewTriggers() {
                             ({ id }) => id === 'trigger_word',
                           )?.value as string[]) || []
                         ).includes(kw.group_name)
-                          ? 'bg-slate-200 dark:bg-slate-600 '
-                          : 'bg-white dark:bg-boxdark hover:bg-slate-100 hover:dark:bg-slate-700',
+                          ? 'bg-slate-300 dark:bg-slate-600 '
+                          : 'bg-white dark:bg-boxdark hover:bg-slate-200 hover:dark:bg-slate-700',
                       )}
                       onClick={() => {
                         let filter =
