@@ -29,6 +29,7 @@ import { useSearch } from '@tanstack/react-router';
 import NewTriggerWordModal from './NewTriggerWordModal.tsx';
 import TableWrapper from '../../../components/Tables/TableWrapper.tsx';
 import _, { Dictionary } from 'lodash';
+import { CheckCircle, XCircle } from '@phosphor-icons/react';
 
 const predefinedTriggerWords = [
   'Fall',
@@ -351,6 +352,18 @@ export default function ReviewTriggers() {
           wrap: false,
           type: 'categorical',
         },
+        cell: (info) => {
+          return (
+            <span className="flex items-center gap-1">
+              {info.getValue() === 'No' ? (
+                <XCircle size={20} />
+              ) : (
+                <CheckCircle size={20} />
+              )}
+              {info.getValue() === 'No' ? 'No' : 'Yes'}
+            </span>
+          );
+        },
       },
       {
         accessorKey: 'has_reviewed',
@@ -366,6 +379,18 @@ export default function ReviewTriggers() {
         meta: {
           wrap: 'whitespace-nowrap',
           type: 'categorical',
+        },
+        cell: (info) => {
+          return (
+            <span className="flex items-center gap-1">
+              {info.getValue() === 'No' ? (
+                <XCircle size={20} />
+              ) : (
+                <CheckCircle size={20} />
+              )}
+              {info.getValue() === 'No' ? 'No' : 'Yes'}
+            </span>
+          );
         },
       },
     ],
