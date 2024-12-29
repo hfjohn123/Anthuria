@@ -309,7 +309,7 @@ export default function EventTrackerTable({
 
   return (
     <>
-      <div className="grid xl:grid-cols-4 grid-cols-3 sm:gap-3">
+      <div className="grid xl:grid-cols-5 grid-cols-3 sm:gap-6">
         {Array.from(
           table.getColumn('occurrence')?.getFacetedUniqueValues().keys() ?? [],
         ).map((word) => (
@@ -322,8 +322,8 @@ export default function EventTrackerTable({
                 (tableState.columnFilters.find(({ id }) => id === 'occurrence')
                   ?.value as string[]) || []
               ).includes(word)
-                ? 'bg-slate-200 dark:bg-slate-600 '
-                : 'bg-white dark:bg-boxdark hover:bg-slate-100 hover:dark:bg-slate-700',
+                ? 'bg-slate-300 dark:bg-slate-600 '
+                : 'bg-white dark:bg-boxdark hover:bg-slate-200 hover:dark:bg-slate-700',
             )}
             value={
               table

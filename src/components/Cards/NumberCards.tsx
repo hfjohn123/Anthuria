@@ -50,7 +50,7 @@ export default function NumberCards({
   return (
     <div
       className={
-        'shadow-default relative py-6 border border-stroke dark:border-strokedark rounded px-7.5  flex flex-col justify-center items-center ' +
+        ' relative py-6  rounded-lg px-7.5  flex flex-col justify-center items-center select-none' +
         ' ' +
         className
       }

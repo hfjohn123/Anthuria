@@ -449,7 +449,7 @@ export default function ReviewTriggers() {
       <div className="flex flex-col gap-7 my-3 sm:my-9 max-w-screen-3xl sm:px-9 mx-auto">
         <h1 className="text-2xl font-bold">Review Triggers</h1>
         <>
-          <div className="grid xl:grid-cols-4 grid-cols-3 sm:gap-3 ">
+          <div className="grid xl:grid-cols-5 grid-cols-3 sm:gap-6 ">
             {predefinedTriggerWords.map((word) => (
               <NumberCards
                 keywordList={
@@ -474,8 +474,8 @@ export default function ReviewTriggers() {
                       ({ id }) => id === 'trigger_word',
                     )?.value as string[]) || []
                   ).includes(word)
-                    ? 'bg-slate-200 dark:bg-slate-600 '
-                    : 'bg-white dark:bg-boxdark hover:bg-slate-100 hover:dark:bg-slate-700',
+                    ? 'bg-slate-300 dark:bg-slate-600 '
+                    : 'bg-white dark:bg-boxdark hover:bg-slate-200 hover:dark:bg-slate-700',
                 )}
                 id={'NumberCards-' + word.replace(' ', '-').replace(/\W/g, '-')}
                 value={

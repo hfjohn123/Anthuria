@@ -16,7 +16,7 @@ const DefaultLayout = ({
       <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
       {/* <!-- ===== Content Area Start ===== --> */}
-      <div className="relative flex flex-auto flex-col h-screen max-w-[100vw] overflow-clip lg:ml-13 ">
+      <div className="relative flex flex-auto flex-col h-screen max-w-[100vw] overflow-clip lg:ml-13 dark:bg-boxdark-2 dark:text-bodydark  ">
         {/* <!-- ===== Header Start ===== --> */}
         <Header
           sidebarOpen={sidebarOpen}
