@@ -9,7 +9,7 @@ import {
   TableState,
   useReactTable,
 } from '@tanstack/react-table';
-import { useState, useEffect, useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import getFacetedUniqueValues from '../../../common/getFacetedUniqueValues.ts';
 import getFacetedMinMaxValues from '../../../common/getFacetedMinMaxValues.ts';
 import HyperLink from '../../../components/Basic/HyerLink.tsx';
@@ -18,6 +18,8 @@ import { MDSFinal } from '../../../types/MDSFinal.ts';
 import TableWrapper from '../../../components/Tables/TableWrapper.tsx';
 import MDSDetail from './MDSDetail.tsx';
 import { AuthContext } from '../../../components/AuthWrapper.tsx';
+import HighlightWrapper from '../../../components/Basic/HighlightWrapper.tsx';
+import stemmedFilter from '../../../components/Tables/stemmedFilter.ts';
 
 export default function MDSTable({ data }: { data: MDSFinal[] }) {
   const { user_data } = useContext(AuthContext);
@@ -31,6 +33,12 @@ export default function MDSTable({ data }: { data: MDSFinal[] }) {
       header: 'Operator',
       meta: { wrap: 'whitespace-nowrap', type: 'categorical' },
       filterFn: 'arrIncludesSome',
+      cell: (info) => (
+        <HighlightWrapper
+          text={info.getValue() as string}
+          searchTerm={info.table.getState().globalFilter}
+        />
+      ),
     },
     {
       accessorKey: 'facility_name',
@@ -41,6 +49,12 @@ export default function MDSTable({ data }: { data: MDSFinal[] }) {
       },
       enableColumnFilter: false,
       filterFn: 'arrIncludesSome',
+      cell: (info) => (
+        <HighlightWrapper
+          text={info.getValue() as string}
+          searchTerm={info.table.getState().globalFilter}
+        />
+      ),
     },
     {
       accessorKey: 'patient_name',
@@ -53,10 +67,16 @@ export default function MDSTable({ data }: { data: MDSFinal[] }) {
                 className="patient_link"
                 href={`https://clearviewhcm.matrixcare.com/core/selectResident.action?residentID=${info.row.original.patient_id}`}
               >
-                {info.row.getValue('patient_name')}
+                <HighlightWrapper
+                  text={info.getValue() as string}
+                  searchTerm={info.table.getState().globalFilter}
+                />
               </HyperLink>
               <p className="text-body-2">
-                {info.row.getValue('facility_name')}
+                <HighlightWrapper
+                  text={info.row.getValue('facility_name') as string}
+                  searchTerm={info.table.getState().globalFilter}
+                />
               </p>
             </>
           );
@@ -69,10 +89,16 @@ export default function MDSTable({ data }: { data: MDSFinal[] }) {
                 className="patient_link"
                 href={`https://${info.row.original.url_header}.pointclickcare.com/admin/client/clientlist.jsp?ESOLtabtype=C&ESOLglobalclientsearch=Y&ESOLclientid=${info.row.original.patient_id}&ESOLfacid=${info.row.original.internal_facility_id.split('_').pop()}&ESOLsave=P`}
               >
-                {info.row.getValue('patient_name')}
+                <HighlightWrapper
+                  text={info.getValue() as string}
+                  searchTerm={info.table.getState().globalFilter}
+                />
               </HyperLink>
               <p className="text-body-2">
-                {info.row.getValue('facility_name')}
+                <HighlightWrapper
+                  text={info.row.getValue('facility_name') as string}
+                  searchTerm={info.table.getState().globalFilter}
+                />
               </p>
             </>
           );
@@ -92,13 +118,18 @@ export default function MDSTable({ data }: { data: MDSFinal[] }) {
       accessorFn: (row) => new Date(row.effective_start_date),
       cell: (info) => {
         const date = info.getValue() as Date;
-        return `${date.toLocaleDateString()} ${date.toLocaleTimeString(
-          navigator.language,
-          {
-            hour: '2-digit',
-            minute: '2-digit',
-          },
-        )}`;
+        return (
+          <HighlightWrapper
+            text={`${date.toLocaleDateString()} ${date.toLocaleTimeString(
+              navigator.language,
+              {
+                hour: '2-digit',
+                minute: '2-digit',
+              },
+            )}`}
+            searchTerm={info.table.getState().globalFilter}
+          />
+        );
       },
       filterFn: dateRangeFilterFn,
       meta: {
@@ -112,13 +143,18 @@ export default function MDSTable({ data }: { data: MDSFinal[] }) {
       accessorFn: (row) => new Date(row.update_time),
       cell: (info) => {
         const date = info.getValue() as Date;
-        return `${date.toLocaleDateString()} ${date.toLocaleTimeString(
-          navigator.language,
-          {
-            hour: '2-digit',
-            minute: '2-digit',
-          },
-        )}`;
+        return (
+          <HighlightWrapper
+            text={`${date.toLocaleDateString()} ${date.toLocaleTimeString(
+              navigator.language,
+              {
+                hour: '2-digit',
+                minute: '2-digit',
+              },
+            )}`}
+            searchTerm={info.table.getState().globalFilter}
+          />
+        );
       },
       filterFn: dateRangeFilterFn,
       meta: {
@@ -197,6 +233,7 @@ export default function MDSTable({ data }: { data: MDSFinal[] }) {
     getFacetedMinMaxValues: getFacetedMinMaxValues(), // generate min/max values for numeric range filter
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    globalFilterFn: stemmedFilter,
   });
   useEffect(() => {
     localStorage.setItem(
