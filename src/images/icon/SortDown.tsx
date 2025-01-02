@@ -1,7 +1,7 @@
 export default function SortDown({ className }: { className?: string }) {
   return (
     <svg
-      viewBox="0 0 20 20"
+      viewBox="0 2 20 18"
       className={className}
       focusable="false"
       aria-hidden="true"

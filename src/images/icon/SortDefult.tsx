@@ -1,7 +1,7 @@
 export default function SortDefult({ className }: { className?: string }) {
   return (
     <svg
-      viewBox="0 0 20 20"
+      viewBox="0 2 20 18"
       focusable="false"
       aria-hidden="true"
       xmlns="http://www.w3.org/2000/svg"

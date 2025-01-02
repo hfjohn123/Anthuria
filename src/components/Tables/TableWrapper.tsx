@@ -12,7 +12,7 @@ import PageNavigation from './PageNavigation.tsx';
 import SearchParams from '../../types/SearchParams.ts';
 import { useNavigate, useSearch } from '@tanstack/react-router';
 import exportExcel from '../../common/excelExport.ts';
-import { DownloadSimple } from '@phosphor-icons/react';
+import { DownloadSimple, Funnel } from '@phosphor-icons/react';
 import TableSettingModal from './TableSettingModal.tsx';
 import Filters from './Filters.tsx';
 import { IconField } from 'primereact/iconfield';
@@ -21,6 +21,7 @@ import DebouncedInputText from '../Forms/Input/DebouncedInputText.tsx';
 import { isBoolean } from 'lodash';
 import SortUp from '../../images/icon/SortUp.tsx';
 import SortDown from '../../images/icon/SortDown.tsx';
+import SortDefult from '../../images/icon/SortDefult.tsx';
 
 export default function TableWrapper({
   table,
@@ -233,32 +234,29 @@ export default function TableWrapper({
                         key={header.id}
                         colSpan={header.colSpan}
                         className="py-3 shadow-table_header  shadow-stroke z-1 px-3  text-left select-none group whitespace-nowrap "
-                        onClick={header.column.getToggleSortingHandler()}
                         role="button"
                       >
                         {header.isPlaceholder ? null : (
-                          <span>
+                          <div className="flex items-center">
                             {flexRender(
                               header.column.columnDef.header,
                               header.getContext(),
                             )}
-                            {{
-                              asc: <SortUp className="inline size-5" />,
-                              desc: <SortDown className="inline size-5" />,
-                            }[header.column.getIsSorted() as string] ??
-                              null ??
-                              {
-                                asc: (
-                                  <SortUp className=" size-5 hidden group-hover:inline " />
-                                ),
-                                desc: (
-                                  <SortDown className=" size-5 hidden group-hover:inline" />
-                                ),
-                              }[
-                                header.column.getNextSortingOrder() as string
-                              ] ??
-                              null}
-                          </span>
+                            <div
+                              onClick={header.column.getToggleSortingHandler()}
+                            >
+                              {{
+                                asc: <SortUp className="inline size-5" />,
+                                desc: <SortDown className="inline size-5" />,
+                              }[header.column.getIsSorted() as string] ?? (
+                                <SortDefult className="inline size-5" />
+                              )}
+                            </div>
+                            {/*{header.column.getCanFilter() &&*/}
+                            {/*  header.column.columnDef.filterFn && (*/}
+                            {/*    <Funnel className="inline size-5 opacity-70" />*/}
+                            {/*  )}*/}
+                          </div>
                         )}
                       </th>
                     );
