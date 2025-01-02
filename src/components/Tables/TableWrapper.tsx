@@ -235,6 +235,7 @@ export default function TableWrapper({
                         colSpan={header.colSpan}
                         className="py-3 shadow-table_header  shadow-stroke z-1 px-3  text-left select-none group whitespace-nowrap "
                         role="button"
+                        onClick={header.column.getToggleSortingHandler()}
                       >
                         {header.isPlaceholder ? null : (
                           <div className="flex items-center">
@@ -242,9 +243,7 @@ export default function TableWrapper({
                               header.column.columnDef.header,
                               header.getContext(),
                             )}
-                            <div
-                              onClick={header.column.getToggleSortingHandler()}
-                            >
+                            <div>
                               {{
                                 asc: <SortUp className="inline size-5" />,
                                 desc: <SortDown className="inline size-5" />,
@@ -298,7 +297,7 @@ export default function TableWrapper({
                     {row.getIsExpanded() && (
                       <tr>
                         <td colSpan={row.getVisibleCells().length}>
-                          {renderExpandedRow({ row, ...rest })}
+                          {renderExpandedRow({ row, tableState, ...rest })}
                         </td>
                       </tr>
                     )}

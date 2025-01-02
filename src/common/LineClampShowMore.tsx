@@ -58,7 +58,7 @@ export default function LineClampShowMore({
           }}
           className="mt-2 text-blue-600 hover:text-blue-800 focus:ring-2 focus:ring-blue-500
                      focus:outline-none font-medium rounded-md px-1 py-1 transition-colors
-                     bg-white bg-opacity-90"
+                     bg-transparent"
           aria-label={isExpanded ? 'Show less content' : 'Show more content'}
         >
           {isExpanded ? 'Show Less' : 'Show More'}

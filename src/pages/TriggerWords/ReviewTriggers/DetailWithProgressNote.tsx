@@ -1,21 +1,24 @@
 import { Bot } from 'lucide-react';
 import { Tooltip } from 'react-tooltip';
-import ShowMoreText from 'react-show-more-text';
 import { ThumbsUp } from '@phosphor-icons/react';
 import CommentModal from './CommentModal.tsx';
 import HyperLink from '../../../components/Basic/HyerLink.tsx';
-import { Row } from '@tanstack/react-table';
+import { Row, TableState } from '@tanstack/react-table';
 import { TriggerFinal } from '../../../types/TriggerFinal.ts';
 import { useQueryClient } from '@tanstack/react-query';
 import usePutComment from '../../../hooks/interface/usePutComment.ts';
 import { useContext } from 'react';
 import { AuthContext } from '../../../components/AuthWrapper.tsx';
 import clsx from 'clsx';
+import HighlightWrapper from '../../../components/Basic/HighlightWrapper.tsx';
+import LineClampShowMore from '../../../common/LineClampShowMore.tsx';
 
 export default function DetailWithProgressNote({
   row,
+  tableState,
 }: {
   row: Row<TriggerFinal>;
+  tableState: TableState;
 }) {
   const { route } = useContext(AuthContext);
   const queryClient = useQueryClient();
@@ -67,16 +70,18 @@ export default function DetailWithProgressNote({
             ({ trigger_word, is_thumb_up, summary, comment, event_ids }) => (
               <tr key={row.id + trigger_word}>
                 <td className="whitespace-nowrap align-top flex items-center flex-nowrap">
-                  {trigger_word}
+                  <HighlightWrapper
+                    text={trigger_word || ''}
+                    searchTerm={tableState.globalFilter || ''}
+                  />
                 </td>
                 <td className="pr-10">
-                  <ShowMoreText
-                    className="whitespace-pre-line"
-                    keepNewLines
-                    anchorClass="text-primary cursor-pointer block dark:text-secondary"
-                  >
-                    {summary}
-                  </ShowMoreText>
+                  <LineClampShowMore className="whitespace-pre-line">
+                    <HighlightWrapper
+                      text={summary || ''}
+                      searchTerm={tableState.globalFilter || ''}
+                    />
+                  </LineClampShowMore>
                 </td>
                 <td className=" align-top	">
                   <div className=" flex items-center flex-nowrap gap-2">
@@ -91,7 +96,7 @@ export default function DetailWithProgressNote({
                         onClick={() =>
                           putComment.mutate({
                             progress_note_id: row.original.progress_note_id,
-                            trigger_word: trigger_word,
+                            trigger_word: trigger_word || '',
                             comment: '',
                             is_thumb_up: true,
                           })
@@ -102,7 +107,7 @@ export default function DetailWithProgressNote({
                       <CommentModal
                         data={{
                           comment: comment || '',
-                          trigger_word,
+                          trigger_word: trigger_word || '',
                           progress_note_id: row.original.progress_note_id,
                         }}
                         active={true}
@@ -111,7 +116,7 @@ export default function DetailWithProgressNote({
                       <CommentModal
                         data={{
                           comment: comment || '',
-                          trigger_word,
+                          trigger_word: trigger_word || '',
                           progress_note_id: row.original.progress_note_id,
                         }}
                         active={false}
@@ -180,13 +185,12 @@ export default function DetailWithProgressNote({
               {row.getValue('progress_note_id')}
             </td>
             <td className="pr-10">
-              <ShowMoreText
-                className="whitespace-pre-line"
-                keepNewLines
-                anchorClass="text-primary cursor-pointer block dark:text-secondary "
-              >
-                {row.getValue('progress_note')}
-              </ShowMoreText>
+              <LineClampShowMore className="whitespace-pre-line">
+                <HighlightWrapper
+                  text={row.getValue('progress_note') || ''}
+                  searchTerm={tableState.globalFilter || ''}
+                />
+              </LineClampShowMore>
             </td>
             <td className="align-top whitespace-nowrap">
               {row.getValue('created_by')}

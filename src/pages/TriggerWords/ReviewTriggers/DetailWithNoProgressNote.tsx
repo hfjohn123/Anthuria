@@ -1,17 +1,20 @@
-import ShowMoreText from 'react-show-more-text';
 import PrimaryButton from '../../../components/Basic/PrimaryButton.tsx';
-import { Row } from '@tanstack/react-table';
+import { Row, TableState } from '@tanstack/react-table';
 import { TriggerFinal } from '../../../types/TriggerFinal.ts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { createToast } from '../../../hooks/fireToast.tsx';
 import { useContext } from 'react';
 import { AuthContext } from '../../../components/AuthWrapper.tsx';
+import HighlightWrapper from '../../../components/Basic/HighlightWrapper.tsx';
+import LineClampShowMore from '../../../common/LineClampShowMore.tsx';
 
 export default function DetailWithNoProgressNote({
   row,
+  tableState,
 }: {
   row: Row<TriggerFinal>;
+  tableState: TableState;
 }) {
   const { route } = useContext(AuthContext);
   const queryClient = useQueryClient();
@@ -100,16 +103,18 @@ export default function DetailWithNoProgressNote({
             ({ trigger_word, summary, is_thumb_up }) => (
               <tr key={row.id + trigger_word}>
                 <td className="whitespace-nowrap align-top flex items-center flex-nowrap">
-                  {trigger_word}
+                  <HighlightWrapper
+                    text={trigger_word || ''}
+                    searchTerm={tableState.globalFilter}
+                  />
                 </td>
                 <td className="pr-10">
-                  <ShowMoreText
-                    className="whitespace-pre-line"
-                    keepNewLines
-                    anchorClass="text-primary cursor-pointer block dark:text-secondary"
-                  >
-                    {summary}
-                  </ShowMoreText>
+                  <LineClampShowMore className="whitespace-pre-line">
+                    <HighlightWrapper
+                      text={summary}
+                      searchTerm={tableState.globalFilter}
+                    />
+                  </LineClampShowMore>
                 </td>
                 <td className="align-top whitespace-nowrap">
                   {is_thumb_up ? (

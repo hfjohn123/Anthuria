@@ -30,6 +30,8 @@ import NewTriggerWordModal from './NewTriggerWordModal.tsx';
 import TableWrapper from '../../../components/Tables/TableWrapper.tsx';
 import _, { Dictionary } from 'lodash';
 import { CheckCircle, XCircle } from '@phosphor-icons/react';
+import HighlightWrapper from '../../../components/Basic/HighlightWrapper.tsx';
+import highlightGenerator from '../../../common/highlightGenerator.ts';
 
 const predefinedTriggerWords = [
   'Fall',
@@ -178,6 +180,12 @@ export default function ReviewTriggers() {
         header: 'Operator',
         meta: { wrap: 'whitespace-nowrap', type: 'categorical' },
         filterFn: 'arrIncludesSome',
+        cell: (info) => (
+          <HighlightWrapper
+            text={info.getValue() as string}
+            searchTerm={info.table.getState().globalFilter}
+          />
+        ),
       },
       {
         accessorKey: 'facility_name',
@@ -189,6 +197,12 @@ export default function ReviewTriggers() {
           excelWidth: 20,
         },
         filterFn: 'arrIncludesSome',
+        cell: (info) => (
+          <HighlightWrapper
+            text={info.getValue() as string}
+            searchTerm={info.table.getState().globalFilter}
+          />
+        ),
       },
       {
         accessorKey: 'patient_name',
@@ -200,7 +214,10 @@ export default function ReviewTriggers() {
                 tooltip_content={'View Patient in MaxtrixCare'}
                 href={`https://clearviewhcm.matrixcare.com/core/selectResident.action?residentID=${info.row.original.patient_id}`}
               >
-                {info.row.getValue('patient_name')}
+                <HighlightWrapper
+                  text={info.getValue() as string}
+                  searchTerm={info.table.getState().globalFilter}
+                />
               </HyperLink>
             );
           }
@@ -211,11 +228,19 @@ export default function ReviewTriggers() {
                 tooltip_content={'View Patient in PCC'}
                 href={`https://${info.row.original.url_header}.pointclickcare.com/admin/client/clientlist.jsp?ESOLtabtype=C&ESOLglobalclientsearch=Y&ESOLclientid=${info.row.original.patient_id}&ESOLfacid=${info.row.original.internal_facility_id.split('_').pop()}&ESOLsave=P`}
               >
-                {info.row.getValue('patient_name')}
+                <HighlightWrapper
+                  text={info.getValue() as string}
+                  searchTerm={info.table.getState().globalFilter}
+                />
               </HyperLink>
             );
           }
-          return info.renderValue();
+          return (
+            <HighlightWrapper
+              text={info.getValue() as string}
+              searchTerm={info.table.getState().globalFilter}
+            />
+          );
         },
         header: 'Patient',
         filterFn: 'includesString',
@@ -238,6 +263,12 @@ export default function ReviewTriggers() {
         sortingFn: 'text',
         sortDescFirst: false,
         filterFn: 'includesString',
+        cell: (info) => (
+          <HighlightWrapper
+            text={info.getValue() as string}
+            searchTerm={info.table.getState().globalFilter}
+          />
+        ),
       },
       {
         accessorKey: 'created_date',
@@ -245,13 +276,18 @@ export default function ReviewTriggers() {
         cell: (info) => {
           if (!info.getValue()) return '';
           const date = new Date(info.getValue() as string | number | Date);
-          return `${date.toLocaleDateString()} ${date.toLocaleTimeString(
-            navigator.language,
-            {
-              hour: '2-digit',
-              minute: '2-digit',
-            },
-          )}`;
+          return (
+            <HighlightWrapper
+              text={`${date.toLocaleDateString()} ${date.toLocaleTimeString(
+                navigator.language,
+                {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                },
+              )}`}
+              searchTerm={info.table.getState().globalFilter}
+            />
+          );
         },
         filterFn: dateRangeFilterFn,
         meta: {
@@ -267,6 +303,12 @@ export default function ReviewTriggers() {
           wrap: false,
           type: 'categorical',
         },
+        cell: (info) => (
+          <HighlightWrapper
+            text={info.getValue() as string}
+            searchTerm={info.table.getState().globalFilter}
+          />
+        ),
       },
       {
         accessorKey: 'revision_date',
@@ -274,13 +316,18 @@ export default function ReviewTriggers() {
         cell: (info) => {
           if (!info.getValue()) return '';
           const date = new Date(info.getValue() as string | number | Date);
-          return `${date.toLocaleDateString()} ${date.toLocaleTimeString(
-            navigator.language,
-            {
-              hour: '2-digit',
-              minute: '2-digit',
-            },
-          )}`;
+          return (
+            <HighlightWrapper
+              text={`${date.toLocaleDateString()} ${date.toLocaleTimeString(
+                navigator.language,
+                {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                },
+              )}`}
+              searchTerm={info.table.getState().globalFilter}
+            />
+          );
         },
         meta: {
           wrap: false,
@@ -296,6 +343,12 @@ export default function ReviewTriggers() {
           type: 'categorical',
         },
         filterFn: 'arrIncludesSome',
+        cell: (info) => (
+          <HighlightWrapper
+            text={info.getValue() as string}
+            searchTerm={info.table.getState().globalFilter}
+          />
+        ),
       },
       {
         accessorKey: 'trigger_word',
@@ -303,7 +356,33 @@ export default function ReviewTriggers() {
         accessorFn: (row) => row.trigger_words.map((d) => d.trigger_word),
         cell: (info) => {
           const value = info.getValue() as string[];
-          return value.join(', ');
+          return (
+            <div className="flex flex-wrap gap-2">
+              {value.map((d) =>
+                highlightGenerator(d, [
+                  ...((info.table
+                    .getState()
+                    .columnFilters.find((f) => f.id === 'trigger_word')
+                    ?.value || []) as string[]),
+                  info.table.getState().globalFilter,
+                ]).map((segment, index) => (
+                  <span
+                    key={index}
+                    className={
+                      segment.isMatch && segment.termIndex !== undefined
+                        ? `bg-yellow-200 px-1 rounded`
+                        : 'bg-slate-100 px-1 rounded'
+                    }
+                    title={
+                      segment.isMatch ? `Match: ${segment.term}` : undefined
+                    }
+                  >
+                    {segment.text}
+                  </span>
+                )),
+              )}
+            </div>
+          );
         },
         filterFn: 'arrIncludesSome',
         meta: {
@@ -323,6 +402,12 @@ export default function ReviewTriggers() {
           download: true,
           excelWidth: 80,
         },
+        cell: (info) => (
+          <HighlightWrapper
+            text={info.getValue() as string}
+            searchTerm={info.table.getState().globalFilter}
+          />
+        ),
       },
       {
         accessorKey: 'summary',
@@ -338,10 +423,17 @@ export default function ReviewTriggers() {
           download: true,
           excelWidth: 80,
         },
+        cell: (info) => (
+          <HighlightWrapper
+            text={info.getValue() as string}
+            searchTerm={info.table.getState().globalFilter}
+          />
+        ),
       },
       {
         accessorKey: 'has_events',
         header: 'Events Associated',
+        enableGlobalFilter: false,
         accessorFn: (row) => {
           return row.trigger_words.some((d) => d.event_ids.length > 0)
             ? 'Yes'
@@ -368,6 +460,7 @@ export default function ReviewTriggers() {
       {
         accessorKey: 'has_reviewed',
         header: 'Reviewed',
+        enableGlobalFilter: false,
         accessorFn: (row) => {
           return row.trigger_words.filter(
             (d) => !d.is_thumb_up && d.comment === null,
@@ -469,12 +562,13 @@ export default function ReviewTriggers() {
       return <div>Error: Unknown error</div>;
     }
   }
+
   return (
     <DefaultLayout title={'Clinical Pulse'}>
       <div className="flex flex-col gap-7 my-3 sm:my-9 max-w-screen-3xl sm:px-9 mx-auto">
         <h1 className="text-2xl font-bold">Review Triggers</h1>
         <>
-          <div className="grid xl:grid-cols-5 grid-cols-3 sm:gap-6 ">
+          <div className="grid xl:grid-cols-5 grid-cols-3 gap-1 sm:gap-6 ">
             {predefinedTriggerWords.map((word) => (
               <NumberCards
                 keywordList={
