@@ -7,8 +7,6 @@ import {
 import { Button } from '@headlessui/react';
 import 'primeicons/primeicons.css';
 
-import SortUpIcon from '../../images/icon/sort-up.svg';
-import SortDownIcon from '../../images/icon/sort-down.svg';
 import { Fragment, useEffect, useRef } from 'react';
 import PageNavigation from './PageNavigation.tsx';
 import SearchParams from '../../types/SearchParams.ts';
@@ -21,6 +19,8 @@ import { IconField } from 'primereact/iconfield';
 import { InputIcon } from 'primereact/inputicon';
 import DebouncedInputText from '../Forms/Input/DebouncedInputText.tsx';
 import { isBoolean } from 'lodash';
+import SortUp from '../../images/icon/SortUp.tsx';
+import SortDown from '../../images/icon/SortDown.tsx';
 
 export default function TableWrapper({
   table,
@@ -243,36 +243,16 @@ export default function TableWrapper({
                               header.getContext(),
                             )}
                             {{
-                              asc: (
-                                <img
-                                  src={SortUpIcon}
-                                  alt="Sort Up Icon"
-                                  className="inline size-5"
-                                />
-                              ),
-                              desc: (
-                                <img
-                                  src={SortDownIcon}
-                                  alt="Sort Down Icon"
-                                  className="inline size-5"
-                                />
-                              ),
+                              asc: <SortUp className="inline size-5" />,
+                              desc: <SortDown className="inline size-5" />,
                             }[header.column.getIsSorted() as string] ??
                               null ??
                               {
                                 asc: (
-                                  <img
-                                    src={SortUpIcon}
-                                    alt="Sort Up Icon"
-                                    className=" size-5 hidden group-hover:inline "
-                                  />
+                                  <SortUp className=" size-5 hidden group-hover:inline " />
                                 ),
                                 desc: (
-                                  <img
-                                    src={SortDownIcon}
-                                    alt="Sort Down Icon"
-                                    className=" size-5 hidden group-hover:inline"
-                                  />
+                                  <SortDown className=" size-5 hidden group-hover:inline" />
                                 ),
                               }[
                                 header.column.getNextSortingOrder() as string
