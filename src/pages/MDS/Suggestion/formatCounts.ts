@@ -54,5 +54,5 @@ export default function formatCounts(counts: CountObject): string {
     result += result ? ` and ${othersCount} others` : `${othersCount} others`;
   }
 
-  return '(' + result + ' detected)';
+  return result + ' detected';
 }
