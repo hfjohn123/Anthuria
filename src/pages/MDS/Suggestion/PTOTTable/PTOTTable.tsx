@@ -65,10 +65,15 @@ export default function PTOTTable({ data }: { data: PTOTFinal }) {
         return (
           <td
             rowSpan={rowSpan}
-            className="py-2 px-4 border-t border-l  first:border-l-0 align-top bg-white"
+            className="py-2 px-4 border-t border-l  first:border-l-0 align-top bg-white border-gray-600"
           >
             {info.getValue() as string}
           </td>
+        );
+      },
+      footer: () => {
+        return (
+          <td className="whitespace-nowrap py-2 px-4 border-t  border-gray-600"></td>
         );
       },
       meta: {
@@ -80,10 +85,15 @@ export default function PTOTTable({ data }: { data: PTOTFinal }) {
       header: 'MDS Item',
       filterFn: 'arrIncludesSome',
       cell: (info) => (
-        <td className="py-2 px-4 border-t border-l ">
+        <td className="py-2 px-4 border-t border-l border-gray-600 ">
           {info.getValue() as string}
         </td>
       ),
+      footer: () => {
+        return (
+          <td className="whitespace-nowrap py-2 px-4 border-t border-l border-gray-600"></td>
+        );
+      },
       meta: {
         type: 'categorical',
       },
@@ -92,7 +102,7 @@ export default function PTOTTable({ data }: { data: PTOTFinal }) {
       accessorKey: 'individual_function_score',
       header: 'Function Score',
       cell: (info) => (
-        <td className="py-2 px-4 border-t border-l  whitespace-nowrap">
+        <td className="py-2 px-4 border-t border-l  whitespace-nowrap border-gray-600">
           {info.getValue() as string}
         </td>
       ),
@@ -100,15 +110,25 @@ export default function PTOTTable({ data }: { data: PTOTFinal }) {
       meta: {
         type: 'categorical',
       },
+      footer: () => {
+        return (
+          <td className="whitespace-nowrap py-2 px-4 border-t border-l border-gray-600"></td>
+        );
+      },
     },
     {
       accessorKey: 'suggestion',
       header: 'AI Suggested Conditions',
       cell: (info) => (
-        <td className="py-2 px-4 border-t border-l ">
+        <td className="py-2 px-4 border-t border-l border-gray-600">
           {(info.getValue() as string[])?.join(', ') || ''}
         </td>
       ),
+      footer: () => {
+        return (
+          <td className="whitespace-nowrap py-2 px-4 border-t border-l border-gray-600"></td>
+        );
+      },
     },
     {
       accessorKey: 'average_function_score',
@@ -126,7 +146,7 @@ export default function PTOTTable({ data }: { data: PTOTFinal }) {
         return (
           <td
             rowSpan={rowSpan}
-            className="py-2 px-4 border-t border-l  bg-blue-50 align-top"
+            className="py-2 px-4 border-t border-l  bg-blue-50 align-top border-gray-600"
           >
             {info.getValue() as string}
           </td>
@@ -134,7 +154,7 @@ export default function PTOTTable({ data }: { data: PTOTFinal }) {
       },
       footer: () => {
         return (
-          <td className="py-2 px-4  border-t border-l  bg-blue-50 font-medium">
+          <td className="py-2 px-4  border-t border-l  bg-blue-50 font-medium border-gray-600">
             Total Score: {data.final_score}
           </td>
         );
@@ -144,7 +164,7 @@ export default function PTOTTable({ data }: { data: PTOTFinal }) {
       accessorKey: 'review',
       header: 'Review',
       cell: () => (
-        <td className="py-2 px-4 border-t border-l  last:border-r-0">
+        <td className="py-2 px-4 border-t border-l  last:border-r-0 border-gray-600">
           <div className="flex items-center gap-2">
             <ThumbsUp className="size-5 cursor-pointer hover:text-blue-500" />
             <ThumbsDown className="size-5 cursor-pointer hover:text-red-500" />
@@ -153,7 +173,7 @@ export default function PTOTTable({ data }: { data: PTOTFinal }) {
       ),
       footer: () => {
         return (
-          <td className="py-2 px-4  border-t border-l  last:border-r-0 font-medium">
+          <td className="py-2 px-4  border-t border-l  last:border-r-0 font-medium border-gray-600">
             Case Mix Group: {data.mix_group}{' '}
             {data.mix_group &&
               '(PT CMI:' +

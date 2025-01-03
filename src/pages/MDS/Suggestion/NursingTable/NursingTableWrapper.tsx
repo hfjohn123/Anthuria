@@ -23,7 +23,9 @@ export default function NursingTableWrapper({ data }: { data: any }) {
       header: 'MDS Item',
       filterFn: 'arrIncludesSome',
       cell: (info) => (
-        <td className="py-2 px-4 border-t ">{info.getValue() as string}</td>
+        <td className="py-2 px-4 border-t border-gray-600 ">
+          {info.getValue() as string}
+        </td>
       ),
       meta: {
         type: 'categorical',
@@ -33,7 +35,7 @@ export default function NursingTableWrapper({ data }: { data: any }) {
       accessorKey: 'description',
       header: 'Description',
       cell: (info) => (
-        <td className="py-2 px-4 border-t border-l whitespace-pre-line">
+        <td className="py-2 px-4 border-t border-l whitespace-pre-line border-gray-600">
           {info.getValue() as string}
         </td>
       ),
@@ -42,7 +44,7 @@ export default function NursingTableWrapper({ data }: { data: any }) {
       accessorKey: 'is_mds',
       header: 'Is Already in MDS Table',
       cell: (info) => (
-        <td className="py-2 px-4 border-t border-l whitespace-nowrap bg-blue-50">
+        <td className="py-2 px-4 border-t border-l whitespace-nowrap bg-blue-50 border-gray-600">
           {info.getValue()
             ? 'Yes'
             : info.row.original.suggestion
@@ -57,12 +59,16 @@ export default function NursingTableWrapper({ data }: { data: any }) {
       header: 'AI Suggested Conditions',
       cell: (info) => {
         if (!info.getValue())
-          return <td className="py-2 px-4 border-t border-l"></td>;
+          return (
+            <td className="py-2 px-4 border-t border-l border-gray-600"></td>
+          );
         const count = (info.getValue() as ProgressNoteAndSummary[]).length;
         if (count === 0)
-          return <td className="py-2 px-4 border-t border-l"></td>;
+          return (
+            <td className="py-2 px-4 border-t border-l border-gray-600"></td>
+          );
         return (
-          <td className="py-2 px-4 border-t border-l">
+          <td className="py-2 px-4 border-t border-l border-gray-600">
             <EvidenceModal
               button={
                 <span>
@@ -85,7 +91,7 @@ export default function NursingTableWrapper({ data }: { data: any }) {
       accessorKey: 'review',
       header: 'Review',
       cell: () => (
-        <td className="py-2 px-4 border-t border-l">
+        <td className="py-2 px-4 border-t border-l border-gray-600">
           <div className="flex items-center gap-2 h-full">
             <ThumbsUp className="size-5 cursor-pointer hover:text-blue-500" />
             <ThumbsDown className="size-5 cursor-pointer hover:text-red-500" />

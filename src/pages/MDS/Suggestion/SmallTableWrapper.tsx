@@ -81,7 +81,7 @@ export default function SmallTableWrapper({
         )}
       </div>
 
-      <div className="overflow-x-auto shadow-sm border border-gray-200 rounded-lg mt-3">
+      <div className="overflow-x-auto shadow-sm border border-gray-600 rounded-lg mt-3">
         <table className="w-full border-collapse">
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -90,7 +90,7 @@ export default function SmallTableWrapper({
                   <th
                     key={header.id}
                     colSpan={header.colSpan}
-                    className="py-2 px-4  border-r border-gray-200 first:border-l-0 last:border-r-0 text-left select-none group whitespace-nowrap text-body-2 bg-gray-50"
+                    className="py-2 px-4  border-r border-gray-600 first:border-l-0 last:border-r-0 text-left select-none group whitespace-nowrap text-body-2 bg-gray-50"
                   >
                     {header.isPlaceholder ? null : (
                       <span>

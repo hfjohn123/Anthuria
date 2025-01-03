@@ -75,13 +75,18 @@ export default function SLPTable({
         filterFn: 'arrIncludesSome',
         cell: (info) => {
           return (
-            <td className="whitespace-normal max-w-[30vw] py-2 px-4 border-t ">
+            <td className="whitespace-normal max-w-[30vw] py-2 px-4 border-t border-gray-600 ">
               {info.getValue() as string}
             </td>
           );
         },
         meta: {
           type: 'categorical',
+        },
+        footer: () => {
+          return (
+            <td className="whitespace-nowrap py-2 px-4 border-t  border-gray-600"></td>
+          );
         },
       },
       {
@@ -90,7 +95,7 @@ export default function SLPTable({
         header: 'Is Already in MDS Table',
         cell: (info) => {
           return (
-            <td className="whitespace-nowrap py-2 px-4 border-t border-l">
+            <td className="whitespace-nowrap py-2 px-4 border-t border-l border-gray-600">
               {info.getValue() as string}
             </td>
           );
@@ -115,7 +120,7 @@ export default function SLPTable({
             );
           }).length;
           return (
-            <td className="py-2 px-4 border-t border-l">
+            <td className="py-2 px-4 border-t border-l border-gray-600">
               <p className="whitespace-nowrap text-left">
                 Current Presence of SLP Conditions: {total_general}
               </p>
@@ -141,7 +146,7 @@ export default function SLPTable({
           if (value && value.length > 0) {
             if (info.row.original.condition === 'Comorbidities Present') {
               return (
-                <td className="py-2 px-4 border-t border-l">
+                <td className="py-2 px-4 border-t border-l border-gray-600">
                   {value.map((entry, index) => {
                     entry = entry as SLPEntry;
                     return (
@@ -170,7 +175,7 @@ export default function SLPTable({
             } else {
               const count = (value as ProgressNoteAndSummary[]).length;
               return (
-                <td className="py-2 px-4 border-t border-l">
+                <td className="py-2 px-4 border-t border-l border-gray-600">
                   <EvidenceModal
                     button={
                       <span>
@@ -189,7 +194,9 @@ export default function SLPTable({
               );
             }
           }
-          return <td className="py-2 px-4 border-t border-l"></td>;
+          return (
+            <td className="py-2 px-4 border-t border-l border-gray-600"></td>
+          );
         },
         header: 'AI Suggested Conditions',
         footer: (info) => {
@@ -210,7 +217,7 @@ export default function SLPTable({
             );
           }).length;
           return (
-            <td className="py-2 px-4 border-t border-l">
+            <td className="py-2 px-4 border-t border-l border-gray-600">
               <p className="whitespace-nowrap text-left ">+ {total_general}</p>
               <p className="whitespace-nowrap text-left">+ {total_diet}</p>
               <br />
@@ -223,7 +230,7 @@ export default function SLPTable({
         header: 'Review',
         cell: () => {
           return (
-            <td className=" py-2 px-4 border-t border-l">
+            <td className=" py-2 px-4 border-t border-l border-gray-600">
               <div className="h-full flex items-center gap-2">
                 <ThumbsUp className="size-5" />
                 <ThumbsDown className="size-5" />
@@ -247,7 +254,7 @@ export default function SLPTable({
             );
           }).length;
           return (
-            <td className="py-2 px-4 border-t border-l">
+            <td className="py-2 px-4 border-t border-l border-gray-600">
               <p className="whitespace-nowrap text-left">= {total_general}</p>
               <p className="whitespace-nowrap text-left">= {total_diet}</p>
               <p className="whitespace-nowrap text-left">

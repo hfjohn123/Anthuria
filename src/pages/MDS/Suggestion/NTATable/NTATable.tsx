@@ -46,13 +46,18 @@ export default function NTATable({ data }: { data: NTAEntry[] }) {
       filterFn: 'arrIncludesSome',
       cell: (info) => {
         return (
-          <td className="whitespace-normal max-w-[30vw] py-2 px-4 border-t  ">
+          <td className="whitespace-normal max-w-[30vw] py-2 px-4 border-t border-gray-600 ">
             {info.getValue() as string}
           </td>
         );
       },
       meta: {
         type: 'categorical',
+      },
+      footer: () => {
+        return (
+          <td className="whitespace-nowrap py-2 px-4 border-t  border-gray-600"></td>
+        );
       },
     },
     {
@@ -64,9 +69,14 @@ export default function NTATable({ data }: { data: NTAEntry[] }) {
       },
       cell: (info) => {
         return (
-          <td className="whitespace-nowrap py-2 px-4 border-t border-l ">
+          <td className="whitespace-nowrap py-2 px-4 border-t border-l border-gray-600">
             {info.getValue() as string}
           </td>
+        );
+      },
+      footer: () => {
+        return (
+          <td className="whitespace-nowrap py-2 px-4 border-t border-l border-gray-600"></td>
         );
       },
     },
@@ -76,7 +86,7 @@ export default function NTATable({ data }: { data: NTAEntry[] }) {
       header: 'Is Already in MDS Table',
       cell: (info) => {
         return (
-          <td className="whitespace-nowrap py-2 px-4 border-t border-l ">
+          <td className="whitespace-nowrap py-2 px-4 border-t border-l border-gray-600">
             {info.getValue() as string}
           </td>
         );
@@ -85,13 +95,18 @@ export default function NTATable({ data }: { data: NTAEntry[] }) {
       meta: {
         type: 'categorical',
       },
+      footer: () => {
+        return (
+          <td className="whitespace-nowrap py-2 px-4 border-t border-l border-gray-600"></td>
+        );
+      },
     },
     {
       accessorKey: 'new_icd10',
       accessorFn: (row) => row.new_icd10?.map((d) => d.icd10) || [],
       cell: (info) => {
         return (
-          <td className="whitespace-nowrap  px-4 border-t border-l ">
+          <td className="whitespace-nowrap  px-4 border-t border-l border-gray-600">
             {info.row.original.new_icd10?.map((d, index, array) => {
               return (
                 <Fragment key={d.icd10}>
@@ -110,7 +125,7 @@ export default function NTATable({ data }: { data: NTAEntry[] }) {
           .rows.filter((row) => row.original.is_mds_table)
           .reduce((sum, row) => sum + row.original.score, 0);
         return (
-          <td className="whitespace-nowrap text-left py-2 px-4 border-t border-l ">
+          <td className="whitespace-nowrap text-left py-2 px-4 border-t border-l border-gray-600">
             Current score: {total} ({getNTACategory(total)}, CMI:{' '}
             {NTAMapping[getNTACategory(total)]})
           </td>
@@ -122,7 +137,7 @@ export default function NTATable({ data }: { data: NTAEntry[] }) {
       header: 'Review',
       cell: () => {
         return (
-          <td className="py-2 px-4 border-t border-l">
+          <td className="py-2 px-4 border-t border-l border-gray-600">
             <div className="flex items-center gap-2 h-full">
               <ThumbsUp className="size-5 cursor-pointer hover:text-blue-500" />
               <ThumbsDown className="size-5 cursor-pointer hover:text-red-500" />
@@ -136,7 +151,7 @@ export default function NTATable({ data }: { data: NTAEntry[] }) {
           .rows.filter((row) => !row.original.is_mds_table)
           .reduce((sum, row) => sum + row.original.score, 0);
         return (
-          <td className="whitespace-nowrap text-left py-2 px-4 border-t border-l ">
+          <td className="whitespace-nowrap text-left py-2 px-4 border-t border-l border-gray-600 ">
             + {total}
           </td>
         );
@@ -147,7 +162,7 @@ export default function NTATable({ data }: { data: NTAEntry[] }) {
       header: 'Score',
       cell: (info) => {
         return (
-          <td className="whitespace-nowrap py-2 px-4 border-t border-l  ">
+          <td className="whitespace-nowrap py-2 px-4 border-t border-l  border-gray-600">
             {info.getValue() as string}
           </td>
         );
@@ -158,7 +173,7 @@ export default function NTATable({ data }: { data: NTAEntry[] }) {
           .getRowModel()
           .rows.reduce((sum, row) => sum + row.original.score, 0);
         return (
-          <td className="whitespace-nowrap text-left py-2 px-4 border-t border-l ">
+          <td className="whitespace-nowrap text-left py-2 px-4 border-t border-l border-gray-600 ">
             Projected score: {total} ({getNTACategory(total)}, CMI:{' '}
             {NTAMapping[getNTACategory(total)]})
           </td>
