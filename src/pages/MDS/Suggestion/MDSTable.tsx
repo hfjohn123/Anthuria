@@ -259,6 +259,7 @@ export default function MDSTable({ data }: { data: MDSFinal[] }) {
       {/*  setTableState={setTableState}*/}
       {/*/>*/}
       <TableWrapper
+        title="PDPM Suggestions"
         filters={true}
         table={table}
         tableState={tableState}

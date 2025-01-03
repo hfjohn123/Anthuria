@@ -735,7 +735,7 @@ export default function ReviewTriggers() {
           </div>
         </>
 
-        <div className=" mt-5 col-span-12 shadow-default  overflow-x-auto sm:overflow-clip  ">
+        <div className=" mt-5 col-span-12 ">
           <TableWrapper
             table={table}
             tableState={tableState}
@@ -749,6 +749,7 @@ export default function ReviewTriggers() {
             setIsRefetching={setIsRefetching}
             includeCreatedDate={includeCreatedDate}
             setIncludeCreatedDate={setIncludeCreatedDate}
+            title={'Progress Notes'}
           />
         </div>
       </div>

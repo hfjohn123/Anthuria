@@ -41,7 +41,7 @@ export default function DebouncedInputText({
       onChange={(e) => setDebouncedValue(e.target.value)}
       required={required}
       size={size}
-      className={clsx('border-0', className)}
+      className={clsx(className)}
     />
   );
 }

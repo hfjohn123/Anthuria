@@ -37,6 +37,7 @@ export default function TableWrapper({
   includeCreatedDate,
   setIncludeCreatedDate,
   filters = true,
+  title,
   ...rest
 }: {
   table: Table<any>;
@@ -52,6 +53,7 @@ export default function TableWrapper({
   includeCreatedDate?: boolean;
   setIncludeCreatedDate?: React.Dispatch<React.SetStateAction<boolean>>;
   filters?: boolean;
+  title?: string;
   [key: string]: any;
 }) {
   const navigate = useNavigate();
@@ -161,154 +163,159 @@ export default function TableWrapper({
         {table.getCoreRowModel().rows.length >= 1 ? 'records' : 'record'} are
         displayed
       </p>
-      <div className=" bg-white dark:bg-boxdark shadow-default h-full flex-col flex overflow-x-auto lg:overflow-clip ">
-        {filters && (
-          <div
-            ref={filterRef}
-            className="sticky  top-0 left-0 flex-none bg-white dark:bg-boxdark z-1 "
-          >
-            <div className="flex items-center border-b border-stroke py-1 px-1 ">
-              <IconField iconPosition="left" className=" flex-1 ">
-                <InputIcon className="pi pi-search" />
-                <DebouncedInputText
-                  setValue={(e) => {
-                    setTableState((prev) => ({
-                      ...prev,
-                      globalFilter: e.target.value,
-                    }));
-                  }}
-                  value={tableState.globalFilter}
-                  placeholder="Global Search..."
-                  className="w-full "
-                />
-              </IconField>
-              {download && (
-                <Button
-                  type="button"
-                  className="hover:text-primary"
-                  onClick={() =>
-                    exportExcel(
-                      table,
-                      'review_triggers_' + new Date().toLocaleString(),
-                    )
-                  }
-                >
-                  <DownloadSimple size={22} />
-                </Button>
-              )}
-              {tableSetting && initialTableState && (
-                <TableSettingModal
-                  table={table}
-                  tableState={tableState}
-                  setTableState={setTableState}
-                  initialTableState={initialTableState}
-                />
-              )}
-            </div>
-            <Filters
-              permanentColumnFilters={permanentColumnFilters}
-              table={table}
-              tableState={tableState}
-              setTableState={setTableState}
-              hasHistory={hasHistory}
-              setIsRefetching={setIsRefetching}
-              includeCreatedDate={includeCreatedDate}
-              setIncludeCreatedDate={setIncludeCreatedDate}
-            />
-          </div>
-        )}
-
-        <div className="flex-1 relative">
-          <table className="w-full border-b-2 border-b-stroke ">
-            <thead
-              className="bg-slate-50 dark:bg-graydark sticky z-1"
-              style={
-                filters ? { top: 'var(--filter-height, 0px)' } : { top: 0 }
-              }
+      <div className=" bg-white dark:bg-boxdark h-full flex-col flex overflow-x-auto lg:overflow-clip p-7.5 gap-7.5 rounded-[30px] ">
+        <h3 className="text-title-md text-black dark:text-white font-semibold	">
+          {title}
+        </h3>
+        <div>
+          {filters && (
+            <div
+              ref={filterRef}
+              className="sticky  top-0 left-0 flex-none bg-white dark:bg-boxdark z-1 "
             >
-              {table.getHeaderGroups().map((headerGroup) => (
-                <tr key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => {
-                    return (
-                      <th
-                        key={header.id}
-                        colSpan={header.colSpan}
-                        className="py-3 shadow-table_header  shadow-stroke z-1 px-3  text-left select-none group whitespace-nowrap "
-                        role="button"
-                        onClick={header.column.getToggleSortingHandler()}
-                      >
-                        {header.isPlaceholder ? null : (
-                          <div className="flex items-center">
-                            {flexRender(
-                              header.column.columnDef.header,
-                              header.getContext(),
-                            )}
-                            <div>
-                              {{
-                                asc: <SortUp className="inline size-5" />,
-                                desc: <SortDown className="inline size-5" />,
-                              }[header.column.getIsSorted() as string] ?? (
-                                <SortDefult className="inline size-5" />
-                              )}
-                            </div>
-                            {/*{header.column.getCanFilter() &&*/}
-                            {/*  header.column.columnDef.filterFn && (*/}
-                            {/*    <Funnel className="inline size-5 opacity-70" />*/}
-                            {/*  )}*/}
-                          </div>
-                        )}
-                      </th>
-                    );
-                  })}
-                </tr>
-              ))}
-            </thead>
-            {table.getCoreRowModel().rows.length === 0 && <p>No Record</p>}
-
-            <tbody>
-              {table.getRowModel().rows.length === 0 &&
-                table.getCoreRowModel().rows.length !== 0 && (
-                  <tr>
-                    <td className="whitespace-nowrap">
-                      No Record matches your filter
-                    </td>
-                  </tr>
+              <div className="flex items-center border-b border-stroke py-1 gap-4 ">
+                <IconField iconPosition="left" className=" flex-1 ">
+                  <InputIcon className="pi pi-search" />
+                  <DebouncedInputText
+                    setValue={(e) => {
+                      setTableState((prev) => ({
+                        ...prev,
+                        globalFilter: e.target.value,
+                      }));
+                    }}
+                    value={tableState.globalFilter}
+                    placeholder="Global Search..."
+                    className="w-full "
+                  />
+                </IconField>
+                {download && (
+                  <Button
+                    type="button"
+                    className="hover:text-primary"
+                    onClick={() =>
+                      exportExcel(
+                        table,
+                        'review_triggers_' + new Date().toLocaleString(),
+                      )
+                    }
+                  >
+                    <DownloadSimple size={22} />
+                  </Button>
                 )}
-              {table.getRowModel().rows.map((row) => {
-                return (
-                  <Fragment key={row.id}>
-                    <tr className="border-t-stroke border-t ">
-                      {row.getVisibleCells().map((cell) => {
-                        return (
-                          <td
-                            key={cell.id}
-                            className={`py-2 px-3 w-[${cell.column.getSize() || 'auto'}] text-sm ${cell.column.columnDef.meta?.wrap} ${row.getIsExpanded() && 'bg-slate-100 dark:bg-slate-700'} `}
-                            role="button"
-                            onClick={row.getToggleExpandedHandler()}
-                          >
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext(),
-                            )}
-                          </td>
-                        );
-                      })}
+                {tableSetting && initialTableState && (
+                  <TableSettingModal
+                    table={table}
+                    tableState={tableState}
+                    setTableState={setTableState}
+                    initialTableState={initialTableState}
+                  />
+                )}
+              </div>
+              <Filters
+                permanentColumnFilters={permanentColumnFilters}
+                table={table}
+                tableState={tableState}
+                setTableState={setTableState}
+                hasHistory={hasHistory}
+                setIsRefetching={setIsRefetching}
+                includeCreatedDate={includeCreatedDate}
+                setIncludeCreatedDate={setIncludeCreatedDate}
+              />
+            </div>
+          )}
+
+          <div className="flex-1 relative">
+            <table className="w-full border-b-2 border-b-stroke ">
+              <thead
+                className="bg-slate-50 dark:bg-graydark sticky z-1"
+                style={
+                  filters ? { top: 'var(--filter-height, 0px)' } : { top: 0 }
+                }
+              >
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <tr key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => {
+                      return (
+                        <th
+                          key={header.id}
+                          colSpan={header.colSpan}
+                          className="py-3 shadow-table_header  shadow-stroke z-1 px-3  text-left select-none group whitespace-nowrap "
+                          role="button"
+                          onClick={header.column.getToggleSortingHandler()}
+                        >
+                          {header.isPlaceholder ? null : (
+                            <div className="flex items-center">
+                              {flexRender(
+                                header.column.columnDef.header,
+                                header.getContext(),
+                              )}
+                              <div>
+                                {{
+                                  asc: <SortUp className="inline size-5" />,
+                                  desc: <SortDown className="inline size-5" />,
+                                }[header.column.getIsSorted() as string] ?? (
+                                  <SortDefult className="inline size-5" />
+                                )}
+                              </div>
+                              {/*{header.column.getCanFilter() &&*/}
+                              {/*  header.column.columnDef.filterFn && (*/}
+                              {/*    <Funnel className="inline size-5 opacity-70" />*/}
+                              {/*  )}*/}
+                            </div>
+                          )}
+                        </th>
+                      );
+                    })}
+                  </tr>
+                ))}
+              </thead>
+              {table.getCoreRowModel().rows.length === 0 && <p>No Record</p>}
+
+              <tbody>
+                {table.getRowModel().rows.length === 0 &&
+                  table.getCoreRowModel().rows.length !== 0 && (
+                    <tr>
+                      <td className="whitespace-nowrap">
+                        No Record matches your filter
+                      </td>
                     </tr>
-                    {row.getIsExpanded() && (
-                      <tr>
-                        <td colSpan={row.getVisibleCells().length}>
-                          {renderExpandedRow({ row, tableState, ...rest })}
-                        </td>
+                  )}
+                {table.getRowModel().rows.map((row) => {
+                  return (
+                    <Fragment key={row.id}>
+                      <tr className="border-t-stroke border-t ">
+                        {row.getVisibleCells().map((cell) => {
+                          return (
+                            <td
+                              key={cell.id}
+                              className={`py-2 px-3 w-[${cell.column.getSize() || 'auto'}] text-sm ${cell.column.columnDef.meta?.wrap} ${row.getIsExpanded() && 'bg-slate-100 dark:bg-slate-700'} `}
+                              role="button"
+                              onClick={row.getToggleExpandedHandler()}
+                            >
+                              {flexRender(
+                                cell.column.columnDef.cell,
+                                cell.getContext(),
+                              )}
+                            </td>
+                          );
+                        })}
                       </tr>
-                    )}
-                  </Fragment>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-        <div className="flex-none">
-          <PageNavigation table={table} tableState={tableState} />
+                      {row.getIsExpanded() && (
+                        <tr>
+                          <td colSpan={row.getVisibleCells().length}>
+                            {renderExpandedRow({ row, tableState, ...rest })}
+                          </td>
+                        </tr>
+                      )}
+                    </Fragment>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+          <div className="flex-none">
+            <PageNavigation table={table} tableState={tableState} />
+          </div>
         </div>
       </div>
     </div>

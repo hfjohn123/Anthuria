@@ -24,7 +24,10 @@ export default function stemFiltering(
 
   // Handle single-word filter
   if (filterWords.length === 1) {
-    return value.trim().toLowerCase().includes(filterWords[0]);
+    return (
+      value.trim().toLowerCase().includes(filterWords[0]) ||
+      valueWords.some((word) => word === filterWords[0])
+    );
   }
 
   // Handle multi-word filter
