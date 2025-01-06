@@ -182,7 +182,7 @@ export default function SLPTable({
                       </span>
                     }
                     icd10={{
-                      icd10: info.row.original.item,
+                      icd10: info.row.original.condition,
                       progress_note: value as ProgressNoteAndSummary[],
                     }}
                   />
