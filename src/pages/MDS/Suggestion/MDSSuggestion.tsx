@@ -1,12 +1,11 @@
 import { Bot } from 'lucide-react';
 import { CaretRight } from '@phosphor-icons/react';
-import { MDSFinal } from '../../../types/MDSFinal.ts';
+import { MDSFinal, SLPEntry } from '../../../types/MDSFinal.ts';
 import {
   Disclosure,
   DisclosureButton,
   DisclosurePanel,
 } from '@headlessui/react';
-import { Row } from '@tanstack/react-table';
 import NTATable from './NTATable/NTATable.tsx';
 import SLPTable from './SLPTable/SLPTable.tsx';
 import PTOTTable from './PTOTTable/PTOTTable.tsx';
@@ -17,43 +16,54 @@ import MagicButton from '../../../images/icon/MagicButton.tsx';
 import { Tooltip } from 'primereact/tooltip';
 
 import clsx from 'clsx';
+import _ from 'lodash';
 
-export default function MDSSuggestion({ row }: { row: Row<MDSFinal> }) {
-  const nta_count = row.original.nta_final_entry
-    .flatMap((d) => d.new_icd10)
+const SLPSkeleton = [
+  { item: 'ci', condition: 'Cognitive Impairment' },
+  { item: 'cp', condition: 'Comorbidities Present' },
+  { item: 'anc', condition: 'Acute Neurologic Condition' },
+  { item: 'mad', condition: 'Mechanically Altered Diet' },
+  { item: 'sd', condition: 'Swallowing Disorder' },
+];
+
+export default function MDSSuggestion({ row }: { row: MDSFinal }) {
+  console.log(row);
+  const slp_joined = _.merge(
+    {},
+    _.keyBy(SLPSkeleton, 'item'),
+    _.keyBy(row.slp_final_entry, 'item'),
+  );
+  const nta_count = row.nta_final_entry
+    .flatMap((d) => d.suggestion)
     .flatMap((d) => d?.progress_note)
     .reduce((acc: { [key: string]: number }, item) => {
       if (!item || !item.source_category) return acc;
       acc[item.source_category] = (acc[item.source_category] || 0) + 1;
       return acc;
     }, {});
-  const slp_count = row.original.slp_final_entry
+  const slp_count = row.slp_final_entry
     .flatMap((d) => {
-      if (d.condition === 'Comorbidities Present') {
-        return d.slp_entry
-          ?.flatMap((d) => d.new_icd10)
+      if (d.item === 'cp') {
+        return d.suggestion
+          ?.flatMap((d: SLPEntry) => d.suggestion)
           .flatMap((d) => d?.progress_note);
       }
-      return d.slp_entry;
+      return d.suggestion;
     })
     .reduce((acc: { [key: string]: number }, item) => {
       if (!item || !item.source_category) return acc;
       acc[item.source_category] = (acc[item.source_category] || 0) + 1;
       return acc;
     }, {});
-  const extensiveServices =
-    row.original.nursing_cc_final_entry.nursing_mds_item_es;
-  const specialCareHigh =
-    row.original.nursing_cc_final_entry.nursing_mds_item_sch;
-  const specialCareLow =
-    row.original.nursing_cc_final_entry.nursing_mds_item_scl;
-  const clinicalComplex =
-    row.original.nursing_cc_final_entry.nursing_mds_item_cc;
+  const extensiveServices = row.nursing_cc_final_entry.nursing_mds_item_es;
+  const specialCareHigh = row.nursing_cc_final_entry.nursing_mds_item_sch;
+  const specialCareLow = row.nursing_cc_final_entry.nursing_mds_item_scl;
+  const clinicalComplex = row.nursing_cc_final_entry.nursing_mds_item_cc;
 
-  const functionalScore = row.original.nursing_fa_final_entry;
-  const depressionIndicator = row.original.nursing_d_final_entry;
-  const BIMS = row.original.nursing_bscp_final_entry.nursing_bscp_bims;
-  const currentGroup = row.original.nursing_group;
+  const functionalScore = row.nursing_fa_final_entry;
+  const depressionIndicator = row.nursing_d_final_entry;
+  const BIMS = row.nursing_bscp_final_entry.nursing_bscp_bims;
+  const currentGroup = row.nursing_group;
 
   const boolFuncScore14 = !!(
     functionalScore.final_score && parseInt(functionalScore.final_score) <= 14
@@ -165,11 +175,11 @@ export default function MDSSuggestion({ row }: { row: Row<MDSFinal> }) {
     (parseInt(BIMS?.mds_value || '99') <= 9 ||
       parseInt(BIMS?.suggested_value || '99') <= 9 ||
       ((BIMS?.mds_value != '99' || BIMS?.suggested_value != '99') &&
-        row.original.nursing_bscp_final_entry.nursing_bscp_mds_bs) ||
-      row.original.nursing_bscp_final_entry.nursing_bscp_mds_sacs) &&
+        row.nursing_bscp_final_entry.nursing_bscp_mds_bs) ||
+      row.nursing_bscp_final_entry.nursing_bscp_mds_sacs) &&
     !boolFuncScore11
   ) {
-    if (row.original.nursing_re_final_entry?.final_count || 0 >= 2) {
+    if (row.nursing_re_final_entry?.final_count || 0 >= 2) {
       suggestGroup = 'BAB2';
     } else {
       suggestGroup = 'BAB1';
@@ -177,16 +187,16 @@ export default function MDSSuggestion({ row }: { row: Row<MDSFinal> }) {
   } else {
     if (
       (parseInt(functionalScore.final_score || '99') <= 5 &&
-        row.original.nursing_re_final_entry?.final_count) ||
+        row.nursing_re_final_entry?.final_count) ||
       0 >= 2
     ) {
       suggestGroup = 'PDE2';
     } else if (
-      (boolFuncScore14 && row.original.nursing_re_final_entry?.final_count) ||
+      (boolFuncScore14 && row.nursing_re_final_entry?.final_count) ||
       0 >= 2
     ) {
       suggestGroup = 'PBC2';
-    } else if (row.original.nursing_re_final_entry?.final_count || 0 >= 2) {
+    } else if (row.nursing_re_final_entry?.final_count || 0 >= 2) {
       suggestGroup = 'PA2';
     } else if (parseInt(functionalScore.final_score || '99') <= 5) {
       suggestGroup = 'PDE1';
@@ -197,12 +207,10 @@ export default function MDSSuggestion({ row }: { row: Row<MDSFinal> }) {
     }
   }
   const suggestCMI = NusingMapping[suggestGroup as keyof typeof NusingMapping];
-  const NTASuggestionCount = row.original.nta_final_entry.filter(
-    (d) => d.new_icd10?.length || 0 > 0,
+  const NTASuggestionCount = row.nta_final_entry.filter(
+    (d) => d.suggestion?.length || 0 > 0,
   ).length;
-  const SLPSuggestionCount = row.original.slp_final_entry.filter(
-    (d) => d.is_suggest,
-  ).length;
+  const SLPSuggestionCount = row.slp_final_entry.length;
   const NursingSuggestionCount =
     (extensiveServices?.filter((d) => d.nursing_mds_suggestion.length > 0)
       .length || 0) +
@@ -262,7 +270,7 @@ export default function MDSSuggestion({ row }: { row: Row<MDSFinal> }) {
             transition
             className="origin-top transition duration-200 ease-out data-[closed]:-translate-y-3 data-[closed]:opacity-0"
           >
-            <NTATable data={row.original.nta_final_entry} />
+            <NTATable data={row.nta_final_entry} />
           </DisclosurePanel>
         </Disclosure>
         <Disclosure defaultOpen={SLPSuggestionCount > 0}>
@@ -288,7 +296,7 @@ export default function MDSSuggestion({ row }: { row: Row<MDSFinal> }) {
             transition
             className="origin-top transition duration-200 ease-out data-[closed]:-translate-y-3 data-[closed]:opacity-0"
           >
-            <SLPTable data={row.original.slp_final_entry} />
+            <SLPTable data={_.values(slp_joined)} />
           </DisclosurePanel>
         </Disclosure>
 
@@ -310,8 +318,8 @@ export default function MDSSuggestion({ row }: { row: Row<MDSFinal> }) {
             transition
             className="origin-top transition duration-200 ease-out data-[closed]:-translate-y-3 data-[closed]:opacity-0"
           >
-            {row.original.ptot_final_entry.clinical_category ? (
-              <PTOTTable data={row.original.ptot_final_entry} />
+            {row.ptot_final_entry.clinical_category ? (
+              <PTOTTable data={row.ptot_final_entry} />
             ) : (
               <div className="flex items-center justify-center h-40">
                 <p className="font-bold text-lg">No Record Found</p>

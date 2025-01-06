@@ -103,11 +103,11 @@ export default function NTATable({ data }: { data: NTAEntry[] }) {
     },
     {
       accessorKey: 'new_icd10',
-      accessorFn: (row) => row.new_icd10?.map((d) => d.icd10) || [],
+      accessorFn: (row) => row.suggestion?.map((d) => d.icd10) || [],
       cell: (info) => {
         return (
           <td className="whitespace-nowrap  px-4 border-t border-l border-gray-600">
-            {info.row.original.new_icd10?.map((d, index, array) => {
+            {info.row.original.suggestion?.map((d, index, array) => {
               return (
                 <Fragment key={d.icd10}>
                   <EvidenceModal icd10={d} button={<span>{d.icd10}</span>} />

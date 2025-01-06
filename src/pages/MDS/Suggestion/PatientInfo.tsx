@@ -1,8 +1,8 @@
 import HyperLink from '../../../components/Basic/HyerLink.tsx';
-import { MDSFinal } from '../../../types/MDSFinal.ts';
+import { PDPMPatient } from '../../../types/MDSFinal.ts';
 import { Row } from '@tanstack/react-table';
 
-export default function PatientInfo({ row }: { row: Row<MDSFinal> }) {
+export default function PatientInfo({ row }: { row: Row<PDPMPatient> }) {
   return (
     <div className="flex flex-col gap-5 px-3">
       <h3 className="text-base font-semibold underline">Patient Information</h3>
@@ -38,19 +38,19 @@ export default function PatientInfo({ row }: { row: Row<MDSFinal> }) {
             <span className="font-bold">Facility Name:</span>
             <p>{row.getValue('facility_name')}</p>
           </div>
-          <div className="mt-2.5">
-            <span className="font-bold">Last Updated:</span>
-            <p>
-              {new Date(row.getValue('update_time')).toLocaleDateString()}{' '}
-              {new Date(row.getValue('update_time')).toLocaleTimeString(
-                navigator.language,
-                {
-                  hour: '2-digit',
-                  minute: '2-digit',
-                },
-              )}
-            </p>
-          </div>
+          {/*<div className="mt-2.5">*/}
+          {/*  <span className="font-bold">Last Updated:</span>*/}
+          {/*  <p>*/}
+          {/*    {new Date(row.getValue('update_time')).toLocaleDateString()}{' '}*/}
+          {/*    {new Date(row.getValue('update_time')).toLocaleTimeString(*/}
+          {/*      navigator.language,*/}
+          {/*      {*/}
+          {/*        hour: '2-digit',*/}
+          {/*        minute: '2-digit',*/}
+          {/*      },*/}
+          {/*    )}*/}
+          {/*  </p>*/}
+          {/*</div>*/}
         </div>
       </div>
     </div>

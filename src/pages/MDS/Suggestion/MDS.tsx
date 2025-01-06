@@ -11,10 +11,10 @@ export default function MDS() {
   const { route } = useContext(AuthContext);
 
   const { isPending, data, error, isError } = useQuery({
-    queryKey: ['/mds/view_pdpm_final_result_test', route],
+    queryKey: ['/mds/view_pdpm_mds_patient_list', route],
     queryFn: () =>
       axios
-        .get(`${route}/mds/view_pdpm_final_result_test`)
+        .get(`${route}/mds/view_pdpm_mds_patient_list`)
         .then((res) => res.data),
   });
 

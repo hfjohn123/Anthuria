@@ -67,6 +67,7 @@ export default function SLPTable({
 }: {
   data: (SLPItem_General | SLPItem_comorbidities_present)[];
 }) {
+  console.log(data);
   const columns: ColumnDef<SLPItem_General | SLPItem_comorbidities_present>[] =
     [
       {
@@ -91,7 +92,7 @@ export default function SLPTable({
       },
       {
         accessorKey: 'is_mds',
-        accessorFn: (row) => (row.is_mds ? 'Yes' : 'No'),
+        accessorFn: (row) => (row.is_mds_table ? 'Yes' : 'No'),
         header: 'Is Already in MDS Table',
         cell: (info) => {
           return (
@@ -107,16 +108,15 @@ export default function SLPTable({
         footer: (info) => {
           const total_general = info.table.getRowModel().rows.filter((row) => {
             return (
-              row.original.is_mds &&
-              row.original.condition !== 'Mechanically Altered Diet' &&
-              row.original.condition !== 'Swallowing Disorder'
+              row.original.is_mds_table &&
+              row.original.item !== 'mad' &&
+              row.original.item !== 'sd'
             );
           }).length;
           const total_diet = info.table.getRowModel().rows.filter((row) => {
             return (
-              row.original.is_mds &&
-              (row.original.condition === 'Mechanically Altered Diet' ||
-                row.original.condition === 'Swallowing Disorder')
+              row.original.is_mds_table &&
+              (row.original.item === 'mad' || row.original.item === 'sd')
             );
           }).length;
           return (
@@ -138,28 +138,26 @@ export default function SLPTable({
       },
       {
         accessorKey: 'slp_entry',
-        accessorFn: (row) => row.slp_entry,
+        accessorFn: (row) => row.suggestion,
         cell: (info) => {
           const value = info.getValue() as Array<
             ProgressNoteAndSummary | SLPEntry
           >;
           if (value && value.length > 0) {
-            if (info.row.original.condition === 'Comorbidities Present') {
+            if (info.row.original.item === 'cp') {
               return (
                 <td className="py-2 px-4 border-t border-l border-gray-600">
                   {value.map((entry, index) => {
                     entry = entry as SLPEntry;
                     return (
                       <Fragment key={entry.comorbidity}>
-                        {entry.new_icd10 && entry.new_icd10.length > 0 ? (
+                        {entry.suggestion && entry.suggestion.length > 0 ? (
                           <EvidenceModal
                             icd10={{
                               icd10: entry.comorbidity,
-                              progress_note: entry.new_icd10.flatMap(
+                              progress_note: entry.suggestion.flatMap(
                                 (d) => d.progress_note,
                               ),
-                              is_thumb_up: null,
-                              comment: null,
                             }}
                             button={<span>{entry.comorbidity}</span>}
                           />
@@ -184,10 +182,8 @@ export default function SLPTable({
                       </span>
                     }
                     icd10={{
-                      icd10: info.row.original.condition,
+                      icd10: info.row.original.item,
                       progress_note: value as ProgressNoteAndSummary[],
-                      is_thumb_up: null, // or some default value
-                      comment: null, // or some default value
                     }}
                   />
                 </td>
@@ -202,18 +198,17 @@ export default function SLPTable({
         footer: (info) => {
           const total_general = info.table.getRowModel().rows.filter((row) => {
             return (
-              !row.original.is_mds &&
-              row.original.is_suggest &&
-              row.original.condition !== 'Mechanically Altered Diet' &&
-              row.original.condition !== 'Swallowing Disorder'
+              !row.original.is_mds_table &&
+              (row.original.suggestion?.length ?? 0) > 0 &&
+              row.original.item !== 'mad' &&
+              row.original.item !== 'sd'
             );
           }).length;
           const total_diet = info.table.getRowModel().rows.filter((row) => {
             return (
-              !row.original.is_mds &&
-              row.original.is_suggest &&
-              (row.original.condition === 'Mechanically Altered Diet' ||
-                row.original.condition === 'Swallowing Disorder')
+              !row.original.is_mds_table &&
+              (row.original.suggestion?.length ?? 0) > 0 &&
+              (row.original.item === 'mad' || row.original.item === 'sd')
             );
           }).length;
           return (
@@ -241,16 +236,17 @@ export default function SLPTable({
         footer: (info) => {
           const total_general = info.table.getRowModel().rows.filter((row) => {
             return (
-              (row.original.is_mds || row.original.is_suggest) &&
-              row.original.condition !== 'Mechanically Altered Diet' &&
-              row.original.condition !== 'Swallowing Disorder'
+              (row.original.is_mds_table ||
+                (row.original.suggestion?.length ?? 0) > 0) &&
+              row.original.item !== 'mad' &&
+              row.original.item !== 'sd'
             );
           }).length;
           const total_diet = info.table.getRowModel().rows.filter((row) => {
             return (
-              (row.original.is_mds || row.original.is_suggest) &&
-              (row.original.condition === 'Mechanically Altered Diet' ||
-                row.original.condition === 'Swallowing Disorder')
+              (row.original.is_mds_table ||
+                (row.original.suggestion?.length ?? 0) > 0) &&
+              (row.original.item === 'mad' || row.original.item === 'sd')
             );
           }).length;
           return (

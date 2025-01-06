@@ -14,20 +14,20 @@ import getFacetedUniqueValues from '../../../common/getFacetedUniqueValues.ts';
 import getFacetedMinMaxValues from '../../../common/getFacetedMinMaxValues.ts';
 import HyperLink from '../../../components/Basic/HyerLink.tsx';
 import dateRangeFilterFn from '../../../common/dateRangeFilterFn.ts';
-import { MDSFinal } from '../../../types/MDSFinal.ts';
+import { PDPMPatient } from '../../../types/MDSFinal.ts';
 import TableWrapper from '../../../components/Tables/TableWrapper.tsx';
-import MDSDetail from './MDSDetail.tsx';
 import { AuthContext } from '../../../components/AuthWrapper.tsx';
 import HighlightWrapper from '../../../components/Basic/HighlightWrapper.tsx';
 import stemmedFilter from '../../../components/Tables/stemmedFilter.ts';
+import MDSDetailLoading from './MDSDetailLoading.tsx';
 
-export default function MDSTable({ data }: { data: MDSFinal[] }) {
+export default function MDSTable({ data }: { data: PDPMPatient[] }) {
   const { user_data } = useContext(AuthContext);
   const PERMANENT_COLUMN_FILTERS =
     user_data.organization_id === 'the_triedge_labs'
       ? ['operation_name', 'facility_name', 'update_time', 'patient_name']
       : ['facility_name', 'update_time', 'patient_name'];
-  const columns: ColumnDef<MDSFinal>[] = [
+  const columns: ColumnDef<PDPMPatient>[] = [
     {
       accessorKey: 'operation_name',
       header: 'Operator',
@@ -140,7 +140,7 @@ export default function MDSTable({ data }: { data: MDSFinal[] }) {
     {
       accessorKey: 'update_time',
       header: 'Update Time',
-      accessorFn: (row) => new Date(row.update_time),
+      accessorFn: (row) => new Date(row.effective_start_date),
       cell: (info) => {
         const date = info.getValue() as Date;
         return (
@@ -255,7 +255,7 @@ export default function MDSTable({ data }: { data: MDSFinal[] }) {
         tableState={tableState}
         setTableState={setTableState}
         permanentColumnFilters={PERMANENT_COLUMN_FILTERS}
-        renderExpandedRow={MDSDetail}
+        renderExpandedRow={MDSDetailLoading}
       />
     </div>
   );

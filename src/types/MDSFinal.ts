@@ -48,40 +48,40 @@ export type NTAEntry = {
   is_mds_table: boolean;
   mds_item: string;
   score: number;
-  update_time: Date;
-  new_icd10?: SuggestedICD10[];
+  suggestion?: SuggestedICD10[];
+  is_thumb_up: boolean | null;
+  is_thumb_down: boolean | null;
+  comment: string | null;
 };
 
 export type SLPItem_General = {
-  condition:
-    | 'Cognitive Impairment'
-    | 'Acute Neurologic Condition'
-    | 'Mechanically Altered Diet'
-    | 'Swallowing Disorder';
-  is_mds?: boolean;
-  is_suggest?: boolean;
-  slp_entry?: ProgressNoteAndSummary[];
+  category: string;
+  item: string;
+  is_mds_table: boolean;
+  suggestion?: ProgressNoteAndSummary[];
+  is_thumb_up: boolean | null;
+  is_thumb_down: boolean | null;
+  comment: string | null;
 };
 
 export type SLPItem_comorbidities_present = {
-  condition: 'Comorbidities Present';
-  is_mds?: boolean;
-  is_suggest?: boolean;
-  slp_entry?: SLPEntry[];
+  category: string;
+  item: 'cp';
+  is_mds_table: boolean;
+  suggestion?: SLPEntry[];
+  is_thumb_up: boolean | null;
+  is_thumb_down: boolean | null;
+  comment: string | null;
 };
 
 export type SuggestedICD10 = {
   icd10: string;
   progress_note: ProgressNoteAndSummary[];
-  is_thumb_up: boolean | null;
-  comment: string | null;
 };
 
 export type SLPEntry = {
   comorbidity: string;
-  is_slp_table: boolean;
-  new_icd10: SuggestedICD10[];
-  update_time: Date;
+  suggestion: SuggestedICD10[];
 };
 
 export type ProgressNoteAndSummary = {

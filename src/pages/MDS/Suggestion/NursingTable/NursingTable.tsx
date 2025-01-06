@@ -5,14 +5,13 @@ import { Button } from 'primereact/button';
 import ClinicalCategory from './ClinicalCategory.tsx';
 import FunctionalScoreTable from './FunctionalScoreTable.tsx';
 import RestorativeNursingTable from './RestorativeNursingTable.tsx';
-import { Row } from '@tanstack/react-table';
 import { MDSFinal } from '../../../../types/MDSFinal.ts';
 import DepressionIndicator from './DepressionIndicator.tsx';
 import clsx from 'clsx';
 import EvidenceModal from '../EvidenceModal.tsx';
 import { NusingMapping } from '../../cmiMapping.ts';
 
-export default function NursingTable({ data }: { data: Row<MDSFinal> }) {
+export default function NursingTable({ data }: { data: MDSFinal }) {
   const stepperRef = useRef<StepperRefAttributes>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [orientation, setOrientation] = useState<'horizontal' | 'vertical'>(
@@ -32,19 +31,15 @@ export default function NursingTable({ data }: { data: Row<MDSFinal> }) {
     resizeObserver.observe(container);
     return () => resizeObserver.disconnect();
   }, []);
-  const extensiveServices =
-    data.original.nursing_cc_final_entry.nursing_mds_item_es;
-  const specialCareHigh =
-    data.original.nursing_cc_final_entry.nursing_mds_item_sch;
-  const specialCareLow =
-    data.original.nursing_cc_final_entry.nursing_mds_item_scl;
-  const clinicalComplex =
-    data.original.nursing_cc_final_entry.nursing_mds_item_cc;
+  const extensiveServices = data.nursing_cc_final_entry.nursing_mds_item_es;
+  const specialCareHigh = data.nursing_cc_final_entry.nursing_mds_item_sch;
+  const specialCareLow = data.nursing_cc_final_entry.nursing_mds_item_scl;
+  const clinicalComplex = data.nursing_cc_final_entry.nursing_mds_item_cc;
 
-  const functionalScore = data.original.nursing_fa_final_entry;
-  const depressionIndicator = data.original.nursing_d_final_entry;
-  const BIMS = data.original.nursing_bscp_final_entry.nursing_bscp_bims;
-  const currentGroup = data.original.nursing_group;
+  const functionalScore = data.nursing_fa_final_entry;
+  const depressionIndicator = data.nursing_d_final_entry;
+  const BIMS = data.nursing_bscp_final_entry.nursing_bscp_bims;
+  const currentGroup = data.nursing_group;
 
   const boolFuncScore14 = !!(
     functionalScore.final_score && parseInt(functionalScore.final_score) <= 14
@@ -156,11 +151,11 @@ export default function NursingTable({ data }: { data: Row<MDSFinal> }) {
     (parseInt(BIMS?.mds_value || '99') <= 9 ||
       parseInt(BIMS?.suggested_value || '99') <= 9 ||
       ((BIMS?.mds_value != '99' || BIMS?.suggested_value != '99') &&
-        data.original.nursing_bscp_final_entry.nursing_bscp_mds_bs) ||
-      data.original.nursing_bscp_final_entry.nursing_bscp_mds_sacs) &&
+        data.nursing_bscp_final_entry.nursing_bscp_mds_bs) ||
+      data.nursing_bscp_final_entry.nursing_bscp_mds_sacs) &&
     !boolFuncScore11
   ) {
-    if (data.original.nursing_re_final_entry?.final_count || 0 >= 2) {
+    if (data.nursing_re_final_entry?.final_count || 0 >= 2) {
       suggestGroup = 'BAB2';
     } else {
       suggestGroup = 'BAB1';
@@ -168,16 +163,16 @@ export default function NursingTable({ data }: { data: Row<MDSFinal> }) {
   } else {
     if (
       (parseInt(functionalScore.final_score || '99') <= 5 &&
-        data.original.nursing_re_final_entry?.final_count) ||
+        data.nursing_re_final_entry?.final_count) ||
       0 >= 2
     ) {
       suggestGroup = 'PDE2';
     } else if (
-      (boolFuncScore14 && data.original.nursing_re_final_entry?.final_count) ||
+      (boolFuncScore14 && data.nursing_re_final_entry?.final_count) ||
       0 >= 2
     ) {
       suggestGroup = 'PBC2';
-    } else if (data.original.nursing_re_final_entry?.final_count || 0 >= 2) {
+    } else if (data.nursing_re_final_entry?.final_count || 0 >= 2) {
       suggestGroup = 'PA2';
     } else if (parseInt(functionalScore.final_score || '99') <= 5) {
       suggestGroup = 'PDE1';
@@ -570,8 +565,6 @@ export default function NursingTable({ data }: { data: Row<MDSFinal> }) {
                     icd10={{
                       icd10: 'BIMS',
                       progress_note: [BIMS.nursing_bscp_suggestion],
-                      is_thumb_up: BIMS.is_thumb_up, // or some default value
-                      comment: BIMS.comment, // or some default value
                     }}
                   />
                 )}
@@ -579,17 +572,13 @@ export default function NursingTable({ data }: { data: Row<MDSFinal> }) {
             </div>
             <ClinicalCategory
               type={'Staff assessment cognitive status'}
-              data={
-                data.original.nursing_bscp_final_entry.nursing_bscp_mds_sacs
-              }
+              data={data.nursing_bscp_final_entry.nursing_bscp_mds_sacs}
             />
             <ClinicalCategory
               type={'Behavioral symptoms'}
-              data={data.original.nursing_bscp_final_entry.nursing_bscp_mds_bs}
+              data={data.nursing_bscp_final_entry.nursing_bscp_mds_bs}
             />
-            <RestorativeNursingTable
-              data={data.original.nursing_re_final_entry}
-            />
+            <RestorativeNursingTable data={data.nursing_re_final_entry} />
             {currentGroup?.startsWith('B') && (
               <div>
                 <p className="font-bold">Current group: </p>
@@ -669,9 +658,7 @@ export default function NursingTable({ data }: { data: Row<MDSFinal> }) {
         >
           <div className="flex flex-col gap-7">
             <FunctionalScoreTable data={functionalScore} />
-            <RestorativeNursingTable
-              data={data.original.nursing_re_final_entry}
-            />
+            <RestorativeNursingTable data={data.nursing_re_final_entry} />
             {currentGroup?.startsWith('P') && (
               <div>
                 <p className="font-bold">Current group: </p>
