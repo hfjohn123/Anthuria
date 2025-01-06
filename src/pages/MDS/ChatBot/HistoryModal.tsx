@@ -24,7 +24,7 @@ export default function HistoryModal({
       button={
         <ClockCounterClockwise
           weight="fill"
-          className="size-5 text-primary hover:text-blue-600 group-[:disabled]:text-gray"
+          className="size-5 text-primary hover:text-blue-600 group-[:disabled]:text-gray-400"
         />
       }
     >

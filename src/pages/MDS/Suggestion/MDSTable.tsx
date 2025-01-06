@@ -248,16 +248,6 @@ export default function MDSTable({ data }: { data: MDSFinal[] }) {
         Patients below include all eligible PDPM patients as well as any
         patients who were PDPM eligible in the past 30 days.
       </p>
-      {/*<NewFilter*/}
-      {/*  options={[*/}
-      {/*    ...new Map(*/}
-      {/*      data.map((d: MDSFinal) => [d.facility_name, d.facility_name]),*/}
-      {/*    ).values(),*/}
-      {/*  ]}*/}
-      {/*  table={table}*/}
-      {/*  tableState={tableState}*/}
-      {/*  setTableState={setTableState}*/}
-      {/*/>*/}
       <TableWrapper
         title="PDPM Suggestions"
         filters={true}

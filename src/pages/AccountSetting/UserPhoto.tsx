@@ -94,7 +94,7 @@ export default function UserPhoto() {
               </div>
             </div>
             {file ? (
-              <div className="relative mb-5.5 block h-52 w-full cursor-pointer appearance-none rounded border border-dashed border-primary bg-gray dark:bg-meta-4">
+              <div className="relative mb-5.5 block h-52 w-full cursor-pointer appearance-none rounded border border-dashed border-primary bg-gray-100 dark:bg-meta-4">
                 <Cropper
                   onCropChange={setCrop}
                   onZoomChange={setZoom}
@@ -112,7 +112,7 @@ export default function UserPhoto() {
             ) : (
               <div
                 id="FileUpload"
-                className="relative mb-5.5 block w-full cursor-pointer appearance-none rounded border border-dashed border-primary bg-gray py-4 px-4 dark:bg-meta-4 sm:py-7.5"
+                className="relative mb-5.5 block w-full cursor-pointer appearance-none rounded border border-dashed border-primary bg-gray-100 py-4 px-4 dark:bg-meta-4 sm:py-7.5"
               >
                 <Input
                   type="file"

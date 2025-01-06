@@ -164,9 +164,11 @@ export default function TableWrapper({
         displayed
       </p>
       <div className=" bg-white dark:bg-boxdark h-full flex-col flex overflow-x-auto lg:overflow-clip p-7.5 gap-7.5 rounded-[30px] ">
-        <h3 className="text-title-md text-black dark:text-white font-semibold	">
-          {title}
-        </h3>
+        {title && (
+          <h3 className="text-title-md text-black dark:text-white font-semibold	">
+            {title}
+          </h3>
+        )}
         <div>
           {filters && (
             <div

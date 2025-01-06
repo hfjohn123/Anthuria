@@ -1,5 +1,17 @@
 // import { faker } from '@faker-js/faker';
 
+export type PDPMPatient = {
+  internal_facility_id: string;
+  internal_patient_id: string;
+  patient_id: string;
+  effective_start_date: Date;
+  patient_name: string;
+  facility_name: string;
+  upstream: string;
+  operation_name: string;
+  url_header: string;
+};
+
 export type MDSFinal = {
   patient_id: string;
   patient_name: string;

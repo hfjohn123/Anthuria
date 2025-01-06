@@ -141,7 +141,7 @@ const AccessManagementModal = memo(function AccessManagementModal({
             </Label>
             <UserName className="absolute left-4.5 top-11.5" />
             <Input
-              className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+              className="w-full rounded border border-stroke  py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
               type="text"
               value={editModalData.name}
               onChange={(e) => {
@@ -157,7 +157,7 @@ const AccessManagementModal = memo(function AccessManagementModal({
               Phone Number
             </Label>
             <Input
-              className="w-full rounded border border-stroke bg-gray py-3 px-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+              className="w-full rounded border border-stroke py-3 px-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
               type="tel"
               onChange={(e) => {
                 setEditModalData((prev) => ({
