@@ -1,6 +1,11 @@
 import { Bot } from 'lucide-react';
 import { CaretRight } from '@phosphor-icons/react';
-import { MDSFinal, SLPEntry } from '../../../types/MDSFinal.ts';
+import {
+  MDSFinal,
+  SLPEntry,
+  SLPItem_comorbidities_present,
+  SLPItem_General,
+} from '../../../types/MDSFinal.ts';
 import {
   Disclosure,
   DisclosureButton,
@@ -27,7 +32,6 @@ const SLPSkeleton = [
 ];
 
 export default function MDSSuggestion({ row }: { row: MDSFinal }) {
-  console.log(row);
   const slp_joined = _.merge(
     {},
     _.keyBy(SLPSkeleton, 'item'),
@@ -44,11 +48,11 @@ export default function MDSSuggestion({ row }: { row: MDSFinal }) {
   const slp_count = row.slp_final_entry
     .flatMap((d) => {
       if (d.item === 'cp') {
-        return d.suggestion
+        return (d as SLPItem_comorbidities_present).suggestion
           ?.flatMap((d: SLPEntry) => d.suggestion)
-          .flatMap((d) => d?.progress_note);
+          ?.flatMap((d) => d.progress_note);
       }
-      return d.suggestion;
+      return (d as SLPItem_General).suggestion;
     })
     .reduce((acc: { [key: string]: number }, item) => {
       if (!item || !item.source_category) return acc;
@@ -210,7 +214,9 @@ export default function MDSSuggestion({ row }: { row: MDSFinal }) {
   const NTASuggestionCount = row.nta_final_entry.filter(
     (d) => d.suggestion?.length || 0 > 0,
   ).length;
-  const SLPSuggestionCount = row.slp_final_entry.length;
+  const SLPSuggestionCount = row.slp_final_entry.filter(
+    (d) => d.suggestion?.length || 0 > 0,
+  ).length;
   const NursingSuggestionCount =
     (extensiveServices?.filter((d) => d.nursing_mds_suggestion.length > 0)
       .length || 0) +
