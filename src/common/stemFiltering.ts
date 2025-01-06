@@ -19,9 +19,11 @@ export default function stemFiltering(
       .map(stemmer);
   };
 
-  const valueWords = processText(value);
-  const filterWords = processText(filterValue);
-
+  const valueWords = processText(value).filter((word) => word !== '');
+  const filterWords = processText(filterValue).filter((word) => word !== '');
+  if (valueWords.length === 0 || filterWords.length === 0) {
+    return false;
+  }
   // Handle single-word filter
   if (filterWords.length === 1) {
     return (
