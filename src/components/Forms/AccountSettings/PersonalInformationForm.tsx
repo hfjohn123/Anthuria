@@ -8,6 +8,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useContext, useState } from 'react';
 import { AuthContext } from '../../AuthWrapper.tsx';
 import { signUp } from 'supertokens-web-js/recipe/emailpassword';
+import PrimaryButton from '../../Basic/PrimaryButton.tsx';
 
 async function signUpClicked(
   email: string,
@@ -304,12 +305,9 @@ export default function PersonalInformationForm({
               >
                 Reset
               </button>
-              <button
-                className="flex justify-center rounded bg-primary py-2 px-6 font-medium text-gray hover:bg-opacity-90"
-                type="submit"
-              >
+              <PrimaryButton className="py-2 px-6 font-medium " type="submit">
                 Save
-              </button>
+              </PrimaryButton>
             </div>
           </form>
         </div>

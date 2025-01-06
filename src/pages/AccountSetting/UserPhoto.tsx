@@ -7,6 +7,7 @@ import getCroppedImg from '../../common/cropImage.ts';
 import axios from 'axios';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createToast } from '../../hooks/fireToast.tsx';
+import PrimaryButton from '../../components/Basic/PrimaryButton.tsx';
 
 export default function UserPhoto() {
   const queryClient = useQueryClient();
@@ -157,8 +158,8 @@ export default function UserPhoto() {
               >
                 Reset
               </Button>
-              <Button
-                className="flex justify-center rounded bg-primary py-2 px-6 font-medium text-gray hover:bg-opacity-90"
+              <PrimaryButton
+                className=" py-2 px-6 font-medium"
                 onClick={async () => {
                   if (file) {
                     const croppedImage = await getCroppedImg(
@@ -174,7 +175,7 @@ export default function UserPhoto() {
                 }}
               >
                 Save
-              </Button>
+              </PrimaryButton>
             </div>
           </form>
         </div>

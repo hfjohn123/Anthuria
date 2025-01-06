@@ -7,6 +7,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios, { AxiosError } from 'axios';
 import { createToast } from '../../hooks/fireToast.tsx';
 import { AuthContext } from '../../components/AuthWrapper.tsx';
+import PrimaryButton from '../../components/Basic/PrimaryButton.tsx';
 
 export default function InviteUserModal() {
   const { route } = useContext(AuthContext);
@@ -116,12 +117,9 @@ export default function InviteUserModal() {
           >
             Cancel
           </Button>
-          <Button
-            className="flex justify-center rounded bg-primary py-2 px-6 font-medium text-gray hover:bg-opacity-90"
-            type="submit"
-          >
+          <PrimaryButton className="py-2 px-6 font-medium" type="submit">
             Send
-          </Button>
+          </PrimaryButton>
         </div>
       </form>
     </Modal>

@@ -189,31 +189,6 @@ export default function NursingTable({ data }: { data: Row<MDSFinal> }) {
   }
   const suggestCMI = NusingMapping[suggestGroup as keyof typeof NusingMapping];
 
-  const es_recommended = !!(boolFuncScore14 && extensiveServices);
-  const sch_recommended = !es_recommended && boolFuncScore14 && boolsch;
-  const scl_recommended =
-    !es_recommended && !sch_recommended && boolFuncScore14 && boolscl;
-  const cc_recommended =
-    !es_recommended && !sch_recommended && !scl_recommended && boolcc;
-  const bsac_recommended = !!(
-    !es_recommended &&
-    !sch_recommended &&
-    !scl_recommended &&
-    !cc_recommended &&
-    !boolFuncScore11 &&
-    (parseInt(BIMS?.mds_value || '99') <= 9 ||
-      parseInt(BIMS?.suggested_value || '99') <= 9 ||
-      ((BIMS?.mds_value != '99' || BIMS?.suggested_value != '99') &&
-        data.original.nursing_bscp_final_entry.nursing_bscp_mds_bs) ||
-      data.original.nursing_bscp_final_entry.nursing_bscp_mds_sacs)
-  );
-  const rpf_recommended =
-    !es_recommended &&
-    !sch_recommended &&
-    !scl_recommended &&
-    !cc_recommended &&
-    !bsac_recommended;
-
   return (
     <div ref={containerRef} className="flex flex-col gap-5 px-5 py-5">
       <Stepper

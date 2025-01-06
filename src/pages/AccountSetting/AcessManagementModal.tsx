@@ -23,6 +23,7 @@ import { AuthContext } from '../../components/AuthWrapper.tsx';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios, { AxiosError } from 'axios';
 import { createToast } from '../../hooks/fireToast.tsx';
+import PrimaryButton from '../../components/Basic/PrimaryButton.tsx';
 
 const AccessManagementModal = memo(function AccessManagementModal({
   allApplications,
@@ -411,12 +412,9 @@ const AccessManagementModal = memo(function AccessManagementModal({
           >
             Cancel
           </Button>
-          <Button
-            className="flex justify-center rounded bg-primary py-2 px-6 font-medium text-gray hover:bg-opacity-90"
-            type="submit"
-          >
+          <PrimaryButton className="py-2 px-6 font-medium" type="submit">
             Save
-          </Button>
+          </PrimaryButton>
         </div>
       </form>
     </Modal>
