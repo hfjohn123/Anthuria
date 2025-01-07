@@ -1,70 +1,53 @@
-import Modal from '../../../components/Modal/Modal.tsx';
 import { useState } from 'react';
 import { ThumbsDown } from '@phosphor-icons/react';
-import { Button, Field, Label, Textarea } from '@headlessui/react';
+import { Button } from 'primereact/button';
 import clsx from 'clsx';
+import { Dialog } from 'primereact/dialog';
+import MDSCommentForm from './MDSCommentForm.tsx';
 
 export default function MDSCommentModal({
   comment,
-  is_thumb_up,
+  is_thumb_down,
 }: {
   comment: string;
-  is_thumb_up: boolean;
+  is_thumb_down: boolean;
 }) {
   const [showModal, setShowModal] = useState(false);
-  const [commentState, setCommentState] = useState(comment);
 
   return (
-    <Modal
-      isOpen={showModal}
-      setIsOpen={setShowModal}
-      classNameses={{
-        title: 'text-xl sm:text-2xl',
-      }}
-      title={'What is Going Wrong?'}
-      button={
+    <>
+      <Button
+        onClick={(event) => {
+          event.stopPropagation();
+          setShowModal(true);
+        }}
+        className="bg-transparent border-0 p-0 m-0"
+      >
         <ThumbsDown
           className={clsx(
-            'size-4 cursor-pointer',
-            comment && !is_thumb_up && 'text-meta-1',
+            'size-5 cursor-pointer thumbs_down',
+            is_thumb_down ? 'text-meta-1' : 'text-body dark:text-bodydark',
           )}
-          weight={comment && !is_thumb_up ? 'fill' : 'regular'}
+          weight={is_thumb_down ? 'fill' : 'regular'}
         />
-      }
-    >
-      <form
-        className="flex flex-col gap-5 px-4 justify-center w-full sm:w-[480px]"
-        autoFocus
+      </Button>
+      <Dialog
+        header="What was inaccurate about this suggestion?"
+        visible={showModal}
+        dismissableMask
+        resizable
+        className="w-[60rem] overflow-hidden"
+        onHide={() => {
+          if (!showModal) return;
+          setShowModal(false);
+        }}
+        maximizable
       >
-        <Field>
-          <Label className="mb-1">Comment</Label>
-          <Textarea
-            className="w-full border border-stroke rounded-md focus:outline-primary p-2 dark:bg-boxdark dark:border-strokedark dark:outline-secondary"
-            value={commentState}
-            onChange={(e) => {
-              setCommentState(e.target.value);
-            }}
-            placeholder="Please Enter Your Comment Here"
-          />
-        </Field>
-        <div className="flex gap-4 justify-end">
-          <Button
-            type="reset"
-            className="dark:text-bodydark1"
-            onClick={() => {
-              setShowModal(false);
-            }}
-          >
-            Cancel
-          </Button>
-          <Button
-            type="submit"
-            className="bg-primary text-white dark:text-bodydark1 rounded p-2 dark:bg-secondary"
-          >
-            Submit
-          </Button>
+        <div>
+          <p className="italic">Please help correct this PDPM suggestion.</p>
+          <MDSCommentForm comment={comment} setIsOpen={setShowModal} />
         </div>
-      </form>
-    </Modal>
+      </Dialog>
+    </>
   );
 }

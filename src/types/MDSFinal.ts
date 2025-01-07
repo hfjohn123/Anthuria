@@ -21,7 +21,7 @@ export type MDSFinal = {
   update_time: Date;
   effective_start_date: Date;
   nta_final_entry: NTAEntry[];
-  slp_final_entry: (SLPItem_General | SLPItem_comorbidities_present)[];
+  slp_final_entry: SLPItem[];
   ptot_final_entry: PTOTFinal;
   nursing_fa_final_entry: NursingFunctionalScore;
   nursing_re_final_entry: RestorativeNursing;
@@ -54,25 +54,24 @@ export type NTAEntry = {
   comment: string | null;
 };
 
-export type SLPItem_General = {
+export type SLPItem = {
   category: string;
   item: string;
   is_mds_table: boolean;
-  suggestion?: ProgressNoteAndSummary[];
   is_thumb_up: boolean | null;
   is_thumb_down: boolean | null;
   comment: string | null;
-};
-
-export type SLPItem_comorbidities_present = {
-  category: string;
-  item: 'cp';
-  is_mds_table: boolean;
-  suggestion?: SLPEntry[];
-  is_thumb_up: boolean | null;
-  is_thumb_down: boolean | null;
-  comment: string | null;
-};
+  condition: string;
+} & (
+  | {
+      item: 'ci' | 'mad' | 'sd' | 'anc';
+      suggestion?: ProgressNoteAndSummary[];
+    }
+  | {
+      item: 'cp';
+      suggestion?: SLPEntry[];
+    }
+);
 
 export type SuggestedICD10 = {
   icd10: string;
@@ -115,6 +114,7 @@ export type FunctionalScore = {
   suggestion: ProgressNoteAndSummary[];
   average_function_score: string;
   is_thumb_up: boolean;
+  is_thumb_down: boolean;
   comment: string;
 };
 

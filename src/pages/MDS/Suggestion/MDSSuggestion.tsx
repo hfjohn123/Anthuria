@@ -1,11 +1,6 @@
 import { Bot } from 'lucide-react';
 import { CaretRight } from '@phosphor-icons/react';
-import {
-  MDSFinal,
-  SLPEntry,
-  SLPItem_comorbidities_present,
-  SLPItem_General,
-} from '../../../types/MDSFinal.ts';
+import { MDSFinal, SLPEntry } from '../../../types/MDSFinal.ts';
 import {
   Disclosure,
   DisclosureButton,
@@ -48,17 +43,27 @@ export default function MDSSuggestion({ row }: { row: MDSFinal }) {
   const slp_count = row.slp_final_entry
     .flatMap((d) => {
       if (d.item === 'cp') {
-        return (d as SLPItem_comorbidities_present).suggestion
+        return d.suggestion
           ?.flatMap((d: SLPEntry) => d.suggestion)
           ?.flatMap((d) => d.progress_note);
       }
-      return (d as SLPItem_General).suggestion;
+      return d.suggestion;
     })
     .reduce((acc: { [key: string]: number }, item) => {
       if (!item || !item.source_category) return acc;
       acc[item.source_category] = (acc[item.source_category] || 0) + 1;
       return acc;
     }, {});
+  const ptotCount = (
+    row.ptot_final_entry.function_score_all?.flatMap((d) => d.suggestion) || []
+  ).reduce((acc: { [key: string]: number }, item) => {
+    if (!item || !item.source_category) return acc;
+    acc[item.source_category] = (acc[item.source_category] || 0) + 1;
+    return acc;
+  }, {});
+  const ptotSuggestionCount = (
+    row.ptot_final_entry?.function_score_all || []
+  ).flatMap((d) => d.suggestion).length;
   const extensiveServices = row.nursing_cc_final_entry.nursing_mds_item_es;
   const specialCareHigh = row.nursing_cc_final_entry.nursing_mds_item_sch;
   const specialCareLow = row.nursing_cc_final_entry.nursing_mds_item_scl;
@@ -313,10 +318,15 @@ export default function MDSSuggestion({ row }: { row: MDSFinal }) {
               <h3 className="text-base font-semibold">PT/OT</h3>
               <div
                 className={clsx(
-                  'py-1.5 px-3 rounded flex gap-1 items-center suggestion-counter bg-slate-200 text-gray-400',
+                  ' py-1.5 px-3 rounded flex gap-1 items-center suggestion-counter',
+                  ptotSuggestionCount > 0
+                    ? 'bg-slate-200 text-gray-600  font-semibold'
+                    : 'bg-slate-200 text-gray-400',
                 )}
+                data-pr-tooltip={formatCounts(ptotCount)}
               >
-                0 AI SUGGESTIONS
+                {ptotSuggestionCount > 0 && <MagicButton className="size-4" />}
+                {ptotSuggestionCount} AI SUGGESTIONS
               </div>
             </div>
           </DisclosureButton>

@@ -13,9 +13,10 @@ import { Fragment, useState } from 'react';
 import getFacetedUniqueValues from '../../../../common/getFacetedUniqueValues.ts';
 import getFacetedMinMaxValues from '../../../../common/getFacetedMinMaxValues.ts';
 import EvidenceModal from '../EvidenceModal.tsx';
-import { ThumbsDown, ThumbsUp } from '@phosphor-icons/react';
 import SmallTableWrapper from '../SmallTableWrapper.tsx';
 import { NTAMapping } from '../../cmiMapping.ts';
+import UpVoteButton from '../UpVoteButton.tsx';
+import MDSCommentModal from '../MDSCommentModal.tsx';
 
 const permanentColumnFilters = ['comorbidity', 'is_mds_table'];
 
@@ -135,12 +136,19 @@ export default function NTATable({ data }: { data: NTAEntry[] }) {
     {
       accessorKey: 'review',
       header: 'Review',
-      cell: () => {
+      cell: (info) => {
         return (
-          <td className="py-2 px-4 border-t border-l border-gray-600">
-            <div className="flex items-center gap-2 h-full">
-              <ThumbsUp className="size-5 cursor-pointer hover:text-blue-500" />
-              <ThumbsDown className="size-5 cursor-pointer hover:text-red-500" />
+          <td className=" py-2 px-4 border-t border-l border-gray-600">
+            <div className="h-full flex items-center gap-2">
+              <UpVoteButton
+                is_thumb_up={info.row.original.is_thumb_up || false}
+                // todo: add logic for thumb up
+              />
+              <MDSCommentModal
+                comment={info.row.original.comment || ''}
+                is_thumb_down={info.row.original.is_thumb_down || false}
+                // todo: add logic for thumb down
+              />
             </div>
           </td>
         );

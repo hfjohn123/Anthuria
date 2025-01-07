@@ -6,13 +6,15 @@ import {
   TableState,
   useReactTable,
 } from '@tanstack/react-table';
-import { ThumbsDown, ThumbsUp } from '@phosphor-icons/react';
 import { useState } from 'react';
 import { FunctionalScore, PTOTFinal } from '../../../../types/MDSFinal.ts';
 import getFacetedUniqueValues from '../../../../common/getFacetedUniqueValues.ts';
 import getFacetedMinMaxValues from '../../../../common/getFacetedMinMaxValues.ts';
 import SmallTableWrapper from '../SmallTableWrapper.tsx';
 import { PTOTMapping } from '../../cmiMapping.ts';
+import UpVoteButton from '../UpVoteButton.tsx';
+import MDSCommentModal from '../MDSCommentModal.tsx';
+import EvidenceModal from '../EvidenceModal.tsx';
 
 // Helper Functions
 const getRowSpan = (rowIndex: number, data?: FunctionalScore[]): number => {
@@ -119,11 +121,31 @@ export default function PTOTTable({ data }: { data: PTOTFinal }) {
     {
       accessorKey: 'suggestion',
       header: 'AI Suggested Conditions',
-      cell: (info) => (
-        <td className="py-2 px-4 border-t border-l border-gray-600">
-          {(info.getValue() as string[])?.join(', ') || ''}
-        </td>
-      ),
+      cell: (info) => {
+        const count = info.row.original.suggestion.length;
+        if (count === 0) {
+          return (
+            <td className="py-2 px-4 border-t border-l border-gray-600"></td>
+          );
+        }
+
+        return (
+          <td className="py-2 px-4 border-t border-l border-gray-600">
+            <EvidenceModal
+              button={
+                <span>
+                  {count} {count === 1 ? 'potential ' : 'potentials '}
+                  found
+                </span>
+              }
+              icd10={{
+                icd10: info.row.original.mds_item,
+                progress_note: info.row.original.suggestion,
+              }}
+            />
+          </td>
+        );
+      },
       footer: () => {
         return (
           <td className="whitespace-nowrap py-2 px-4 border-t border-l border-gray-600"></td>
@@ -163,14 +185,28 @@ export default function PTOTTable({ data }: { data: PTOTFinal }) {
     {
       accessorKey: 'review',
       header: 'Review',
-      cell: () => (
-        <td className="py-2 px-4 border-t border-l  last:border-r-0 border-gray-600">
-          <div className="flex items-center gap-2">
-            <ThumbsUp className="size-5 cursor-pointer hover:text-blue-500" />
-            <ThumbsDown className="size-5 cursor-pointer hover:text-red-500" />
-          </div>
-        </td>
-      ),
+      cell: (info) => {
+        if (info.row.original.suggestion?.length ?? 0 > 0) {
+          return (
+            <td className=" py-2 px-4 border-t border-l border-gray-600">
+              <div className="h-full flex items-center gap-2">
+                <UpVoteButton
+                  is_thumb_up={info.row.original.is_thumb_up || false}
+                  // todo: add logic for thumb up
+                />
+                <MDSCommentModal
+                  comment={info.row.original.comment || ''}
+                  is_thumb_down={info.row.original.is_thumb_down || false}
+                  // todo: add logic for thumb down
+                />
+              </div>
+            </td>
+          );
+        }
+        return (
+          <td className="py-2 px-4 border-t border-l border-gray-600"></td>
+        );
+      },
       footer: () => {
         return (
           <td className="py-2 px-4  border-t border-l  last:border-r-0 font-medium border-gray-600">
