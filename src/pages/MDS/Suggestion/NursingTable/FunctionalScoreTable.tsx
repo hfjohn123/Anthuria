@@ -16,6 +16,7 @@ import { useState } from 'react';
 import getFacetedUniqueValues from '../../../../common/getFacetedUniqueValues.ts';
 import getFacetedMinMaxValues from '../../../../common/getFacetedMinMaxValues.ts';
 import clsx from 'clsx';
+import EvidenceModal from '../EvidenceModal.tsx';
 
 // Helper Functions
 const getRowSpan = (rowIndex: number, data?: FunctionalScore[]): number => {
@@ -123,11 +124,31 @@ export default function FunctionalScoreTable({
     {
       accessorKey: 'suggestion',
       header: 'AI Suggested Conditions',
-      cell: (info) => (
-        <td className="py-2 px-4 border-t border-l border-gray-600">
-          {(info.getValue() as string[])?.join(', ') || ''}
-        </td>
-      ),
+      cell: (info) => {
+        const count = info.row.original.suggestion.length;
+        if (count === 0) {
+          return (
+            <td className="py-2 px-4 border-t border-l border-gray-600"></td>
+          );
+        }
+
+        return (
+          <td className="py-2 px-4 border-t border-l border-gray-600">
+            <EvidenceModal
+              button={
+                <span>
+                  {count} {count === 1 ? 'potential ' : 'potentials '}
+                  found
+                </span>
+              }
+              icd10={{
+                icd10: info.row.original.mds_item,
+                progress_note: info.row.original.suggestion,
+              }}
+            />
+          </td>
+        );
+      },
       footer: () => {
         return (
           <td className="whitespace-nowrap py-2 px-4 border-t border-l border-gray-600"></td>

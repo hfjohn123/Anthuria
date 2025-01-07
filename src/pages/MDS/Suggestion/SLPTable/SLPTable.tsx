@@ -63,7 +63,6 @@ function getSLPCategory(total_general: number, total_diet: number) {
 }
 
 export default function SLPTable({ data }: { data: SLPItem[] }) {
-  console.log(data);
   const columns: ColumnDef<SLPItem>[] = [
     {
       accessorKey: 'condition',
