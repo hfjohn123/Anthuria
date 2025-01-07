@@ -11,8 +11,8 @@ export default function UpVoteButton({
     <Button className="bg-transparent border-0 p-0 m-0">
       <ThumbsUp
         className={clsx(
-          'size-5 cursor-pointer thumbs_up',
-          is_thumb_up ? 'text-meta-3' : 'text-body dark:text-bodydark',
+          'size-5 cursor-pointer thumbs_up hover:text-blue-500',
+          is_thumb_up ? 'text-blue-500' : 'text-body dark:text-bodydark',
         )}
         weight={is_thumb_up ? 'fill' : 'regular'}
       />

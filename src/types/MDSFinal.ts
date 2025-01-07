@@ -168,8 +168,7 @@ export type NursingCC = {
 
 export type NursingBIMS = {
   mds_value: string;
-  suggested_value: string | null;
-  nursing_bscp_suggestion: ProgressNoteAndSummary;
+  nursing_bscp_suggestion: ProgressNoteAndSummary[];
   is_thumb_up: boolean | null;
   comment: string | null;
 };

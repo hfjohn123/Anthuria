@@ -149,8 +149,7 @@ export default function NursingTable({ data }: { data: MDSFinal }) {
     }
   } else if (
     (parseInt(BIMS?.mds_value || '99') <= 9 ||
-      parseInt(BIMS?.suggested_value || '99') <= 9 ||
-      ((BIMS?.mds_value != '99' || BIMS?.suggested_value != '99') &&
+      (BIMS?.mds_value != '99' &&
         data.nursing_bscp_final_entry.nursing_bscp_mds_bs) ||
       data.nursing_bscp_final_entry.nursing_bscp_mds_sacs) &&
     !boolFuncScore11
@@ -557,14 +556,12 @@ export default function NursingTable({ data }: { data: MDSFinal }) {
 
               <p>
                 BIMS: {BIMS?.mds_value || 'No Record Found (99)'}{' '}
-                {BIMS?.suggested_value && (
+                {BIMS?.nursing_bscp_suggestion && (
                   <EvidenceModal
-                    button={
-                      <span>(AI suggests BIMS: {BIMS.suggested_value})</span>
-                    }
+                    button={<span>(AI suggests BIMS)</span>}
                     icd10={{
                       icd10: 'BIMS',
-                      progress_note: [BIMS.nursing_bscp_suggestion],
+                      progress_note: BIMS.nursing_bscp_suggestion,
                     }}
                   />
                 )}

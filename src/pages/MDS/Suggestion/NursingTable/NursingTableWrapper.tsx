@@ -7,16 +7,26 @@ import {
   TableState,
   useReactTable,
 } from '@tanstack/react-table';
-import { ThumbsDown, ThumbsUp } from '@phosphor-icons/react';
 import { useState } from 'react';
 import getFacetedUniqueValues from '../../../../common/getFacetedUniqueValues.ts';
 import getFacetedMinMaxValues from '../../../../common/getFacetedMinMaxValues.ts';
-import { ProgressNoteAndSummary } from '../../../../types/MDSFinal.ts';
+import {
+  NursingBSCP,
+  NursingCC,
+  ProgressNoteAndSummary,
+  RestorativeCountAll,
+} from '../../../../types/MDSFinal.ts';
 import EvidenceModal from '../EvidenceModal.tsx';
+import UpVoteButton from '../UpVoteButton.tsx';
+import MDSCommentModal from '../MDSCommentModal.tsx';
 
 const permanentColumnFilters = ['mds_item'];
 
-export default function NursingTableWrapper({ data }: { data: any }) {
+export default function NursingTableWrapper({
+  data,
+}: {
+  data: NursingCC[] | NursingBSCP[] | RestorativeCountAll[];
+}) {
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'mds_item',
@@ -88,14 +98,28 @@ export default function NursingTableWrapper({ data }: { data: any }) {
     {
       accessorKey: 'review',
       header: 'Review',
-      cell: () => (
-        <td className="py-2 px-4 border-t border-l border-gray-600">
-          <div className="flex items-center gap-2 h-full">
-            <ThumbsUp className="size-5 cursor-pointer hover:text-blue-500" />
-            <ThumbsDown className="size-5 cursor-pointer hover:text-red-500" />
-          </div>
-        </td>
-      ),
+      cell: (info) => {
+        if (info.row.original.nursing_mds_suggestion?.length ?? 0 > 0) {
+          return (
+            <td className=" py-2 px-4 border-t border-l border-gray-600">
+              <div className="h-full flex items-center gap-2">
+                <UpVoteButton
+                  is_thumb_up={info.row.original.is_thumb_up || false}
+                  // todo: add logic for thumb up
+                />
+                <MDSCommentModal
+                  comment={info.row.original.comment || ''}
+                  is_thumb_down={info.row.original.is_thumb_down || false}
+                  // todo: add logic for thumb down
+                />
+              </div>
+            </td>
+          );
+        }
+        return (
+          <td className="py-2 px-4 border-t border-l border-gray-600"></td>
+        );
+      },
     },
   ];
 

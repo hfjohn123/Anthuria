@@ -25,8 +25,8 @@ export default function MDSCommentModal({
       >
         <ThumbsDown
           className={clsx(
-            'size-5 cursor-pointer thumbs_down',
-            is_thumb_down ? 'text-meta-1' : 'text-body dark:text-bodydark',
+            'size-5 cursor-pointer thumbs_down hover:text-red-500',
+            is_thumb_down ? 'text-red-500' : 'text-body dark:text-bodydark',
           )}
           weight={is_thumb_down ? 'fill' : 'regular'}
         />
