@@ -25,8 +25,13 @@ export default function MDSTable({ data }: { data: PDPMPatient[] }) {
   const { user_data } = useContext(AuthContext);
   const PERMANENT_COLUMN_FILTERS =
     user_data.organization_id === 'the_triedge_labs'
-      ? ['operation_name', 'facility_name', 'update_time', 'patient_name']
-      : ['facility_name', 'update_time', 'patient_name'];
+      ? [
+          'operation_name',
+          'facility_name',
+          'effective_start_date',
+          'patient_name',
+        ]
+      : ['facility_name', 'effective_start_date', 'patient_name'];
   const columns: ColumnDef<PDPMPatient>[] = [
     {
       accessorKey: 'operation_name',
@@ -115,31 +120,6 @@ export default function MDSTable({ data }: { data: PDPMPatient[] }) {
     {
       accessorKey: 'effective_start_date',
       header: 'Eligibility Start Date',
-      accessorFn: (row) => new Date(row.effective_start_date),
-      cell: (info) => {
-        const date = info.getValue() as Date;
-        return (
-          <HighlightWrapper
-            text={`${date.toLocaleDateString()} ${date.toLocaleTimeString(
-              navigator.language,
-              {
-                hour: '2-digit',
-                minute: '2-digit',
-              },
-            )}`}
-            searchTerm={info.table.getState().globalFilter}
-          />
-        );
-      },
-      filterFn: dateRangeFilterFn,
-      meta: {
-        wrap: 'whitespace-nowrap',
-        type: 'daterange',
-      },
-    },
-    {
-      accessorKey: 'update_time',
-      header: 'Update Time',
       accessorFn: (row) => new Date(row.effective_start_date),
       cell: (info) => {
         const date = info.getValue() as Date;
