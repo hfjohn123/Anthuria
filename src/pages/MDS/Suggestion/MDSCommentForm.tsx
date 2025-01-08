@@ -1,6 +1,9 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { InputTextarea } from 'primereact/inputtextarea';
 import { FloatLabel } from 'primereact/floatlabel';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import axios from 'axios';
+import { AuthContext } from '../../../components/AuthWrapper.tsx';
 
 export default function MDSCommentForm({
   comment,
@@ -11,9 +14,45 @@ export default function MDSCommentForm({
   setIsOpen: any;
 }) {
   const [commentState, setCommentState] = useState(comment);
-  // const { route } = useContext(AuthContext);
-  // const queryClient = useQueryClient();
-  // const putComment = usePutComment(route, queryClient);
+  const { route } = useContext(AuthContext);
+  const queryClient = useQueryClient();
+  const commentMutation = useMutation({
+    mutationFn: async ({
+      internal_facility_id,
+      internal_patient_id,
+      category,
+      item,
+    }: {
+      internal_facility_id: string;
+      internal_patient_id: string;
+      category: string;
+      item: string;
+    }) => {
+      if (!internal_facility_id || !internal_patient_id || !category || !item)
+        return;
+      return axios.put(`${route}/mds/comment`, {
+        internal_facility_id,
+        internal_patient_id,
+        category,
+        item,
+        is_thumb_up: 1,
+        is_thumb_down: 0,
+        comment: '',
+      });
+    },
+    onMutate: () => {
+      // setThumbState(true);
+    },
+    // onSettled: () => {
+    //   queryClient.invalidateQueries({
+    //     queryKey: [
+    //       '/mds/view_pdpm_final_result_test',
+    //       route,
+    //       internal_patient_id,
+    //     ],
+    //   });
+    // },
+  });
   return (
     <form
       className="flex flex-col gap-5 justify-center w-full px-4"

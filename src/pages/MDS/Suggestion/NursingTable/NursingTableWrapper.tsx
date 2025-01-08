@@ -7,7 +7,7 @@ import {
   TableState,
   useReactTable,
 } from '@tanstack/react-table';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import getFacetedUniqueValues from '../../../../common/getFacetedUniqueValues.ts';
 import getFacetedMinMaxValues from '../../../../common/getFacetedMinMaxValues.ts';
 import {
@@ -19,6 +19,7 @@ import {
 import EvidenceModal from '../EvidenceModal.tsx';
 import UpVoteButton from '../UpVoteButton.tsx';
 import MDSCommentModal from '../MDSCommentModal.tsx';
+import { NursingTableContext } from './NursingTable.tsx';
 
 const permanentColumnFilters = ['mds_item'];
 
@@ -27,6 +28,7 @@ export default function NursingTableWrapper({
 }: {
   data: NursingCC[] | NursingBSCP[] | RestorativeCountAll[];
 }) {
+  const row_data = useContext(NursingTableContext);
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'mds_item',
@@ -105,7 +107,10 @@ export default function NursingTableWrapper({
               <div className="h-full flex items-center gap-2">
                 <UpVoteButton
                   is_thumb_up={info.row.original.is_thumb_up || false}
-                  // todo: add logic for thumb up
+                  internal_facility_id={row_data?.internal_facility_id || ''}
+                  internal_patient_id={row_data?.internal_patient_id || ''}
+                  category={info.row.original.category}
+                  item={info.row.original.item}
                 />
                 <MDSCommentModal
                   comment={info.row.original.comment || ''}

@@ -16,6 +16,7 @@ export type MDSFinal = {
   patient_id: string;
   patient_name: string;
   internal_facility_id: string;
+  internal_patient_id: string;
   facility_name: string;
   upstream: string;
   update_time: Date;
@@ -52,6 +53,8 @@ export type NTAEntry = {
   is_thumb_up: boolean | null;
   is_thumb_down: boolean | null;
   comment: string | null;
+  category: string;
+  item: string;
 };
 
 export type SLPItem = {
@@ -94,6 +97,8 @@ export type ProgressNoteAndSummary = {
 
 export type PTOTFinal = {
   clinical_category?: string;
+  category: string;
+  item: string;
 } & (
   | {
       mix_group: string;
@@ -116,6 +121,8 @@ export type FunctionalScore = {
   is_thumb_up: boolean;
   is_thumb_down: boolean;
   comment: string;
+  category: string;
+  item: string;
 };
 
 export type NursingFunctionalScore =

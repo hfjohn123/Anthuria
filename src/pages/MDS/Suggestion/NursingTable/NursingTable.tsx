@@ -1,6 +1,6 @@
 import { Stepper, StepperRefAttributes } from 'primereact/stepper';
 import { StepperPanel } from 'primereact/stepperpanel';
-import { useEffect, useRef, useState } from 'react';
+import { createContext, useEffect, useRef, useState } from 'react';
 import { Button } from 'primereact/button';
 import ClinicalCategory from './ClinicalCategory.tsx';
 import FunctionalScoreTable from './FunctionalScoreTable.tsx';
@@ -10,6 +10,8 @@ import DepressionIndicator from './DepressionIndicator.tsx';
 import clsx from 'clsx';
 import EvidenceModal from '../EvidenceModal.tsx';
 import { NusingMapping } from '../../cmiMapping.ts';
+
+export const NursingTableContext = createContext<MDSFinal | null>(null);
 
 export default function NursingTable({ data }: { data: MDSFinal }) {
   const stepperRef = useRef<StepperRefAttributes>(null);
@@ -184,506 +186,514 @@ export default function NursingTable({ data }: { data: MDSFinal }) {
   const suggestCMI = NusingMapping[suggestGroup as keyof typeof NusingMapping];
 
   return (
-    <div ref={containerRef} className="flex flex-col gap-5 px-5 py-5">
-      <Stepper
-        ref={stepperRef}
-        pt={{ panelContainer: () => 'bg-transparent' }}
-        headerPosition="bottom"
-        orientation={orientation}
-      >
-        <StepperPanel
-          pt={{
-            number: (props) =>
-              clsx(
-                'p-stepper-number',
-                // eslint-disable-next-line react/prop-types
-                !props.context.active &&
-                  (currentGroup?.startsWith('E') ||
-                    suggestGroup.startsWith('E'))
-                  ? 'bg-yellow-500'
-                  : '',
-                '',
-              ),
-            header: (props) =>
-              clsx(
-                'p-stepper-header items-center',
-                // eslint-disable-next-line react/prop-types
-                props.context.active && 'p-highlight',
-                orientation === 'horizontal' && 'p-stepper-header-bottom',
-              ),
-            action: () =>
-              clsx(
-                'p-stepper-action p-component bg-transparent gap-1',
-                suggestGroup.startsWith('E') &&
-                  orientation === 'horizontal' &&
-                  'before:content-["Recommended"]',
-                suggestGroup.startsWith('E') &&
-                  orientation === 'vertical' &&
-                  "after:content-['Recommended'] ",
-                currentGroup?.startsWith('E') &&
-                  orientation === 'horizontal' &&
-                  !suggestGroup.startsWith('E') &&
-                  'before:content-["Current_Group"]',
-                currentGroup?.startsWith('E') &&
-                  orientation === 'vertical' &&
-                  !suggestGroup.startsWith('E') &&
-                  "after:content-['Current_Group'] ",
-              ),
-            toggleableContent: () =>
-              'p-stepper-toggleable-content bg-transparent',
-          }}
-          header="Extensive Services"
+    <NursingTableContext.Provider value={data}>
+      <div ref={containerRef} className="flex flex-col gap-5 px-5 py-5">
+        <Stepper
+          ref={stepperRef}
+          pt={{ panelContainer: () => 'bg-transparent' }}
+          headerPosition="bottom"
+          orientation={orientation}
         >
-          <div className="flex flex-col gap-7">
-            <ClinicalCategory
-              type="extensiveServices"
-              data={extensiveServices}
-            />
-            <FunctionalScoreTable data={functionalScore} />
-            {currentGroup?.startsWith('E') && (
-              <div>
-                <p className="font-bold">Current group: </p>
-                <p>
-                  {currentGroup} (CMI:{' '}
-                  {NusingMapping[currentGroup as keyof typeof NusingMapping]})
-                </p>
-              </div>
-            )}
-            {suggestGroup?.startsWith('E') && (
-              <div>
-                <p className="font-bold">Suggested group: </p>
-                <p>
-                  {suggestGroup} (CMI: {suggestCMI})
-                </p>
-              </div>
-            )}
-          </div>
-          <div className="flex pt-4 justify-end">
-            <Button
-              label="Next"
-              icon="pi pi-arrow-right"
-              iconPos="right"
-              onClick={() => stepperRef.current?.nextCallback()}
-            />
-          </div>
-        </StepperPanel>
-        <StepperPanel
-          pt={{
-            number: (props) =>
-              clsx(
-                'p-stepper-number',
-                // eslint-disable-next-line react/prop-types
-                !props.context.active &&
-                  (currentGroup?.startsWith('H') ||
-                    suggestGroup.startsWith('H'))
-                  ? 'bg-yellow-500'
-                  : '',
-                '',
-              ),
-            header: (props) =>
-              clsx(
-                'p-stepper-header items-center',
-                // eslint-disable-next-line react/prop-types
-                props.context.active && 'p-highlight',
-                orientation === 'horizontal' && 'p-stepper-header-bottom',
-              ),
-            action: () =>
-              clsx(
-                'p-stepper-action p-component bg-transparent gap-1',
-                suggestGroup.startsWith('H') &&
-                  orientation === 'horizontal' &&
-                  'before:content-["Recommended"]',
-                suggestGroup.startsWith('H') &&
-                  orientation === 'vertical' &&
-                  "after:content-['Recommended'] ",
-                currentGroup?.startsWith('H') &&
-                  orientation === 'horizontal' &&
-                  !suggestGroup.startsWith('H') &&
-                  'before:content-["Current_Group"]',
-                currentGroup?.startsWith('H') &&
-                  orientation === 'vertical' &&
-                  !suggestGroup.startsWith('H') &&
-                  "after:content-['Current_Group'] ",
-              ),
-            toggleableContent: () =>
-              'p-stepper-toggleable-content bg-transparent',
-          }}
-          header="Special Care High"
-        >
-          <div className="flex flex-col gap-7">
-            <ClinicalCategory type="specialCareHigh" data={specialCareHigh} />
-            <FunctionalScoreTable data={functionalScore} />
-            <DepressionIndicator data={depressionIndicator} />
-            {currentGroup?.startsWith('H') && (
-              <div>
-                <p className="font-bold">Current group: </p>
-                <p>
-                  {currentGroup} (CMI:{' '}
-                  {NusingMapping[currentGroup as keyof typeof NusingMapping]})
-                </p>
-              </div>
-            )}
-            {suggestGroup?.startsWith('H') && (
-              <div>
-                <p className="font-bold">Suggested group: </p>
-                <p>
-                  {suggestGroup} (CMI: {suggestCMI})
-                </p>
-              </div>
-            )}
-          </div>
-          <div className="flex pt-4 justify-between">
-            <Button
-              label="Back"
-              severity="secondary"
-              icon="pi pi-arrow-left"
-              onClick={() => stepperRef.current?.prevCallback()}
-            />
-            <Button
-              label="Next"
-              icon="pi pi-arrow-right"
-              iconPos="right"
-              onClick={() => stepperRef.current?.nextCallback()}
-            />
-          </div>
-        </StepperPanel>
-        <StepperPanel
-          pt={{
-            number: (props) =>
-              clsx(
-                'p-stepper-number',
-                // eslint-disable-next-line react/prop-types
-                !props.context.active &&
-                  (currentGroup?.startsWith('L') ||
-                    suggestGroup.startsWith('L'))
-                  ? 'bg-yellow-500'
-                  : '',
-                '',
-              ),
-            header: (props) =>
-              clsx(
-                'p-stepper-header items-center',
-                // eslint-disable-next-line react/prop-types
-                props.context.active && 'p-highlight',
-                orientation === 'horizontal' && 'p-stepper-header-bottom',
-              ),
-            action: () =>
-              clsx(
-                'p-stepper-action p-component bg-transparent gap-1',
-                suggestGroup.startsWith('L') &&
-                  orientation === 'horizontal' &&
-                  'before:content-["Recommended"]',
-                suggestGroup.startsWith('L') &&
-                  orientation === 'vertical' &&
-                  "after:content-['Recommended'] ",
-                currentGroup?.startsWith('L') &&
-                  orientation === 'horizontal' &&
-                  !suggestGroup.startsWith('L') &&
-                  'before:content-["Current_Group"]',
-                currentGroup?.startsWith('L') &&
-                  orientation === 'vertical' &&
-                  !suggestGroup.startsWith('L') &&
-                  "after:content-['Current_Group'] ",
-              ),
-            toggleableContent: () =>
-              'p-stepper-toggleable-content bg-transparent',
-          }}
-          header="Special Care Low"
-        >
-          <div className="flex flex-col gap-7">
-            <ClinicalCategory type="specialCareLow" data={specialCareLow} />
-            <FunctionalScoreTable data={functionalScore} />
-            <DepressionIndicator data={depressionIndicator} />
-            {currentGroup?.startsWith('L') && (
-              <div>
-                <p className="font-bold">Current group: </p>
-                <p>
-                  {currentGroup} (CMI:{' '}
-                  {NusingMapping[currentGroup as keyof typeof NusingMapping]})
-                </p>
-              </div>
-            )}
-            {suggestGroup?.startsWith('L') && (
-              <div>
-                <p className="font-bold">Suggested group: </p>
-                <p>
-                  {suggestGroup} (CMI: {suggestCMI})
-                </p>
-              </div>
-            )}
-          </div>
-          <div className="flex pt-4 justify-between">
-            <Button
-              label="Back"
-              severity="secondary"
-              icon="pi pi-arrow-left"
-              onClick={() => stepperRef.current?.prevCallback()}
-            />
-            <Button
-              label="Next"
-              icon="pi pi-arrow-right"
-              iconPos="right"
-              onClick={() => stepperRef.current?.nextCallback()}
-            />
-          </div>
-        </StepperPanel>
-        <StepperPanel
-          pt={{
-            number: (props) =>
-              clsx(
-                'p-stepper-number',
-                // eslint-disable-next-line react/prop-types
-                !props.context.active &&
-                  (currentGroup?.startsWith('C') ||
-                    suggestGroup.startsWith('C'))
-                  ? 'bg-yellow-500'
-                  : '',
-                '',
-              ),
-            header: (props) =>
-              clsx(
-                'p-stepper-header items-center',
-                // eslint-disable-next-line react/prop-types
-                props.context.active && 'p-highlight',
-                orientation === 'horizontal' && 'p-stepper-header-bottom',
-              ),
-            action: () =>
-              clsx(
-                'p-stepper-action p-component bg-transparent gap-1',
-                suggestGroup.startsWith('C') &&
-                  orientation === 'horizontal' &&
-                  'before:content-["Recommended"]',
-                suggestGroup.startsWith('C') &&
-                  orientation === 'vertical' &&
-                  "after:content-['Recommended'] ",
-                currentGroup?.startsWith('C') &&
-                  orientation === 'horizontal' &&
-                  !suggestGroup.startsWith('C') &&
-                  'before:content-["Current_Group"]',
-                currentGroup?.startsWith('C') &&
-                  orientation === 'vertical' &&
-                  !suggestGroup.startsWith('C') &&
-                  "after:content-['Current_Group'] ",
-              ),
-            toggleableContent: () =>
-              'p-stepper-toggleable-content bg-transparent',
-          }}
-          header="Clinically Complex"
-        >
-          <div className="flex flex-col gap-7">
-            <ClinicalCategory type="clinicallyComplex" data={clinicalComplex} />
-            <DepressionIndicator data={depressionIndicator} />
-            {currentGroup?.startsWith('C') && (
-              <div>
-                <p className="font-bold">Current group: </p>
-                <p>
-                  {currentGroup} (CMI:{' '}
-                  {NusingMapping[currentGroup as keyof typeof NusingMapping]})
-                </p>
-              </div>
-            )}
-            {suggestGroup?.startsWith('C') && (
-              <div>
-                <p className="font-bold">Suggested group: </p>
-                <p>
-                  {suggestGroup} (CMI: {suggestCMI})
-                </p>
-              </div>
-            )}
-          </div>
-          <div className="flex pt-4 justify-between">
-            <Button
-              label="Back"
-              severity="secondary"
-              icon="pi pi-arrow-left"
-              onClick={() => stepperRef.current?.prevCallback()}
-            />
-            <Button
-              label="Next"
-              icon="pi pi-arrow-right"
-              iconPos="right"
-              onClick={() => stepperRef.current?.nextCallback()}
-            />
-          </div>
-        </StepperPanel>
-        <StepperPanel
-          pt={{
-            number: (props) =>
-              clsx(
-                'p-stepper-number',
-                // eslint-disable-next-line react/prop-types
-                !props.context.active &&
-                  (currentGroup?.startsWith('B') ||
-                    suggestGroup.startsWith('B'))
-                  ? 'bg-yellow-500'
-                  : '',
-                '',
-              ),
-            header: (props) =>
-              clsx(
-                'p-stepper-header items-center',
-                // eslint-disable-next-line react/prop-types
-                props.context.active && 'p-highlight',
-                orientation === 'horizontal' && 'p-stepper-header-bottom',
-              ),
-            action: () =>
-              clsx(
-                'p-stepper-action p-component bg-transparent gap-1',
-                suggestGroup.startsWith('B') &&
-                  orientation === 'horizontal' &&
-                  'before:content-["Recommended"]',
-                suggestGroup.startsWith('B') &&
-                  orientation === 'vertical' &&
-                  "after:content-['Recommended'] ",
-                currentGroup?.startsWith('B') &&
-                  orientation === 'horizontal' &&
-                  !suggestGroup.startsWith('B') &&
-                  'before:content-["Current_Group"]',
-                currentGroup?.startsWith('B') &&
-                  orientation === 'vertical' &&
-                  !suggestGroup.startsWith('B') &&
-                  "after:content-['Current_Group'] ",
-              ),
-            toggleableContent: () =>
-              'p-stepper-toggleable-content bg-transparent',
-          }}
-          header="Behavioral Symptoms And Cognitive Performance"
-        >
-          <div className="flex flex-col gap-7">
-            <FunctionalScoreTable data={functionalScore} />
-            <div>
-              <p className="font-bold">Resident interview cognitive status:</p>
-
-              <p>
-                BIMS: {BIMS?.mds_value || 'No Record Found (99)'}{' '}
-                {BIMS?.nursing_bscp_suggestion && (
-                  <EvidenceModal
-                    button={<span>(AI suggests BIMS)</span>}
-                    icd10={{
-                      icd10: 'BIMS',
-                      progress_note: BIMS.nursing_bscp_suggestion,
-                    }}
-                  />
-                )}
-              </p>
+          <StepperPanel
+            pt={{
+              number: (props) =>
+                clsx(
+                  'p-stepper-number',
+                  // eslint-disable-next-line react/prop-types
+                  !props.context.active &&
+                    (currentGroup?.startsWith('E') ||
+                      suggestGroup.startsWith('E'))
+                    ? 'bg-yellow-500'
+                    : '',
+                  '',
+                ),
+              header: (props) =>
+                clsx(
+                  'p-stepper-header items-center',
+                  // eslint-disable-next-line react/prop-types
+                  props.context.active && 'p-highlight',
+                  orientation === 'horizontal' && 'p-stepper-header-bottom',
+                ),
+              action: () =>
+                clsx(
+                  'p-stepper-action p-component bg-transparent gap-1',
+                  suggestGroup.startsWith('E') &&
+                    orientation === 'horizontal' &&
+                    'before:content-["Recommended"]',
+                  suggestGroup.startsWith('E') &&
+                    orientation === 'vertical' &&
+                    "after:content-['Recommended'] ",
+                  currentGroup?.startsWith('E') &&
+                    orientation === 'horizontal' &&
+                    !suggestGroup.startsWith('E') &&
+                    'before:content-["Current_Group"]',
+                  currentGroup?.startsWith('E') &&
+                    orientation === 'vertical' &&
+                    !suggestGroup.startsWith('E') &&
+                    "after:content-['Current_Group'] ",
+                ),
+              toggleableContent: () =>
+                'p-stepper-toggleable-content bg-transparent',
+            }}
+            header="Extensive Services"
+          >
+            <div className="flex flex-col gap-7">
+              <ClinicalCategory
+                type="extensiveServices"
+                data={extensiveServices}
+              />
+              <FunctionalScoreTable data={functionalScore} />
+              {currentGroup?.startsWith('E') && (
+                <div>
+                  <p className="font-bold">Current group: </p>
+                  <p>
+                    {currentGroup} (CMI:{' '}
+                    {NusingMapping[currentGroup as keyof typeof NusingMapping]})
+                  </p>
+                </div>
+              )}
+              {suggestGroup?.startsWith('E') && (
+                <div>
+                  <p className="font-bold">Suggested group: </p>
+                  <p>
+                    {suggestGroup} (CMI: {suggestCMI})
+                  </p>
+                </div>
+              )}
             </div>
-            <ClinicalCategory
-              type={'Staff assessment cognitive status'}
-              data={data.nursing_bscp_final_entry.nursing_bscp_mds_sacs}
-            />
-            <ClinicalCategory
-              type={'Behavioral symptoms'}
-              data={data.nursing_bscp_final_entry.nursing_bscp_mds_bs}
-            />
-            <RestorativeNursingTable data={data.nursing_re_final_entry} />
-            {currentGroup?.startsWith('B') && (
+            <div className="flex pt-4 justify-end">
+              <Button
+                label="Next"
+                icon="pi pi-arrow-right"
+                iconPos="right"
+                onClick={() => stepperRef.current?.nextCallback()}
+              />
+            </div>
+          </StepperPanel>
+          <StepperPanel
+            pt={{
+              number: (props) =>
+                clsx(
+                  'p-stepper-number',
+                  // eslint-disable-next-line react/prop-types
+                  !props.context.active &&
+                    (currentGroup?.startsWith('H') ||
+                      suggestGroup.startsWith('H'))
+                    ? 'bg-yellow-500'
+                    : '',
+                  '',
+                ),
+              header: (props) =>
+                clsx(
+                  'p-stepper-header items-center',
+                  // eslint-disable-next-line react/prop-types
+                  props.context.active && 'p-highlight',
+                  orientation === 'horizontal' && 'p-stepper-header-bottom',
+                ),
+              action: () =>
+                clsx(
+                  'p-stepper-action p-component bg-transparent gap-1',
+                  suggestGroup.startsWith('H') &&
+                    orientation === 'horizontal' &&
+                    'before:content-["Recommended"]',
+                  suggestGroup.startsWith('H') &&
+                    orientation === 'vertical' &&
+                    "after:content-['Recommended'] ",
+                  currentGroup?.startsWith('H') &&
+                    orientation === 'horizontal' &&
+                    !suggestGroup.startsWith('H') &&
+                    'before:content-["Current_Group"]',
+                  currentGroup?.startsWith('H') &&
+                    orientation === 'vertical' &&
+                    !suggestGroup.startsWith('H') &&
+                    "after:content-['Current_Group'] ",
+                ),
+              toggleableContent: () =>
+                'p-stepper-toggleable-content bg-transparent',
+            }}
+            header="Special Care High"
+          >
+            <div className="flex flex-col gap-7">
+              <ClinicalCategory type="specialCareHigh" data={specialCareHigh} />
+              <FunctionalScoreTable data={functionalScore} />
+              <DepressionIndicator data={depressionIndicator} />
+              {currentGroup?.startsWith('H') && (
+                <div>
+                  <p className="font-bold">Current group: </p>
+                  <p>
+                    {currentGroup} (CMI:{' '}
+                    {NusingMapping[currentGroup as keyof typeof NusingMapping]})
+                  </p>
+                </div>
+              )}
+              {suggestGroup?.startsWith('H') && (
+                <div>
+                  <p className="font-bold">Suggested group: </p>
+                  <p>
+                    {suggestGroup} (CMI: {suggestCMI})
+                  </p>
+                </div>
+              )}
+            </div>
+            <div className="flex pt-4 justify-between">
+              <Button
+                label="Back"
+                severity="secondary"
+                icon="pi pi-arrow-left"
+                onClick={() => stepperRef.current?.prevCallback()}
+              />
+              <Button
+                label="Next"
+                icon="pi pi-arrow-right"
+                iconPos="right"
+                onClick={() => stepperRef.current?.nextCallback()}
+              />
+            </div>
+          </StepperPanel>
+          <StepperPanel
+            pt={{
+              number: (props) =>
+                clsx(
+                  'p-stepper-number',
+                  // eslint-disable-next-line react/prop-types
+                  !props.context.active &&
+                    (currentGroup?.startsWith('L') ||
+                      suggestGroup.startsWith('L'))
+                    ? 'bg-yellow-500'
+                    : '',
+                  '',
+                ),
+              header: (props) =>
+                clsx(
+                  'p-stepper-header items-center',
+                  // eslint-disable-next-line react/prop-types
+                  props.context.active && 'p-highlight',
+                  orientation === 'horizontal' && 'p-stepper-header-bottom',
+                ),
+              action: () =>
+                clsx(
+                  'p-stepper-action p-component bg-transparent gap-1',
+                  suggestGroup.startsWith('L') &&
+                    orientation === 'horizontal' &&
+                    'before:content-["Recommended"]',
+                  suggestGroup.startsWith('L') &&
+                    orientation === 'vertical' &&
+                    "after:content-['Recommended'] ",
+                  currentGroup?.startsWith('L') &&
+                    orientation === 'horizontal' &&
+                    !suggestGroup.startsWith('L') &&
+                    'before:content-["Current_Group"]',
+                  currentGroup?.startsWith('L') &&
+                    orientation === 'vertical' &&
+                    !suggestGroup.startsWith('L') &&
+                    "after:content-['Current_Group'] ",
+                ),
+              toggleableContent: () =>
+                'p-stepper-toggleable-content bg-transparent',
+            }}
+            header="Special Care Low"
+          >
+            <div className="flex flex-col gap-7">
+              <ClinicalCategory type="specialCareLow" data={specialCareLow} />
+              <FunctionalScoreTable data={functionalScore} />
+              <DepressionIndicator data={depressionIndicator} />
+              {currentGroup?.startsWith('L') && (
+                <div>
+                  <p className="font-bold">Current group: </p>
+                  <p>
+                    {currentGroup} (CMI:{' '}
+                    {NusingMapping[currentGroup as keyof typeof NusingMapping]})
+                  </p>
+                </div>
+              )}
+              {suggestGroup?.startsWith('L') && (
+                <div>
+                  <p className="font-bold">Suggested group: </p>
+                  <p>
+                    {suggestGroup} (CMI: {suggestCMI})
+                  </p>
+                </div>
+              )}
+            </div>
+            <div className="flex pt-4 justify-between">
+              <Button
+                label="Back"
+                severity="secondary"
+                icon="pi pi-arrow-left"
+                onClick={() => stepperRef.current?.prevCallback()}
+              />
+              <Button
+                label="Next"
+                icon="pi pi-arrow-right"
+                iconPos="right"
+                onClick={() => stepperRef.current?.nextCallback()}
+              />
+            </div>
+          </StepperPanel>
+          <StepperPanel
+            pt={{
+              number: (props) =>
+                clsx(
+                  'p-stepper-number',
+                  // eslint-disable-next-line react/prop-types
+                  !props.context.active &&
+                    (currentGroup?.startsWith('C') ||
+                      suggestGroup.startsWith('C'))
+                    ? 'bg-yellow-500'
+                    : '',
+                  '',
+                ),
+              header: (props) =>
+                clsx(
+                  'p-stepper-header items-center',
+                  // eslint-disable-next-line react/prop-types
+                  props.context.active && 'p-highlight',
+                  orientation === 'horizontal' && 'p-stepper-header-bottom',
+                ),
+              action: () =>
+                clsx(
+                  'p-stepper-action p-component bg-transparent gap-1',
+                  suggestGroup.startsWith('C') &&
+                    orientation === 'horizontal' &&
+                    'before:content-["Recommended"]',
+                  suggestGroup.startsWith('C') &&
+                    orientation === 'vertical' &&
+                    "after:content-['Recommended'] ",
+                  currentGroup?.startsWith('C') &&
+                    orientation === 'horizontal' &&
+                    !suggestGroup.startsWith('C') &&
+                    'before:content-["Current_Group"]',
+                  currentGroup?.startsWith('C') &&
+                    orientation === 'vertical' &&
+                    !suggestGroup.startsWith('C') &&
+                    "after:content-['Current_Group'] ",
+                ),
+              toggleableContent: () =>
+                'p-stepper-toggleable-content bg-transparent',
+            }}
+            header="Clinically Complex"
+          >
+            <div className="flex flex-col gap-7">
+              <ClinicalCategory
+                type="clinicallyComplex"
+                data={clinicalComplex}
+              />
+              <DepressionIndicator data={depressionIndicator} />
+              {currentGroup?.startsWith('C') && (
+                <div>
+                  <p className="font-bold">Current group: </p>
+                  <p>
+                    {currentGroup} (CMI:{' '}
+                    {NusingMapping[currentGroup as keyof typeof NusingMapping]})
+                  </p>
+                </div>
+              )}
+              {suggestGroup?.startsWith('C') && (
+                <div>
+                  <p className="font-bold">Suggested group: </p>
+                  <p>
+                    {suggestGroup} (CMI: {suggestCMI})
+                  </p>
+                </div>
+              )}
+            </div>
+            <div className="flex pt-4 justify-between">
+              <Button
+                label="Back"
+                severity="secondary"
+                icon="pi pi-arrow-left"
+                onClick={() => stepperRef.current?.prevCallback()}
+              />
+              <Button
+                label="Next"
+                icon="pi pi-arrow-right"
+                iconPos="right"
+                onClick={() => stepperRef.current?.nextCallback()}
+              />
+            </div>
+          </StepperPanel>
+          <StepperPanel
+            pt={{
+              number: (props) =>
+                clsx(
+                  'p-stepper-number',
+                  // eslint-disable-next-line react/prop-types
+                  !props.context.active &&
+                    (currentGroup?.startsWith('B') ||
+                      suggestGroup.startsWith('B'))
+                    ? 'bg-yellow-500'
+                    : '',
+                  '',
+                ),
+              header: (props) =>
+                clsx(
+                  'p-stepper-header items-center',
+                  // eslint-disable-next-line react/prop-types
+                  props.context.active && 'p-highlight',
+                  orientation === 'horizontal' && 'p-stepper-header-bottom',
+                ),
+              action: () =>
+                clsx(
+                  'p-stepper-action p-component bg-transparent gap-1',
+                  suggestGroup.startsWith('B') &&
+                    orientation === 'horizontal' &&
+                    'before:content-["Recommended"]',
+                  suggestGroup.startsWith('B') &&
+                    orientation === 'vertical' &&
+                    "after:content-['Recommended'] ",
+                  currentGroup?.startsWith('B') &&
+                    orientation === 'horizontal' &&
+                    !suggestGroup.startsWith('B') &&
+                    'before:content-["Current_Group"]',
+                  currentGroup?.startsWith('B') &&
+                    orientation === 'vertical' &&
+                    !suggestGroup.startsWith('B') &&
+                    "after:content-['Current_Group'] ",
+                ),
+              toggleableContent: () =>
+                'p-stepper-toggleable-content bg-transparent',
+            }}
+            header="Behavioral Symptoms And Cognitive Performance"
+          >
+            <div className="flex flex-col gap-7">
+              <FunctionalScoreTable data={functionalScore} />
               <div>
-                <p className="font-bold">Current group: </p>
-                <p>
-                  {currentGroup} (CMI:{' '}
-                  {NusingMapping[currentGroup as keyof typeof NusingMapping]})
+                <p className="font-bold">
+                  Resident interview cognitive status:
                 </p>
-              </div>
-            )}
-            {suggestGroup?.startsWith('B') && (
-              <div>
-                <p className="font-bold">Suggested group: </p>
-                <p>
-                  {suggestGroup} (CMI: {suggestCMI})
-                </p>
-              </div>
-            )}
-          </div>
 
-          <div className="flex pt-4 justify-between">
-            <Button
-              label="Back"
-              severity="secondary"
-              icon="pi pi-arrow-left"
-              onClick={() => stepperRef.current?.prevCallback()}
-            />
-            <Button
-              label="Next"
-              icon="pi pi-arrow-right"
-              iconPos="right"
-              onClick={() => stepperRef.current?.nextCallback()}
-            />
-          </div>
-        </StepperPanel>
-        <StepperPanel
-          pt={{
-            number: (props) =>
-              clsx(
-                'p-stepper-number',
-                // eslint-disable-next-line react/prop-types
-                !props.context.active &&
-                  (currentGroup?.startsWith('P') ||
-                    suggestGroup.startsWith('P'))
-                  ? 'bg-yellow-500'
-                  : '',
-                '',
-              ),
-            header: (props) =>
-              clsx(
-                'p-stepper-header items-center',
-                // eslint-disable-next-line react/prop-types
-                props.context.active && 'p-highlight',
-                orientation === 'horizontal' && 'p-stepper-header-bottom',
-              ),
-            action: () =>
-              clsx(
-                'p-stepper-action p-component bg-transparent gap-1',
-                suggestGroup.startsWith('P') &&
-                  orientation === 'horizontal' &&
-                  'before:content-["Recommended"]',
-                suggestGroup.startsWith('P') &&
-                  orientation === 'vertical' &&
-                  "after:content-['Recommended'] ",
-                currentGroup?.startsWith('P') &&
-                  orientation === 'horizontal' &&
-                  !suggestGroup.startsWith('P') &&
-                  'before:content-["Current_Group"]',
-                currentGroup?.startsWith('P') &&
-                  orientation === 'vertical' &&
-                  !suggestGroup.startsWith('P') &&
-                  "after:content-['Current_Group'] ",
-              ),
-            toggleableContent: () =>
-              'p-stepper-toggleable-content bg-transparent',
-          }}
-          header="Reduced Physical Function"
-        >
-          <div className="flex flex-col gap-7">
-            <FunctionalScoreTable data={functionalScore} />
-            <RestorativeNursingTable data={data.nursing_re_final_entry} />
-            {currentGroup?.startsWith('P') && (
-              <div>
-                <p className="font-bold">Current group: </p>
                 <p>
-                  {currentGroup} (CMI:{' '}
-                  {NusingMapping[currentGroup as keyof typeof NusingMapping]})
+                  BIMS: {BIMS?.mds_value || 'No Record Found (99)'}{' '}
+                  {BIMS?.nursing_bscp_suggestion &&
+                    BIMS?.nursing_bscp_suggestion.length > 0 && (
+                      <EvidenceModal
+                        button={<span>(AI suggests BIMS)</span>}
+                        icd10={{
+                          icd10: 'BIMS',
+                          progress_note: BIMS.nursing_bscp_suggestion,
+                        }}
+                      />
+                    )}
                 </p>
               </div>
-            )}
-            {suggestGroup?.startsWith('P') && (
-              <div>
-                <p className="font-bold">Suggested group: </p>
-                <p>
-                  {suggestGroup} (CMI: {suggestCMI})
-                </p>
-              </div>
-            )}
-          </div>
-          <div className="flex pt-4 ">
-            <Button
-              label="Back"
-              severity="secondary"
-              icon="pi pi-arrow-left"
-              onClick={() => stepperRef.current?.prevCallback()}
-            />
-          </div>
-        </StepperPanel>
-      </Stepper>
-    </div>
+              <ClinicalCategory
+                type={'Staff assessment cognitive status'}
+                data={data.nursing_bscp_final_entry.nursing_bscp_mds_sacs}
+              />
+              <ClinicalCategory
+                type={'Behavioral symptoms'}
+                data={data.nursing_bscp_final_entry.nursing_bscp_mds_bs}
+              />
+              <RestorativeNursingTable data={data.nursing_re_final_entry} />
+              {currentGroup?.startsWith('B') && (
+                <div>
+                  <p className="font-bold">Current group: </p>
+                  <p>
+                    {currentGroup} (CMI:{' '}
+                    {NusingMapping[currentGroup as keyof typeof NusingMapping]})
+                  </p>
+                </div>
+              )}
+              {suggestGroup?.startsWith('B') && (
+                <div>
+                  <p className="font-bold">Suggested group: </p>
+                  <p>
+                    {suggestGroup} (CMI: {suggestCMI})
+                  </p>
+                </div>
+              )}
+            </div>
+
+            <div className="flex pt-4 justify-between">
+              <Button
+                label="Back"
+                severity="secondary"
+                icon="pi pi-arrow-left"
+                onClick={() => stepperRef.current?.prevCallback()}
+              />
+              <Button
+                label="Next"
+                icon="pi pi-arrow-right"
+                iconPos="right"
+                onClick={() => stepperRef.current?.nextCallback()}
+              />
+            </div>
+          </StepperPanel>
+          <StepperPanel
+            pt={{
+              number: (props) =>
+                clsx(
+                  'p-stepper-number',
+                  // eslint-disable-next-line react/prop-types
+                  !props.context.active &&
+                    (currentGroup?.startsWith('P') ||
+                      suggestGroup.startsWith('P'))
+                    ? 'bg-yellow-500'
+                    : '',
+                  '',
+                ),
+              header: (props) =>
+                clsx(
+                  'p-stepper-header items-center',
+                  // eslint-disable-next-line react/prop-types
+                  props.context.active && 'p-highlight',
+                  orientation === 'horizontal' && 'p-stepper-header-bottom',
+                ),
+              action: () =>
+                clsx(
+                  'p-stepper-action p-component bg-transparent gap-1',
+                  suggestGroup.startsWith('P') &&
+                    orientation === 'horizontal' &&
+                    'before:content-["Recommended"]',
+                  suggestGroup.startsWith('P') &&
+                    orientation === 'vertical' &&
+                    "after:content-['Recommended'] ",
+                  currentGroup?.startsWith('P') &&
+                    orientation === 'horizontal' &&
+                    !suggestGroup.startsWith('P') &&
+                    'before:content-["Current_Group"]',
+                  currentGroup?.startsWith('P') &&
+                    orientation === 'vertical' &&
+                    !suggestGroup.startsWith('P') &&
+                    "after:content-['Current_Group'] ",
+                ),
+              toggleableContent: () =>
+                'p-stepper-toggleable-content bg-transparent',
+            }}
+            header="Reduced Physical Function"
+          >
+            <div className="flex flex-col gap-7">
+              <FunctionalScoreTable data={functionalScore} />
+              <RestorativeNursingTable data={data.nursing_re_final_entry} />
+              {currentGroup?.startsWith('P') && (
+                <div>
+                  <p className="font-bold">Current group: </p>
+                  <p>
+                    {currentGroup} (CMI:{' '}
+                    {NusingMapping[currentGroup as keyof typeof NusingMapping]})
+                  </p>
+                </div>
+              )}
+              {suggestGroup?.startsWith('P') && (
+                <div>
+                  <p className="font-bold">Suggested group: </p>
+                  <p>
+                    {suggestGroup} (CMI: {suggestCMI})
+                  </p>
+                </div>
+              )}
+            </div>
+            <div className="flex pt-4 ">
+              <Button
+                label="Back"
+                severity="secondary"
+                icon="pi pi-arrow-left"
+                onClick={() => stepperRef.current?.prevCallback()}
+              />
+            </div>
+          </StepperPanel>
+        </Stepper>
+      </div>
+    </NursingTableContext.Provider>
   );
 }

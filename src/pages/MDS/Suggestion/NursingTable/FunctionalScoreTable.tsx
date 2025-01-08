@@ -11,12 +11,14 @@ import {
   FunctionalScore,
   NursingFunctionalScore,
 } from '../../../../types/MDSFinal.ts';
-import { ThumbsDown, ThumbsUp } from '@phosphor-icons/react';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import getFacetedUniqueValues from '../../../../common/getFacetedUniqueValues.ts';
 import getFacetedMinMaxValues from '../../../../common/getFacetedMinMaxValues.ts';
 import clsx from 'clsx';
 import EvidenceModal from '../EvidenceModal.tsx';
+import UpVoteButton from '../UpVoteButton.tsx';
+import MDSCommentModal from '../MDSCommentModal.tsx';
+import { MDSContext } from '../MDSDetail.tsx';
 
 // Helper Functions
 const getRowSpan = (rowIndex: number, data?: FunctionalScore[]): number => {
@@ -52,6 +54,7 @@ export default function FunctionalScoreTable({
 }: {
   data: NursingFunctionalScore;
 }) {
+  const row_data = useContext(MDSContext);
   const columns: ColumnDef<FunctionalScore>[] = [
     {
       accessorKey: 'function_area',
@@ -189,14 +192,31 @@ export default function FunctionalScoreTable({
     {
       accessorKey: 'review',
       header: 'Review',
-      cell: () => (
-        <td className="py-2 px-4 border-t border-l border-gray-600">
-          <div className="flex items-center gap-2">
-            <ThumbsUp className="size-5 cursor-pointer hover:text-blue-500" />
-            <ThumbsDown className="size-5 cursor-pointer hover:text-red-500" />
-          </div>
-        </td>
-      ),
+      cell: (info) => {
+        if (info.row.original.suggestion?.length ?? 0 > 0) {
+          return (
+            <td className=" py-2 px-4 border-t border-l border-gray-600">
+              <div className="h-full flex items-center gap-2">
+                <UpVoteButton
+                  is_thumb_up={info.row.original.is_thumb_up || false}
+                  internal_facility_id={row_data?.internal_facility_id || ''}
+                  internal_patient_id={row_data?.internal_patient_id || ''}
+                  category={info.row.original.category}
+                  item={info.row.original.item}
+                />
+                <MDSCommentModal
+                  comment={info.row.original.comment || ''}
+                  is_thumb_down={info.row.original.is_thumb_down || false}
+                  // todo: add logic for thumb down
+                />
+              </div>
+            </td>
+          );
+        }
+        return (
+          <td className="py-2 px-4 border-t border-l border-gray-600"></td>
+        );
+      },
       footer: () => {
         return (
           <td className="whitespace-nowrap py-2 px-4 border-t border-l border-gray-600"></td>

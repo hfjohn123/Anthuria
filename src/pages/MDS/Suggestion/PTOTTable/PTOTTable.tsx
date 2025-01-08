@@ -6,7 +6,7 @@ import {
   TableState,
   useReactTable,
 } from '@tanstack/react-table';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { FunctionalScore, PTOTFinal } from '../../../../types/MDSFinal.ts';
 import getFacetedUniqueValues from '../../../../common/getFacetedUniqueValues.ts';
 import getFacetedMinMaxValues from '../../../../common/getFacetedMinMaxValues.ts';
@@ -15,6 +15,7 @@ import { PTOTMapping } from '../../cmiMapping.ts';
 import UpVoteButton from '../UpVoteButton.tsx';
 import MDSCommentModal from '../MDSCommentModal.tsx';
 import EvidenceModal from '../EvidenceModal.tsx';
+import { MDSContext } from '../MDSDetail.tsx';
 
 // Helper Functions
 const getRowSpan = (rowIndex: number, data?: FunctionalScore[]): number => {
@@ -47,6 +48,7 @@ const isFirstInGroup = (
 const permanentColumnFilters = ['function_area', 'mds_item'];
 
 export default function PTOTTable({ data }: { data: PTOTFinal }) {
+  const row_data = useContext(MDSContext);
   const [tableData] = useState(data.function_score_all || []);
 
   const columns: ColumnDef<FunctionalScore>[] = [
@@ -192,7 +194,10 @@ export default function PTOTTable({ data }: { data: PTOTFinal }) {
               <div className="h-full flex items-center gap-2">
                 <UpVoteButton
                   is_thumb_up={info.row.original.is_thumb_up || false}
-                  // todo: add logic for thumb up
+                  internal_facility_id={row_data?.internal_facility_id || ''}
+                  internal_patient_id={row_data?.internal_patient_id || ''}
+                  category={info.row.original.category}
+                  item={info.row.original.item}
                 />
                 <MDSCommentModal
                   comment={info.row.original.comment || ''}

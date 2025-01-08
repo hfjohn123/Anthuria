@@ -9,7 +9,7 @@ import {
   TableState,
   useReactTable,
 } from '@tanstack/react-table';
-import { Fragment, useState } from 'react';
+import { Fragment, useContext, useState } from 'react';
 import getFacetedUniqueValues from '../../../../common/getFacetedUniqueValues.ts';
 import getFacetedMinMaxValues from '../../../../common/getFacetedMinMaxValues.ts';
 import EvidenceModal from '../EvidenceModal.tsx';
@@ -17,6 +17,7 @@ import SmallTableWrapper from '../SmallTableWrapper.tsx';
 import { NTAMapping } from '../../cmiMapping.ts';
 import UpVoteButton from '../UpVoteButton.tsx';
 import MDSCommentModal from '../MDSCommentModal.tsx';
+import { MDSContext } from '../MDSDetail.tsx';
 
 const permanentColumnFilters = ['comorbidity', 'is_mds_table'];
 
@@ -40,6 +41,8 @@ function getNTACategory(score: number) {
 }
 
 export default function NTATable({ data }: { data: NTAEntry[] }) {
+  const row_data = useContext(MDSContext);
+
   const columns: ColumnDef<NTAEntry>[] = [
     {
       accessorKey: 'comorbidity',
@@ -137,20 +140,28 @@ export default function NTATable({ data }: { data: NTAEntry[] }) {
       accessorKey: 'review',
       header: 'Review',
       cell: (info) => {
+        if (info.row.original.suggestion?.length ?? 0 > 0) {
+          return (
+            <td className=" py-2 px-4 border-t border-l border-gray-600">
+              <div className="h-full flex items-center gap-2">
+                <UpVoteButton
+                  is_thumb_up={info.row.original.is_thumb_up || false}
+                  internal_facility_id={row_data?.internal_facility_id || ''}
+                  internal_patient_id={row_data?.internal_patient_id || ''}
+                  category={info.row.original.category}
+                  item={info.row.original.item}
+                />
+                <MDSCommentModal
+                  comment={info.row.original.comment || ''}
+                  is_thumb_down={info.row.original.is_thumb_down || false}
+                  // todo: add logic for thumb down
+                />
+              </div>
+            </td>
+          );
+        }
         return (
-          <td className=" py-2 px-4 border-t border-l border-gray-600">
-            <div className="h-full flex items-center gap-2">
-              <UpVoteButton
-                is_thumb_up={info.row.original.is_thumb_up || false}
-                // todo: add logic for thumb up
-              />
-              <MDSCommentModal
-                comment={info.row.original.comment || ''}
-                is_thumb_down={info.row.original.is_thumb_down || false}
-                // todo: add logic for thumb down
-              />
-            </div>
-          </td>
+          <td className="py-2 px-4 border-t border-l border-gray-600"></td>
         );
       },
       footer: (info) => {

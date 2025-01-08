@@ -16,6 +16,7 @@ const usePutComment = (route: string, queryClient: any) => {
       is_thumb_up: boolean;
     }) => {
       const progress_note_id_str = String(progress_note_id);
+
       return axios.put(`${route}/trigger_comment`, {
         progress_note_id: progress_note_id_str,
         trigger_word,

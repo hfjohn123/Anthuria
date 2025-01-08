@@ -4,7 +4,7 @@ import clsx from 'clsx';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { AuthContext } from '../../../components/AuthWrapper.tsx';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 
 export default function UpVoteButton({
   is_thumb_up,
@@ -21,6 +21,7 @@ export default function UpVoteButton({
 }) {
   const { route } = useContext(AuthContext);
   const queryClient = useQueryClient();
+  const [thumbUpState, setThumbState] = useState(is_thumb_up);
   const commentMutation = useMutation({
     mutationFn: async ({
       internal_facility_id,
@@ -33,7 +34,9 @@ export default function UpVoteButton({
       category: string;
       item: string;
     }) => {
-      return axios.put(`${route}/trigger_comment`, {
+      if (!internal_facility_id || !internal_patient_id || !category || !item)
+        return;
+      return axios.put(`${route}/mds/comment`, {
         internal_facility_id,
         internal_patient_id,
         category,
@@ -42,6 +45,9 @@ export default function UpVoteButton({
         is_thumb_down: 0,
         comment: '',
       });
+    },
+    onMutate: () => {
+      setThumbState(true);
     },
     onSettled: () => {
       queryClient.invalidateQueries({
@@ -56,22 +62,22 @@ export default function UpVoteButton({
   return (
     <Button
       className="bg-transparent border-0 p-0 m-0"
-      // onClick={() => {
-      //   if (!is_thumb_up)
-      //     commentMutation.mutate({
-      //       internal_facility_id,
-      //       internal_patient_id,
-      //       category,
-      //       item,
-      //     });
-      // }}
+      onClick={() => {
+        if (!thumbUpState)
+          commentMutation.mutate({
+            internal_facility_id,
+            internal_patient_id,
+            category,
+            item,
+          });
+      }}
     >
       <ThumbsUp
         className={clsx(
           'size-5 cursor-pointer thumbs_up hover:text-blue-500',
-          is_thumb_up ? 'text-blue-500' : 'text-body dark:text-bodydark',
+          thumbUpState ? 'text-blue-500' : 'text-body dark:text-bodydark',
         )}
-        weight={is_thumb_up ? 'fill' : 'regular'}
+        weight={thumbUpState ? 'fill' : 'regular'}
       />
     </Button>
   );

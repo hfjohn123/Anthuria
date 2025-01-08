@@ -3,7 +3,7 @@ import {
   ProgressNoteAndSummary,
   SLPEntry,
 } from '../../../../types/MDSFinal.ts';
-import { Fragment, useState } from 'react';
+import { Fragment, useContext, useState } from 'react';
 import {
   ColumnDef,
   getCoreRowModel,
@@ -22,6 +22,7 @@ import { SLPMapping } from '../../cmiMapping.ts';
 import SmallTableWrapper from '../SmallTableWrapper.tsx';
 import MDSCommentModal from '../MDSCommentModal.tsx';
 import UpVoteButton from '../UpVoteButton.tsx';
+import { MDSContext } from '../MDSDetail.tsx';
 
 const permanentColumnFilters = ['condition', 'is_mds'];
 
@@ -63,6 +64,7 @@ function getSLPCategory(total_general: number, total_diet: number) {
 }
 
 export default function SLPTable({ data }: { data: SLPItem[] }) {
+  const row_data = useContext(MDSContext);
   const columns: ColumnDef<SLPItem>[] = [
     {
       accessorKey: 'condition',
@@ -224,7 +226,10 @@ export default function SLPTable({ data }: { data: SLPItem[] }) {
               <div className="h-full flex items-center gap-2">
                 <UpVoteButton
                   is_thumb_up={info.row.original.is_thumb_up || false}
-                  // todo: add logic for thumb up
+                  internal_facility_id={row_data?.internal_facility_id || ''}
+                  internal_patient_id={row_data?.internal_patient_id || ''}
+                  category={info.row.original.category}
+                  item={info.row.original.item}
                 />
                 <MDSCommentModal
                   comment={info.row.original.comment || ''}

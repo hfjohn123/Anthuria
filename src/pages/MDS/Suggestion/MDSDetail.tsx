@@ -1,13 +1,14 @@
-import { PDPMPatient } from '../../../types/MDSFinal.ts';
+import { MDSFinal, PDPMPatient } from '../../../types/MDSFinal.ts';
 import { Row } from '@tanstack/react-table';
 import MDSSuggestion from './MDSSuggestion.tsx';
 import PatientInfo from './PatientInfo.tsx';
-import { useContext } from 'react';
+import { createContext, useContext } from 'react';
 import { AuthContext } from '../../../components/AuthWrapper.tsx';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { Skeleton } from 'primereact/skeleton';
 
+export const MDSContext = createContext<MDSFinal | null>(null);
 export default function MDSDetail({ row }: { row: Row<PDPMPatient> }) {
   const { route } = useContext(AuthContext);
 
@@ -24,9 +25,10 @@ export default function MDSDetail({ row }: { row: Row<PDPMPatient> }) {
             internal_patient_id: row.original.internal_patient_id,
           },
         })
-        .then((res) => res.data),
+        .then((res) => {
+          return res.data;
+        }),
   });
-
   if (isPending) {
     return (
       <div className="border-round border-1 surface-border p-4">
@@ -76,9 +78,11 @@ export default function MDSDetail({ row }: { row: Row<PDPMPatient> }) {
   }
 
   return (
-    <div className="bg-slate-50 dark:bg-slate-900 px-3 text-sm py-4 flex flex-col gap-5">
-      <PatientInfo row={row} />
-      <MDSSuggestion row={data} />
-    </div>
+    <MDSContext.Provider value={data}>
+      <div className="bg-slate-50 dark:bg-slate-900 px-3 text-sm py-4 flex flex-col gap-5">
+        <PatientInfo row={row} />
+        <MDSSuggestion row={data} />
+      </div>
+    </MDSContext.Provider>
   );
 }
