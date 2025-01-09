@@ -19,9 +19,10 @@ export default function MDSDetail({ row }: { row: Row<PDPMPatient> }) {
       row.original.internal_patient_id,
       row.original.internal_facility_id,
     ],
-    queryFn: () =>
+    queryFn: ({ signal }) =>
       axios
         .get(`${route}/mds/view_pdpm_final_result_test`, {
+          signal,
           params: {
             internal_patient_id: row.original.internal_patient_id,
             internal_facility_id: row.original.internal_facility_id,

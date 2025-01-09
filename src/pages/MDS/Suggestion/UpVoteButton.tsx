@@ -4,7 +4,7 @@ import clsx from 'clsx';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { AuthContext } from '../../../components/AuthWrapper.tsx';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 
 export default function UpVoteButton({
   is_thumb_up,
@@ -21,6 +21,7 @@ export default function UpVoteButton({
 }) {
   const { route } = useContext(AuthContext);
   const queryClient = useQueryClient();
+  const [thumbUpState, setThumbState] = useState(is_thumb_up);
   const commentMutation = useMutation({
     mutationFn: async ({
       internal_facility_id,
@@ -40,12 +41,14 @@ export default function UpVoteButton({
         internal_patient_id,
         category,
         item,
-        is_thumb_up: is_thumb_up ? 0 : 1,
+        is_thumb_up: thumbUpState ? 1 : 0,
         is_thumb_down: 0,
         comment: '',
       });
     },
-    onSettled: async (data) => {
+    onMutate: async () => {
+      setThumbState(!thumbUpState);
+
       await queryClient.cancelQueries({
         queryKey: [
           '/mds/view_pdpm_final_result_test',
@@ -54,24 +57,21 @@ export default function UpVoteButton({
           internal_facility_id,
         ],
       });
-      queryClient.setQueryData(
-        [
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: [
           '/mds/view_pdpm_final_result_test',
           route,
           internal_patient_id,
           internal_facility_id,
         ],
-        data?.data,
-      );
+      });
     },
   });
   return (
     <Button
-      className={clsx(
-        'bg-transparent border-0 p-0 m-0',
-        commentMutation.isPending && 'p-disabled cursor-wait',
-      )}
-      disabled={commentMutation.isPending}
+      className="bg-transparent border-0 p-0 m-0"
       onClick={() => {
         commentMutation.mutate({
           internal_facility_id,
@@ -84,11 +84,9 @@ export default function UpVoteButton({
       <ThumbsUp
         className={clsx(
           'size-5 cursor-pointer thumbs_up hover:text-blue-500',
-          is_thumb_up || commentMutation.isPending
-            ? 'text-blue-500'
-            : 'text-body dark:text-bodydark',
+          thumbUpState ? 'text-blue-500' : 'text-body dark:text-bodydark',
         )}
-        weight={is_thumb_up || commentMutation.isPending ? 'fill' : 'regular'}
+        weight={thumbUpState ? 'fill' : 'regular'}
       />
     </Button>
   );
