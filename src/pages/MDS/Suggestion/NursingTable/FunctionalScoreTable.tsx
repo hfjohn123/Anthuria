@@ -193,12 +193,20 @@ export default function FunctionalScoreTable({
       accessorKey: 'review',
       header: 'Review',
       cell: (info) => {
+        const [thumbUpState, setThumbUpState] = useState(
+          info.row.original.is_thumb_up || false,
+        );
+        const [thumbDownState, setThumbDownState] = useState(
+          info.row.original.is_thumb_down || false,
+        );
         if (info.row.original.suggestion?.length ?? 0 > 0) {
           return (
             <td className=" py-2 px-4 border-t border-l border-gray-600">
               <div className="h-full flex items-center gap-2">
                 <UpVoteButton
-                  is_thumb_up={info.row.original.is_thumb_up || false}
+                  is_thumb_up={thumbUpState}
+                  setThumbUpState={setThumbUpState}
+                  setThumbDownState={setThumbDownState}
                   internal_facility_id={row_data?.internal_facility_id || ''}
                   internal_patient_id={row_data?.internal_patient_id || ''}
                   category={info.row.original.category}
@@ -206,8 +214,13 @@ export default function FunctionalScoreTable({
                 />
                 <MDSCommentModal
                   comment={info.row.original.comment || ''}
-                  is_thumb_down={info.row.original.is_thumb_down || false}
-                  // todo: add logic for thumb down
+                  is_thumb_down={thumbDownState}
+                  setThumbUpState={setThumbUpState}
+                  setThumbDownState={setThumbDownState}
+                  internal_facility_id={row_data?.internal_facility_id || ''}
+                  internal_patient_id={row_data?.internal_patient_id || ''}
+                  category={info.row.original.category}
+                  item={info.row.original.item}
                 />
               </div>
             </td>

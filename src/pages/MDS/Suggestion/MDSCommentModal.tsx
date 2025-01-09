@@ -1,24 +1,125 @@
-import { useState } from 'react';
+import { Dispatch, SetStateAction, useContext, useState } from 'react';
 import { ThumbsDown } from '@phosphor-icons/react';
 import { Button } from 'primereact/button';
 import clsx from 'clsx';
 import { Dialog } from 'primereact/dialog';
 import MDSCommentForm from './MDSCommentForm.tsx';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import axios from 'axios';
+import { AuthContext } from '../../../components/AuthWrapper.tsx';
 
 export default function MDSCommentModal({
   comment,
   is_thumb_down,
+  internal_facility_id,
+  internal_patient_id,
+  category,
+  item,
+  setThumbDownState,
+  setThumbUpState,
 }: {
   comment: string;
   is_thumb_down: boolean;
+  internal_facility_id: string;
+  internal_patient_id: string;
+  category: string;
+  item: string;
+  setThumbUpState: Dispatch<SetStateAction<boolean>>;
+  setThumbDownState: Dispatch<SetStateAction<boolean>>;
 }) {
   const [showModal, setShowModal] = useState(false);
+  const { route } = useContext(AuthContext);
+  const queryClient = useQueryClient();
+
+  const commentMutation = useMutation({
+    mutationFn: async ({
+      internal_facility_id,
+      internal_patient_id,
+      category,
+      item,
+      comment,
+    }: {
+      internal_facility_id: string;
+      internal_patient_id: string;
+      category: string;
+      item: string;
+      comment: string;
+    }) => {
+      if (!internal_facility_id || !internal_patient_id || !category || !item)
+        return;
+      return axios.put(`${route}/mds/comment`, {
+        internal_facility_id,
+        internal_patient_id,
+        category,
+        item,
+        is_thumb_up: 0,
+        is_thumb_down: is_thumb_down ? 1 : 0,
+        comment,
+      });
+    },
+    onMutate: async () => {
+      setThumbDownState(!is_thumb_down);
+      setThumbUpState(false);
+
+      await queryClient.cancelQueries({
+        queryKey: [
+          '/mds/view_pdpm_final_result_test',
+          route,
+          internal_patient_id,
+          internal_facility_id,
+        ],
+      });
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: [
+          '/mds/view_pdpm_final_result_test',
+          route,
+          internal_patient_id,
+          internal_facility_id,
+        ],
+      });
+    },
+  });
+  console.log(is_thumb_down);
+  if (is_thumb_down) {
+    return (
+      <Button
+        onClick={(event) => {
+          event.stopPropagation();
+          commentMutation.mutate({
+            internal_facility_id,
+            internal_patient_id,
+            category,
+            item,
+            comment,
+          });
+        }}
+        className="bg-transparent border-0 p-0 m-0"
+      >
+        <ThumbsDown
+          className={clsx(
+            'size-5 cursor-pointer thumbs_down hover:text-red-500 text-red-500',
+          )}
+          weight="fill"
+        />
+      </Button>
+    );
+  }
 
   return (
     <>
       <Button
         onClick={(event) => {
           event.stopPropagation();
+          queryClient.cancelQueries({
+            queryKey: [
+              '/mds/view_pdpm_final_result_test',
+              route,
+              internal_patient_id,
+              internal_facility_id,
+            ],
+          });
           setShowModal(true);
         }}
         className="bg-transparent border-0 p-0 m-0"
@@ -26,9 +127,9 @@ export default function MDSCommentModal({
         <ThumbsDown
           className={clsx(
             'size-5 cursor-pointer thumbs_down hover:text-red-500',
-            is_thumb_down ? 'text-red-500' : 'text-body dark:text-bodydark',
+            'text-body dark:text-bodydark',
           )}
-          weight={is_thumb_down ? 'fill' : 'regular'}
+          weight={'regular'}
         />
       </Button>
       <Dialog
@@ -45,7 +146,17 @@ export default function MDSCommentModal({
       >
         <div>
           <p className="italic">Please help correct this PDPM suggestion.</p>
-          <MDSCommentForm comment={comment} setIsOpen={setShowModal} />
+          <MDSCommentForm
+            comment={comment}
+            setIsOpen={setShowModal}
+            internal_facility_id={internal_facility_id}
+            internal_patient_id={internal_patient_id}
+            category={category}
+            item={item}
+            // thumbDownState={thumbDownState}
+            // setThumbDownState={setThumbDownState}
+            commentMutation={commentMutation}
+          />
         </div>
       </Dialog>
     </>

@@ -4,16 +4,20 @@ import clsx from 'clsx';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { AuthContext } from '../../../components/AuthWrapper.tsx';
-import { useContext, useState } from 'react';
+import { Dispatch, SetStateAction, useContext } from 'react';
 
 export default function UpVoteButton({
   is_thumb_up,
+  setThumbUpState,
+  setThumbDownState,
   internal_facility_id,
   internal_patient_id,
   category,
   item,
 }: {
   is_thumb_up: boolean;
+  setThumbUpState: Dispatch<SetStateAction<boolean>>;
+  setThumbDownState: Dispatch<SetStateAction<boolean>>;
   internal_facility_id: string;
   internal_patient_id: string;
   category: string;
@@ -21,7 +25,6 @@ export default function UpVoteButton({
 }) {
   const { route } = useContext(AuthContext);
   const queryClient = useQueryClient();
-  const [thumbUpState, setThumbState] = useState(is_thumb_up);
   const commentMutation = useMutation({
     mutationFn: async ({
       internal_facility_id,
@@ -41,13 +44,14 @@ export default function UpVoteButton({
         internal_patient_id,
         category,
         item,
-        is_thumb_up: thumbUpState ? 1 : 0,
+        is_thumb_up: is_thumb_up ? 1 : 0,
         is_thumb_down: 0,
         comment: '',
       });
     },
     onMutate: async () => {
-      setThumbState(!thumbUpState);
+      setThumbUpState(!is_thumb_up);
+      setThumbDownState(false);
 
       await queryClient.cancelQueries({
         queryKey: [
@@ -84,9 +88,9 @@ export default function UpVoteButton({
       <ThumbsUp
         className={clsx(
           'size-5 cursor-pointer thumbs_up hover:text-blue-500',
-          thumbUpState ? 'text-blue-500' : 'text-body dark:text-bodydark',
+          is_thumb_up ? 'text-blue-500' : 'text-body dark:text-bodydark',
         )}
-        weight={thumbUpState ? 'fill' : 'regular'}
+        weight={is_thumb_up ? 'fill' : 'regular'}
       />
     </Button>
   );
