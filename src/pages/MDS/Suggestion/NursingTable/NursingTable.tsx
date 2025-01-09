@@ -187,12 +187,21 @@ export default function NursingTable({ data }: { data: MDSFinal }) {
 
   return (
     <NursingTableContext.Provider value={data}>
-      <div ref={containerRef} className="flex flex-col gap-5 px-5 py-5">
+      <div
+        ref={containerRef}
+        className="flex flex-col gap-5 px-5 py-5 scroll-mt-26"
+      >
         <Stepper
           ref={stepperRef}
           pt={{ panelContainer: () => 'bg-transparent' }}
           headerPosition="bottom"
           orientation={orientation}
+          onChangeStep={() => {
+            containerRef.current?.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start',
+            });
+          }}
         >
           <StepperPanel
             pt={{
@@ -237,7 +246,7 @@ export default function NursingTable({ data }: { data: MDSFinal }) {
             }}
             header="Extensive Services"
           >
-            <div className="flex flex-col gap-7">
+            <div className="flex flex-col gap-7 ">
               <ClinicalCategory
                 type="extensiveServices"
                 data={extensiveServices}
@@ -313,7 +322,7 @@ export default function NursingTable({ data }: { data: MDSFinal }) {
             }}
             header="Special Care High"
           >
-            <div className="flex flex-col gap-7">
+            <div className="flex flex-col gap-7 ">
               <ClinicalCategory type="specialCareHigh" data={specialCareHigh} />
               <FunctionalScoreTable data={functionalScore} />
               <DepressionIndicator data={depressionIndicator} />

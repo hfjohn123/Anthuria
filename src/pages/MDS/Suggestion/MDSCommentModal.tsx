@@ -81,7 +81,6 @@ export default function MDSCommentModal({
       });
     },
   });
-  console.log(is_thumb_down);
   if (is_thumb_down) {
     return (
       <Button
