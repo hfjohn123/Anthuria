@@ -10,13 +10,13 @@ import ReviewTriggers from './pages/TriggerWords/ReviewTriggers/ReviewTriggers.t
 import SignIn from './pages/Authentication/SignIn/index.tsx';
 import SignUp from './pages/Authentication/SignUp.tsx';
 import {
-  RouterProvider,
-  createRouter,
   createRootRoute,
-  Outlet,
   createRoute,
-  Navigate,
+  createRouter,
   Link,
+  Navigate,
+  Outlet,
+  RouterProvider,
 } from '@tanstack/react-router';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import SuperTokens, { SuperTokensWrapper } from 'supertokens-auth-react';
@@ -43,8 +43,19 @@ datadogRum.init({
   // see https://docs.datadoghq.com/getting_started/site/
   site: 'datadoghq.com',
   service:
-    window.location.origin === 'http://localhost' ? 'noah-dev' : 'noah-stg',
-  env: window.location.origin === 'http://localhost' ? 'dev' : 'stg',
+    window.location.origin === 'http://localhost' ||
+    window.location.origin === 'brea-dev.triedgesandbox.com'
+      ? 'noah-dev'
+      : window.location.origin === 'https://noah.triedgesandbox.com'
+        ? 'noah-stg'
+        : 'anthuria-prod',
+  env:
+    window.location.origin === 'http://localhost' ||
+    window.location.origin === 'brea-dev.triedgesandbox.com'
+      ? 'dev'
+      : window.location.origin === 'https://noah.triedgesandbox.com'
+        ? 'stg'
+        : 'prod',
   // Specify a version number to identify the deployed version of your application in Datadog
   version: '0.0.1',
   allowedTracingUrls: [(url) => url.startsWith(getRoute())],
