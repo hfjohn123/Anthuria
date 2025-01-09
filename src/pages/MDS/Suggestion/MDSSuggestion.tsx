@@ -182,8 +182,7 @@ export default function MDSSuggestion({ row }: { row: MDSFinal }) {
     }
   } else if (
     (parseInt(BIMS?.mds_value || '99') <= 9 ||
-      parseInt(BIMS?.suggested_value || '99') <= 9 ||
-      ((BIMS?.mds_value != '99' || BIMS?.suggested_value != '99') &&
+      (BIMS?.mds_value != '99' &&
         row.nursing_bscp_final_entry.nursing_bscp_mds_bs) ||
       row.nursing_bscp_final_entry.nursing_bscp_mds_sacs) &&
     !boolFuncScore11
@@ -231,7 +230,7 @@ export default function MDSSuggestion({ row }: { row: MDSFinal }) {
       .length || 0) +
     (clinicalComplex?.filter((d) => d.nursing_mds_suggestion.length > 0)
       .length || 0) +
-    (BIMS?.suggested_value ? 1 : 0);
+    (BIMS?.nursing_bscp_suggestion.length || 0);
   let NursingCount = currentGroup
     ? `Current Mix Group: ${currentGroup}, Current CMI: ${NusingMapping[currentGroup as keyof typeof NusingMapping]}, `
     : '';

@@ -17,12 +17,14 @@ export default function MDSDetail({ row }: { row: Row<PDPMPatient> }) {
       '/mds/view_pdpm_final_result_test',
       route,
       row.original.internal_patient_id,
+      row.original.internal_facility_id,
     ],
     queryFn: () =>
       axios
         .get(`${route}/mds/view_pdpm_final_result_test`, {
           params: {
             internal_patient_id: row.original.internal_patient_id,
+            internal_facility_id: row.original.internal_facility_id,
           },
         })
         .then((res) => {

@@ -4,7 +4,7 @@ import clsx from 'clsx';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { AuthContext } from '../../../components/AuthWrapper.tsx';
-import { useContext, useState } from 'react';
+import { useContext } from 'react';
 
 export default function UpVoteButton({
   is_thumb_up,
@@ -21,7 +21,6 @@ export default function UpVoteButton({
 }) {
   const { route } = useContext(AuthContext);
   const queryClient = useQueryClient();
-  const [thumbUpState, setThumbState] = useState(is_thumb_up);
   const commentMutation = useMutation({
     mutationFn: async ({
       internal_facility_id,
@@ -41,43 +40,55 @@ export default function UpVoteButton({
         internal_patient_id,
         category,
         item,
-        is_thumb_up: 1,
+        is_thumb_up: is_thumb_up ? 0 : 1,
         is_thumb_down: 0,
         comment: '',
       });
     },
-    onMutate: () => {
-      setThumbState(true);
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({
+    onSettled: async (data) => {
+      await queryClient.cancelQueries({
         queryKey: [
           '/mds/view_pdpm_final_result_test',
           route,
           internal_patient_id,
+          internal_facility_id,
         ],
       });
+      queryClient.setQueryData(
+        [
+          '/mds/view_pdpm_final_result_test',
+          route,
+          internal_patient_id,
+          internal_facility_id,
+        ],
+        data?.data,
+      );
     },
   });
   return (
     <Button
-      className="bg-transparent border-0 p-0 m-0"
+      className={clsx(
+        'bg-transparent border-0 p-0 m-0',
+        commentMutation.isPending && 'p-disabled cursor-wait',
+      )}
+      disabled={commentMutation.isPending}
       onClick={() => {
-        if (!thumbUpState)
-          commentMutation.mutate({
-            internal_facility_id,
-            internal_patient_id,
-            category,
-            item,
-          });
+        commentMutation.mutate({
+          internal_facility_id,
+          internal_patient_id,
+          category,
+          item,
+        });
       }}
     >
       <ThumbsUp
         className={clsx(
           'size-5 cursor-pointer thumbs_up hover:text-blue-500',
-          thumbUpState ? 'text-blue-500' : 'text-body dark:text-bodydark',
+          is_thumb_up || commentMutation.isPending
+            ? 'text-blue-500'
+            : 'text-body dark:text-bodydark',
         )}
-        weight={thumbUpState ? 'fill' : 'regular'}
+        weight={is_thumb_up || commentMutation.isPending ? 'fill' : 'regular'}
       />
     </Button>
   );
