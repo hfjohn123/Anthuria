@@ -7,7 +7,7 @@ import { Row, TableState } from '@tanstack/react-table';
 import { TriggerFinal } from '../../../types/TriggerFinal.ts';
 import { useQueryClient } from '@tanstack/react-query';
 import usePutComment from '../../../hooks/interface/usePutComment.ts';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { AuthContext } from '../../../components/AuthWrapper.tsx';
 import clsx from 'clsx';
 import HighlightWrapper from '../../../components/Basic/HighlightWrapper.tsx';
@@ -67,106 +67,115 @@ export default function DetailWithProgressNote({
         </thead>
         <tbody>
           {row.original.trigger_words.map(
-            ({ trigger_word, is_thumb_up, summary, comment, event_ids }) => (
-              <tr key={row.id + trigger_word}>
-                <td className="whitespace-nowrap align-top flex items-center flex-nowrap">
-                  <HighlightWrapper
-                    text={trigger_word || ''}
-                    searchTerm={tableState.globalFilter || ''}
-                  />
-                </td>
-                <td className="pr-10">
-                  <LineClampShowMore className="whitespace-pre-line">
+            ({ trigger_word, is_thumb_up, summary, comment, event_ids }) => {
+              const [isthumbup, setThumbup] = useState(is_thumb_up || false);
+              const [commentState, setCommentState] = useState(comment || '');
+              return (
+                <tr key={row.id + trigger_word}>
+                  <td className="whitespace-nowrap align-top flex items-center flex-nowrap">
                     <HighlightWrapper
-                      text={summary || ''}
+                      text={trigger_word || ''}
                       searchTerm={tableState.globalFilter || ''}
                     />
-                  </LineClampShowMore>
-                </td>
-                <td className=" align-top	">
-                  <div className=" flex items-center flex-nowrap gap-2">
-                    {is_thumb_up ? (
-                      <ThumbsUp
-                        className="size-4 text-meta-3 cursor-pointer thumbs_up"
-                        weight="fill"
-                      />
-                    ) : (
-                      <ThumbsUp
-                        className="size-4 cursor-pointer thumbs_up"
-                        onClick={() =>
-                          putComment.mutate({
-                            progress_note_id: row.original.progress_note_id,
-                            trigger_word: trigger_word || '',
-                            comment: '',
-                            is_thumb_up: true,
-                          })
-                        }
-                      />
-                    )}
-                    {!is_thumb_up && comment !== null ? (
-                      <CommentModal
-                        data={{
-                          comment: comment || '',
-                          trigger_word: trigger_word || '',
-                          progress_note_id: row.original.progress_note_id,
-                        }}
-                        active={true}
-                      />
-                    ) : (
-                      <CommentModal
-                        data={{
-                          comment: comment || '',
-                          trigger_word: trigger_word || '',
-                          progress_note_id: row.original.progress_note_id,
-                        }}
-                        active={false}
-                      />
-                    )}
-                  </div>
-                </td>
-                {row.original.upstream !== 'PCC' && (
-                  <td className="align-top ">
-                    {event_ids && event_ids.length > 0 ? (
-                      event_ids.map((event_id) => (
-                        <HyperLink
-                          key={event_id}
-                          className="action_link"
-                          href={`https://clearviewhcm.matrixcare.com/Zion?zionpagealias=EVENTVIEW&NSPID=${row.original.patient_id}&CHGPID=true&EVENTID=${event_id}&dashboardHomePage=true&OEType=Event&PATIENTID=${row.original.patient_id}`}
-                        >
-                          View the Event
-                        </HyperLink>
-                      ))
-                    ) : trigger_word === 'Fall' ? (
-                      <HyperLink
-                        className="action_link"
-                        tooltip_content={'Create an Event in MatrixCare'}
-                        href={`https://clearviewhcm.matrixcare.com/Zion?zionpagealias=EVENTCREATE&PATIENTID=${row.original.patient_id}&formId=944&categoryName=Safety%20Events&formDescription=Post+Fall+Event+v3`}
-                      >
-                        Create Event
-                      </HyperLink>
-                    ) : trigger_word === 'Wound/Ulcer' ? (
-                      <HyperLink
-                        tooltip_content={'Create an Event in MatrixCare'}
-                        className="action_link"
-                        href={`https://clearviewhcm.matrixcare.com/Zion?zionpagealias=EVENTCREATE&PATIENTID=${row.original.patient_id}&formId=948&categoryName=Skin%20Integrity%20Events&formDescription=Wound+Other+Event`}
-                      >
-                        Create Event
-                      </HyperLink>
-                    ) : trigger_word === 'Weight Change' ? (
-                      <p></p>
-                    ) : (
-                      <HyperLink
-                        tooltip_content={'Create an Event in MatrixCare'}
-                        className="action_link"
-                        href={`https://clearviewhcm.matrixcare.com/Zion?zionpagealias=EVENTCREATE&PATIENTID=${row.original.patient_id}`}
-                      >
-                        Create Event
-                      </HyperLink>
-                    )}
                   </td>
-                )}
-              </tr>
-            ),
+                  <td className="pr-10">
+                    <LineClampShowMore className="whitespace-pre-line">
+                      <HighlightWrapper
+                        text={summary || ''}
+                        searchTerm={tableState.globalFilter || ''}
+                      />
+                    </LineClampShowMore>
+                  </td>
+                  <td className=" align-top	">
+                    <div className=" flex items-center flex-nowrap gap-2">
+                      {isthumbup ? (
+                        <ThumbsUp
+                          className="size-4 text-meta-3 cursor-pointer thumbs_up"
+                          weight="fill"
+                        />
+                      ) : (
+                        <ThumbsUp
+                          className="size-4 cursor-pointer thumbs_up"
+                          onClick={() => {
+                            setThumbup(true);
+                            putComment.mutate({
+                              progress_note_id: row.original.progress_note_id,
+                              trigger_word: trigger_word || '',
+                              comment: '',
+                              is_thumb_up: true,
+                            });
+                          }}
+                        />
+                      )}
+                      {!isthumbup && commentState !== null ? (
+                        <CommentModal
+                          data={{
+                            comment: commentState,
+                            trigger_word: trigger_word || '',
+                            progress_note_id: row.original.progress_note_id,
+                          }}
+                          active={true}
+                          setThumbUp={setThumbup}
+                          setCommentState={setCommentState}
+                        />
+                      ) : (
+                        <CommentModal
+                          data={{
+                            comment: commentState,
+                            trigger_word: trigger_word || '',
+                            progress_note_id: row.original.progress_note_id,
+                          }}
+                          setThumbUp={setThumbup}
+                          setCommentState={setCommentState}
+                          active={false}
+                        />
+                      )}
+                    </div>
+                  </td>
+                  {row.original.upstream !== 'PCC' && (
+                    <td className="align-top ">
+                      {event_ids && event_ids.length > 0 ? (
+                        event_ids.map((event_id) => (
+                          <HyperLink
+                            key={event_id}
+                            className="action_link"
+                            href={`https://clearviewhcm.matrixcare.com/Zion?zionpagealias=EVENTVIEW&NSPID=${row.original.patient_id}&CHGPID=true&EVENTID=${event_id}&dashboardHomePage=true&OEType=Event&PATIENTID=${row.original.patient_id}`}
+                          >
+                            View the Event
+                          </HyperLink>
+                        ))
+                      ) : trigger_word === 'Fall' ? (
+                        <HyperLink
+                          className="action_link"
+                          tooltip_content={'Create an Event in MatrixCare'}
+                          href={`https://clearviewhcm.matrixcare.com/Zion?zionpagealias=EVENTCREATE&PATIENTID=${row.original.patient_id}&formId=944&categoryName=Safety%20Events&formDescription=Post+Fall+Event+v3`}
+                        >
+                          Create Event
+                        </HyperLink>
+                      ) : trigger_word === 'Wound/Ulcer' ? (
+                        <HyperLink
+                          tooltip_content={'Create an Event in MatrixCare'}
+                          className="action_link"
+                          href={`https://clearviewhcm.matrixcare.com/Zion?zionpagealias=EVENTCREATE&PATIENTID=${row.original.patient_id}&formId=948&categoryName=Skin%20Integrity%20Events&formDescription=Wound+Other+Event`}
+                        >
+                          Create Event
+                        </HyperLink>
+                      ) : trigger_word === 'Weight Change' ? (
+                        <p></p>
+                      ) : (
+                        <HyperLink
+                          tooltip_content={'Create an Event in MatrixCare'}
+                          className="action_link"
+                          href={`https://clearviewhcm.matrixcare.com/Zion?zionpagealias=EVENTCREATE&PATIENTID=${row.original.patient_id}`}
+                        >
+                          Create Event
+                        </HyperLink>
+                      )}
+                    </td>
+                  )}
+                </tr>
+              );
+            },
           )}
         </tbody>
       </table>

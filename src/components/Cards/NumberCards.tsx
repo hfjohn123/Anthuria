@@ -13,6 +13,7 @@ export default function NumberCards({
   data,
   trigger_words = [],
   initialNewTrigger,
+  setSelfDefinedKeywordsState,
   ...props
 }: {
   className?: string;
@@ -33,6 +34,7 @@ export default function NumberCards({
         trigger_word: string;
         internal_facility_id: string[];
         keyword_list: string[];
+        setSelfDefinedKeywordsState?: any;
       };
     }
   | {
@@ -69,6 +71,7 @@ export default function NumberCards({
           trigger_words={trigger_words}
           initialNewTrigger={initialNewTrigger}
           header={'Keywords for ' + title}
+          setSelfDefinedKeywordsState={setSelfDefinedKeywordsState}
         />
       )}
       <h3 className="sm:whitespace-nowrap text-sm sm:text-base text-center">

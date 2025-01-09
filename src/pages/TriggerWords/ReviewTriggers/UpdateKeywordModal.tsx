@@ -15,6 +15,7 @@ export default function UpdateKeywordModal({
   trigger_words,
   initialNewTrigger,
   header,
+  setSelfDefinedKeywordsState,
 }: {
   data: TriggerFinal[];
   trigger_words: string[];
@@ -25,6 +26,7 @@ export default function UpdateKeywordModal({
     keyword_list: string[];
   };
   header: string;
+  setSelfDefinedKeywordsState?: any;
 }) {
   const toast = useRef<Toast>(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -74,6 +76,7 @@ export default function UpdateKeywordModal({
             initialNewTrigger={initialNewTrigger}
             ref={formRef}
             callback={() => setIsOpen(false)}
+            setSelfDefinedKeywordsState={setSelfDefinedKeywordsState}
           />
         </Dialog>
       </div>

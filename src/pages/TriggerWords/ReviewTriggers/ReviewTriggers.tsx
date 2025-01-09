@@ -135,7 +135,7 @@ export default function ReviewTriggers() {
     !search['history'],
   );
 
-  const fetchTriggerWord = async () => {
+  const fetchTriggerWord = async (signal?: AbortSignal) => {
     let params: { [key: string]: any } = {};
     if (includeCreatedDate) {
       const today = new Date();
@@ -157,6 +157,7 @@ export default function ReviewTriggers() {
       };
     }
     const response = await axios.get(`${route}/trigger_final`, {
+      signal,
       params,
     });
     return response.data;
@@ -170,8 +171,16 @@ export default function ReviewTriggers() {
     refetch,
   }: UseQueryResult<TriggerAPI, unknown> = useQuery({
     queryKey: ['trigger_word_view_trigger_word_detail_final', route],
-    queryFn: fetchTriggerWord,
+    queryFn: ({ signal }) => fetchTriggerWord(signal),
   });
+
+  const [selfDefinedKeywordsState, setSelfDefinedKeywordsState] = useState(
+    data?.self_defined_keywords,
+  );
+
+  useEffect(() => {
+    setSelfDefinedKeywordsState(data?.self_defined_keywords);
+  }, [data?.self_defined_keywords]);
 
   const columns = useMemo<ColumnDef<TriggerFinal>[]>(
     () => [
@@ -564,195 +573,204 @@ export default function ReviewTriggers() {
   }
 
   return (
-    <DefaultLayout title={'Clinical Pulse'}>
-      <div className="flex flex-col gap-7 my-3 sm:my-9 max-w-screen-3xl sm:px-9 mx-auto">
-        <h1 className="text-2xl font-bold">Review Triggers</h1>
-        <>
-          <div className="grid xl:grid-cols-5 grid-cols-3 gap-1 sm:gap-6 ">
-            {predefinedTriggerWords.map((word) => (
-              <NumberCards
-                keywordList={
-                  data &&
-                  data.keywords
-                    .filter(
-                      (kw: { trigger_word: string; key_word: string }) =>
-                        kw.trigger_word.toLowerCase() === word.toLowerCase(),
-                    )
-                    .map(
-                      (kw: { trigger_word: string; key_word: string }) =>
-                        kw.key_word,
-                    )
-                }
-                keywordModal={true}
-                key={word}
-                className={clsx(
-                  'col-span-1',
-                  'cursor-pointer',
-                  (
-                    (tableState.columnFilters.find(
-                      ({ id }) => id === 'trigger_word',
-                    )?.value as string[]) || []
-                  ).includes(word)
-                    ? 'bg-slate-300 dark:bg-slate-600 '
-                    : 'bg-white dark:bg-boxdark hover:bg-slate-200 hover:dark:bg-slate-700',
-                )}
-                id={'NumberCards-' + word.replace(' ', '-').replace(/\W/g, '-')}
-                value={
-                  table
-                    .getColumn('trigger_word')
-                    ?.getFacetedUniqueValues()
-                    .get(word) || 0
-                }
-                initialValue={initialFacetedCounts[word] || 0}
-                title={word}
-                onClick={() => {
-                  let filter =
-                    (tableState.columnFilters.find(
-                      ({ id }) => id === 'trigger_word',
-                    )?.value as string[]) || [];
-                  if (filter.includes(word)) {
-                    filter = filter.filter((f) => f !== word);
-                  } else {
-                    filter.push(word);
+    data && (
+      <DefaultLayout title={'Clinical Pulse'}>
+        <div className="flex flex-col gap-7 my-3 sm:my-9 max-w-screen-3xl sm:px-9 mx-auto">
+          <h1 className="text-2xl font-bold">Review Triggers</h1>
+          <>
+            <div className="grid xl:grid-cols-5 grid-cols-3 gap-1 sm:gap-6 ">
+              {predefinedTriggerWords.map((word) => (
+                <NumberCards
+                  keywordList={
+                    data &&
+                    data.keywords
+                      .filter(
+                        (kw: { trigger_word: string; key_word: string }) =>
+                          kw.trigger_word.toLowerCase() === word.toLowerCase(),
+                      )
+                      .map(
+                        (kw: { trigger_word: string; key_word: string }) =>
+                          kw.key_word,
+                      )
                   }
-                  if (filter.length === 0) {
+                  keywordModal={true}
+                  key={word}
+                  className={clsx(
+                    'col-span-1',
+                    'cursor-pointer',
+                    (
+                      (tableState.columnFilters.find(
+                        ({ id }) => id === 'trigger_word',
+                      )?.value as string[]) || []
+                    ).includes(word)
+                      ? 'bg-slate-300 dark:bg-slate-600 '
+                      : 'bg-white dark:bg-boxdark hover:bg-slate-200 hover:dark:bg-slate-700',
+                  )}
+                  id={
+                    'NumberCards-' + word.replace(' ', '-').replace(/\W/g, '-')
+                  }
+                  value={
+                    table
+                      .getColumn('trigger_word')
+                      ?.getFacetedUniqueValues()
+                      .get(word) || 0
+                  }
+                  initialValue={initialFacetedCounts[word] || 0}
+                  title={word}
+                  onClick={() => {
+                    let filter =
+                      (tableState.columnFilters.find(
+                        ({ id }) => id === 'trigger_word',
+                      )?.value as string[]) || [];
+                    if (filter.includes(word)) {
+                      filter = filter.filter((f) => f !== word);
+                    } else {
+                      filter.push(word);
+                    }
+                    if (filter.length === 0) {
+                      setTableState((prev) => ({
+                        ...prev,
+                        columnFilters: prev.columnFilters.filter(
+                          ({ id }) => id !== 'trigger_word',
+                        ),
+                      }));
+                      return;
+                    }
                     setTableState((prev) => ({
                       ...prev,
-                      columnFilters: prev.columnFilters.filter(
-                        ({ id }) => id !== 'trigger_word',
-                      ),
+                      columnFilters: [
+                        ...prev.columnFilters.filter(
+                          ({ id }) => id !== 'trigger_word',
+                        ),
+                        {
+                          id: 'trigger_word',
+                          value: filter,
+                        },
+                      ],
                     }));
-                    return;
-                  }
-                  setTableState((prev) => ({
-                    ...prev,
-                    columnFilters: [
-                      ...prev.columnFilters.filter(
-                        ({ id }) => id !== 'trigger_word',
-                      ),
-                      {
-                        id: 'trigger_word',
-                        value: filter,
-                      },
-                    ],
-                  }));
-                }}
-              />
-            ))}
-            {data?.self_defined_keywords &&
-              data.self_defined_keywords
-                .filter((kw) =>
-                  kw.internal_facility_id.some((id) =>
-                    locations
-                      .map((loc) => loc.internal_facility_id)
-                      .includes(id),
-                  ),
-                )
-                .map((kw) => {
-                  const new_kw = {
-                    group_name: kw.group_name,
-                    trigger_word: kw.trigger_word,
-                    internal_facility_id: kw.internal_facility_id.filter((id) =>
+                  }}
+                />
+              ))}
+              {selfDefinedKeywordsState &&
+                selfDefinedKeywordsState
+                  .filter((kw) =>
+                    kw.internal_facility_id.some((id) =>
                       locations
                         .map((loc) => loc.internal_facility_id)
                         .includes(id),
                     ),
-                    keyword_list: kw.keyword_list,
-                  };
-                  return (
-                    <NumberCards
-                      keywordModal
-                      editable
-                      title={kw.group_name}
-                      value={
-                        table
-                          .getColumn('trigger_word')
-                          ?.getFacetedUniqueValues()
-                          .get(kw.group_name) || 0
-                      }
-                      key={kw.group_name}
-                      className={clsx(
-                        'col-span-1',
-                        'cursor-pointer',
-                        (
-                          (tableState.columnFilters.find(
-                            ({ id }) => id === 'trigger_word',
-                          )?.value as string[]) || []
-                        ).includes(kw.group_name)
-                          ? 'bg-slate-300 dark:bg-slate-600 '
-                          : 'bg-white dark:bg-boxdark hover:bg-slate-200 hover:dark:bg-slate-700',
-                      )}
-                      onClick={() => {
-                        let filter =
-                          (tableState.columnFilters.find(
-                            ({ id }) => id === 'trigger_word',
-                          )?.value as string[]) || [];
-                        if (filter.includes(kw.group_name)) {
-                          filter = filter.filter((f) => f !== kw.group_name);
-                        } else {
-                          filter.push(kw.group_name);
+                  )
+                  .map((kw) => {
+                    const new_kw = {
+                      group_name: kw.group_name,
+                      trigger_word: kw.trigger_word,
+                      internal_facility_id: kw.internal_facility_id.filter(
+                        (id) =>
+                          locations
+                            .map((loc) => loc.internal_facility_id)
+                            .includes(id),
+                      ),
+                      keyword_list: kw.keyword_list,
+                    };
+                    return (
+                      <NumberCards
+                        keywordModal
+                        editable
+                        title={kw.group_name}
+                        value={
+                          table
+                            .getColumn('trigger_word')
+                            ?.getFacetedUniqueValues()
+                            .get(kw.group_name) || 0
                         }
-                        if (filter.length === 0) {
+                        key={kw.group_name}
+                        className={clsx(
+                          'col-span-1',
+                          'cursor-pointer',
+                          (
+                            (tableState.columnFilters.find(
+                              ({ id }) => id === 'trigger_word',
+                            )?.value as string[]) || []
+                          ).includes(kw.group_name)
+                            ? 'bg-slate-300 dark:bg-slate-600 '
+                            : 'bg-white dark:bg-boxdark hover:bg-slate-200 hover:dark:bg-slate-700',
+                        )}
+                        onClick={() => {
+                          let filter =
+                            (tableState.columnFilters.find(
+                              ({ id }) => id === 'trigger_word',
+                            )?.value as string[]) || [];
+                          if (filter.includes(kw.group_name)) {
+                            filter = filter.filter((f) => f !== kw.group_name);
+                          } else {
+                            filter.push(kw.group_name);
+                          }
+                          if (filter.length === 0) {
+                            setTableState((prev) => ({
+                              ...prev,
+                              columnFilters: prev.columnFilters.filter(
+                                ({ id }) => id !== 'trigger_word',
+                              ),
+                            }));
+                            return;
+                          }
                           setTableState((prev) => ({
                             ...prev,
-                            columnFilters: prev.columnFilters.filter(
-                              ({ id }) => id !== 'trigger_word',
-                            ),
+                            columnFilters: [
+                              ...prev.columnFilters.filter(
+                                ({ id }) => id !== 'trigger_word',
+                              ),
+                              {
+                                id: 'trigger_word',
+                                value: filter,
+                              },
+                            ],
                           }));
-                          return;
+                        }}
+                        initialNewTrigger={new_kw}
+                        trigger_words={predefinedTriggerWords.concat(
+                          data.self_defined_keywords?.map(
+                            (kw) => kw.group_name,
+                          ) ?? [],
+                        )}
+                        data={data.data}
+                        setSelfDefinedKeywordsState={
+                          setSelfDefinedKeywordsState
                         }
-                        setTableState((prev) => ({
-                          ...prev,
-                          columnFilters: [
-                            ...prev.columnFilters.filter(
-                              ({ id }) => id !== 'trigger_word',
-                            ),
-                            {
-                              id: 'trigger_word',
-                              value: filter,
-                            },
-                          ],
-                        }));
-                      }}
-                      initialNewTrigger={new_kw}
-                      trigger_words={predefinedTriggerWords.concat(
-                        data.self_defined_keywords?.map(
-                          (kw) => kw.group_name,
-                        ) ?? [],
-                      )}
-                      data={data.data}
-                    />
-                  );
-                })}
-          </div>
-          <div className="self-end">
-            <NewTriggerWordModal
-              data={data.data}
-              trigger_words={predefinedTriggerWords.concat(
-                data.self_defined_keywords?.map((kw) => kw.group_name) ?? [],
-              )}
+                      />
+                    );
+                  })}
+            </div>
+            <div className="self-end">
+              <NewTriggerWordModal
+                data={data.data}
+                trigger_words={predefinedTriggerWords.concat(
+                  data.self_defined_keywords?.map((kw) => kw.group_name) ?? [],
+                )}
+                setSelfDefinedKeywordsState={setSelfDefinedKeywordsState}
+              />
+            </div>
+          </>
+
+          <div className=" mt-5 col-span-12 ">
+            <TableWrapper
+              table={table}
+              tableState={tableState}
+              setTableState={setTableState}
+              permanentColumnFilters={PERMANENT_COLUMN_FILTERS}
+              renderExpandedRow={TriggerNoteDetail}
+              download={true}
+              tableSetting={true}
+              initialTableState={initialTableState}
+              hasHistory={true}
+              setIsRefetching={setIsRefetching}
+              includeCreatedDate={includeCreatedDate}
+              setIncludeCreatedDate={setIncludeCreatedDate}
+              title={'Progress Notes'}
             />
           </div>
-        </>
-
-        <div className=" mt-5 col-span-12 ">
-          <TableWrapper
-            table={table}
-            tableState={tableState}
-            setTableState={setTableState}
-            permanentColumnFilters={PERMANENT_COLUMN_FILTERS}
-            renderExpandedRow={TriggerNoteDetail}
-            download={true}
-            tableSetting={true}
-            initialTableState={initialTableState}
-            hasHistory={true}
-            setIsRefetching={setIsRefetching}
-            includeCreatedDate={includeCreatedDate}
-            setIncludeCreatedDate={setIncludeCreatedDate}
-            title={'Progress Notes'}
-          />
         </div>
-      </div>
-    </DefaultLayout>
+      </DefaultLayout>
+    )
   );
 }

@@ -24,9 +24,11 @@ const initialNewTrigger: {
 export default function NewTriggerWordModal({
   data,
   trigger_words,
+  setSelfDefinedKeywordsState,
 }: {
   data: TriggerFinal[];
   trigger_words: string[];
+  setSelfDefinedKeywordsState: any;
 }) {
   const toast = useRef<Toast>(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -60,6 +62,7 @@ export default function NewTriggerWordModal({
           isNew
           initialNewTrigger={initialNewTrigger}
           callback={() => setIsOpen(false)}
+          setSelfDefinedKeywordsState={setSelfDefinedKeywordsState}
         />
       </Dialog>
     </>

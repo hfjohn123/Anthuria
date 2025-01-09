@@ -1,13 +1,17 @@
 import { Dialog } from 'primereact/dialog';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { ThumbsDown } from '@phosphor-icons/react';
 import { Button } from 'primereact/button';
 import clsx from 'clsx';
 import CommentForm from '../../../components/Forms/CommentForm.tsx';
+import { useQueryClient } from '@tanstack/react-query';
+import { AuthContext } from '../../../components/AuthWrapper.tsx';
 
 export default function CommentModal({
   data,
   active,
+  setThumbUp,
+  setCommentState,
 }: {
   data: {
     comment: string;
@@ -15,14 +19,20 @@ export default function CommentModal({
     progress_note_id: number;
   };
   active: boolean;
+  setThumbUp: any;
+  setCommentState: any;
 }) {
   const [showModal, setShowModal] = useState(false);
-
+  const queryClient = useQueryClient();
+  const { route } = useContext(AuthContext);
   return (
     <>
       <Button
         onClick={(event) => {
           event.stopPropagation();
+          queryClient.cancelQueries({
+            queryKey: ['trigger_word_view_trigger_word_detail_final', route],
+          });
           setShowModal(true);
         }}
         className="bg-transparent border-0 p-0 m-0"
@@ -49,7 +59,12 @@ export default function CommentModal({
       >
         <div>
           <p className="italic">Please help correct this trigger assignment.</p>
-          <CommentForm comment={data} setIsOpen={setShowModal} />
+          <CommentForm
+            comment={data}
+            setIsOpen={setShowModal}
+            setCommentState={setCommentState}
+            setThumbUp={setThumbUp}
+          />
         </div>
       </Dialog>
     </>
