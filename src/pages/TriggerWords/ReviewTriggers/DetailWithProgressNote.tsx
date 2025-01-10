@@ -23,6 +23,7 @@ export default function DetailWithProgressNote({
   const { route } = useContext(AuthContext);
   const queryClient = useQueryClient();
   const putComment = usePutComment(route, queryClient);
+
   return (
     <div className="bg-slate-50 dark:bg-slate-900 px-4 text-sm py-4 flex flex-col gap-4.5">
       <table className="basis-full pb-3 border-stroke border-b border-spacing-y-2.5 border-separate">
@@ -69,7 +70,7 @@ export default function DetailWithProgressNote({
           {row.original.trigger_words.map(
             ({ trigger_word, is_thumb_up, summary, comment, event_ids }) => {
               const [isthumbup, setThumbup] = useState(is_thumb_up || false);
-              const [commentState, setCommentState] = useState(comment || '');
+              const [commentState, setCommentState] = useState(comment || null);
               return (
                 <tr key={row.id + trigger_word}>
                   <td className="whitespace-nowrap align-top flex items-center flex-nowrap">
@@ -107,10 +108,10 @@ export default function DetailWithProgressNote({
                           }}
                         />
                       )}
-                      {!isthumbup && commentState ? (
+                      {!isthumbup && commentState !== null ? (
                         <CommentModal
                           data={{
-                            comment: commentState,
+                            comment: commentState || '',
                             trigger_word: trigger_word || '',
                             progress_note_id: row.original.progress_note_id,
                           }}
@@ -121,7 +122,7 @@ export default function DetailWithProgressNote({
                       ) : (
                         <CommentModal
                           data={{
-                            comment: commentState,
+                            comment: commentState || '',
                             trigger_word: trigger_word || '',
                             progress_note_id: row.original.progress_note_id,
                           }}

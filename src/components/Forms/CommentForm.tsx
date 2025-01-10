@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { AuthContext } from '../AuthWrapper.tsx';
 import usePutComment from '../../hooks/interface/usePutComment.ts';
@@ -22,6 +22,7 @@ export default function CommentForm({
 }) {
   const { route } = useContext(AuthContext);
   const queryClient = useQueryClient();
+  const [commentTemp, setCommentTemp] = useState(comment.comment);
   const putComment = usePutComment(route, queryClient);
   return (
     <form
@@ -34,19 +35,20 @@ export default function CommentForm({
         putComment.mutate({
           progress_note_id: comment.progress_note_id,
           trigger_word: comment.trigger_word,
-          comment: comment.comment,
+          comment: commentTemp,
           is_thumb_up: false,
         });
         setThumbUp(false);
         setIsOpen(false);
+        setCommentState(commentTemp);
       }}
     >
       <FloatLabel className="mt-7">
         <InputTextarea
           className="w-full border border-stroke rounded-md focus:outline-primary p-2 dark:bg-boxdark dark:border-strokedark dark:outline-secondary"
-          value={comment.comment}
+          value={commentTemp}
           onChange={(e) => {
-            setCommentState(e.target.value);
+            setCommentTemp(e.target.value);
           }}
           autoResize
           rows={5}
