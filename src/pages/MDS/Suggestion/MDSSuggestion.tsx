@@ -204,9 +204,9 @@ export default function MDSSuggestion({ row }: { row: MDSFinal }) {
   ) {
     suggestGroup = 'ES1';
   } else if (boolsch && boolFuncScore14) {
-    if (parseInt(functionalScore.final_score) <= 5 && boolIsDepressed) {
+    if (parseInt(functionalScore.final_score || '99') <= 5 && boolIsDepressed) {
       suggestGroup = 'HDE2';
-    } else if (parseInt(functionalScore.final_score) <= 5) {
+    } else if (parseInt(functionalScore.final_score || '99') <= 5) {
       suggestGroup = 'HBC2';
     } else if (boolIsDepressed) {
       suggestGroup = 'HDE1';
@@ -214,9 +214,9 @@ export default function MDSSuggestion({ row }: { row: MDSFinal }) {
       suggestGroup = 'HBC1';
     }
   } else if (boolscl && boolFuncScore14) {
-    if (parseInt(functionalScore.final_score) <= 5 && boolIsDepressed) {
+    if (parseInt(functionalScore.final_score || '99') <= 5 && boolIsDepressed) {
       suggestGroup = 'LDE2';
-    } else if (parseInt(functionalScore.final_score) <= 5) {
+    } else if (parseInt(functionalScore.final_score || '99') <= 5) {
       suggestGroup = 'LBC2';
     } else if (boolIsDepressed) {
       suggestGroup = 'LDE1';
@@ -329,7 +329,8 @@ export default function MDSSuggestion({ row }: { row: MDSFinal }) {
                 data-pr-tooltip={formatCounts(nta_count)}
               >
                 {NTASuggestionCount > 0 && <MagicButton className="size-4" />}
-                {NTASuggestionCount} AI SUGGESTIONS
+                {NTASuggestionCount} AI SUGGESTION
+                {NTASuggestionCount !== 1 && 'S'}
               </div>
             </div>
           </DisclosureButton>
@@ -355,7 +356,8 @@ export default function MDSSuggestion({ row }: { row: MDSFinal }) {
                 data-pr-tooltip={formatCounts(slp_count)}
               >
                 {SLPSuggestionCount > 0 && <MagicButton className="size-4" />}
-                {SLPSuggestionCount} AI SUGGESTIONS
+                {SLPSuggestionCount} AI SUGGESTION
+                {SLPSuggestionCount !== 1 && 'S'}
               </div>
             </div>
           </DisclosureButton>
@@ -382,7 +384,8 @@ export default function MDSSuggestion({ row }: { row: MDSFinal }) {
                 data-pr-tooltip={formatCounts(ptotCount)}
               >
                 {ptotSuggestionCount > 0 && <MagicButton className="size-4" />}
-                {ptotSuggestionCount} AI SUGGESTIONS
+                {ptotSuggestionCount} AI SUGGESTION
+                {ptotSuggestionCount !== 1 && 'S'}
               </div>
             </div>
           </DisclosureButton>
@@ -411,7 +414,8 @@ export default function MDSSuggestion({ row }: { row: MDSFinal }) {
                 {NursingSuggestionCount > 0 && (
                   <MagicButton className="size-4" />
                 )}
-                {NursingSuggestionCount} AI SUGGESTIONS
+                {NursingSuggestionCount} AI SUGGESTION
+                {NursingSuggestionCount !== 1 && 'S'}
               </div>
             </div>
           </DisclosureButton>
