@@ -128,7 +128,7 @@ export default function FunctionalScoreTable({
       accessorKey: 'suggestion',
       header: 'AI Suggested Conditions',
       cell: (info) => {
-        const count = info.row.original.suggestion.length;
+        const count = info.row.original.suggestion?.length || 0;
         if (count === 0) {
           return (
             <td className="py-2 px-4 border-t border-l border-gray-600"></td>
@@ -146,7 +146,7 @@ export default function FunctionalScoreTable({
               }
               icd10={{
                 icd10: info.row.original.mds_item,
-                progress_note: info.row.original.suggestion,
+                progress_note: info.row.original.suggestion || [],
               }}
             />
           </td>
@@ -298,7 +298,9 @@ export default function FunctionalScoreTable({
 
   return (
     <div className={clsx('flex flex-col', data.function_score_all && 'gap-3')}>
-      <p className="font-semibold">Functional Score: {data.final_score}</p>
+      <p className="font-semibold">
+        Functional Score: {data.final_score || 'Not Available (99)'}
+      </p>
       {data.function_score_all ? (
         <SmallTableWrapper
           permanentColumnFilters={permanentColumnFilters}

@@ -97,26 +97,16 @@ export type ProgressNoteAndSummary = {
 
 export type PTOTFinal = {
   clinical_category?: string;
-  category: string;
-  item: string;
-} & (
-  | {
-      mix_group: string;
-      final_score: string;
-      function_score_all: FunctionalScore[];
-    }
-  | {
-      mix_group?: never;
-      final_score?: never;
-      function_score_all?: never;
-    }
-);
+  mix_group?: string;
+  final_score?: string;
+  function_score_all?: FunctionalScore[];
+};
 
 export type FunctionalScore = {
   function_area: string;
   mds_item: string;
   individual_function_score: string;
-  suggestion: ProgressNoteAndSummary[];
+  suggestion?: ProgressNoteAndSummary[];
   average_function_score: string;
   is_thumb_up: boolean;
   is_thumb_down: boolean;
@@ -125,15 +115,10 @@ export type FunctionalScore = {
   item: string;
 };
 
-export type NursingFunctionalScore =
-  | {
-      final_score: string;
-      function_score_all: FunctionalScore[];
-    }
-  | {
-      final_score?: undefined;
-      function_score_all?: never;
-    };
+export type NursingFunctionalScore = {
+  final_score?: string;
+  function_score_all?: FunctionalScore[];
+};
 
 export type RestorativeNursing =
   | {

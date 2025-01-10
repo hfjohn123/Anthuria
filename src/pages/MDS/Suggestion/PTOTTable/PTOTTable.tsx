@@ -124,7 +124,7 @@ export default function PTOTTable({ data }: { data: PTOTFinal }) {
       accessorKey: 'suggestion',
       header: 'AI Suggested Conditions',
       cell: (info) => {
-        const count = info.row.original.suggestion.length;
+        const count = info.row.original.suggestion?.length || 0;
         if (count === 0) {
           return (
             <td className="py-2 px-4 border-t border-l border-gray-600"></td>
@@ -142,7 +142,7 @@ export default function PTOTTable({ data }: { data: PTOTFinal }) {
               }
               icd10={{
                 icd10: info.row.original.mds_item,
-                progress_note: info.row.original.suggestion,
+                progress_note: info.row.original.suggestion || [],
               }}
             />
           </td>

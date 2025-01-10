@@ -10,8 +10,19 @@ import DepressionIndicator from './DepressionIndicator.tsx';
 import clsx from 'clsx';
 import EvidenceModal from '../EvidenceModal.tsx';
 import { NusingMapping } from '../../cmiMapping.ts';
+import _ from 'lodash';
 
 export const NursingTableContext = createContext<MDSFinal | null>(null);
+
+const FunctionalScoreSkeleton = [
+  { function_area: 'Eating', mds_item: 'GG0130A' },
+  { function_area: 'Toileting Hygiene', mds_item: 'GG0130C' },
+  { function_area: 'Mobility', mds_item: 'GG0170B' },
+  { function_area: 'Mobility', mds_item: 'GG0170C' },
+  { function_area: 'Transfer', mds_item: 'GG0170D' },
+  { function_area: 'Transfer', mds_item: 'GG0170E' },
+  { function_area: 'Transfer', mds_item: 'GG0170F' },
+];
 
 export default function NursingTable({ data }: { data: MDSFinal }) {
   const stepperRef = useRef<StepperRefAttributes>(null);
@@ -37,8 +48,18 @@ export default function NursingTable({ data }: { data: MDSFinal }) {
   const specialCareHigh = data.nursing_cc_final_entry.nursing_mds_item_sch;
   const specialCareLow = data.nursing_cc_final_entry.nursing_mds_item_scl;
   const clinicalComplex = data.nursing_cc_final_entry.nursing_mds_item_cc;
-
   const functionalScore = data.nursing_fa_final_entry;
+  const functionalScoreJoined = _.values(
+    _.merge(
+      {},
+      _.keyBy(FunctionalScoreSkeleton, 'mds_item'),
+      _.keyBy(functionalScore.function_score_all, 'mds_item'),
+    ),
+  );
+  const functionalScoreFinal = {
+    final_score: functionalScore.final_score,
+    function_score_all: functionalScoreJoined,
+  };
   const depressionIndicator = data.nursing_d_final_entry;
   const BIMS = data.nursing_bscp_final_entry.nursing_bscp_bims;
   const currentGroup = data.nursing_group;
@@ -116,9 +137,9 @@ export default function NursingTable({ data }: { data: MDSFinal }) {
   ) {
     suggestGroup = 'ES1';
   } else if (boolsch && boolFuncScore14) {
-    if (parseInt(functionalScore.final_score) <= 5 && boolIsDepressed) {
+    if (parseInt(functionalScore.final_score || '99') <= 5 && boolIsDepressed) {
       suggestGroup = 'HDE2';
-    } else if (parseInt(functionalScore.final_score) <= 5) {
+    } else if (parseInt(functionalScore.final_score || '99') <= 5) {
       suggestGroup = 'HBC2';
     } else if (boolIsDepressed) {
       suggestGroup = 'HDE1';
@@ -126,9 +147,9 @@ export default function NursingTable({ data }: { data: MDSFinal }) {
       suggestGroup = 'HBC1';
     }
   } else if (boolscl && boolFuncScore14) {
-    if (parseInt(functionalScore.final_score) <= 5 && boolIsDepressed) {
+    if (parseInt(functionalScore.final_score || '99') <= 5 && boolIsDepressed) {
       suggestGroup = 'LDE2';
-    } else if (parseInt(functionalScore.final_score) <= 5) {
+    } else if (parseInt(functionalScore.final_score || '99') <= 5) {
       suggestGroup = 'LBC2';
     } else if (boolIsDepressed) {
       suggestGroup = 'LDE1';
@@ -251,7 +272,7 @@ export default function NursingTable({ data }: { data: MDSFinal }) {
                 type="extensiveServices"
                 data={extensiveServices}
               />
-              <FunctionalScoreTable data={functionalScore} />
+              <FunctionalScoreTable data={functionalScoreFinal} />
               {currentGroup?.startsWith('E') && (
                 <div>
                   <p className="font-bold">Current group: </p>
@@ -324,7 +345,7 @@ export default function NursingTable({ data }: { data: MDSFinal }) {
           >
             <div className="flex flex-col gap-7 ">
               <ClinicalCategory type="specialCareHigh" data={specialCareHigh} />
-              <FunctionalScoreTable data={functionalScore} />
+              <FunctionalScoreTable data={functionalScoreFinal} />
               <DepressionIndicator data={depressionIndicator} />
               {currentGroup?.startsWith('H') && (
                 <div>
@@ -404,7 +425,7 @@ export default function NursingTable({ data }: { data: MDSFinal }) {
           >
             <div className="flex flex-col gap-7">
               <ClinicalCategory type="specialCareLow" data={specialCareLow} />
-              <FunctionalScoreTable data={functionalScore} />
+              <FunctionalScoreTable data={functionalScoreFinal} />
               <DepressionIndicator data={depressionIndicator} />
               {currentGroup?.startsWith('L') && (
                 <div>
@@ -565,7 +586,7 @@ export default function NursingTable({ data }: { data: MDSFinal }) {
             header="Behavioral Symptoms And Cognitive Performance"
           >
             <div className="flex flex-col gap-7">
-              <FunctionalScoreTable data={functionalScore} />
+              <FunctionalScoreTable data={functionalScoreFinal} />
               <div>
                 <p className="font-bold">
                   Resident interview cognitive status:
@@ -672,7 +693,7 @@ export default function NursingTable({ data }: { data: MDSFinal }) {
             header="Reduced Physical Function"
           >
             <div className="flex flex-col gap-7">
-              <FunctionalScoreTable data={functionalScore} />
+              <FunctionalScoreTable data={functionalScoreFinal} />
               <RestorativeNursingTable data={data.nursing_re_final_entry} />
               {currentGroup?.startsWith('P') && (
                 <div>

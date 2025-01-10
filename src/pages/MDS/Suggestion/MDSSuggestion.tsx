@@ -26,7 +26,64 @@ const SLPSkeleton = [
   { item: 'sd', condition: 'Swallowing Disorder' },
 ];
 
+const PTOTSkeleton = [
+  {
+    function_area: 'Eating',
+    mds_item: 'GG0130A',
+  },
+  {
+    function_area: 'Oral Hygiene',
+    mds_item: 'GG0130B',
+  },
+  {
+    function_area: 'Toileting Hygiene',
+    mds_item: 'GG0130C',
+  },
+  {
+    function_area: 'Mobility',
+    mds_item: 'GG0170B',
+  },
+  {
+    function_area: 'Mobility',
+    mds_item: 'GG0170C',
+  },
+  {
+    function_area: 'Transfer',
+    mds_item: 'GG0170D',
+  },
+  {
+    function_area: 'Transfer',
+    mds_item: 'GG0170E',
+  },
+  {
+    function_area: 'Transfer',
+    mds_item: 'GG0170F',
+  },
+  {
+    function_area: 'Walking',
+    mds_item: 'GG0170J',
+  },
+  {
+    function_area: 'Walking',
+    mds_item: 'GG0170K',
+  },
+];
+
 export default function MDSSuggestion({ row }: { row: MDSFinal }) {
+  const ptot_joined = _.values(
+    _.merge(
+      {},
+      _.keyBy(PTOTSkeleton, 'mds_item'),
+      _.keyBy(row.ptot_final_entry.function_score_all, 'mds_item'),
+    ),
+  );
+  const ptot_data = {
+    clinical_category: row.ptot_final_entry.clinical_category,
+    mix_group: row.ptot_final_entry.mix_group,
+    final_score: row.ptot_final_entry.final_score,
+    function_score_all: ptot_joined,
+  };
+
   const slp_joined = _.merge(
     {},
     _.keyBy(SLPSkeleton, 'item'),
@@ -310,7 +367,7 @@ export default function MDSSuggestion({ row }: { row: MDSFinal }) {
           </DisclosurePanel>
         </Disclosure>
 
-        <Disclosure>
+        <Disclosure defaultOpen={ptotSuggestionCount > 0}>
           <DisclosureButton className="group ">
             <div className="flex items-center py-2 gap-2 hover:bg-[#E6F3FF] ">
               <CaretRight className="ease-in-out transition-all duration-200  group-data-[open]:rotate-90" />
@@ -333,17 +390,11 @@ export default function MDSSuggestion({ row }: { row: MDSFinal }) {
             transition
             className="origin-top transition duration-200 ease-out data-[closed]:-translate-y-3 data-[closed]:opacity-0"
           >
-            {row.ptot_final_entry.clinical_category ? (
-              <PTOTTable data={row.ptot_final_entry} />
-            ) : (
-              <div className="flex items-center justify-center h-40">
-                <p className="font-bold text-lg">No Record Found</p>
-              </div>
-            )}
+            <PTOTTable data={ptot_data} />
           </DisclosurePanel>
         </Disclosure>
 
-        <Disclosure>
+        <Disclosure defaultOpen={NursingSuggestionCount > 0}>
           <DisclosureButton className="group ">
             <div className="flex items-center py-2 gap-2 hover:bg-[#E6F3FF] ">
               <CaretRight className="ease-in-out transition-all duration-200  group-data-[open]:rotate-90" />
