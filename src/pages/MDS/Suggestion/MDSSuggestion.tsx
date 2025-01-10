@@ -120,7 +120,7 @@ export default function MDSSuggestion({ row }: { row: MDSFinal }) {
   }, {});
   const ptotSuggestionCount = (
     row.ptot_final_entry?.function_score_all || []
-  ).flatMap((d) => d.suggestion).length;
+  ).filter((d) => d.suggestion && d.suggestion.length > 0).length;
   const extensiveServices = row.nursing_cc_final_entry.nursing_mds_item_es;
   const specialCareHigh = row.nursing_cc_final_entry.nursing_mds_item_sch;
   const specialCareLow = row.nursing_cc_final_entry.nursing_mds_item_scl;
