@@ -47,7 +47,10 @@ export default function NursingTableWrapper({
       accessorKey: 'description',
       header: 'Description',
       cell: (info) => (
-        <td className="py-2 px-4 border-t border-l whitespace-pre-line border-gray-600">
+        <td
+          className="py-2 px-4 border-t border-l whitespace-pre-line border-gray-600"
+          key={'123'}
+        >
           {info.getValue() as string}
         </td>
       ),

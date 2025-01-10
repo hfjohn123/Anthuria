@@ -296,7 +296,7 @@ export default function PTOTTable({ data }: { data: PTOTFinal }) {
     <div className="flex flex-col gap-5 px-5 py-5">
       <div>
         <span className="font-bold">Clinical Category:</span>
-        <p>{data.clinical_category}</p>
+        <p>{data.clinical_category || 'Not Available'}</p>
       </div>
 
       <SmallTableWrapper

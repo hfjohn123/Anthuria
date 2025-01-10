@@ -210,7 +210,7 @@ export default function NursingTable({ data }: { data: MDSFinal }) {
     <NursingTableContext.Provider value={data}>
       <div
         ref={containerRef}
-        className="flex flex-col gap-5 px-5 py-5 scroll-mt-26"
+        className={clsx('flex flex-col gap-5 px-5 py-5 xl:scroll-mt-26')}
       >
         <Stepper
           ref={stepperRef}
@@ -219,7 +219,7 @@ export default function NursingTable({ data }: { data: MDSFinal }) {
           orientation={orientation}
           onChangeStep={() => {
             containerRef.current?.scrollIntoView({
-              behavior: 'smooth',
+              behavior: orientation === 'horizontal' ? 'smooth' : 'instant',
               block: 'start',
             });
           }}
