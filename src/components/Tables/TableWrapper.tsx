@@ -246,12 +246,12 @@ export default function TableWrapper({
                           onClick={header.column.getToggleSortingHandler()}
                         >
                           {header.isPlaceholder ? null : (
-                            <div className="flex items-center">
-                              {flexRender(
-                                header.column.columnDef.header,
-                                header.getContext(),
-                              )}
+                            <div className="flex items-center w-full justify-between">
                               <div>
+                                {flexRender(
+                                  header.column.columnDef.header,
+                                  header.getContext(),
+                                )}
                                 {{
                                   asc: <SortUp className="inline size-5" />,
                                   desc: <SortDown className="inline size-5" />,
@@ -261,7 +261,13 @@ export default function TableWrapper({
                               </div>
                               {/*{header.column.getCanFilter() &&*/}
                               {/*  header.column.columnDef.filterFn && (*/}
-                              {/*    <Funnel className="inline size-5 opacity-70" />*/}
+                              {/*    <Button*/}
+                              {/*      onClick={(e) => {*/}
+                              {/*        e.stopPropagation();*/}
+                              {/*      }}*/}
+                              {/*    >*/}
+                              {/*      <Funnel className="inline size-5 opacity-70" />*/}
+                              {/*    </Button>*/}
                               {/*  )}*/}
                             </div>
                           )}
