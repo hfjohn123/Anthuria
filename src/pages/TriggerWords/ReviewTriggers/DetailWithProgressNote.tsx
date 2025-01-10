@@ -107,7 +107,7 @@ export default function DetailWithProgressNote({
                           }}
                         />
                       )}
-                      {!isthumbup && commentState !== null ? (
+                      {!isthumbup && commentState ? (
                         <CommentModal
                           data={{
                             comment: commentState,
