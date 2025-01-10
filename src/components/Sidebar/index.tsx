@@ -286,7 +286,8 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                             {(user_data.organization_id ===
                               'oxford_valley_health' ||
                               user_data.organization_id ===
-                                'the_triedge_labs') && (
+                                'the_triedge_labs' ||
+                              user_data.organization_id === 'ascent') && (
                               <li>
                                 <Link
                                   to="/trigger-words/incident-tracker"
