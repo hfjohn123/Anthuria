@@ -193,7 +193,6 @@ export default function PTOTTable({ data }: { data: PTOTFinal }) {
         const [thumbDownState, setThumbDownState] = useState(
           info.row.original.is_thumb_down || false,
         );
-        console.log(info.row.original.is_thumb_up);
         if (info.row.original.suggestion?.length ?? 0 > 0) {
           return (
             <td className=" py-2 px-4 border-t border-l border-gray-600">

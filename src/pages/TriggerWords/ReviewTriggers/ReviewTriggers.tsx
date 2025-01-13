@@ -362,9 +362,18 @@ export default function ReviewTriggers() {
       {
         accessorKey: 'trigger_word',
         header: 'Category Name',
-        accessorFn: (row) => row.trigger_words.map((d) => d.trigger_word),
+        accessorFn: (row) => {
+          const value = row.trigger_words.map((d) => d.trigger_word);
+          if (value.length === 0) {
+            return ['Uncategorized'];
+          }
+          return value;
+        },
         cell: (info) => {
           const value = info.getValue() as string[];
+          if (value[0] === 'Uncategorized') {
+            return <div className="flex flex-wrap gap-2"></div>;
+          }
           return (
             <div className="flex flex-wrap gap-2">
               {value.map((d) =>
@@ -740,6 +749,65 @@ export default function ReviewTriggers() {
                       />
                     );
                   })}
+              <NumberCards
+                keywordModal={true}
+                key="Uncategorized"
+                className={clsx(
+                  'col-span-1',
+                  'cursor-pointer',
+                  (
+                    (tableState.columnFilters.find(
+                      ({ id }) => id === 'trigger_word',
+                    )?.value as string[]) || []
+                  ).includes('Uncategorized')
+                    ? 'bg-slate-300 dark:bg-slate-600 '
+                    : 'bg-white dark:bg-boxdark hover:bg-slate-200 hover:dark:bg-slate-700',
+                )}
+                id={
+                  'NumberCards-' +
+                  'Uncategorized'.replace(' ', '-').replace(/\W/g, '-')
+                }
+                value={
+                  table
+                    .getColumn('trigger_word')
+                    ?.getFacetedUniqueValues()
+                    .get('Uncategorized') || 0
+                }
+                initialValue={initialFacetedCounts['Uncategorized'] || 0}
+                title={'Uncategorized'}
+                onClick={() => {
+                  let filter =
+                    (tableState.columnFilters.find(
+                      ({ id }) => id === 'trigger_word',
+                    )?.value as string[]) || [];
+                  if (filter.includes('Uncategorized')) {
+                    filter = filter.filter((f) => f !== 'Uncategorized');
+                  } else {
+                    filter.push('Uncategorized');
+                  }
+                  if (filter.length === 0) {
+                    setTableState((prev) => ({
+                      ...prev,
+                      columnFilters: prev.columnFilters.filter(
+                        ({ id }) => id !== 'trigger_word',
+                      ),
+                    }));
+                    return;
+                  }
+                  setTableState((prev) => ({
+                    ...prev,
+                    columnFilters: [
+                      ...prev.columnFilters.filter(
+                        ({ id }) => id !== 'trigger_word',
+                      ),
+                      {
+                        id: 'trigger_word',
+                        value: filter,
+                      },
+                    ],
+                  }));
+                }}
+              />
             </div>
             <div className="self-end">
               <NewTriggerWordModal
