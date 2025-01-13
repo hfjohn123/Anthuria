@@ -7,8 +7,9 @@ import {
 import SelectCaretDown from '../../../images/icon/SelectCaretDown.tsx';
 import clsx from 'clsx';
 import DateTimeFilter from './DateTimeFilter.tsx';
+import { Funnel } from '@phosphor-icons/react';
 
-export default function DateTimeDropdown({
+export default function DateTimeFunnelDropdown({
   id,
   value,
   autoFocus = true,
@@ -40,24 +41,12 @@ export default function DateTimeDropdown({
               value && value.length > 0 && 'border-body',
             )}
           >
-            <span className="">
-              {id}
-              {value && ': ' + value?.map((d) => d?.toDateString()).join(' - ')}
-            </span>
             {value && value.filter((d) => d).length > 0 ? (
               <div
                 onClick={() => clearFilter()}
                 className="fill-[rgb(204,204,204)]"
               >
-                <svg
-                  height="20"
-                  width="20"
-                  viewBox="0 0 20 20"
-                  aria-hidden="true"
-                  focusable="false"
-                >
-                  <path d="M14.348 14.849c-0.469 0.469-1.229 0.469-1.697 0l-2.651-3.030-2.651 3.029c-0.469 0.469-1.229 0.469-1.697 0-0.469-0.469-0.469-1.229 0-1.697l2.758-3.15-2.759-3.152c-0.469-0.469-0.469-1.228 0-1.697s1.228-0.469 1.697 0l2.652 3.031 2.651-3.031c0.469-0.469 1.228-0.469 1.697 0s0.469 1.229 0 1.697l-2.758 3.152 2.758 3.15c0.469 0.469 0.469 1.229 0 1.698z"></path>
-                </svg>
+                <Funnel className="inline size-5 opacity-70" />
               </div>
             ) : (
               <SelectCaretDown className="fill-[rgb(204,204,204)] hover:fill-[rgb(153,153,153)] data-[open]:fill-[rgb(153,153,153)]" />
