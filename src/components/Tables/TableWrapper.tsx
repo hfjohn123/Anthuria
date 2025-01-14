@@ -12,7 +12,7 @@ import PageNavigation from './PageNavigation.tsx';
 import SearchParams from '../../types/SearchParams.ts';
 import { useNavigate, useSearch } from '@tanstack/react-router';
 import exportExcel from '../../common/excelExport.ts';
-import { DownloadSimple, Funnel } from '@phosphor-icons/react';
+import { DownloadSimple } from '@phosphor-icons/react';
 import TableSettingModal from './TableSettingModal.tsx';
 import Filters from './Filters.tsx';
 import { IconField } from 'primereact/iconfield';

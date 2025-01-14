@@ -6,7 +6,7 @@
 @layer tailwind-base {
   @tailwind base;
   body {
-    @apply font-inter font-normal text-base text-body bg-whiten  relative z-1;
+    @apply font-inter font-normal text-base text-black bg-whiten  relative z-1;
   }
 }
 

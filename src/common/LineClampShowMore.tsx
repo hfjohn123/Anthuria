@@ -10,18 +10,18 @@ export default function LineClampShowMore({
   children: ReactNode;
 }) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [showButton, setShowButton] = useState(false);
-  const contentRef = useRef<HTMLDivElement>(null);
+  const [shouldShowButton, setShouldShowButton] = useState(false);
+  const contentElementRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const checkOverflow = () => {
-      const content = contentRef.current;
-      if (content) {
-        const style = window.getComputedStyle(content);
-        const lineHeight = parseInt(style.lineHeight);
+      const contentElement = contentElementRef.current;
+      if (contentElement) {
+        const style = getComputedStyle(contentElement);
+        const lineHeight = parseInt(style.lineHeight, 10);
         const maxHeight = lineHeight * maxLines;
 
-        setShowButton(content.scrollHeight > maxHeight);
+        setShouldShowButton(contentElement.scrollHeight > maxHeight);
       }
     };
 
@@ -39,10 +39,15 @@ export default function LineClampShowMore({
       } as CSSProperties)
     : {};
 
+  const handleToggle = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    setIsExpanded(!isExpanded);
+  };
+
   return (
     <div className="relative">
       <div
-        ref={contentRef}
+        ref={contentElementRef}
         style={lineClampStyle}
         className={`relative transition-all duration-300 ease-in-out ${className}`}
         aria-expanded={isExpanded}
@@ -50,16 +55,13 @@ export default function LineClampShowMore({
         {children}
       </div>
 
-      {showButton && (
+      {shouldShowButton && (
         <button
-          onClick={(event) => {
-            event.preventDefault();
-            setIsExpanded(!isExpanded);
-          }}
-          className="mt-2 text-blue-600 hover:text-blue-800 focus:ring-2 focus:ring-blue-500
-                     focus:outline-none font-medium rounded-md px-1 py-1 transition-colors
+          className="mt-1 text-blue-600 hover:text-blue-800 focus:ring-2 focus:ring-blue-500
+                     focus:outline-none font-medium rounded-md transition-colors
                      bg-transparent"
           aria-label={isExpanded ? 'Show less content' : 'Show more content'}
+          onClick={handleToggle}
         >
           {isExpanded ? 'Show Less' : 'Show More'}
         </button>

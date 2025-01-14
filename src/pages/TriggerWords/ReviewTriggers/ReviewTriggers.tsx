@@ -584,7 +584,7 @@ export default function ReviewTriggers() {
   return (
     data && (
       <DefaultLayout title={'Clinical Pulse'}>
-        <div className="flex flex-col gap-7 my-3 sm:my-9 max-w-screen-3xl sm:px-9 mx-auto">
+        <div className="flex flex-col gap-5 my-3 sm:my-5 max-w-screen-3xl sm:px-5 mx-auto">
           <h1 className="text-2xl font-bold">Review Triggers</h1>
           <>
             <div className="grid xl:grid-cols-5 grid-cols-3 gap-1 sm:gap-6 ">
