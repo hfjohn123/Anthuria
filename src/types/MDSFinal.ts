@@ -10,6 +10,20 @@ export type PDPMPatient = {
   upstream: string;
   operation_name: string;
   url_header: string;
+  mds_nta_group: string;
+  mds_nta_cmi: number;
+  mds_nta_pay: number;
+  suggest_nta_group: string;
+  suggest_nta_cmi: number;
+  suggest_nta_pay: number;
+  n_nta_suggestion: number;
+  mds_slp_group: string;
+  mds_slp_cmi: number;
+  mds_slp_pay: number;
+  suggest_slp_group: string;
+  suggest_slp_cmi: number;
+  suggest_slp_pay: number;
+  n_slp_suggestion: number;
 };
 
 export type MDSFinal = {

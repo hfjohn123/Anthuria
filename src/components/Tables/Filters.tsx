@@ -487,7 +487,8 @@ export default function Filters({
               .filter(
                 (c) =>
                   !tableState.columnFilters.find((f) => f.id === c.id) &&
-                  !permanentColumnFilters.includes(c.id),
+                  !permanentColumnFilters.includes(c.id) &&
+                  c.getCanFilter(),
               )
               .map((c) => ({
                 label: c.columnDef.header as string,

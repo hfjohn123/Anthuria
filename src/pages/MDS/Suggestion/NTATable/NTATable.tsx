@@ -181,7 +181,10 @@ export default function NTATable({ data }: { data: NTAEntry[] }) {
         const total = info.table
           .getRowModel()
           .rows.filter((row) => !row.original.is_mds_table)
-          .reduce((sum, row) => sum + row.original.score, 0);
+          .reduce((sum, row) => {
+            if (row.original.is_thumb_down) return sum;
+            return sum + row.original.score;
+          }, 0);
         return (
           <td className="whitespace-nowrap text-left py-2 px-4 border-t border-l border-gray-600 ">
             + {total}
@@ -201,9 +204,10 @@ export default function NTATable({ data }: { data: NTAEntry[] }) {
       },
 
       footer: (info) => {
-        const total = info.table
-          .getRowModel()
-          .rows.reduce((sum, row) => sum + row.original.score, 0);
+        const total = info.table.getRowModel().rows.reduce((sum, row) => {
+          if (row.original.is_thumb_down) return sum;
+          return sum + row.original.score;
+        }, 0);
         return (
           <td className="whitespace-nowrap text-left py-2 px-4 border-t border-l border-gray-600 ">
             Projected score: {total} ({getNTACategory(total)}, CMI:{' '}

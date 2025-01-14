@@ -17,6 +17,8 @@ import { Tooltip } from 'primereact/tooltip';
 
 import clsx from 'clsx';
 import _ from 'lodash';
+import { useContext } from 'react';
+import { MDSPatientContext } from './MDSDetailLoading.tsx';
 
 const SLPSkeleton = [
   { item: 'ci', condition: 'Cognitive Impairment' },
@@ -70,6 +72,7 @@ const PTOTSkeleton = [
 ];
 
 export default function MDSSuggestion({ row }: { row: MDSFinal }) {
+  const patientData = useContext(MDSPatientContext);
   const ptot_joined = _.values(
     _.merge(
       {},
@@ -273,10 +276,14 @@ export default function MDSSuggestion({ row }: { row: MDSFinal }) {
   }
   const suggestCMI = NusingMapping[suggestGroup as keyof typeof NusingMapping];
   const NTASuggestionCount = row.nta_final_entry.filter(
-    (d) => d.suggestion?.length || 0 > 0,
+    (d) =>
+      (d.suggestion?.length || 0 > 0) &&
+      (d.is_thumb_down === null || !d.is_thumb_down),
   ).length;
   const SLPSuggestionCount = row.slp_final_entry.filter(
-    (d) => d.suggestion?.length || 0 > 0,
+    (d) =>
+      (d.suggestion?.length || 0 > 0) &&
+      (d.is_thumb_down === null || !d.is_thumb_down),
   ).length;
   const NursingSuggestionCount =
     (extensiveServices?.filter((d) => d.nursing_mds_suggestion.length > 0)

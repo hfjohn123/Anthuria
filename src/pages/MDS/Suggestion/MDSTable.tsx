@@ -142,6 +142,95 @@ export default function MDSTable({ data }: { data: PDPMPatient[] }) {
         type: 'daterange',
       },
     },
+    {
+      accessorKey: 'n_nta_suggestion',
+      enableColumnFilter: false,
+      accessorFn: (row) => row.suggest_nta_pay - row.mds_nta_pay,
+      header: 'NTA',
+      cell: (info) => {
+        const value = info.row.original.n_nta_suggestion as number;
+        const mainString = value === 1 ? 'Suggestion' : 'Suggestions';
+        const subString =
+          'Original NTA Group: ' +
+          info.row.original.mds_nta_group +
+          ', Original CMI: ' +
+          info.row.original.mds_nta_cmi +
+          ', Original Opptunity: $' +
+          info.row.original.mds_nta_pay;
+        const suggestString =
+          'Suggest NTA Group: ' +
+          info.row.original.suggest_nta_group +
+          ', Suggest CMI: ' +
+          info.row.original.suggest_nta_cmi +
+          ', Suggest Opportunity: $' +
+          info.row.original.suggest_nta_pay;
+        return (
+          <>
+            <HighlightWrapper
+              text={value + ' ' + mainString}
+              searchTerm={info.table.getState().globalFilter}
+            />
+            <p className="text-body-2">
+              <HighlightWrapper
+                text={subString}
+                searchTerm={info.table.getState().globalFilter}
+              />
+            </p>{' '}
+            <p className="text-body-2">
+              <HighlightWrapper
+                text={suggestString}
+                searchTerm={info.table.getState().globalFilter}
+              />
+            </p>
+          </>
+        );
+      },
+    },
+    {
+      accessorKey: 'n_slp_suggestion',
+      accessorFn: (row) => row.suggest_slp_pay - row.mds_slp_pay,
+      header: 'SLP',
+      enableColumnFilter: false,
+
+      cell: (info) => {
+        const value = info.row.original.n_slp_suggestion as number;
+        const mainString = value === 1 ? 'Suggestion' : 'Suggestions';
+        const subString =
+          'Original SLP Group: ' +
+          info.row.original.mds_slp_group +
+          ', Original CMI: ' +
+          info.row.original.mds_slp_cmi +
+          ', Original Opptunity: $' +
+          info.row.original.mds_slp_pay;
+        const suggestString =
+          'Suggest SLP Group: ' +
+          info.row.original.suggest_slp_group +
+          ', Suggest CMI: ' +
+          info.row.original.suggest_slp_cmi +
+          ', Suggest Opportunity: $' +
+          info.row.original.suggest_slp_pay;
+        return (
+          <>
+            <HighlightWrapper
+              text={value + ' ' + mainString}
+              searchTerm={info.table.getState().globalFilter}
+            />
+            <p className="text-body-2">
+              <HighlightWrapper
+                text={subString}
+                searchTerm={info.table.getState().globalFilter}
+              />
+            </p>{' '}
+            <p className="text-body-2">
+              <HighlightWrapper
+                text={suggestString}
+                searchTerm={info.table.getState().globalFilter}
+              />
+            </p>
+          </>
+        );
+      },
+    },
   ];
 
   const [tableState, setTableState] = useState<TableState>({
@@ -223,7 +312,7 @@ export default function MDSTable({ data }: { data: PDPMPatient[] }) {
   }, [tableState.columnVisibility]);
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-5">
       <p className="italic">
         Patients below include all eligible PDPM patients as well as any
         patients who were PDPM eligible in the past 30 days.
