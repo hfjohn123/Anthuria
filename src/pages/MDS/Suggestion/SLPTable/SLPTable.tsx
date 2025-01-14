@@ -277,7 +277,6 @@ export default function SLPTable({ data }: { data: SLPItem[] }) {
             (row.original.item === 'mad' || row.original.item === 'sd')
           );
         }).length;
-        console.log(total_general, total_diet);
         return (
           <td className="py-2 px-4 border-t border-l border-gray-600">
             <p className="whitespace-nowrap text-left">= {total_general}</p>
