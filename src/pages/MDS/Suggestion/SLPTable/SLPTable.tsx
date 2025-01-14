@@ -196,6 +196,7 @@ export default function SLPTable({ data }: { data: SLPItem[] }) {
           return (
             !row.original.is_mds_table &&
             (row.original.suggestion?.length ?? 0) > 0 &&
+            row.original.is_thumb_down !== true &&
             row.original.item !== 'mad' &&
             row.original.item !== 'sd'
           );
@@ -204,6 +205,7 @@ export default function SLPTable({ data }: { data: SLPItem[] }) {
           return (
             !row.original.is_mds_table &&
             (row.original.suggestion?.length ?? 0) > 0 &&
+            row.original.is_thumb_down !== true &&
             (row.original.item === 'mad' || row.original.item === 'sd')
           );
         }).length;
@@ -261,7 +263,8 @@ export default function SLPTable({ data }: { data: SLPItem[] }) {
         const total_general = info.table.getRowModel().rows.filter((row) => {
           return (
             (row.original.is_mds_table ||
-              (row.original.suggestion?.length ?? 0) > 0) &&
+              ((row.original.suggestion?.length ?? 0) > 0 &&
+                row.original.is_thumb_down != true)) &&
             row.original.item !== 'mad' &&
             row.original.item !== 'sd'
           );
@@ -269,10 +272,12 @@ export default function SLPTable({ data }: { data: SLPItem[] }) {
         const total_diet = info.table.getRowModel().rows.filter((row) => {
           return (
             (row.original.is_mds_table ||
-              (row.original.suggestion?.length ?? 0) > 0) &&
+              ((row.original.suggestion?.length ?? 0) > 0 &&
+                row.original.is_thumb_down != true)) &&
             (row.original.item === 'mad' || row.original.item === 'sd')
           );
         }).length;
+        console.log(total_general, total_diet);
         return (
           <td className="py-2 px-4 border-t border-l border-gray-600">
             <p className="whitespace-nowrap text-left">= {total_general}</p>

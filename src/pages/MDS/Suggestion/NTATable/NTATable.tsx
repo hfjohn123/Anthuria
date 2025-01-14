@@ -205,7 +205,8 @@ export default function NTATable({ data }: { data: NTAEntry[] }) {
 
       footer: (info) => {
         const total = info.table.getRowModel().rows.reduce((sum, row) => {
-          if (row.original.is_thumb_down) return sum;
+          if (row.original.is_thumb_down && !row.original.is_mds_table)
+            return sum;
           return sum + row.original.score;
         }, 0);
         return (
