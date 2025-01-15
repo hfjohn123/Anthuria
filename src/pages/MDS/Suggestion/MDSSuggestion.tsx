@@ -17,6 +17,8 @@ import { Tooltip } from 'primereact/tooltip';
 
 import clsx from 'clsx';
 import _ from 'lodash';
+import { useContext } from 'react';
+import { MDSPatientContext } from './MDSDetailLoading.tsx';
 
 const SLPSkeleton = [
   { item: 'ci', condition: 'Cognitive Impairment' },
@@ -70,6 +72,7 @@ const PTOTSkeleton = [
 ];
 
 export default function MDSSuggestion({ row }: { row: MDSFinal }) {
+  const patientInfo = useContext(MDSPatientContext);
   const ptot_joined = _.values(
     _.merge(
       {},
@@ -308,6 +311,7 @@ export default function MDSSuggestion({ row }: { row: MDSFinal }) {
           className="size-6 focus:outline-none bot-icon"
         />
       </div>
+
       <Tooltip className="z-99 text-xs" target=".bot-icon" />
       <Tooltip
         className="z-99 w-44 text-xs"
@@ -336,6 +340,15 @@ export default function MDSSuggestion({ row }: { row: MDSFinal }) {
                 {NTASuggestionCount} AI SUGGESTION
                 {NTASuggestionCount !== 1 && 'S'}
               </div>
+              <p className="text-gray-600 ">
+                RATE OPP: $
+                {(
+                  Math.round(
+                    (patientInfo.suggest_nta_pay - patientInfo.mds_nta_pay) *
+                      100,
+                  ) / 100
+                ).toFixed(2)}
+              </p>
             </div>
           </DisclosureButton>
           <DisclosurePanel
@@ -363,6 +376,15 @@ export default function MDSSuggestion({ row }: { row: MDSFinal }) {
                 {SLPSuggestionCount} AI SUGGESTION
                 {SLPSuggestionCount !== 1 && 'S'}
               </div>
+              <p className="text-gray-600 ">
+                RATE OPP: $
+                {(
+                  Math.round(
+                    (patientInfo.suggest_slp_pay - patientInfo.mds_slp_pay) *
+                      100,
+                  ) / 100
+                ).toFixed(2)}
+              </p>
             </div>
           </DisclosureButton>
           <DisclosurePanel
