@@ -24,6 +24,8 @@ export type PDPMPatient = {
   suggest_slp_cmi: number;
   suggest_slp_pay: number;
   n_slp_suggestion: number;
+  original_nta_opportunities?: number;
+  original_slp_opportunities?: number;
 };
 
 export type MDSFinal = {
@@ -60,12 +62,12 @@ export type MDSFinal = {
 
 export type NTAEntry = {
   comorbidity: string;
-  is_mds_table: boolean;
+  is_mds_table: number;
   mds_item: string;
   score: number;
   suggestion?: SuggestedICD10[];
-  is_thumb_up: boolean | null;
-  is_thumb_down: boolean | null;
+  is_thumb_up: number | null;
+  is_thumb_down: number | null;
   comment: string | null;
   category: string;
   item: string;
@@ -74,9 +76,9 @@ export type NTAEntry = {
 export type SLPItem = {
   category: string;
   item: string;
-  is_mds_table: boolean;
-  is_thumb_up: boolean | null;
-  is_thumb_down: boolean | null;
+  is_mds_table: number;
+  is_thumb_up: number | null;
+  is_thumb_down: number | null;
   comment: string | null;
   condition: string;
 } & (

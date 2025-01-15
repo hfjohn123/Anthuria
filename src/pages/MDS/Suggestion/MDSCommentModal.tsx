@@ -19,13 +19,13 @@ export default function MDSCommentModal({
   setThumbUpState,
 }: {
   comment: string;
-  is_thumb_down: boolean;
+  is_thumb_down: number;
   internal_facility_id: string;
   internal_patient_id: string;
   category: string;
   item: string;
-  setThumbUpState: Dispatch<SetStateAction<boolean>>;
-  setThumbDownState: Dispatch<SetStateAction<boolean>>;
+  setThumbUpState: Dispatch<SetStateAction<number>>;
+  setThumbDownState: Dispatch<SetStateAction<number>>;
 }) {
   const [showModal, setShowModal] = useState(false);
   const { route } = useContext(AuthContext);
@@ -58,8 +58,9 @@ export default function MDSCommentModal({
       });
     },
     onMutate: async () => {
-      setThumbDownState(!is_thumb_down);
-      setThumbUpState(false);
+      setThumbDownState(is_thumb_down === 1 ? 0 : 1);
+      console.log('test');
+      setThumbUpState(0);
 
       await queryClient.cancelQueries({
         queryKey: [
@@ -68,6 +69,9 @@ export default function MDSCommentModal({
           internal_patient_id,
           internal_facility_id,
         ],
+      });
+      await queryClient.cancelQueries({
+        queryKey: ['/mds/view_pdpm_mds_patient_list', route],
       });
     },
     onSettled: () => {
@@ -78,6 +82,9 @@ export default function MDSCommentModal({
           internal_patient_id,
           internal_facility_id,
         ],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['/mds/view_pdpm_mds_patient_list', route],
       });
     },
   });
@@ -119,6 +126,10 @@ export default function MDSCommentModal({
               internal_facility_id,
             ],
           });
+          queryClient.cancelQueries({
+            queryKey: ['/mds/view_pdpm_mds_patient_list', route],
+          });
+
           setShowModal(true);
         }}
         className="bg-transparent border-0 p-0 m-0"

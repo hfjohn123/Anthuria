@@ -531,7 +531,7 @@ export default function ReviewTriggers() {
     data: data?.data ?? [],
     columns,
     state: tableState,
-
+    autoResetAll: false,
     onStateChange: setTableState,
     getRowCanExpand: () => true,
     autoResetPageIndex: false,

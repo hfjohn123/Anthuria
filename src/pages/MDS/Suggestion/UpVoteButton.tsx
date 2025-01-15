@@ -15,9 +15,9 @@ export default function UpVoteButton({
   category,
   item,
 }: {
-  is_thumb_up: boolean;
-  setThumbUpState: Dispatch<SetStateAction<boolean>>;
-  setThumbDownState: Dispatch<SetStateAction<boolean>>;
+  is_thumb_up: number;
+  setThumbUpState: Dispatch<SetStateAction<number>>;
+  setThumbDownState: Dispatch<SetStateAction<number>>;
   internal_facility_id: string;
   internal_patient_id: string;
   category: string;
@@ -50,8 +50,8 @@ export default function UpVoteButton({
       });
     },
     onMutate: async () => {
-      setThumbUpState(!is_thumb_up);
-      setThumbDownState(false);
+      setThumbUpState(is_thumb_up === 1 ? 0 : 1);
+      setThumbDownState(0);
 
       await queryClient.cancelQueries({
         queryKey: [
@@ -60,6 +60,9 @@ export default function UpVoteButton({
           internal_patient_id,
           internal_facility_id,
         ],
+      });
+      await queryClient.cancelQueries({
+        queryKey: ['/mds/view_pdpm_mds_patient_list', route],
       });
     },
     onSettled: () => {
@@ -70,6 +73,9 @@ export default function UpVoteButton({
           internal_patient_id,
           internal_facility_id,
         ],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['/mds/view_pdpm_mds_patient_list', route],
       });
     },
   });

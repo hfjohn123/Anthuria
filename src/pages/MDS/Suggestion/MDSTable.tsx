@@ -145,7 +145,7 @@ export default function MDSTable({ data }: { data: PDPMPatient[] }) {
     {
       accessorKey: 'n_nta_suggestion',
       enableColumnFilter: false,
-      accessorFn: (row) => row.suggest_nta_pay - row.mds_nta_pay,
+      accessorFn: (row) => row.original_nta_opportunities,
       header: 'NTA',
       cell: (info) => {
         const value = info.row.original.n_nta_suggestion as number;
@@ -188,7 +188,7 @@ export default function MDSTable({ data }: { data: PDPMPatient[] }) {
     },
     {
       accessorKey: 'n_slp_suggestion',
-      accessorFn: (row) => row.suggest_slp_pay - row.mds_slp_pay,
+      accessorFn: (row) => row.original_slp_opportunities,
       header: 'SLP',
       enableColumnFilter: false,
 

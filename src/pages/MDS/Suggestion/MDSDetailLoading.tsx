@@ -1,7 +1,7 @@
 import MDSDetail from './MDSDetail.tsx';
 import { Row } from '@tanstack/react-table';
 import { PDPMPatient } from '../../../types/MDSFinal.ts';
-import { createContext } from 'react';
+import { createContext, memo } from 'react';
 
 export const MDSPatientContext = createContext<PDPMPatient>({
   internal_facility_id: '',
@@ -28,11 +28,19 @@ export const MDSPatientContext = createContext<PDPMPatient>({
   suggest_slp_pay: 0,
   n_slp_suggestion: 0,
 });
+const MemoizedMDSDetail = memo(MDSDetail, (prevProps, nextProps) => {
+  // Custom comparison logic
+  return (
+    prevProps.row.original.internal_patient_id ===
+    nextProps.row.original.internal_patient_id
+  );
+  // Add more specific comparisons as needed
+});
 
 export default function MDSDetailLoading({ row }: { row: Row<PDPMPatient> }) {
   return (
     <MDSPatientContext.Provider value={row.original}>
-      <MDSDetail row={row} />
+      <MemoizedMDSDetail row={row} />
     </MDSPatientContext.Provider>
   );
 }

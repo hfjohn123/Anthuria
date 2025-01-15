@@ -17,8 +17,6 @@ import { Tooltip } from 'primereact/tooltip';
 
 import clsx from 'clsx';
 import _ from 'lodash';
-import { useContext } from 'react';
-import { MDSPatientContext } from './MDSDetailLoading.tsx';
 
 const SLPSkeleton = [
   { item: 'ci', condition: 'Cognitive Impairment' },
@@ -72,7 +70,6 @@ const PTOTSkeleton = [
 ];
 
 export default function MDSSuggestion({ row }: { row: MDSFinal }) {
-  const patientData = useContext(MDSPatientContext);
   const ptot_joined = _.values(
     _.merge(
       {},

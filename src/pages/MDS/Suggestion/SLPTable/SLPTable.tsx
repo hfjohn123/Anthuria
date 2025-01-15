@@ -196,7 +196,7 @@ export default function SLPTable({ data }: { data: SLPItem[] }) {
           return (
             !row.original.is_mds_table &&
             (row.original.suggestion?.length ?? 0) > 0 &&
-            row.original.is_thumb_down !== true &&
+            row.original.is_thumb_down !== 1 &&
             row.original.item !== 'mad' &&
             row.original.item !== 'sd'
           );
@@ -205,7 +205,7 @@ export default function SLPTable({ data }: { data: SLPItem[] }) {
           return (
             !row.original.is_mds_table &&
             (row.original.suggestion?.length ?? 0) > 0 &&
-            row.original.is_thumb_down !== true &&
+            row.original.is_thumb_down !== 1 &&
             (row.original.item === 'mad' || row.original.item === 'sd')
           );
         }).length;
@@ -223,10 +223,10 @@ export default function SLPTable({ data }: { data: SLPItem[] }) {
       header: 'Review',
       cell: (info) => {
         const [thumbUpState, setThumbUpState] = useState(
-          info.row.original.is_thumb_up || false,
+          info.row.original.is_thumb_up || 0,
         );
         const [thumbDownState, setThumbDownState] = useState(
-          info.row.original.is_thumb_down || false,
+          info.row.original.is_thumb_down || 0,
         );
         if (info.row.original.suggestion?.length ?? 0 > 0) {
           return (
@@ -264,7 +264,7 @@ export default function SLPTable({ data }: { data: SLPItem[] }) {
           return (
             (row.original.is_mds_table ||
               ((row.original.suggestion?.length ?? 0) > 0 &&
-                row.original.is_thumb_down != true)) &&
+                row.original.is_thumb_down !== 1)) &&
             row.original.item !== 'mad' &&
             row.original.item !== 'sd'
           );
@@ -273,7 +273,7 @@ export default function SLPTable({ data }: { data: SLPItem[] }) {
           return (
             (row.original.is_mds_table ||
               ((row.original.suggestion?.length ?? 0) > 0 &&
-                row.original.is_thumb_down != true)) &&
+                row.original.is_thumb_down !== 1)) &&
             (row.original.item === 'mad' || row.original.item === 'sd')
           );
         }).length;
