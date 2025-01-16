@@ -32,6 +32,7 @@ import _, { Dictionary } from 'lodash';
 import { CheckCircle, XCircle } from '@phosphor-icons/react';
 import HighlightWrapper from '../../../components/Basic/HighlightWrapper.tsx';
 import highlightGenerator from '../../../common/highlightGenerator.ts';
+import { MeterGroup } from 'primereact/metergroup';
 
 const predefinedTriggerWords = [
   'Fall',
@@ -134,28 +135,22 @@ export default function ReviewTriggers() {
   const [includeCreatedDate, setIncludeCreatedDate] = useState(
     !search['history'],
   );
-
+  const today = new Date();
+  let twentyFourhAgo = new Date(today.getTime() - 1000 * 60 * 60 * 24);
+  if (includeCreatedDate) {
+    twentyFourhAgo = new Date(today.getTime() - 1000 * 60 * 60 * 24);
+    twentyFourhAgo.setHours(0, 0, 0, 0);
+  } else {
+    twentyFourhAgo = new Date(today.getTime() - 1000 * 60 * 60 * 24 * 7);
+  }
+  today.setHours(23, 59, 59, 999);
   const fetchTriggerWord = async (signal?: AbortSignal) => {
-    let params: { [key: string]: any } = {};
-    if (includeCreatedDate) {
-      const today = new Date();
-      const twentyFourhAgo = new Date(today.getTime() - 1000 * 60 * 60 * 24);
-      twentyFourhAgo.setHours(0, 0, 0, 0);
-      today.setHours(23, 59, 59, 999);
-      params = { from_date: twentyFourhAgo, to_date: today };
-    } else {
-      const today = new Date();
-      const twentyFourhAgo = new Date(
-        today.getTime() - 1000 * 60 * 60 * 24 * 7,
-      );
-      today.setHours(23, 59, 59, 999);
-      params = {
-        from_date: twentyFourhAgo,
-        to_date: today,
-        // pagelimit: tableState.pagination.pageSize,
-        // page: tableState.pagination.pageIndex + 1,
-      };
-    }
+    const params: { [key: string]: any } = {
+      from_date: twentyFourhAgo,
+      to_date: today,
+      // pagelimit: tableState.pagination.pageSize,
+      // page: tableState.pagination.pageIndex + 1,
+    };
     const response = await axios.get(`${route}/trigger_final`, {
       signal,
       params,
@@ -580,12 +575,51 @@ export default function ReviewTriggers() {
       return <div>Error: Unknown error</div>;
     }
   }
+  const total_count = table.getCoreRowModel().rows.length;
+  const uncategorized_count = table
+    .getCoreRowModel()
+    .rows.filter((row) => row.original.trigger_words.length === 0).length;
 
   return (
     data && (
-      <DefaultLayout title={'Clinical Pulse'}>
-        <div className="flex flex-col gap-5 my-3 sm:my-5 max-w-screen-3xl sm:px-5 mx-auto">
-          <h1 className="text-2xl font-bold">Review Triggers</h1>
+      <DefaultLayout>
+        <div className="flex flex-col gap-5 my-3 sm:my-5 max-w-screen-3xl sm:px-5 mx-auto ">
+          <div className="w-full bg-white dark:bg-boxdark rounded-[30px] p-7.5 flex justify-between items-center">
+            <div className="flex flex-col gap-3">
+              <h1 className="font-semibold text-2xl">Clinical Pulse</h1>
+              <p className="text-sm	text-gray-500 ">
+                {table.getFilteredRowModel().rows.length} of {total_count}{' '}
+                {total_count >= 1
+                  ? `records starting since ${twentyFourhAgo.toLocaleString(
+                      'en-US',
+                      {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric',
+                        hour: 'numeric',
+                        minute: 'numeric',
+                        timeZoneName: 'short',
+                      },
+                    )}  are `
+                  : `record is `}
+                displayed
+              </p>
+            </div>
+            <MeterGroup
+              values={[
+                {
+                  label: 'Categorized',
+                  value:
+                    ((total_count - uncategorized_count) / total_count) * 100,
+                },
+                {
+                  label: 'Uncategorized',
+                  color: '#E2E8F0',
+                  value: (uncategorized_count / total_count) * 100,
+                },
+              ]}
+            />
+          </div>
           <>
             <div className="grid xl:grid-cols-5 grid-cols-3 gap-1 sm:gap-6 ">
               {predefinedTriggerWords.map((word) => (
@@ -692,6 +726,7 @@ export default function ReviewTriggers() {
                             ?.getFacetedUniqueValues()
                             .get(kw.group_name) || 0
                         }
+                        initialValue={initialFacetedCounts[kw.group_name] || 0}
                         key={kw.group_name}
                         className={clsx(
                           'col-span-1',
@@ -773,7 +808,7 @@ export default function ReviewTriggers() {
                     ?.getFacetedUniqueValues()
                     .get('Uncategorized') || 0
                 }
-                initialValue={initialFacetedCounts['Uncategorized'] || 0}
+                initialValue={uncategorized_count}
                 title={'Uncategorized'}
                 onClick={() => {
                   let filter =
