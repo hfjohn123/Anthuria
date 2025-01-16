@@ -42,7 +42,6 @@ function getNTACategory(score: number) {
 
 export default function NTATable({ data }: { data: NTAEntry[] }) {
   const row_data = useContext(MDSContext);
-  console.log('rendering nta table', data);
   const columns: ColumnDef<NTAEntry>[] = [
     {
       accessorKey: 'comorbidity',
@@ -146,7 +145,6 @@ export default function NTATable({ data }: { data: NTAEntry[] }) {
         const [thumbDownState, setThumbDownState] = useState(
           info.row.original.is_thumb_down || 0,
         );
-        console.log(thumbDownState);
         if (info.row.original.suggestion?.length ?? 0 > 0) {
           return (
             <td className=" py-2 px-4 border-t border-l border-gray-600">

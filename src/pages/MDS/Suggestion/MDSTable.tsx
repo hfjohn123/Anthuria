@@ -381,6 +381,24 @@ export default function MDSTable({ data }: { data: PDPMPatient[] }) {
       pageSize: 30,
     },
   });
+
+  useEffect(() => {
+    if (localStorage.getItem('clearMDSStorage') !== '5') {
+      localStorage.removeItem('MDSUserVisibilitySettings');
+      localStorage.setItem('clearMDSStorage', '5');
+    } else {
+      const userVisibilitySettings = localStorage.getItem(
+        'MDSUserVisibilitySettings',
+      );
+      if (userVisibilitySettings) {
+        setTableState((prev) => ({
+          ...prev,
+          columnVisibility: JSON.parse(userVisibilitySettings),
+        }));
+      }
+    }
+  }, []);
+
   const table = useReactTable({
     data: data,
     columns,

@@ -23,7 +23,6 @@ export default function TableSettingModal({
   initialTableState?: TableState;
 }) {
   const [showSettingsModal, setShowSettingsModal] = useState(false);
-  console.log(tableState.columnVisibility);
   return (
     <Modal
       isOpen={showSettingsModal}
