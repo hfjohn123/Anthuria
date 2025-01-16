@@ -48,6 +48,10 @@ export default function MDS() {
                   item.suggest_nta_pay - item.mds_nta_pay,
                 original_slp_opportunities:
                   item.suggest_slp_pay - item.mds_slp_pay,
+                original_pt_opportunities:
+                  item.suggest_pt_pay - item.mds_pt_pay,
+                original_ot_opportunities:
+                  item.suggest_ot_pay - item.mds_ot_pay,
               };
         });
       });

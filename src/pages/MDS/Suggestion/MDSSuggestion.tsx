@@ -413,6 +413,18 @@ export default function MDSSuggestion({ row }: { row: MDSFinal }) {
                 {ptotSuggestionCount} AI SUGGESTION
                 {ptotSuggestionCount !== 1 && 'S'}
               </div>
+              <p className="text-gray-600 ">
+                RATE OPP: $
+                {(
+                  Math.round(
+                    (patientInfo.suggest_pt_pay +
+                      patientInfo.suggest_ot_pay -
+                      patientInfo.mds_pt_pay -
+                      patientInfo.mds_ot_pay) *
+                      100,
+                  ) / 100
+                ).toFixed(2)}
+              </p>
             </div>
           </DisclosureButton>
           <DisclosurePanel

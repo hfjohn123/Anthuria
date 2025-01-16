@@ -143,7 +143,7 @@ export default function MDSTable({ data }: { data: PDPMPatient[] }) {
       },
     },
     {
-      accessorKey: 'n_nta_suggestion',
+      accessorKey: 'nta',
       enableColumnFilter: false,
       accessorFn: (row) => row.original_nta_opportunities,
       header: 'NTA',
@@ -187,7 +187,7 @@ export default function MDSTable({ data }: { data: PDPMPatient[] }) {
       },
     },
     {
-      accessorKey: 'n_slp_suggestion',
+      accessorKey: 'slp',
       accessorFn: (row) => row.original_slp_opportunities,
       header: 'SLP',
       enableColumnFilter: false,
@@ -209,6 +209,96 @@ export default function MDSTable({ data }: { data: PDPMPatient[] }) {
           info.row.original.suggest_slp_cmi +
           ', Opportunity: $' +
           info.row.original.suggest_slp_pay;
+        return (
+          <>
+            <HighlightWrapper
+              text={value + ' ' + mainString}
+              searchTerm={info.table.getState().globalFilter}
+            />
+            <p className="text-body-2">
+              <HighlightWrapper
+                text={subString}
+                searchTerm={info.table.getState().globalFilter}
+              />
+            </p>{' '}
+            <p className="text-body-2">
+              <HighlightWrapper
+                text={suggestString}
+                searchTerm={info.table.getState().globalFilter}
+              />
+            </p>
+          </>
+        );
+      },
+    },
+    {
+      accessorKey: 'pt',
+      accessorFn: (row) => row.original_pt_opportunities,
+      header: 'PT',
+      enableColumnFilter: false,
+
+      cell: (info) => {
+        const value = info.row.original.n_pt_suggestion as number;
+        const mainString = value === 1 ? 'Suggestion' : 'Suggestions';
+        const subString =
+          'Original Group: ' +
+          info.row.original.mds_pt_group +
+          ', CMI: ' +
+          info.row.original.mds_pt_cmi +
+          ', Opportunity: $' +
+          info.row.original.mds_pt_pay;
+        const suggestString =
+          'Suggest Group: ' +
+          info.row.original.suggest_pt_group +
+          ', CMI: ' +
+          info.row.original.suggest_pt_cmi +
+          ', Opportunity: $' +
+          info.row.original.suggest_pt_pay;
+        return (
+          <>
+            <HighlightWrapper
+              text={value + ' ' + mainString}
+              searchTerm={info.table.getState().globalFilter}
+            />
+            <p className="text-body-2">
+              <HighlightWrapper
+                text={subString}
+                searchTerm={info.table.getState().globalFilter}
+              />
+            </p>{' '}
+            <p className="text-body-2">
+              <HighlightWrapper
+                text={suggestString}
+                searchTerm={info.table.getState().globalFilter}
+              />
+            </p>
+          </>
+        );
+      },
+    },
+    {
+      accessorKey: 'ot',
+      accessorFn: (row) => row.original_ot_opportunities,
+      header: 'OT',
+      enableColumnFilter: false,
+
+      cell: (info) => {
+        const value = info.row.original.n_ot_suggestion as number;
+        const mainString = value === 1 ? 'Suggestion' : 'Suggestions';
+        const subString =
+          'Original Group: ' +
+          info.row.original.mds_ot_group +
+          ', CMI: ' +
+          info.row.original.mds_ot_cmi +
+          ', Opportunity: $' +
+          info.row.original.mds_ot_pay;
+        const suggestString =
+          'Suggest Group: ' +
+          info.row.original.suggest_ot_group +
+          ', CMI: ' +
+          info.row.original.suggest_ot_cmi +
+          ', Opportunity: $' +
+          info.row.original.suggest_ot_pay;
         return (
           <>
             <HighlightWrapper

@@ -40,6 +40,8 @@ export type PDPMPatient = {
   n_ot_suggestion: number;
   original_nta_opportunities?: number;
   original_slp_opportunities?: number;
+  original_pt_opportunities?: number;
+  original_ot_opportunities?: number;
 };
 
 export type MDSFinal = {
