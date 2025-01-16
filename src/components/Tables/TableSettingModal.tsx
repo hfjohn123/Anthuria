@@ -20,9 +20,10 @@ export default function TableSettingModal({
   table: Table<any>;
   tableState: TableState;
   setTableState: React.Dispatch<React.SetStateAction<TableState>>;
-  initialTableState: TableState;
+  initialTableState?: TableState;
 }) {
   const [showSettingsModal, setShowSettingsModal] = useState(false);
+  console.log(tableState.columnVisibility);
   return (
     <Modal
       isOpen={showSettingsModal}
@@ -38,6 +39,7 @@ export default function TableSettingModal({
         <Select
           options={table
             .getAllColumns()
+            .filter((c) => c.getCanHide())
             .map((c) => {
               return {
                 value: c.id,
@@ -81,16 +83,18 @@ export default function TableSettingModal({
             }));
           }}
         />
-        <Button
-          onClick={() =>
-            setTableState((prev) => ({
-              ...prev,
-              columnVisibility: initialTableState.columnVisibility,
-            }))
-          }
-        >
-          Reset to default
-        </Button>
+        {initialTableState && (
+          <Button
+            onClick={() =>
+              setTableState((prev) => ({
+                ...prev,
+                columnVisibility: initialTableState.columnVisibility,
+              }))
+            }
+          >
+            Reset to default
+          </Button>
+        )}
       </div>
     </Modal>
   );

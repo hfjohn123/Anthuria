@@ -52,6 +52,7 @@ export default function MDSTable({ data }: { data: PDPMPatient[] }) {
         wrap: 'whitespace-nowrap',
         type: 'categorical',
       },
+      enableHiding: false,
       enableColumnFilter: false,
       filterFn: 'arrIncludesSome',
       cell: (info) => (
@@ -359,16 +360,20 @@ export default function MDSTable({ data }: { data: PDPMPatient[] }) {
             facility_name: false,
             patient_name: true,
             effective_start_date: true,
-            update_time: false,
-            existing_icd10: true,
+            nta: false,
+            slp: false,
+            pt: false,
+            ot: false,
             operation_name: user_data.organization_id === 'the_triedge_labs',
           }
         : {
             facility_name: false,
             patient_name: true,
             effective_start_date: true,
-            update_time: false,
-            existing_icd10: true,
+            nta: true,
+            slp: true,
+            pt: true,
+            ot: false,
             operation_name: user_data.organization_id === 'the_triedge_labs',
           },
     pagination: {
@@ -383,6 +388,7 @@ export default function MDSTable({ data }: { data: PDPMPatient[] }) {
     onStateChange: setTableState,
     getRowCanExpand: () => true,
     autoResetPageIndex: false,
+    autoResetAll: false,
     getFacetedUniqueValues: getFacetedUniqueValues(),
     autoResetExpanded: false,
     getCoreRowModel: getCoreRowModel(),
@@ -415,6 +421,7 @@ export default function MDSTable({ data }: { data: PDPMPatient[] }) {
         setTableState={setTableState}
         permanentColumnFilters={PERMANENT_COLUMN_FILTERS}
         renderExpandedRow={MDSDetailLoading}
+        tableSetting={true}
       />
     </div>
   );

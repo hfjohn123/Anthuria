@@ -204,7 +204,7 @@ export default function TableWrapper({
                     <DownloadSimple size={22} />
                   </Button>
                 )}
-                {tableSetting && initialTableState && (
+                {tableSetting && (
                   <TableSettingModal
                     table={table}
                     tableState={tableState}
