@@ -151,18 +151,18 @@ export default function MDSTable({ data }: { data: PDPMPatient[] }) {
         const value = info.row.original.n_nta_suggestion as number;
         const mainString = value === 1 ? 'Suggestion' : 'Suggestions';
         const subString =
-          'Original NTA Group: ' +
+          'Original Group: ' +
           info.row.original.mds_nta_group +
-          ', Original CMI: ' +
+          ', CMI: ' +
           info.row.original.mds_nta_cmi +
-          ', Original Opptunity: $' +
+          ', Opportunity: $' +
           info.row.original.mds_nta_pay;
         const suggestString =
-          'Suggest NTA Group: ' +
+          'Suggest Group: ' +
           info.row.original.suggest_nta_group +
-          ', Suggest CMI: ' +
+          ', CMI: ' +
           info.row.original.suggest_nta_cmi +
-          ', Suggest Opportunity: $' +
+          ', Opportunity: $' +
           info.row.original.suggest_nta_pay;
         return (
           <>
@@ -196,18 +196,18 @@ export default function MDSTable({ data }: { data: PDPMPatient[] }) {
         const value = info.row.original.n_slp_suggestion as number;
         const mainString = value === 1 ? 'Suggestion' : 'Suggestions';
         const subString =
-          'Original SLP Group: ' +
+          'Original Group: ' +
           info.row.original.mds_slp_group +
-          ', Original CMI: ' +
+          ', CMI: ' +
           info.row.original.mds_slp_cmi +
-          ', Original Opptunity: $' +
+          ', Opportunity: $' +
           info.row.original.mds_slp_pay;
         const suggestString =
-          'Suggest SLP Group: ' +
+          'Suggest Group: ' +
           info.row.original.suggest_slp_group +
-          ', Suggest CMI: ' +
+          ', CMI: ' +
           info.row.original.suggest_slp_cmi +
-          ', Suggest Opportunity: $' +
+          ', Opportunity: $' +
           info.row.original.suggest_slp_pay;
         return (
           <>
