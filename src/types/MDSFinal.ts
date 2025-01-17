@@ -38,10 +38,19 @@ export type PDPMPatient = {
   suggest_ot_cmi: number;
   suggest_ot_pay: number;
   n_ot_suggestion: number;
+  mds_nursing_group: string;
+  mds_nursing_cmi: number;
+  mds_nursing_pay: number;
+  suggest_nursing_group: string;
+  suggest_nursing_cmi: number;
+  suggest_nursing_pay: number;
+  n_nursing_suggestion: number;
   original_nta_opportunities?: number;
   original_slp_opportunities?: number;
   original_pt_opportunities?: number;
   original_ot_opportunities?: number;
+  original_nursing_opportunities?: number;
+  original_total_opportunities?: number;
 };
 
 export type MDSFinal = {

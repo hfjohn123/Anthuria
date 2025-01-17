@@ -285,16 +285,8 @@ export default function MDSSuggestion({ row }: { row: MDSFinal }) {
       (d.suggestion?.length || 0 > 0) &&
       (d.is_thumb_down === null || !d.is_thumb_down),
   ).length;
-  const NursingSuggestionCount =
-    (extensiveServices?.filter((d) => d.nursing_mds_suggestion.length > 0)
-      .length || 0) +
-    (specialCareHigh?.filter((d) => d.nursing_mds_suggestion.length > 0)
-      .length || 0) +
-    (specialCareLow?.filter((d) => d.nursing_mds_suggestion.length > 0)
-      .length || 0) +
-    (clinicalComplex?.filter((d) => d.nursing_mds_suggestion.length > 0)
-      .length || 0) +
-    (BIMS?.nursing_bscp_suggestion.length || 0);
+  const NursingSuggestionCount = patientInfo.n_nursing_suggestion;
+
   let NursingCount = currentGroup
     ? `Current Mix Group: ${currentGroup}, Current CMI: ${NusingMapping[currentGroup as keyof typeof NusingMapping]}, `
     : '';

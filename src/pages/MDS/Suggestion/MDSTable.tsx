@@ -152,18 +152,18 @@ export default function MDSTable({ data }: { data: PDPMPatient[] }) {
         const value = info.row.original.n_nta_suggestion as number;
         const mainString = value === 1 ? 'Suggestion' : 'Suggestions';
         const subString =
-          'Original Group: ' +
+          'Current: ' +
           info.row.original.mds_nta_group +
-          ', CMI: ' +
+          ', ' +
           info.row.original.mds_nta_cmi +
-          ', Opportunity: $' +
+          ', $' +
           info.row.original.mds_nta_pay;
         const suggestString =
-          'Suggest Group: ' +
+          'Suggested: ' +
           info.row.original.suggest_nta_group +
-          ', CMI: ' +
+          ', ' +
           info.row.original.suggest_nta_cmi +
-          ', Opportunity: $' +
+          ', $' +
           info.row.original.suggest_nta_pay;
         return (
           <>
@@ -197,18 +197,18 @@ export default function MDSTable({ data }: { data: PDPMPatient[] }) {
         const value = info.row.original.n_slp_suggestion as number;
         const mainString = value === 1 ? 'Suggestion' : 'Suggestions';
         const subString =
-          'Original Group: ' +
+          'Current: ' +
           info.row.original.mds_slp_group +
-          ', CMI: ' +
+          ', ' +
           info.row.original.mds_slp_cmi +
-          ', Opportunity: $' +
+          ', $' +
           info.row.original.mds_slp_pay;
         const suggestString =
-          'Suggest Group: ' +
+          'Suggested: ' +
           info.row.original.suggest_slp_group +
-          ', CMI: ' +
+          ', ' +
           info.row.original.suggest_slp_cmi +
-          ', Opportunity: $' +
+          ', $' +
           info.row.original.suggest_slp_pay;
         return (
           <>
@@ -242,18 +242,18 @@ export default function MDSTable({ data }: { data: PDPMPatient[] }) {
         const value = info.row.original.n_pt_suggestion as number;
         const mainString = value === 1 ? 'Suggestion' : 'Suggestions';
         const subString =
-          'Original Group: ' +
+          'Current: ' +
           info.row.original.mds_pt_group +
-          ', CMI: ' +
+          ', ' +
           info.row.original.mds_pt_cmi +
-          ', Opportunity: $' +
+          ', $' +
           info.row.original.mds_pt_pay;
         const suggestString =
-          'Suggest Group: ' +
+          'Suggested: ' +
           info.row.original.suggest_pt_group +
-          ', CMI: ' +
+          ', ' +
           info.row.original.suggest_pt_cmi +
-          ', Opportunity: $' +
+          ', $' +
           info.row.original.suggest_pt_pay;
         return (
           <>
@@ -287,18 +287,18 @@ export default function MDSTable({ data }: { data: PDPMPatient[] }) {
         const value = info.row.original.n_ot_suggestion as number;
         const mainString = value === 1 ? 'Suggestion' : 'Suggestions';
         const subString =
-          'Original Group: ' +
+          'Current: ' +
           info.row.original.mds_ot_group +
-          ', CMI: ' +
+          ', ' +
           info.row.original.mds_ot_cmi +
-          ', Opportunity: $' +
+          ', $' +
           info.row.original.mds_ot_pay;
         const suggestString =
-          'Suggest Group: ' +
+          'Suggested: ' +
           info.row.original.suggest_ot_group +
-          ', CMI: ' +
+          ', ' +
           info.row.original.suggest_ot_cmi +
-          ', Opportunity: $' +
+          ', $' +
           info.row.original.suggest_ot_pay;
         return (
           <>
@@ -318,6 +318,82 @@ export default function MDSTable({ data }: { data: PDPMPatient[] }) {
                 searchTerm={info.table.getState().globalFilter}
               />
             </p>
+          </>
+        );
+      },
+    },
+    {
+      accessorKey: 'nursing',
+      accessorFn: (row) => row.original_nursing_opportunities,
+      header: 'Nursing',
+      enableColumnFilter: false,
+
+      cell: (info) => {
+        const value = info.row.original.n_nursing_suggestion as number;
+        const mainString = value === 1 ? 'Suggestion' : 'Suggestions';
+        const subString =
+          'Current: ' +
+          info.row.original.mds_nursing_group +
+          ', ' +
+          info.row.original.mds_nursing_cmi +
+          ', $' +
+          info.row.original.mds_nursing_pay;
+        const suggestString =
+          'Suggested: ' +
+          info.row.original.suggest_nursing_group +
+          ', ' +
+          info.row.original.suggest_nursing_cmi +
+          ', $' +
+          info.row.original.suggest_nursing_pay;
+        return (
+          <>
+            <HighlightWrapper
+              text={value + ' ' + mainString}
+              searchTerm={info.table.getState().globalFilter}
+            />
+            <p className="text-body-2">
+              <HighlightWrapper
+                text={subString}
+                searchTerm={info.table.getState().globalFilter}
+              />
+            </p>{' '}
+            <p className="text-body-2">
+              <HighlightWrapper
+                text={suggestString}
+                searchTerm={info.table.getState().globalFilter}
+              />
+            </p>
+          </>
+        );
+      },
+    },
+    {
+      accessorKey: 'total_opp',
+      accessorFn: (row) => row.original_total_opportunities,
+      header: 'Total Opportunities',
+      enableColumnFilter: false,
+      cell: (info) => {
+        const value =
+          info.row.original.suggest_nta_pay +
+          info.row.original.suggest_slp_pay +
+          info.row.original.suggest_pt_pay +
+          info.row.original.suggest_ot_pay +
+          info.row.original.suggest_nursing_pay -
+          info.row.original.mds_nta_pay -
+          info.row.original.mds_slp_pay -
+          info.row.original.mds_pt_pay -
+          info.row.original.mds_ot_pay -
+          info.row.original.mds_nursing_pay;
+        const string =
+          parseInt(value.toFixed()) >= 0
+            ? '$' + value.toFixed(2).replace('-0', '0')
+            : '-$' + Math.abs(value).toFixed(2);
+        return (
+          <>
+            <HighlightWrapper
+              text={string}
+              searchTerm={info.table.getState().globalFilter}
+            />
           </>
         );
       },
@@ -359,21 +435,25 @@ export default function MDSTable({ data }: { data: PDPMPatient[] }) {
         ? {
             facility_name: false,
             patient_name: true,
-            effective_start_date: true,
+            effective_start_date: false,
             nta: false,
             slp: false,
             pt: false,
             ot: false,
+            nursing: false,
+            total_opp: true,
             operation_name: user_data.organization_id === 'the_triedge_labs',
           }
         : {
             facility_name: false,
             patient_name: true,
-            effective_start_date: true,
+            effective_start_date: false,
             nta: true,
             slp: true,
             pt: true,
             ot: false,
+            nursing: true,
+            total_opp: true,
             operation_name: user_data.organization_id === 'the_triedge_labs',
           },
     pagination: {
@@ -383,9 +463,9 @@ export default function MDSTable({ data }: { data: PDPMPatient[] }) {
   });
 
   useEffect(() => {
-    if (localStorage.getItem('clearMDSStorage') !== '5') {
+    if (localStorage.getItem('clearMDSStorage') !== '6') {
       localStorage.removeItem('MDSUserVisibilitySettings');
-      localStorage.setItem('clearMDSStorage', '5');
+      localStorage.setItem('clearMDSStorage', '6');
     } else {
       const userVisibilitySettings = localStorage.getItem(
         'MDSUserVisibilitySettings',

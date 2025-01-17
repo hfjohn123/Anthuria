@@ -52,6 +52,19 @@ export default function MDS() {
                   item.suggest_pt_pay - item.mds_pt_pay,
                 original_ot_opportunities:
                   item.suggest_ot_pay - item.mds_ot_pay,
+                original_nursing_opportunities:
+                  item.suggest_nursing_pay - item.mds_nursing_pay,
+                original_total_opportunities:
+                  item.suggest_nta_pay +
+                  item.suggest_slp_pay +
+                  item.suggest_pt_pay +
+                  item.suggest_ot_pay +
+                  item.suggest_nursing_pay -
+                  item.mds_nta_pay -
+                  item.mds_slp_pay -
+                  item.mds_pt_pay -
+                  item.mds_ot_pay -
+                  item.mds_nursing_pay,
               };
         });
       });
