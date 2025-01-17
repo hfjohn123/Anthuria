@@ -45,10 +45,15 @@ export type PDPMPatient = {
   suggest_nursing_cmi: number;
   suggest_nursing_pay: number;
   n_nursing_suggestion: number;
+  original_nta_suggestions?: number;
+  original_slp_suggestions?: number;
+  original_ptot_suggestions?: number;
+  original_nursing_suggestions?: number;
   original_nta_opportunities?: number;
   original_slp_opportunities?: number;
   original_pt_opportunities?: number;
   original_ot_opportunities?: number;
+  original_ptot_opportunities?: number;
   original_nursing_opportunities?: number;
   original_total_opportunities?: number;
 };

@@ -44,6 +44,10 @@ export default function MDS() {
             ? { ...prevItem, ...item }
             : {
                 ...item,
+                original_nta_suggestions: item.n_nta_suggestion,
+                original_slp_suggestions: item.n_slp_suggestion,
+                original_ptot_suggestions: item.n_pt_suggestion,
+                original_nursing_suggestions: item.n_nursing_suggestion,
                 original_nta_opportunities:
                   item.suggest_nta_pay - item.mds_nta_pay,
                 original_slp_opportunities:
@@ -52,6 +56,11 @@ export default function MDS() {
                   item.suggest_pt_pay - item.mds_pt_pay,
                 original_ot_opportunities:
                   item.suggest_ot_pay - item.mds_ot_pay,
+                original_ptot_opportunities:
+                  item.suggest_pt_pay +
+                  item.suggest_ot_pay -
+                  item.mds_pt_pay -
+                  item.mds_ot_pay,
                 original_nursing_opportunities:
                   item.suggest_nursing_pay - item.mds_nursing_pay,
                 original_total_opportunities:

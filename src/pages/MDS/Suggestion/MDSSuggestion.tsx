@@ -447,6 +447,16 @@ export default function MDSSuggestion({ row }: { row: MDSFinal }) {
                 {NursingSuggestionCount} AI SUGGESTION
                 {NursingSuggestionCount !== 1 && 'S'}
               </div>
+              <p className="text-gray-600 ">
+                RATE OPP: $
+                {(
+                  Math.round(
+                    (patientInfo.suggest_nursing_pay -
+                      patientInfo.mds_nursing_pay) *
+                      100,
+                  ) / 100
+                ).toFixed(2)}
+              </p>
             </div>
           </DisclosureButton>
           <DisclosurePanel
