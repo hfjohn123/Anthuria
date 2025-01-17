@@ -18,18 +18,18 @@ export const PTOTMapping = {
 };
 
 export const SLPMapping = {
-  SA: 0.68,
-  SB: 1.82,
-  SC: 2.67,
-  SD: 1.46,
-  SE: 2.34,
-  SF: 2.98,
-  SG: 2.04,
-  SH: 2.86,
-  SI: 3.53,
-  SJ: 2.99,
-  SK: 3.7,
-  SL: 4.21,
+  SA: 0.64,
+  SB: 1.72,
+  SC: 2.52,
+  SD: 1.38,
+  SE: 2.21,
+  SF: 2.82,
+  SG: 2.93,
+  SH: 2.7,
+  SI: 3.34,
+  SJ: 2.83,
+  SK: 3.5,
+  SL: 3.98,
 };
 
 export const NusingMapping = {
@@ -61,10 +61,10 @@ export const NusingMapping = {
 };
 
 export const NTAMapping = {
-  NA: 3.24,
-  NB: 2.53,
-  NC: 1.84,
-  ND: 1.33,
-  NE: 0.96,
-  NF: 0.72,
+  NA: 3.06,
+  NB: 2.39,
+  NC: 1.74,
+  ND: 1.26,
+  NE: 0.91,
+  NF: 0.68,
 };

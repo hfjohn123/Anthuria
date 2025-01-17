@@ -22,7 +22,6 @@ import stemmedFilter from '../../../components/Tables/stemmedFilter.ts';
 import MDSDetailLoading from './MDSDetailLoading.tsx';
 
 export default function MDSTable({ data }: { data: PDPMPatient[] }) {
-  console.log(data);
   const { user_data } = useContext(AuthContext);
   const PERMANENT_COLUMN_FILTERS =
     user_data.organization_id === 'the_triedge_labs'
@@ -420,7 +419,6 @@ export default function MDSTable({ data }: { data: PDPMPatient[] }) {
         );
       },
     },
-
     {
       accessorKey: 'ptot_opp',
       accessorFn: (row) => row.original_ptot_opportunities,
@@ -451,7 +449,7 @@ export default function MDSTable({ data }: { data: PDPMPatient[] }) {
       accessorFn: (row) => row.original_nursing_suggestions,
       header: 'Nursing',
       enableColumnFilter: false,
-
+      sortDescFirst: true,
       cell: (info) => {
         const value = info.row.original.n_nursing_suggestion as number;
         const mainString = value === 1 ? 'Suggestion' : 'Suggestions';
@@ -643,7 +641,6 @@ export default function MDSTable({ data }: { data: PDPMPatient[] }) {
     onStateChange: setTableState,
     getRowCanExpand: () => true,
     autoResetPageIndex: false,
-    autoResetAll: false,
     getFacetedUniqueValues: getFacetedUniqueValues(),
     autoResetExpanded: false,
     getCoreRowModel: getCoreRowModel(),
@@ -654,6 +651,7 @@ export default function MDSTable({ data }: { data: PDPMPatient[] }) {
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     globalFilterFn: stemmedFilter,
+    getRowId: (row) => row.internal_patient_id,
   });
   useEffect(() => {
     localStorage.setItem(
@@ -661,6 +659,7 @@ export default function MDSTable({ data }: { data: PDPMPatient[] }) {
       JSON.stringify(tableState.columnVisibility),
     );
   }, [tableState.columnVisibility]);
+  console.log(tableState.expanded);
 
   return (
     <div className="flex flex-col gap-5">

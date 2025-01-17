@@ -65,10 +65,12 @@ export default function NursingTable({ data }: { data: MDSFinal }) {
   const currentGroup = data.nursing_group;
 
   const boolFuncScore14 = !!(
-    functionalScore.final_score && parseInt(functionalScore.final_score) <= 14
+    functionalScore.final_score &&
+    parseInt(functionalScore.final_score || '99') <= 14
   );
   const boolFuncScore11 = !!(
-    functionalScore.final_score && parseInt(functionalScore.final_score) <= 11
+    functionalScore.final_score &&
+    parseInt(functionalScore.final_score || '99') <= 11
   );
   let boolsch = false;
   if (specialCareHigh) {
