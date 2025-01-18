@@ -114,7 +114,6 @@ export default function TableWrapper({
 
     return () => resizeObserver.disconnect();
   }, []);
-
   useEffect(() => {
     const searchParams: SearchParams = {};
     tableState.columnFilters.forEach((filter) => {

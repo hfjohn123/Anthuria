@@ -145,12 +145,15 @@ export default function ReviewTriggers() {
   }
   today.setHours(23, 59, 59, 999);
   const fetchTriggerWord = async (signal?: AbortSignal) => {
-    const params: { [key: string]: any } = {
-      from_date: twentyFourhAgo,
-      to_date: today,
-      // pagelimit: tableState.pagination.pageSize,
-      // page: tableState.pagination.pageIndex + 1,
-    };
+    const params: { [key: string]: any } =
+      user_data.organization_id === 'AVHC'
+        ? {}
+        : {
+            from_date: twentyFourhAgo,
+            to_date: today,
+            // pagelimit: tableState.pagination.pageSize,
+            // page: tableState.pagination.pageIndex + 1,
+          };
     const response = await axios.get(`${route}/trigger_final`, {
       signal,
       params,
@@ -317,9 +320,12 @@ export default function ReviewTriggers() {
       {
         accessorKey: 'revision_date',
         header: 'Revision Date',
+        accessorFn: (row) => {
+          return new Date(row.revision_date).getTime();
+        },
         cell: (info) => {
           if (!info.getValue()) return '';
-          const date = new Date(info.getValue() as string | number | Date);
+          const date = new Date(info.getValue() as number);
           return (
             <HighlightWrapper
               text={`${date.toLocaleDateString()} ${date.toLocaleTimeString(
@@ -865,9 +871,13 @@ export default function ReviewTriggers() {
               download={true}
               tableSetting={true}
               initialTableState={initialTableState}
-              hasHistory={true}
+              hasHistory={user_data.organization_id !== 'AVHC'}
               setIsRefetching={setIsRefetching}
-              includeCreatedDate={includeCreatedDate}
+              includeCreatedDate={
+                user_data.organization_id !== 'AVHC'
+                  ? includeCreatedDate
+                  : false
+              }
               setIncludeCreatedDate={setIncludeCreatedDate}
               title={'Progress Notes'}
             />

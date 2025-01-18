@@ -413,8 +413,8 @@ export default function Filters({
                 key={filter.id}
                 id={table.getColumn(filter.id)?.columnDef.header as string}
                 value={
-                  tableState.columnFilters.filter((f) => f.id === filter.id)[0]
-                    .value as [Date, Date]
+                  tableState.columnFilters.find((f) => f.id === filter.id)
+                    ?.value as [Date, Date]
                 }
                 setValue={([start, end]: [Date | null, Date | null]) => {
                   start && start.setHours(0, 0, 0, 0);

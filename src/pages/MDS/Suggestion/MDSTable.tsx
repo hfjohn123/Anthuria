@@ -659,7 +659,6 @@ export default function MDSTable({ data }: { data: PDPMPatient[] }) {
       JSON.stringify(tableState.columnVisibility),
     );
   }, [tableState.columnVisibility]);
-  console.log(tableState.expanded);
 
   return (
     <div className="flex flex-col gap-5">
