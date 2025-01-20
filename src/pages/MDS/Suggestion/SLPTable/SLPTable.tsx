@@ -18,53 +18,17 @@ import getFacetedUniqueValues from '../../../../common/getFacetedUniqueValues.ts
 import getFacetedMinMaxValues from '../../../../common/getFacetedMinMaxValues.ts';
 
 import EvidenceModal from '../EvidenceModal.tsx';
-import { SLPMapping } from '../../cmiMapping.ts';
 import SmallTableWrapper from '../SmallTableWrapper.tsx';
 import MDSCommentModal from '../MDSCommentModal.tsx';
 import UpVoteButton from '../UpVoteButton.tsx';
 import { MDSContext } from '../MDSDetail.tsx';
+import { MDSPatientContext } from '../MDSDetailLoading.tsx';
 
 const permanentColumnFilters = ['condition', 'is_mds'];
 
-function getSLPCategory(total_general: number, total_diet: number) {
-  if (total_general === 3 && total_diet === 2) {
-    return 'SL';
-  }
-  if (total_general === 3 && total_diet === 1) {
-    return 'SK';
-  }
-  if (total_general === 3 && total_diet === 0) {
-    return 'SJ';
-  }
-  if (total_general === 2 && total_diet === 2) {
-    return 'SI';
-  }
-  if (total_general === 2 && total_diet === 1) {
-    return 'SH';
-  }
-  if (total_general === 2 && total_diet === 0) {
-    return 'SG';
-  }
-  if (total_general === 1 && total_diet === 2) {
-    return 'SF';
-  }
-  if (total_general === 1 && total_diet === 1) {
-    return 'SE';
-  }
-  if (total_general === 1 && total_diet === 0) {
-    return 'SD';
-  }
-  if (total_general === 0 && total_diet === 2) {
-    return 'SC';
-  }
-  if (total_general === 0 && total_diet === 1) {
-    return 'SB';
-  }
-  return 'SA';
-}
-
 export default function SLPTable({ data }: { data: SLPItem[] }) {
   const row_data = useContext(MDSContext);
+  const patientInfo = useContext(MDSPatientContext);
   const columns: ColumnDef<SLPItem>[] = [
     {
       accessorKey: 'condition',
@@ -101,32 +65,18 @@ export default function SLPTable({ data }: { data: SLPItem[] }) {
       meta: {
         type: 'categorical',
       },
-      footer: (info) => {
-        const total_general = info.table.getRowModel().rows.filter((row) => {
-          return (
-            row.original.is_mds_table &&
-            row.original.item !== 'mad' &&
-            row.original.item !== 'sd'
-          );
-        }).length;
-        const total_diet = info.table.getRowModel().rows.filter((row) => {
-          return (
-            row.original.is_mds_table &&
-            (row.original.item === 'mad' || row.original.item === 'sd')
-          );
-        }).length;
+      footer: () => {
         return (
-          <td className="py-2 px-4 border-t border-l border-gray-600">
+          <td className="py-2 px-4 border-t border-l border-gray-600 font-medium">
             <p className="whitespace-nowrap text-left">
-              Current Presence of SLP Conditions: {total_general}
+              Current Presence of SLP Conditions: {patientInfo.mds_slp_s_count}
             </p>
             <p className="whitespace-nowrap text-left">
-              Current Presence of Diet Conditions: {total_diet}
+              Current Presence of Diet Conditions: {patientInfo.mds_slp_f_count}
             </p>
             <p className="whitespace-nowrap text-left">
-              Current Case Mix Group:{' '}
-              {getSLPCategory(total_general, total_diet)} (CMI:{' '}
-              {SLPMapping[getSLPCategory(total_general, total_diet)]})
+              Current Case Mix Group: {patientInfo.mds_slp_group} (CMI:{' '}
+              {patientInfo.mds_slp_cmi}, ${patientInfo.mds_slp_pay})
             </p>
           </td>
         );
@@ -191,28 +141,41 @@ export default function SLPTable({ data }: { data: SLPItem[] }) {
         );
       },
       header: 'AI Suggested Conditions',
-      footer: (info) => {
-        const total_general = info.table.getRowModel().rows.filter((row) => {
-          return (
-            !row.original.is_mds_table &&
-            (row.original.suggestion?.length ?? 0) > 0 &&
-            row.original.is_thumb_down !== 1 &&
-            row.original.item !== 'mad' &&
-            row.original.item !== 'sd'
-          );
-        }).length;
-        const total_diet = info.table.getRowModel().rows.filter((row) => {
-          return (
-            !row.original.is_mds_table &&
-            (row.original.suggestion?.length ?? 0) > 0 &&
-            row.original.is_thumb_down !== 1 &&
-            (row.original.item === 'mad' || row.original.item === 'sd')
-          );
-        }).length;
+      footer: () => {
         return (
-          <td className="py-2 px-4 border-t border-l border-gray-600">
-            <p className="whitespace-nowrap text-left ">+ {total_general}</p>
-            <p className="whitespace-nowrap text-left">+ {total_diet}</p>
+          <td className="py-2 px-4 border-t border-l border-gray-600 font-medium">
+            <p className="whitespace-nowrap text-left ">
+              {patientInfo.suggest_slp_s_count - patientInfo.mds_slp_s_count >=
+              0 ? (
+                <span>
+                  +{' '}
+                  {patientInfo.suggest_slp_s_count -
+                    patientInfo.mds_slp_s_count}
+                </span>
+              ) : (
+                <span>
+                  -{' '}
+                  {patientInfo.mds_slp_s_count -
+                    patientInfo.suggest_slp_s_count}
+                </span>
+              )}
+            </p>
+            <p className="whitespace-nowrap text-left ">
+              {patientInfo.suggest_slp_f_count - patientInfo.mds_slp_f_count >=
+              0 ? (
+                <span>
+                  +{' '}
+                  {patientInfo.suggest_slp_f_count -
+                    patientInfo.mds_slp_f_count}
+                </span>
+              ) : (
+                <span>
+                  -{' '}
+                  {patientInfo.mds_slp_f_count -
+                    patientInfo.suggest_slp_f_count}
+                </span>
+              )}
+            </p>
             <br />
           </td>
         );
@@ -259,32 +222,18 @@ export default function SLPTable({ data }: { data: SLPItem[] }) {
           <td className="py-2 px-4 border-t border-l border-gray-600"></td>
         );
       },
-      footer: (info) => {
-        const total_general = info.table.getRowModel().rows.filter((row) => {
-          return (
-            (row.original.is_mds_table ||
-              ((row.original.suggestion?.length ?? 0) > 0 &&
-                row.original.is_thumb_down !== 1)) &&
-            row.original.item !== 'mad' &&
-            row.original.item !== 'sd'
-          );
-        }).length;
-        const total_diet = info.table.getRowModel().rows.filter((row) => {
-          return (
-            (row.original.is_mds_table ||
-              ((row.original.suggestion?.length ?? 0) > 0 &&
-                row.original.is_thumb_down !== 1)) &&
-            (row.original.item === 'mad' || row.original.item === 'sd')
-          );
-        }).length;
+      footer: () => {
         return (
           <td className="py-2 px-4 border-t border-l border-gray-600">
-            <p className="whitespace-nowrap text-left">= {total_general}</p>
-            <p className="whitespace-nowrap text-left">= {total_diet}</p>
             <p className="whitespace-nowrap text-left">
-              Projected Case Mix Group:{' '}
-              {getSLPCategory(total_general, total_diet)} (CMI:{' '}
-              {SLPMapping[getSLPCategory(total_general, total_diet)]})
+              = {patientInfo.suggest_slp_s_count}
+            </p>
+            <p className="whitespace-nowrap text-left">
+              = {patientInfo.suggest_slp_f_count}
+            </p>
+            <p className="whitespace-nowrap text-left">
+              Projected Case Mix Group: {patientInfo.suggest_slp_group} (CMI: {}
+              {patientInfo.suggest_slp_cmi}, ${patientInfo.suggest_slp_pay})
             </p>
           </td>
         );

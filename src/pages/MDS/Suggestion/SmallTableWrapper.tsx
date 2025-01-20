@@ -81,7 +81,7 @@ export default function SmallTableWrapper({
         )}
       </div>
 
-      <div className="overflow-x-auto shadow-sm border border-gray-600 rounded-lg mt-3">
+      <div className="overflow-x-auto shadow-sm border border-gray-600 rounded-lg mt-3 text-[#4b5563]">
         <table className="w-full border-collapse">
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (

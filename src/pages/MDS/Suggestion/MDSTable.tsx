@@ -515,7 +515,7 @@ export default function MDSTable({ data }: { data: PDPMPatient[] }) {
     {
       accessorKey: 'total_opp',
       accessorFn: (row) => row.original_total_opportunities,
-      header: 'Total OPP',
+      header: 'Rate Change',
       enableColumnFilter: false,
       cell: (info) => {
         const value =

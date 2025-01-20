@@ -14,34 +14,16 @@ import getFacetedUniqueValues from '../../../../common/getFacetedUniqueValues.ts
 import getFacetedMinMaxValues from '../../../../common/getFacetedMinMaxValues.ts';
 import EvidenceModal from '../EvidenceModal.tsx';
 import SmallTableWrapper from '../SmallTableWrapper.tsx';
-import { NTAMapping } from '../../cmiMapping.ts';
 import UpVoteButton from '../UpVoteButton.tsx';
 import MDSCommentModal from '../MDSCommentModal.tsx';
 import { MDSContext } from '../MDSDetail.tsx';
+import { MDSPatientContext } from '../MDSDetailLoading.tsx';
 
 const permanentColumnFilters = ['comorbidity', 'is_mds_table'];
 
-function getNTACategory(score: number) {
-  if (score === 0) {
-    return 'NF';
-  }
-  if (score < 3) {
-    return 'NE';
-  }
-  if (score < 6) {
-    return 'ND';
-  }
-  if (score < 9) {
-    return 'NC';
-  }
-  if (score < 12) {
-    return 'NB';
-  }
-  return 'NA';
-}
-
 export default function NTATable({ data }: { data: NTAEntry[] }) {
   const row_data = useContext(MDSContext);
+  const patientInfo = useContext(MDSPatientContext);
   const columns: ColumnDef<NTAEntry>[] = [
     {
       accessorKey: 'comorbidity',
@@ -122,15 +104,12 @@ export default function NTATable({ data }: { data: NTAEntry[] }) {
         );
       },
       header: 'AI Suggested Conditions',
-      footer: (info) => {
-        const total = info.table
-          .getRowModel()
-          .rows.filter((row) => row.original.is_mds_table)
-          .reduce((sum, row) => sum + row.original.score, 0);
+      footer: () => {
         return (
           <td className="whitespace-nowrap text-left py-2 px-4 border-t border-l border-gray-600">
-            Current score: {total} ({getNTACategory(total)}, CMI:{' '}
-            {NTAMapping[getNTACategory(total)]})
+            Current score: {patientInfo.mds_nta_score} (
+            {patientInfo.mds_nta_group}, CMI: {patientInfo.mds_nta_cmi}, $
+            {patientInfo.mds_nta_pay})
           </td>
         );
       },
@@ -176,17 +155,18 @@ export default function NTATable({ data }: { data: NTAEntry[] }) {
           <td className="py-2 px-4 border-t border-l border-gray-600"></td>
         );
       },
-      footer: (info) => {
-        const total = info.table
-          .getRowModel()
-          .rows.filter((row) => !row.original.is_mds_table)
-          .reduce((sum, row) => {
-            if (row.original.is_thumb_down) return sum;
-            return sum + row.original.score;
-          }, 0);
+      footer: () => {
         return (
           <td className="whitespace-nowrap text-left py-2 px-4 border-t border-l border-gray-600 ">
-            + {total}
+            {patientInfo.suggest_nta_score - patientInfo.mds_nta_score >= 0 ? (
+              <span>
+                + {patientInfo.suggest_nta_score - patientInfo.mds_nta_score}
+              </span>
+            ) : (
+              <span>
+                - {patientInfo.mds_nta_score - patientInfo.suggest_nta_score}
+              </span>
+            )}
           </td>
         );
       },
@@ -202,16 +182,12 @@ export default function NTATable({ data }: { data: NTAEntry[] }) {
         );
       },
 
-      footer: (info) => {
-        const total = info.table.getRowModel().rows.reduce((sum, row) => {
-          if (row.original.is_thumb_down && !row.original.is_mds_table)
-            return sum;
-          return sum + row.original.score;
-        }, 0);
+      footer: () => {
         return (
           <td className="whitespace-nowrap text-left py-2 px-4 border-t border-l border-gray-600 ">
-            Projected score: {total} ({getNTACategory(total)}, CMI:{' '}
-            {NTAMapping[getNTACategory(total)]})
+            Projected score: {patientInfo.suggest_nta_score} (
+            {patientInfo.suggest_nta_group}, CMI: {patientInfo.suggest_nta_cmi},
+            ${patientInfo.suggest_nta_pay})
           </td>
         );
       },
