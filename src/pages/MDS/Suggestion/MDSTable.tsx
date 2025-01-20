@@ -144,139 +144,6 @@ export default function MDSTable({ data }: { data: PDPMPatient[] }) {
       },
     },
     {
-      accessorKey: 'nta',
-      enableColumnFilter: false,
-      accessorFn: (row) => row.original_nta_suggestions,
-      header: 'NTA',
-      cell: (info) => {
-        const value = info.row.original.n_nta_suggestion as number;
-        const mainString = value === 1 ? 'Suggestion' : 'Suggestions';
-        const subString =
-          'Current: ' +
-          info.row.original.mds_nta_group +
-          ', ' +
-          info.row.original.mds_nta_cmi +
-          ', $' +
-          info.row.original.mds_nta_pay;
-        const suggestString =
-          'Suggested: ' +
-          info.row.original.suggest_nta_group +
-          ', ' +
-          info.row.original.suggest_nta_cmi +
-          ', $' +
-          info.row.original.suggest_nta_pay;
-        return (
-          <>
-            <HighlightWrapper
-              text={value + ' ' + mainString}
-              searchTerm={info.table.getState().globalFilter}
-            />
-            <p className="text-body-2">
-              <HighlightWrapper
-                text={subString}
-                searchTerm={info.table.getState().globalFilter}
-              />
-            </p>{' '}
-            <p className="text-body-2">
-              <HighlightWrapper
-                text={suggestString}
-                searchTerm={info.table.getState().globalFilter}
-              />
-            </p>
-          </>
-        );
-      },
-    },
-    {
-      accessorKey: 'nta_opp',
-      accessorFn: (row) => row.original_nta_opportunities,
-      header: 'NTA OPP',
-      enableColumnFilter: false,
-      cell: (info) => {
-        const value =
-          info.row.original.suggest_nta_pay - info.row.original.mds_nta_pay;
-        const string =
-          parseInt(value.toFixed()) >= 0
-            ? '$' + value.toFixed(2).replace('-0', '0')
-            : '-$' + Math.abs(value).toFixed(2);
-        return (
-          <>
-            <HighlightWrapper
-              text={string}
-              searchTerm={info.table.getState().globalFilter}
-            />
-          </>
-        );
-      },
-    },
-    {
-      accessorKey: 'slp',
-      accessorFn: (row) => row.original_slp_suggestions,
-      header: 'SLP',
-      enableColumnFilter: false,
-
-      cell: (info) => {
-        const value = info.row.original.n_slp_suggestion as number;
-        const mainString = value === 1 ? 'Suggestion' : 'Suggestions';
-        const subString =
-          'Current: ' +
-          info.row.original.mds_slp_group +
-          ', ' +
-          info.row.original.mds_slp_cmi +
-          ', $' +
-          info.row.original.mds_slp_pay;
-        const suggestString =
-          'Suggested: ' +
-          info.row.original.suggest_slp_group +
-          ', ' +
-          info.row.original.suggest_slp_cmi +
-          ', $' +
-          info.row.original.suggest_slp_pay;
-        return (
-          <>
-            <HighlightWrapper
-              text={value + ' ' + mainString}
-              searchTerm={info.table.getState().globalFilter}
-            />
-            <p className="text-body-2">
-              <HighlightWrapper
-                text={subString}
-                searchTerm={info.table.getState().globalFilter}
-              />
-            </p>{' '}
-            <p className="text-body-2">
-              <HighlightWrapper
-                text={suggestString}
-                searchTerm={info.table.getState().globalFilter}
-              />
-            </p>
-          </>
-        );
-      },
-    },
-    {
-      accessorKey: 'slp_opp',
-      accessorFn: (row) => row.original_slp_opportunities,
-      header: 'SLP OPP',
-      enableColumnFilter: false,
-      cell: (info) => {
-        const value =
-          info.row.original.suggest_slp_pay - info.row.original.mds_slp_pay;
-        const string =
-          parseInt(value.toFixed()) >= 0
-            ? '$' + value.toFixed(2).replace('-0', '0')
-            : '-$' + Math.abs(value).toFixed(2);
-        return (
-          <>
-            <HighlightWrapper
-              text={string}
-              searchTerm={info.table.getState().globalFilter}
-            />
-          </>
-        );
-      },
-    },
-    {
       accessorKey: 'pt',
       accessorFn: (row) => row.original_ptot_suggestions,
       header: 'PT',
@@ -445,6 +312,73 @@ export default function MDSTable({ data }: { data: PDPMPatient[] }) {
       },
     },
     {
+      accessorKey: 'slp',
+      accessorFn: (row) => row.original_slp_suggestions,
+      header: 'SLP',
+      enableColumnFilter: false,
+
+      cell: (info) => {
+        const value = info.row.original.n_slp_suggestion as number;
+        const mainString = value === 1 ? 'Suggestion' : 'Suggestions';
+        const subString =
+          'Current: ' +
+          info.row.original.mds_slp_group +
+          ', ' +
+          info.row.original.mds_slp_cmi +
+          ', $' +
+          info.row.original.mds_slp_pay;
+        const suggestString =
+          'Suggested: ' +
+          info.row.original.suggest_slp_group +
+          ', ' +
+          info.row.original.suggest_slp_cmi +
+          ', $' +
+          info.row.original.suggest_slp_pay;
+        return (
+          <>
+            <HighlightWrapper
+              text={value + ' ' + mainString}
+              searchTerm={info.table.getState().globalFilter}
+            />
+            <p className="text-body-2">
+              <HighlightWrapper
+                text={subString}
+                searchTerm={info.table.getState().globalFilter}
+              />
+            </p>{' '}
+            <p className="text-body-2">
+              <HighlightWrapper
+                text={suggestString}
+                searchTerm={info.table.getState().globalFilter}
+              />
+            </p>
+          </>
+        );
+      },
+    },
+    {
+      accessorKey: 'slp_opp',
+      accessorFn: (row) => row.original_slp_opportunities,
+      header: 'SLP OPP',
+      enableColumnFilter: false,
+      cell: (info) => {
+        const value =
+          info.row.original.suggest_slp_pay - info.row.original.mds_slp_pay;
+        const string =
+          parseInt(value.toFixed()) >= 0
+            ? '$' + value.toFixed(2).replace('-0', '0')
+            : '-$' + Math.abs(value).toFixed(2);
+        return (
+          <>
+            <HighlightWrapper
+              text={string}
+              searchTerm={info.table.getState().globalFilter}
+            />
+          </>
+        );
+      },
+    },
+    {
       accessorKey: 'nursing',
       accessorFn: (row) => row.original_nursing_suggestions,
       header: 'Nursing',
@@ -513,6 +447,72 @@ export default function MDSTable({ data }: { data: PDPMPatient[] }) {
       },
     },
     {
+      accessorKey: 'nta',
+      enableColumnFilter: false,
+      accessorFn: (row) => row.original_nta_suggestions,
+      header: 'NTA',
+      cell: (info) => {
+        const value = info.row.original.n_nta_suggestion as number;
+        const mainString = value === 1 ? 'Suggestion' : 'Suggestions';
+        const subString =
+          'Current: ' +
+          info.row.original.mds_nta_group +
+          ', ' +
+          info.row.original.mds_nta_cmi +
+          ', $' +
+          info.row.original.mds_nta_pay;
+        const suggestString =
+          'Suggested: ' +
+          info.row.original.suggest_nta_group +
+          ', ' +
+          info.row.original.suggest_nta_cmi +
+          ', $' +
+          info.row.original.suggest_nta_pay;
+        return (
+          <>
+            <HighlightWrapper
+              text={value + ' ' + mainString}
+              searchTerm={info.table.getState().globalFilter}
+            />
+            <p className="text-body-2">
+              <HighlightWrapper
+                text={subString}
+                searchTerm={info.table.getState().globalFilter}
+              />
+            </p>{' '}
+            <p className="text-body-2">
+              <HighlightWrapper
+                text={suggestString}
+                searchTerm={info.table.getState().globalFilter}
+              />
+            </p>
+          </>
+        );
+      },
+    },
+    {
+      accessorKey: 'nta_opp',
+      accessorFn: (row) => row.original_nta_opportunities,
+      header: 'NTA OPP',
+      enableColumnFilter: false,
+      cell: (info) => {
+        const value =
+          info.row.original.suggest_nta_pay - info.row.original.mds_nta_pay;
+        const string =
+          parseInt(value.toFixed()) >= 0
+            ? '$' + value.toFixed(2).replace('-0', '0')
+            : '-$' + Math.abs(value).toFixed(2);
+        return (
+          <>
+            <HighlightWrapper
+              text={string}
+              searchTerm={info.table.getState().globalFilter}
+            />
+          </>
+        );
+      },
+    },
+    {
       accessorKey: 'total_opp',
       accessorFn: (row) => row.original_total_opportunities,
       header: 'Total OPP',
@@ -531,8 +531,8 @@ export default function MDSTable({ data }: { data: PDPMPatient[] }) {
           info.row.original.mds_nursing_pay;
         const string =
           parseInt(value.toFixed()) >= 0
-            ? '$' + value.toFixed(2).replace('-0', '0')
-            : '-$' + Math.abs(value).toFixed(2);
+            ? '$' + value.toFixed(2).replace('-', '')
+            : '-$' + value.toFixed(2).replace('-', '');
         return (
           <>
             <HighlightWrapper
