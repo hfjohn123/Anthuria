@@ -38,6 +38,7 @@ export default function TableWrapper({
   setIncludeCreatedDate,
   filters = true,
   title,
+  placeholder = 'Global Search...',
   ...rest
 }: {
   table: Table<any>;
@@ -54,6 +55,7 @@ export default function TableWrapper({
   setIncludeCreatedDate?: React.Dispatch<React.SetStateAction<boolean>>;
   filters?: boolean;
   title?: string;
+  placeholder?: string;
   [key: string]: any;
 }) {
   const navigate = useNavigate();
@@ -164,7 +166,7 @@ export default function TableWrapper({
           : 'record is '}
         displayed
       </p>
-      <div className=" bg-white dark:bg-boxdark h-full flex-col flex overflow-x-auto lg:overflow-clip p-7.5 gap-7.5 rounded-[30px] ">
+      <div className=" bg-white dark:bg-boxdark h-full flex-col flex overflow-x-auto lg:overflow-clip px-7.5 py-5 gap-7.5 rounded-[30px] ">
         {title && (
           <h3 className="text-title-md text-black dark:text-white font-semibold	">
             {title}
@@ -176,7 +178,7 @@ export default function TableWrapper({
               ref={filterRef}
               className="sticky  top-0 left-0 flex-none bg-white dark:bg-boxdark z-1 "
             >
-              <div className="flex items-center border-b border-stroke py-1 gap-4 ">
+              <div className="flex items-center  py-1 gap-4 ">
                 <IconField iconPosition="left" className=" flex-1 ">
                   <InputIcon className="pi pi-search" />
                   <DebouncedInputText
@@ -187,8 +189,8 @@ export default function TableWrapper({
                       }));
                     }}
                     value={tableState.globalFilter}
-                    placeholder="Global Search..."
-                    className="w-full "
+                    placeholder={placeholder}
+                    className="w-full py-2"
                   />
                 </IconField>
                 {download && (
@@ -230,7 +232,7 @@ export default function TableWrapper({
           <div className="flex-1 relative">
             <table className="w-full border-b-2 border-b-stroke ">
               <thead
-                className="bg-slate-50 dark:bg-graydark sticky z-1"
+                className=" bg-white dark:bg-graydark sticky z-1"
                 style={
                   filters ? { top: 'var(--filter-height, 0px)' } : { top: 0 }
                 }

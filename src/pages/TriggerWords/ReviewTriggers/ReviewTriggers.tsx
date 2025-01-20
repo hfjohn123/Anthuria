@@ -862,27 +862,25 @@ export default function ReviewTriggers() {
             </div>
           </>
 
-          <div className=" mt-5 col-span-12 ">
-            <TableWrapper
-              table={table}
-              tableState={tableState}
-              setTableState={setTableState}
-              permanentColumnFilters={PERMANENT_COLUMN_FILTERS}
-              renderExpandedRow={TriggerNoteDetail}
-              download={true}
-              tableSetting={true}
-              initialTableState={initialTableState}
-              hasHistory={user_data.organization_id !== 'AVHC'}
-              setIsRefetching={setIsRefetching}
-              includeCreatedDate={
-                user_data.organization_id !== 'AVHC'
-                  ? includeCreatedDate
-                  : false
-              }
-              setIncludeCreatedDate={setIncludeCreatedDate}
-              title={'Progress Notes'}
-            />
-          </div>
+          <TableWrapper
+            table={table}
+            tableState={tableState}
+            setTableState={setTableState}
+            permanentColumnFilters={PERMANENT_COLUMN_FILTERS}
+            renderExpandedRow={TriggerNoteDetail}
+            download={true}
+            tableSetting={true}
+            initialTableState={initialTableState}
+            hasHistory={user_data.organization_id !== 'AVHC'}
+            setIsRefetching={setIsRefetching}
+            includeCreatedDate={
+              user_data.organization_id !== 'AVHC' ? includeCreatedDate : false
+            }
+            setIncludeCreatedDate={setIncludeCreatedDate}
+            placeholder={
+              'Search for any text associated with a progress note, including the patient’s name, facility, the clinician who wrote the note.'
+            }
+          />
         </div>
       </DefaultLayout>
     )
