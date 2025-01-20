@@ -387,11 +387,12 @@ export default function ReviewTriggers() {
                 ]).map((segment, index) => (
                   <span
                     key={index}
-                    className={
+                    className={clsx(
+                      'px-2.5 rounded-lg',
                       segment.isMatch && segment.termIndex !== undefined
-                        ? `bg-yellow-200 px-1 rounded`
-                        : 'bg-slate-100 px-1 rounded'
-                    }
+                        ? `bg-yellow-200`
+                        : 'bg-slate-100',
+                    )}
                     title={
                       segment.isMatch ? `Match: ${segment.term}` : undefined
                     }

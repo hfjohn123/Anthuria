@@ -11,6 +11,7 @@ import { ThumbsUp } from '@phosphor-icons/react';
 import CommentModal from './CommentModal.tsx';
 import highlightGenerator from '../../../common/highlightGenerator.ts';
 import clsx from 'clsx';
+import MagicButton from '../../../images/icon/MagicButton.tsx';
 
 export default function DetailWithProgressNote({
   row,
@@ -27,8 +28,118 @@ export default function DetailWithProgressNote({
     .join('\n\n');
 
   return (
-    <div className="bg-slate-50 dark:bg-slate-900 px-4 text-sm  flex gap-5 py-2.5 relative overflow-visible">
-      <div className="flex flex-col gap-5 basis-3/4">
+    <div className="bg-slate-50 dark:bg-slate-900 p-2.5 text-sm  flex gap-5 relative overflow-visible">
+      <div
+        className="flex flex-col gap-5 basis-1/3 justify-start sticky self-start	"
+        style={{ top: 'calc(var(--filter-height, 0px) + 4rem)' }}
+      >
+        {explanation && (
+          <DataField
+            title={
+              <div className="text-[#7A7A7A] flex gap-2">
+                AI Explanation <MagicButton className="size-5" />
+              </div>
+            }
+          >
+            <LineClampShowMore className="whitespace-pre-line" maxLines={3}>
+              <HighlightWrapper
+                text={explanation || ''}
+                searchTerm={tableState.globalFilter || ''}
+              />
+            </LineClampShowMore>
+          </DataField>
+        )}
+        <DataField
+          title={
+            <div className="text-[#7A7A7A] flex gap-2">
+              AI Categories <MagicButton className="size-5" />
+            </div>
+          }
+        >
+          <div>
+            {row.original.trigger_words.map((t) => {
+              const [isthumbup, setThumbup] = useState(t.is_thumb_up || false);
+              const [commentState, setCommentState] = useState(
+                t.comment || null,
+              );
+              return (
+                <div
+                  key={t.trigger_word}
+                  className="border-y border-stroke flex justify-between py-[6px]"
+                >
+                  {highlightGenerator(t.trigger_word || '', [
+                    ...((tableState.columnFilters.find(
+                      (f) => f.id === 'trigger_word',
+                    )?.value || []) as string[]),
+                    tableState.globalFilter,
+                  ]).map((segment, index) => (
+                    <span
+                      key={index}
+                      className={clsx(
+                        'px-2.5 rounded-lg',
+                        segment.isMatch && segment.termIndex !== undefined
+                          ? `bg-yellow-200`
+                          : 'bg-slate-300',
+                      )}
+                      title={
+                        segment.isMatch ? `Match: ${segment.term}` : undefined
+                      }
+                    >
+                      {segment.text}
+                    </span>
+                  ))}
+                  <div className=" flex items-center flex-nowrap gap-2">
+                    {isthumbup ? (
+                      <ThumbsUp
+                        className="size-5 text-meta-3 cursor-pointer thumbs_up"
+                        weight="fill"
+                      />
+                    ) : (
+                      <ThumbsUp
+                        className="size-5 cursor-pointer thumbs_up text-body"
+                        onClick={() => {
+                          setThumbup(true);
+                          putComment.mutate({
+                            progress_note_id: row.original.progress_note_id,
+                            trigger_word: t.trigger_word || '',
+                            comment: '',
+                            is_thumb_up: true,
+                          });
+                        }}
+                      />
+                    )}
+                    {!isthumbup && commentState !== null ? (
+                      <CommentModal
+                        data={{
+                          comment: commentState || '',
+                          trigger_word: t.trigger_word || '',
+                          progress_note_id: row.original.progress_note_id,
+                        }}
+                        active={true}
+                        setThumbUp={setThumbup}
+                        setCommentState={setCommentState}
+                      />
+                    ) : (
+                      <CommentModal
+                        data={{
+                          comment: commentState || '',
+                          trigger_word: t.trigger_word || '',
+                          progress_note_id: row.original.progress_note_id,
+                        }}
+                        setThumbUp={setThumbup}
+                        setCommentState={setCommentState}
+                        active={false}
+                      />
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </DataField>
+      </div>
+      <div className="border-r  border-stroke min-h-full" />
+      <div className="flex flex-col gap-5 basis-2/3">
         <div className="flex flex-col gap-2">
           <DataField title="Progress Note">
             <LineClampShowMore className="whitespace-pre-line">
@@ -69,291 +180,6 @@ export default function DetailWithProgressNote({
           />
         </div>
       </div>
-      <div
-        className="flex flex-col gap-5 basis-1/4 justify-start sticky self-start	"
-        style={{ top: 'calc(var(--filter-height, 0px) + 4rem)' }}
-      >
-        {explanation && (
-          <DataField title="AI Explanation">
-            <LineClampShowMore className="whitespace-pre-line" maxLines={3}>
-              <HighlightWrapper
-                text={explanation || ''}
-                searchTerm={tableState.globalFilter || ''}
-              />
-            </LineClampShowMore>
-          </DataField>
-        )}
-        <DataField title="AI Categories">
-          {row.original.trigger_words.map((t) => {
-            const [isthumbup, setThumbup] = useState(t.is_thumb_up || false);
-            const [commentState, setCommentState] = useState(t.comment || null);
-            return (
-              <div
-                key={t.trigger_word}
-                className="border-y border-stroke flex justify-between py-[5px]"
-              >
-                {highlightGenerator(t.trigger_word || '', [
-                  ...((tableState.columnFilters.find(
-                    (f) => f.id === 'trigger_word',
-                  )?.value || []) as string[]),
-                  tableState.globalFilter,
-                ]).map((segment, index) => (
-                  <span
-                    key={index}
-                    className={clsx(
-                      'px-2.5 rounded',
-                      segment.isMatch && segment.termIndex !== undefined
-                        ? `bg-yellow-200`
-                        : 'bg-slate-300',
-                    )}
-                    title={
-                      segment.isMatch ? `Match: ${segment.term}` : undefined
-                    }
-                  >
-                    {segment.text}
-                  </span>
-                ))}
-                <div className=" flex items-center flex-nowrap gap-2">
-                  {isthumbup ? (
-                    <ThumbsUp
-                      className="size-4 text-meta-3 cursor-pointer thumbs_up"
-                      weight="fill"
-                    />
-                  ) : (
-                    <ThumbsUp
-                      className="size-4 cursor-pointer thumbs_up text-body"
-                      onClick={() => {
-                        setThumbup(true);
-                        putComment.mutate({
-                          progress_note_id: row.original.progress_note_id,
-                          trigger_word: t.trigger_word || '',
-                          comment: '',
-                          is_thumb_up: true,
-                        });
-                      }}
-                    />
-                  )}
-                  {!isthumbup && commentState !== null ? (
-                    <CommentModal
-                      data={{
-                        comment: commentState || '',
-                        trigger_word: t.trigger_word || '',
-                        progress_note_id: row.original.progress_note_id,
-                      }}
-                      active={true}
-                      setThumbUp={setThumbup}
-                      setCommentState={setCommentState}
-                    />
-                  ) : (
-                    <CommentModal
-                      data={{
-                        comment: commentState || '',
-                        trigger_word: t.trigger_word || '',
-                        progress_note_id: row.original.progress_note_id,
-                      }}
-                      setThumbUp={setThumbup}
-                      setCommentState={setCommentState}
-                      active={false}
-                    />
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </DataField>
-      </div>
-      {/*<table className="basis-full pb-3 border-stroke border-b border-spacing-y-2.5 border-separate">*/}
-      {/*  <thead>*/}
-      {/*    <tr>*/}
-      {/*      <th className="text-left w-2/12">*/}
-      {/*        <div className="flex gap-1.5">*/}
-      {/*          <p>Trigger</p>*/}
-      {/*          <Bot*/}
-      {/*            data-tooltip-id="bot-tooltip"*/}
-      {/*            data-tooltip-content="Trigger generated by AI from Progress Note"*/}
-      {/*            className="size-5 block focus:outline-none"*/}
-      {/*          />*/}
-      {/*          <Tooltip id="bot-tooltip" className="z-99" />*/}
-      {/*        </div>*/}
-      {/*      </th>*/}
-      {/*      <th*/}
-      {/*        className={clsx(*/}
-      {/*          'text-left pr-10 ',*/}
-      {/*          row.original.upstream === 'PCC' ? 'w-8/12' : 'w-6/12',*/}
-      {/*        )}*/}
-      {/*      >*/}
-      {/*        <div className="flex gap-1.5">*/}
-      {/*          <p>Explanations</p>*/}
-      {/*          <Bot*/}
-      {/*            data-tooltip-id="bot-tooltip"*/}
-      {/*            data-tooltip-content="Explanation generated by AI from Progress Note"*/}
-      {/*            className="size-5 block focus:outline-none"*/}
-      {/*          />*/}
-      {/*          <Tooltip id="bot-tooltip" className="z-99" />*/}
-      {/*        </div>*/}
-      {/*      </th>*/}
-      {/*      <th className="text-left  w-2/12">*/}
-      {/*        <p>Review</p>*/}
-      {/*      </th>*/}
-      {/*      {row.original.upstream !== 'PCC' && (*/}
-      {/*        <th className="text-left w-2/12">*/}
-      {/*          <p>Actions</p>*/}
-      {/*        </th>*/}
-      {/*      )}*/}
-      {/*    </tr>*/}
-      {/*  </thead>*/}
-      {/*  <tbody>*/}
-      {/*    {row.original.trigger_words.map(*/}
-      {/*      ({ trigger_word, is_thumb_up, summary, comment, event_ids }) => {*/}
-      {/*        const [isthumbup, setThumbup] = useState(is_thumb_up || false);*/}
-      {/*        const [commentState, setCommentState] = useState(comment || null);*/}
-      {/*        return (*/}
-      {/*          <tr key={row.id + trigger_word}>*/}
-      {/*            <td className="whitespace-nowrap align-top flex items-center flex-nowrap">*/}
-      {/*              <HighlightWrapper*/}
-      {/*                text={trigger_word || ''}*/}
-      {/*                searchTerm={tableState.globalFilter || ''}*/}
-      {/*              />*/}
-      {/*            </td>*/}
-      {/*            <td className="pr-10">*/}
-      {/*              <LineClampShowMore className="whitespace-pre-line">*/}
-      {/*                <HighlightWrapper*/}
-      {/*                  text={summary || ''}*/}
-      {/*                  searchTerm={tableState.globalFilter || ''}*/}
-      {/*                />*/}
-      {/*              </LineClampShowMore>*/}
-      {/*            </td>*/}
-      {/*            <td className=" align-top	">*/}
-      {/*              <div className=" flex items-center flex-nowrap gap-2">*/}
-      {/*                {isthumbup ? (*/}
-      {/*                  <ThumbsUp*/}
-      {/*                    className="size-4 text-meta-3 cursor-pointer thumbs_up"*/}
-      {/*                    weight="fill"*/}
-      {/*                  />*/}
-      {/*                ) : (*/}
-      {/*                  <ThumbsUp*/}
-      {/*                    className="size-4 cursor-pointer thumbs_up"*/}
-      {/*                    onClick={() => {*/}
-      {/*                      setThumbup(true);*/}
-      {/*                      putComment.mutate({*/}
-      {/*                        progress_note_id: row.original.progress_note_id,*/}
-      {/*                        trigger_word: trigger_word || '',*/}
-      {/*                        comment: '',*/}
-      {/*                        is_thumb_up: true,*/}
-      {/*                      });*/}
-      {/*                    }}*/}
-      {/*                  />*/}
-      {/*                )}*/}
-      {/*                {!isthumbup && commentState !== null ? (*/}
-      {/*                  <CommentModal*/}
-      {/*                    data={{*/}
-      {/*                      comment: commentState || '',*/}
-      {/*                      trigger_word: trigger_word || '',*/}
-      {/*                      progress_note_id: row.original.progress_note_id,*/}
-      {/*                    }}*/}
-      {/*                    active={true}*/}
-      {/*                    setThumbUp={setThumbup}*/}
-      {/*                    setCommentState={setCommentState}*/}
-      {/*                  />*/}
-      {/*                ) : (*/}
-      {/*                  <CommentModal*/}
-      {/*                    data={{*/}
-      {/*                      comment: commentState || '',*/}
-      {/*                      trigger_word: trigger_word || '',*/}
-      {/*                      progress_note_id: row.original.progress_note_id,*/}
-      {/*                    }}*/}
-      {/*                    setThumbUp={setThumbup}*/}
-      {/*                    setCommentState={setCommentState}*/}
-      {/*                    active={false}*/}
-      {/*                  />*/}
-      {/*                )}*/}
-      {/*              </div>*/}
-      {/*            </td>*/}
-      {/*            {row.original.upstream !== 'PCC' && (*/}
-      {/*              <td className="align-top ">*/}
-      {/*                {event_ids && event_ids.length > 0 ? (*/}
-      {/*                  event_ids.map((event_id) => (*/}
-      {/*                    <HyperLink*/}
-      {/*                      key={event_id}*/}
-      {/*                      className="action_link"*/}
-      {/*                      href={`https://clearviewhcm.matrixcare.com/Zion?zionpagealias=EVENTVIEW&NSPID=${row.original.patient_id}&CHGPID=true&EVENTID=${event_id}&dashboardHomePage=true&OEType=Event&PATIENTID=${row.original.patient_id}`}*/}
-      {/*                    >*/}
-      {/*                      View the Event*/}
-      {/*                    </HyperLink>*/}
-      {/*                  ))*/}
-      {/*                ) : trigger_word === 'Fall' ? (*/}
-      {/*                  <HyperLink*/}
-      {/*                    className="action_link"*/}
-      {/*                    tooltip_content={'Create an Event in MatrixCare'}*/}
-      {/*                    href={`https://clearviewhcm.matrixcare.com/Zion?zionpagealias=EVENTCREATE&PATIENTID=${row.original.patient_id}&formId=944&categoryName=Safety%20Events&formDescription=Post+Fall+Event+v3`}*/}
-      {/*                  >*/}
-      {/*                    Create Event*/}
-      {/*                  </HyperLink>*/}
-      {/*                ) : trigger_word === 'Wound/Ulcer' ? (*/}
-      {/*                  <HyperLink*/}
-      {/*                    tooltip_content={'Create an Event in MatrixCare'}*/}
-      {/*                    className="action_link"*/}
-      {/*                    href={`https://clearviewhcm.matrixcare.com/Zion?zionpagealias=EVENTCREATE&PATIENTID=${row.original.patient_id}&formId=948&categoryName=Skin%20Integrity%20Events&formDescription=Wound+Other+Event`}*/}
-      {/*                  >*/}
-      {/*                    Create Event*/}
-      {/*                  </HyperLink>*/}
-      {/*                ) : trigger_word === 'Weight Change' ? (*/}
-      {/*                  <p></p>*/}
-      {/*                ) : (*/}
-      {/*                  <HyperLink*/}
-      {/*                    tooltip_content={'Create an Event in MatrixCare'}*/}
-      {/*                    className="action_link"*/}
-      {/*                    href={`https://clearviewhcm.matrixcare.com/Zion?zionpagealias=EVENTCREATE&PATIENTID=${row.original.patient_id}`}*/}
-      {/*                  >*/}
-      {/*                    Create Event*/}
-      {/*                  </HyperLink>*/}
-      {/*                )}*/}
-      {/*              </td>*/}
-      {/*            )}*/}
-      {/*          </tr>*/}
-      {/*        );*/}
-      {/*      },*/}
-      {/*    )}*/}
-      {/*  </tbody>*/}
-      {/*</table>*/}
-      {/*<table className="pb-3 border-stroke border-spacing-y-2.5 border-separate">*/}
-      {/*  <thead>*/}
-      {/*    <tr>*/}
-      {/*      <th className="text-left w-2/12">Progress Note ID</th>*/}
-      {/*      <th className="text-left w-6/12">Progress Note</th>*/}
-      {/*      <th className="text-left w-2/12">Created By</th>*/}
-      {/*      <th className="text-left w-2/12">Created Date</th>*/}
-      {/*    </tr>*/}
-      {/*  </thead>*/}
-      {/*  <tbody>*/}
-      {/*    <tr>*/}
-      {/*      <td className="align-top whitespace-nowrap">*/}
-      {/*        {row.getValue('progress_note_id')}*/}
-      {/*      </td>*/}
-      {/*      <td className="pr-10">*/}
-      {/*        <LineClampShowMore className="whitespace-pre-line">*/}
-      {/*          <HighlightWrapper*/}
-      {/*            text={row.getValue('progress_note') || ''}*/}
-      {/*            searchTerm={tableState.globalFilter || ''}*/}
-      {/*          />*/}
-      {/*        </LineClampShowMore>*/}
-      {/*      </td>*/}
-      {/*      <td className="align-top whitespace-nowrap">*/}
-      {/*        {row.getValue('created_by')}*/}
-      {/*      </td>*/}
-      {/*      <td className=" whitespace-nowrap align-top">*/}
-      {/*        {new Date(row.getValue('created_date')).toLocaleDateString()}{' '}*/}
-      {/*        {new Date(row.getValue('created_date')).toLocaleTimeString(*/}
-      {/*          navigator.language,*/}
-      {/*          {*/}
-      {/*            hour: '2-digit',*/}
-      {/*            minute: '2-digit',*/}
-      {/*          },*/}
-      {/*        )}*/}
-      {/*      </td>*/}
-      {/*    </tr>*/}
-      {/*  </tbody>*/}
-      {/*</table>*/}
     </div>
   );
 }

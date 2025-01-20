@@ -8,7 +8,7 @@ export default function DataField({
   searchTerm,
   className,
 }: {
-  title: string;
+  title: string | React.ReactNode;
   className?: string;
 } & (
   | {
@@ -24,7 +24,11 @@ export default function DataField({
 )) {
   return (
     <div className={clsx('flex flex-col gap-2 ', className)}>
-      <h3 className="text-[#7A7A7A]">{title}</h3>
+      {typeof title === 'string' ? (
+        <h3 className="text-[#7A7A7A]">{title}</h3>
+      ) : (
+        title
+      )}
       {children ? (
         children
       ) : (

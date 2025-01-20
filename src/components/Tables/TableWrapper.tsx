@@ -260,16 +260,6 @@ export default function TableWrapper({
                                   <SortDefult className="inline size-5" />
                                 )}
                               </div>
-                              {/*{header.column.getCanFilter() &&*/}
-                              {/*  header.column.columnDef.filterFn && (*/}
-                              {/*    <Button*/}
-                              {/*      onClick={(e) => {*/}
-                              {/*        e.stopPropagation();*/}
-                              {/*      }}*/}
-                              {/*    >*/}
-                              {/*      <Funnel className="inline size-5 opacity-70" />*/}
-                              {/*    </Button>*/}
-                              {/*  )}*/}
                             </div>
                           )}
                         </th>
@@ -311,7 +301,10 @@ export default function TableWrapper({
                       </tr>
                       {row.getIsExpanded() && (
                         <tr>
-                          <td colSpan={row.getVisibleCells().length}>
+                          <td
+                            colSpan={row.getVisibleCells().length}
+                            className="p-0"
+                          >
                             {renderExpandedRow({ row, tableState, ...rest })}
                           </td>
                         </tr>

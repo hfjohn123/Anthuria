@@ -39,7 +39,7 @@ export default function CommentModal({
       >
         <ThumbsDown
           className={clsx(
-            'size-4 cursor-pointer thumbs_down',
+            'size-5 cursor-pointer thumbs_down',
             active ? 'text-meta-1' : 'text-body dark:text-bodydark',
           )}
           weight={active ? 'fill' : 'regular'}
