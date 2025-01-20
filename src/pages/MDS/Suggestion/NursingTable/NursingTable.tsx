@@ -1,6 +1,6 @@
 import { Stepper, StepperRefAttributes } from 'primereact/stepper';
 import { StepperPanel } from 'primereact/stepperpanel';
-import { createContext, useEffect, useRef, useState } from 'react';
+import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { Button } from 'primereact/button';
 import ClinicalCategory from './ClinicalCategory.tsx';
 import FunctionalScoreTable from './FunctionalScoreTable.tsx';
@@ -11,6 +11,7 @@ import clsx from 'clsx';
 import EvidenceModal from '../EvidenceModal.tsx';
 import { NusingMapping } from '../../cmiMapping.ts';
 import _ from 'lodash';
+import { MDSPatientContext } from '../MDSDetailLoading.tsx';
 
 export const NursingTableContext = createContext<MDSFinal | null>(null);
 
@@ -64,149 +65,10 @@ export default function NursingTable({ data }: { data: MDSFinal }) {
   const BIMS = data.nursing_bscp_final_entry.nursing_bscp_bims;
   const currentGroup = data.nursing_group;
 
-  const boolFuncScore14 = !!(
-    functionalScore.final_score &&
-    parseInt(functionalScore.final_score || '99') <= 14
-  );
-  const boolFuncScore11 = !!(
-    functionalScore.final_score &&
-    parseInt(functionalScore.final_score || '99') <= 11
-  );
-  let boolsch = false;
-  if (specialCareHigh) {
-    if (specialCareHigh.length > 1) {
-      boolsch = true;
-    }
-    if (specialCareHigh.length === 1) {
-      if (
-        (specialCareHigh[0].mds_item === 'I5100, Nursing Function Score' &&
-          boolFuncScore11) ||
-        specialCareHigh[0].mds_item !== 'I5100, Nursing Function Score'
-      ) {
-        boolsch = true;
-      }
-    }
-  }
-  let boolscl = false;
-  if (specialCareLow) {
-    if (
-      specialCareLow.filter(
-        (item) =>
-          item.mds_item === 'I4400, Nursing Function Score' ||
-          item.mds_item === 'I5200, Nursing Function Score' ||
-          item.mds_item === 'I5300, Nursing Function Score',
-      ).length === specialCareLow.length
-    ) {
-      if (boolFuncScore11) {
-        boolscl = true;
-      }
-    } else {
-      boolscl = true;
-    }
-  }
-  let boolcc = false;
-  if (clinicalComplex) {
-    if (
-      clinicalComplex[0].mds_item === 'I4900, Nursing Function Score' &&
-      boolFuncScore11
-    ) {
-      boolcc = true;
-    }
-    if (clinicalComplex[0].mds_item !== 'I4900, Nursing Function Score') {
-      boolcc = true;
-    }
-    if (clinicalComplex.length > 1) {
-      boolcc = true;
-    }
-  }
-  const boolIsDepressed = !!(
-    depressionIndicator.is_mds || depressionIndicator.is_suggest
-  );
-  let suggestGroup = 'PA1';
-  if (
-    extensiveServices?.some((item) => item.mds_item === 'O0110E1B') &&
-    boolFuncScore14
-  ) {
-    suggestGroup = 'ES3';
-  } else if (
-    extensiveServices?.some((item) => item.mds_item === 'O0110F1B') &&
-    boolFuncScore14
-  ) {
-    suggestGroup = 'ES2';
-  } else if (
-    extensiveServices?.some((item) => item.mds_item === 'O0110M1B') &&
-    boolFuncScore14
-  ) {
-    suggestGroup = 'ES1';
-  } else if (boolsch && boolFuncScore14) {
-    if (parseInt(functionalScore.final_score || '99') <= 5 && boolIsDepressed) {
-      suggestGroup = 'HDE2';
-    } else if (parseInt(functionalScore.final_score || '99') <= 5) {
-      suggestGroup = 'HBC2';
-    } else if (boolIsDepressed) {
-      suggestGroup = 'HDE1';
-    } else {
-      suggestGroup = 'HBC1';
-    }
-  } else if (boolscl && boolFuncScore14) {
-    if (parseInt(functionalScore.final_score || '99') <= 5 && boolIsDepressed) {
-      suggestGroup = 'LDE2';
-    } else if (parseInt(functionalScore.final_score || '99') <= 5) {
-      suggestGroup = 'LBC2';
-    } else if (boolIsDepressed) {
-      suggestGroup = 'LDE1';
-    } else {
-      suggestGroup = 'LBC1';
-    }
-  } else if (boolcc) {
-    if (parseInt(functionalScore.final_score || '99') <= 5 && boolIsDepressed) {
-      suggestGroup = 'CDE2';
-    } else if (boolFuncScore14 && boolIsDepressed) {
-      suggestGroup = 'CBC2';
-    } else if (boolIsDepressed) {
-      suggestGroup = 'CA2';
-    } else if (parseInt(functionalScore.final_score || '99') <= 5) {
-      suggestGroup = 'CDE1';
-    } else if (boolFuncScore14) {
-      suggestGroup = 'CBC1';
-    } else {
-      suggestGroup = 'CA1';
-    }
-  } else if (
-    (parseInt(BIMS?.mds_value || '99') <= 9 ||
-      (BIMS?.mds_value != '99' &&
-        data.nursing_bscp_final_entry.nursing_bscp_mds_bs) ||
-      data.nursing_bscp_final_entry.nursing_bscp_mds_sacs) &&
-    !boolFuncScore11
-  ) {
-    if (data.nursing_re_final_entry?.final_count || 0 >= 2) {
-      suggestGroup = 'BAB2';
-    } else {
-      suggestGroup = 'BAB1';
-    }
-  } else {
-    if (
-      (parseInt(functionalScore.final_score || '99') <= 5 &&
-        data.nursing_re_final_entry?.final_count) ||
-      0 >= 2
-    ) {
-      suggestGroup = 'PDE2';
-    } else if (
-      (boolFuncScore14 && data.nursing_re_final_entry?.final_count) ||
-      0 >= 2
-    ) {
-      suggestGroup = 'PBC2';
-    } else if (data.nursing_re_final_entry?.final_count || 0 >= 2) {
-      suggestGroup = 'PA2';
-    } else if (parseInt(functionalScore.final_score || '99') <= 5) {
-      suggestGroup = 'PDE1';
-    } else if (boolFuncScore14) {
-      suggestGroup = 'PBC1';
-    } else {
-      suggestGroup = 'PA1';
-    }
-  }
-  const suggestCMI = NusingMapping[suggestGroup as keyof typeof NusingMapping];
+  const patientInfo = useContext(MDSPatientContext);
+
+  const suggestGroup = patientInfo.suggest_nursing_group;
+  const suggestCMI = patientInfo.suggest_nursing_cmi;
 
   return (
     <NursingTableContext.Provider value={data}>

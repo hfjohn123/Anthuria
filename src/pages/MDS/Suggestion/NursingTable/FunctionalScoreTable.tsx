@@ -19,6 +19,7 @@ import EvidenceModal from '../EvidenceModal.tsx';
 import UpVoteButton from '../UpVoteButton.tsx';
 import MDSCommentModal from '../MDSCommentModal.tsx';
 import { MDSContext } from '../MDSDetail.tsx';
+import { MDSPatientContext } from '../MDSDetailLoading.tsx';
 
 // Helper Functions
 const getRowSpan = (rowIndex: number, data?: FunctionalScore[]): number => {
@@ -55,6 +56,8 @@ export default function FunctionalScoreTable({
   data: NursingFunctionalScore;
 }) {
   const row_data = useContext(MDSContext);
+  const patientInfo = useContext(MDSPatientContext);
+
   const columns: ColumnDef<FunctionalScore>[] = [
     {
       accessorKey: 'function_area',
@@ -108,7 +111,7 @@ export default function FunctionalScoreTable({
     },
     {
       accessorKey: 'individual_function_score',
-      header: 'Function Score',
+      header: 'Current Function Score',
       cell: (info) => (
         <td className="py-2 px-4 border-t border-l border-gray-600  whitespace-nowrap">
           {info.getValue() as string}
@@ -121,6 +124,36 @@ export default function FunctionalScoreTable({
       footer: () => {
         return (
           <td className="whitespace-nowrap py-2 px-4 border-t border-l border-gray-600"></td>
+        );
+      },
+    },
+    {
+      accessorKey: 'average_function_score',
+      header: 'Current Average Score',
+      cell: (info) => {
+        const rowIndex = info.row.index;
+        if (
+          !isFirstInGroup(rowIndex, 'function_area', data.function_score_all)
+        ) {
+          return null;
+        }
+
+        const rowSpan = getRowSpan(rowIndex, data.function_score_all);
+
+        return (
+          <td
+            rowSpan={rowSpan}
+            className="py-2 px-4 border-t border-l  bg-blue-50 align-top border-gray-600"
+          >
+            {info.getValue() as string}
+          </td>
+        );
+      },
+      footer: () => {
+        return (
+          <td className="py-2 px-4  border-t  border-l  bg-blue-50 font-medium border-gray-600">
+            Current Final Score: {data.final_score}
+          </td>
         );
       },
     },
@@ -159,36 +192,6 @@ export default function FunctionalScoreTable({
       },
     },
 
-    {
-      accessorKey: 'average_function_score',
-      header: 'Average Score',
-      cell: (info) => {
-        const rowIndex = info.row.index;
-        if (
-          !isFirstInGroup(rowIndex, 'function_area', data.function_score_all)
-        ) {
-          return null;
-        }
-
-        const rowSpan = getRowSpan(rowIndex, data.function_score_all);
-
-        return (
-          <td
-            rowSpan={rowSpan}
-            className="py-2 px-4 border-t border-l  bg-blue-50 align-top border-gray-600"
-          >
-            {info.getValue() as string}
-          </td>
-        );
-      },
-      footer: () => {
-        return (
-          <td className="py-2 px-4  border-t  border-l  bg-blue-50 font-medium border-gray-600">
-            Total Score: {data.final_score}
-          </td>
-        );
-      },
-    },
     {
       accessorKey: 'review',
       header: 'Review',
@@ -232,9 +235,12 @@ export default function FunctionalScoreTable({
       },
       footer: () => {
         return (
-          <td className="whitespace-nowrap py-2 px-4 border-t border-l border-gray-600"></td>
+          <td className="py-2 px-4  border-t  border-l  bg-blue-50 font-medium border-gray-600">
+            Suggested Final Score: {patientInfo?.nursing_fs}
+          </td>
         );
       },
+
       // footer: () => {
       //   return (
       //     <td className="py-2 px-4  border-r  last:border-r-0 font-medium">

@@ -11,7 +11,6 @@ import { FunctionalScore, PTOTFinal } from '../../../../types/MDSFinal.ts';
 import getFacetedUniqueValues from '../../../../common/getFacetedUniqueValues.ts';
 import getFacetedMinMaxValues from '../../../../common/getFacetedMinMaxValues.ts';
 import SmallTableWrapper from '../SmallTableWrapper.tsx';
-import { PTOTMapping } from '../../cmiMapping.ts';
 import UpVoteButton from '../UpVoteButton.tsx';
 import MDSCommentModal from '../MDSCommentModal.tsx';
 import EvidenceModal from '../EvidenceModal.tsx';
