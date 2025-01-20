@@ -9,7 +9,6 @@ import { MDSFinal } from '../../../../types/MDSFinal.ts';
 import DepressionIndicator from './DepressionIndicator.tsx';
 import clsx from 'clsx';
 import EvidenceModal from '../EvidenceModal.tsx';
-import { NusingMapping } from '../../cmiMapping.ts';
 import _ from 'lodash';
 import { MDSPatientContext } from '../MDSDetailLoading.tsx';
 
@@ -141,8 +140,8 @@ export default function NursingTable({ data }: { data: MDSFinal }) {
                 <div>
                   <p className="font-bold">Current group: </p>
                   <p>
-                    {currentGroup} (CMI:{' '}
-                    {NusingMapping[currentGroup as keyof typeof NusingMapping]})
+                    {currentGroup} (CMI: {patientInfo.mds_nursing_cmi}, $
+                    {patientInfo.mds_nursing_pay})
                   </p>
                 </div>
               )}
@@ -150,7 +149,8 @@ export default function NursingTable({ data }: { data: MDSFinal }) {
                 <div>
                   <p className="font-bold">Suggested group: </p>
                   <p>
-                    {suggestGroup} (CMI: {suggestCMI})
+                    {suggestGroup} (CMI: {suggestCMI}, $
+                    {patientInfo.mds_nursing_pay})
                   </p>
                 </div>
               )}
@@ -215,8 +215,8 @@ export default function NursingTable({ data }: { data: MDSFinal }) {
                 <div>
                   <p className="font-bold">Current group: </p>
                   <p>
-                    {currentGroup} (CMI:{' '}
-                    {NusingMapping[currentGroup as keyof typeof NusingMapping]})
+                    {currentGroup} (CMI: {patientInfo.mds_nursing_cmi}, $
+                    {patientInfo.mds_nursing_pay})
                   </p>
                 </div>
               )}
@@ -224,7 +224,8 @@ export default function NursingTable({ data }: { data: MDSFinal }) {
                 <div>
                   <p className="font-bold">Suggested group: </p>
                   <p>
-                    {suggestGroup} (CMI: {suggestCMI})
+                    {suggestGroup} (CMI: {suggestCMI}, $
+                    {patientInfo.mds_nursing_pay})
                   </p>
                 </div>
               )}
@@ -295,8 +296,8 @@ export default function NursingTable({ data }: { data: MDSFinal }) {
                 <div>
                   <p className="font-bold">Current group: </p>
                   <p>
-                    {currentGroup} (CMI:{' '}
-                    {NusingMapping[currentGroup as keyof typeof NusingMapping]})
+                    {currentGroup} (CMI: {patientInfo.mds_nursing_cmi}, $
+                    {patientInfo.mds_nursing_pay})
                   </p>
                 </div>
               )}
@@ -304,7 +305,8 @@ export default function NursingTable({ data }: { data: MDSFinal }) {
                 <div>
                   <p className="font-bold">Suggested group: </p>
                   <p>
-                    {suggestGroup} (CMI: {suggestCMI})
+                    {suggestGroup} (CMI: {suggestCMI}, $
+                    {patientInfo.mds_nursing_pay})
                   </p>
                 </div>
               )}
@@ -377,8 +379,8 @@ export default function NursingTable({ data }: { data: MDSFinal }) {
                 <div>
                   <p className="font-bold">Current group: </p>
                   <p>
-                    {currentGroup} (CMI:{' '}
-                    {NusingMapping[currentGroup as keyof typeof NusingMapping]})
+                    {currentGroup} (CMI: {patientInfo.mds_nursing_cmi}, $
+                    {patientInfo.mds_nursing_pay})
                   </p>
                 </div>
               )}
@@ -386,7 +388,8 @@ export default function NursingTable({ data }: { data: MDSFinal }) {
                 <div>
                   <p className="font-bold">Suggested group: </p>
                   <p>
-                    {suggestGroup} (CMI: {suggestCMI})
+                    {suggestGroup} (CMI: {suggestCMI}, $
+                    {patientInfo.mds_nursing_pay})
                   </p>
                 </div>
               )}
@@ -483,8 +486,8 @@ export default function NursingTable({ data }: { data: MDSFinal }) {
                 <div>
                   <p className="font-bold">Current group: </p>
                   <p>
-                    {currentGroup} (CMI:{' '}
-                    {NusingMapping[currentGroup as keyof typeof NusingMapping]})
+                    {currentGroup} (CMI: {patientInfo.mds_nursing_cmi}, $
+                    {patientInfo.mds_nursing_pay})
                   </p>
                 </div>
               )}
@@ -492,7 +495,8 @@ export default function NursingTable({ data }: { data: MDSFinal }) {
                 <div>
                   <p className="font-bold">Suggested group: </p>
                   <p>
-                    {suggestGroup} (CMI: {suggestCMI})
+                    {suggestGroup} (CMI: {suggestCMI}, $
+                    {patientInfo.mds_nursing_pay})
                   </p>
                 </div>
               )}
@@ -563,8 +567,8 @@ export default function NursingTable({ data }: { data: MDSFinal }) {
                 <div>
                   <p className="font-bold">Current group: </p>
                   <p>
-                    {currentGroup} (CMI:{' '}
-                    {NusingMapping[currentGroup as keyof typeof NusingMapping]})
+                    {currentGroup} (CMI: {patientInfo.mds_nursing_cmi}, $
+                    {patientInfo.mds_nursing_pay})
                   </p>
                 </div>
               )}
@@ -572,7 +576,8 @@ export default function NursingTable({ data }: { data: MDSFinal }) {
                 <div>
                   <p className="font-bold">Suggested group: </p>
                   <p>
-                    {suggestGroup} (CMI: {suggestCMI})
+                    {suggestGroup} (CMI: {suggestCMI}, $
+                    {patientInfo.mds_nursing_pay})
                   </p>
                 </div>
               )}
