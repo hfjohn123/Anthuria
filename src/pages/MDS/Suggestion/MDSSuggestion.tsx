@@ -223,8 +223,8 @@ export default function MDSSuggestion({ row }: { row: MDSFinal }) {
               <p className="text-gray-600 ">
                 RATE OPP:{' '}
                 {parseInt(SLPValue.toFixed()) >= 0
-                  ? '$' + SLPValue.toFixed(2).replace('-0', '0')
-                  : '-$' + SLPValue.toFixed(2)}
+                  ? '$' + SLPValue.toFixed(2).replace('-', '')
+                  : '-$' + SLPValue.toFixed(2).replace('-', '')}
               </p>
             </div>
           </DisclosureButton>
@@ -258,8 +258,8 @@ export default function MDSSuggestion({ row }: { row: MDSFinal }) {
               <p className="text-gray-600 ">
                 RATE OPP:{' '}
                 {parseInt(NursingValue.toFixed()) >= 0
-                  ? '$' + NursingValue.toFixed(2).replace('-0', '0')
-                  : '-$' + NursingValue.toFixed(2)}
+                  ? '$' + NursingValue.toFixed(2).replace('-', '')
+                  : '-$' + NursingValue.toFixed(2).replace('-', '')}
               </p>
             </div>
           </DisclosureButton>
@@ -293,8 +293,8 @@ export default function MDSSuggestion({ row }: { row: MDSFinal }) {
               <p className="text-gray-600 ">
                 RATE OPP:{' '}
                 {parseInt(NTAValue.toFixed()) >= 0
-                  ? '$' + NTAValue.toFixed(2).replace('-0', '0')
-                  : '-$' + NTAValue.toFixed(2)}
+                  ? '$' + NTAValue.toFixed(2).replace('-', '')
+                  : '-$' + NTAValue.toFixed(2).replace('-', '')}
               </p>
             </div>
           </DisclosureButton>
