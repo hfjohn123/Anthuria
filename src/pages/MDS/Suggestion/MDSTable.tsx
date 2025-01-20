@@ -377,26 +377,26 @@ export default function MDSTable({ data }: { data: PDPMPatient[] }) {
         const mainString = value === 1 ? 'Suggestion' : 'Suggestions';
         const subString =
           'Current: ' +
-          info.row.original.mds_ot_group +
+          info.row.original.mds_pt_group +
           ', ' +
-          info.row.original.mds_ot_cmi +
-          '/' +
           info.row.original.mds_pt_cmi +
+          '/' +
+          info.row.original.mds_ot_cmi +
           ', $' +
-          info.row.original.mds_ot_pay +
+          info.row.original.mds_pt_pay +
           '/$' +
-          info.row.original.mds_pt_pay;
+          info.row.original.mds_ot_pay;
         const suggestString =
           'Suggested: ' +
-          info.row.original.suggest_ot_group +
+          info.row.original.suggest_pt_group +
           ', ' +
-          info.row.original.suggest_ot_cmi +
-          '/' +
           info.row.original.suggest_pt_cmi +
+          '/' +
+          info.row.original.suggest_ot_cmi +
           ', $' +
-          info.row.original.suggest_ot_pay +
+          info.row.original.suggest_pt_pay +
           '/$' +
-          info.row.original.suggest_pt_pay;
+          info.row.original.suggest_ot_pay;
         return (
           <>
             <HighlightWrapper

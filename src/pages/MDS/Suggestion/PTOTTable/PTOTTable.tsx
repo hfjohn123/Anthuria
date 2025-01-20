@@ -16,6 +16,7 @@ import UpVoteButton from '../UpVoteButton.tsx';
 import MDSCommentModal from '../MDSCommentModal.tsx';
 import EvidenceModal from '../EvidenceModal.tsx';
 import { MDSContext } from '../MDSDetail.tsx';
+import { MDSPatientContext } from '../MDSDetailLoading.tsx';
 
 // Helper Functions
 const getRowSpan = (rowIndex: number, data?: FunctionalScore[]): number => {
@@ -49,6 +50,7 @@ const permanentColumnFilters = ['function_area', 'mds_item'];
 
 export default function PTOTTable({ data }: { data: PTOTFinal }) {
   const row_data = useContext(MDSContext);
+  const patientInfo = useContext(MDSPatientContext);
 
   const columns: ColumnDef<FunctionalScore>[] = [
     {
@@ -103,7 +105,7 @@ export default function PTOTTable({ data }: { data: PTOTFinal }) {
     },
     {
       accessorKey: 'individual_function_score',
-      header: 'Function Score',
+      header: 'Current Function Score',
       cell: (info) => (
         <td className="py-2 px-4 border-t border-l  whitespace-nowrap border-gray-600">
           {info.getValue() as string}
@@ -119,6 +121,43 @@ export default function PTOTTable({ data }: { data: PTOTFinal }) {
         );
       },
     },
+    {
+      accessorKey: 'average_function_score',
+      header: 'Current Average Score',
+      cell: (info) => {
+        const rowIndex = info.row.index;
+        if (
+          !isFirstInGroup(rowIndex, 'function_area', data.function_score_all)
+        ) {
+          return null;
+        }
+
+        const rowSpan = getRowSpan(rowIndex, data.function_score_all);
+
+        return (
+          <td
+            rowSpan={rowSpan}
+            className="py-2 px-4 border-t border-l  bg-blue-50 align-top border-gray-600"
+          >
+            {info.getValue() as string}
+          </td>
+        );
+      },
+      footer: () => {
+        return (
+          <td className="py-2 px-4  border-t border-l  bg-blue-50 font-medium border-gray-600">
+            Current Total Score: {data.final_score}
+            <br />
+            PT: {patientInfo.mds_pt_group}, {patientInfo.mds_pt_cmi}, $
+            {patientInfo.mds_pt_pay}
+            <br />
+            OT: {patientInfo.mds_ot_group}, {patientInfo.mds_ot_cmi}, $
+            {patientInfo.mds_ot_pay}
+          </td>
+        );
+      },
+    },
+
     {
       accessorKey: 'suggestion',
       header: 'AI Suggested Conditions',
@@ -154,44 +193,14 @@ export default function PTOTTable({ data }: { data: PTOTFinal }) {
       },
     },
     {
-      accessorKey: 'average_function_score',
-      header: 'Average Score',
-      cell: (info) => {
-        const rowIndex = info.row.index;
-        if (
-          !isFirstInGroup(rowIndex, 'function_area', data.function_score_all)
-        ) {
-          return null;
-        }
-
-        const rowSpan = getRowSpan(rowIndex, data.function_score_all);
-
-        return (
-          <td
-            rowSpan={rowSpan}
-            className="py-2 px-4 border-t border-l  bg-blue-50 align-top border-gray-600"
-          >
-            {info.getValue() as string}
-          </td>
-        );
-      },
-      footer: () => {
-        return (
-          <td className="py-2 px-4  border-t border-l  bg-blue-50 font-medium border-gray-600">
-            Total Score: {data.final_score}
-          </td>
-        );
-      },
-    },
-    {
       accessorKey: 'review',
       header: 'Review',
       cell: (info) => {
         const [thumbUpState, setThumbUpState] = useState(
-          info.row.original.is_thumb_up || false,
+          info.row.original.is_thumb_up ?? 0,
         );
         const [thumbDownState, setThumbDownState] = useState(
-          info.row.original.is_thumb_down || false,
+          info.row.original.is_thumb_down ?? 0,
         );
         if (info.row.original.suggestion?.length ?? 0 > 0) {
           return (
@@ -227,13 +236,13 @@ export default function PTOTTable({ data }: { data: PTOTFinal }) {
       footer: () => {
         return (
           <td className="py-2 px-4  border-t border-l  last:border-r-0 font-medium border-gray-600">
-            Case Mix Group: {data.mix_group}{' '}
-            {data.mix_group &&
-              '(PT CMI:' +
-                PTOTMapping[data.mix_group as keyof typeof PTOTMapping].PT_CMI +
-                ', OT CMI:' +
-                PTOTMapping[data.mix_group as keyof typeof PTOTMapping].OT_CMI +
-                ')'}
+            Suggested Final Score: {patientInfo.ptot_fs}
+            <br />
+            PT: {patientInfo.suggest_pt_group}, {patientInfo.suggest_pt_cmi}, $
+            {patientInfo.suggest_pt_pay}
+            <br />
+            OT: {patientInfo.suggest_ot_group}, {patientInfo.suggest_ot_cmi}, $
+            {patientInfo.suggest_ot_pay}
           </td>
         );
       },

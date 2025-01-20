@@ -56,6 +56,8 @@ export type PDPMPatient = {
   original_ptot_opportunities?: number;
   original_nursing_opportunities?: number;
   original_total_opportunities?: number;
+  ptot_fs: number;
+  nursing_fs: number;
 };
 
 export type MDSFinal = {
@@ -154,8 +156,8 @@ export type FunctionalScore = {
   individual_function_score: string;
   suggestion?: ProgressNoteAndSummary[];
   average_function_score: string;
-  is_thumb_up: boolean;
-  is_thumb_down: boolean;
+  is_thumb_up: number;
+  is_thumb_down: number;
   comment: string;
   category: string;
   item: string;
