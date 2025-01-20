@@ -58,7 +58,8 @@ export type PDPMPatient = {
   original_total_opportunities?: number;
   ptot_fs: number;
   nursing_fs: number;
-  mds_hipps: string;
+  mds_hipps?: string;
+  suggest_hipps: string;
   mds_nta_score: number;
   suggest_nta_score: number;
   mds_slp_s_count: number;

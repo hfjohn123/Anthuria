@@ -49,7 +49,6 @@ export default function MDSTable({ data }: { data: PDPMPatient[] }) {
       accessorKey: 'facility_name',
       header: 'Facility',
       meta: {
-        wrap: 'whitespace-nowrap',
         type: 'categorical',
       },
       enableHiding: false,
@@ -114,7 +113,6 @@ export default function MDSTable({ data }: { data: PDPMPatient[] }) {
       header: 'Patient',
       filterFn: 'includesString',
       meta: {
-        wrap: 'whitespace-normal',
         type: 'text',
       },
     },
@@ -513,6 +511,31 @@ export default function MDSTable({ data }: { data: PDPMPatient[] }) {
       },
     },
     {
+      accessorKey: 'hipps',
+      accessorFn: (row) => row.original_total_opportunities,
+      header: 'HIPPS',
+      enableColumnFilter: false,
+      cell: (info) => {
+        return (
+          <>
+            <HighlightWrapper
+              text={
+                'Current: ' + (info.row.original.mds_hipps ?? 'Not Subbmitted')
+              }
+              searchTerm={info.table.getState().globalFilter}
+              className={'whitespace-nowrap'}
+            />
+            <br />
+            <HighlightWrapper
+              className="whitespace-nowrap"
+              text={'Suggested: ' + info.row.original.suggest_hipps}
+              searchTerm={info.table.getState().globalFilter}
+            />
+          </>
+        );
+      },
+    },
+    {
       accessorKey: 'total_opp',
       accessorFn: (row) => row.original_total_opportunities,
       header: 'Rate Change',
@@ -592,6 +615,7 @@ export default function MDSTable({ data }: { data: PDPMPatient[] }) {
             nursing: false,
             nursing_opp: true,
             total_opp: true,
+            hipps: false,
             operation_name: user_data.organization_id === 'the_triedge_labs',
           }
         : {
@@ -609,6 +633,7 @@ export default function MDSTable({ data }: { data: PDPMPatient[] }) {
             nursing: true,
             nursing_opp: false,
             total_opp: true,
+            hipps: false,
             operation_name: user_data.organization_id === 'the_triedge_labs',
           },
     pagination: {

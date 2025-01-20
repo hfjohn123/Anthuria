@@ -287,7 +287,7 @@ export default function TableWrapper({
                           return (
                             <td
                               key={cell.id}
-                              className={`py-2 px-3 w-[${cell.column.getSize() || 'auto'}] text-sm ${cell.column.columnDef.meta?.wrap} ${row.getIsExpanded() && 'bg-slate-100 dark:bg-slate-700'} `}
+                              className={`py-2 px-3 text-sm ${cell.column.columnDef.meta?.wrap} ${row.getIsExpanded() && 'bg-slate-100 dark:bg-slate-700'} `}
                               role="button"
                               onClick={row.getToggleExpandedHandler()}
                             >
