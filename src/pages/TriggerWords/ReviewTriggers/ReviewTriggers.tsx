@@ -140,15 +140,21 @@ export default function ReviewTriggers() {
     (d) => d['id'] === 'trigger_words',
   ) || { locations: [] };
 
-  const RevisionDate = useMemo(
-    () =>
-      tableState.columnFilters.find((f) => f.id === 'revision_date') as {
-        value: number[];
-      },
-    [tableState.columnFilters.find((f) => f.id === 'revision_date')],
+  const [startValue, endValue] = useMemo(() => {
+    const revisionFilter = tableState.columnFilters.find(
+      (f) => f.id === 'revision_date',
+    ) as { id: string; value: any[] };
+    return [
+      revisionFilter?.value?.[0] ?? null,
+      revisionFilter?.value?.[1] ?? null,
+    ];
+  }, [tableState.columnFilters]);
+  const start = useMemo(
+    () => (startValue ? new Date(startValue) : null),
+    [startValue],
   );
-  const start = useMemo(() => new Date(RevisionDate.value[0]), [RevisionDate]);
-  const end = useMemo(() => new Date(RevisionDate.value[1]), [RevisionDate]);
+
+  const end = useMemo(() => (endValue ? new Date(endValue) : null), [endValue]);
 
   const fetchTriggerWord = async (signal?: AbortSignal) => {
     const params: { [key: string]: any } =
@@ -607,7 +613,9 @@ export default function ReviewTriggers() {
               <p className="text-sm	text-gray-500 ">
                 {table.getFilteredRowModel().rows.length} of {total_count}{' '}
                 {total_count >= 1
-                  ? `records starting since ${start.toLocaleString('en-US', {
+                  ? `records starting since ${(
+                      start ?? new Date()
+                    ).toLocaleString('en-US', {
                       month: 'short',
                       day: 'numeric',
                       year: 'numeric',

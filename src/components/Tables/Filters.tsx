@@ -218,7 +218,9 @@ export default function Filters({
                 filter === 'revision_date'
                   ? Math.min(
                       value && value[0]
-                        ? value[0] + 1000 * 60 * 60 * 24 * 7
+                        ? value[1]
+                          ? Date.now()
+                          : value[0] + 1000 * 60 * 60 * 24 * 7
                         : 999999999999998,
                       Date.now(),
                     ) || Date.now()
