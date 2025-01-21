@@ -89,7 +89,7 @@ export default function MDS() {
 
   return (
     stableData && (
-      <DefaultLayout title={'Minimum Data Set'}>
+      <DefaultLayout>
         <div className="flex flex-col gap-5 my-3 sm:my-5 max-w-screen-3xl sm:px-5 mx-auto ">
           <MDSTable data={stableData} />
         </div>

@@ -727,7 +727,6 @@ export default function MDSTable({ data }: { data: PDPMPatient[] }) {
         patients who were PDPM eligible in the past 30 days.
       </p>
       <TableWrapper
-        title="PDPM Suggestions"
         filters={true}
         table={table}
         tableState={tableState}

@@ -20,11 +20,11 @@ export default function DateTimeDropdown({
 }: {
   id: string;
   autoFocus?: boolean;
-  value?: Date[];
-  setValue: (value: [Date, Date | null]) => void;
+  value: [number | null, number | null];
+  setValue: (value: [number | null, number | null]) => void;
   clearFilter: () => void;
-  minDate?: Date;
-  maxDate?: Date;
+  minDate?: number;
+  maxDate?: number;
   callback?: () => void;
 }) {
   return (
@@ -42,11 +42,20 @@ export default function DateTimeDropdown({
           >
             <span className="">
               {id}
-              {value && ': ' + value?.map((d) => d?.toDateString()).join(' - ')}
+              {value &&
+                ': ' +
+                  value
+                    ?.map((d) => d && new Date(d)?.toDateString())
+                    .join(' - ')}
             </span>
             {value && value.filter((d) => d).length > 0 ? (
               <div
-                onClick={() => clearFilter()}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  clearFilter();
+                  close();
+                  callback?.();
+                }}
                 className="fill-[rgb(204,204,204)]"
               >
                 <svg
@@ -69,7 +78,6 @@ export default function DateTimeDropdown({
               // Your onClose handler here
               if (!value || (value && value.filter((d) => d).length < 2)) {
                 clearFilter();
-                return;
               }
               callback?.();
             }}

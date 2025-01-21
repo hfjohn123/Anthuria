@@ -1,6 +1,10 @@
 import DefaultLayout from '../../../layout/DefaultLayout.tsx';
 import axios from 'axios';
-import { useQuery, UseQueryResult } from '@tanstack/react-query';
+import {
+  useQuery,
+  useQueryClient,
+  UseQueryResult,
+} from '@tanstack/react-query';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import Loader from '../../../common/Loader';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -21,11 +25,9 @@ import getFacetedMinMaxValues from '../../../common/getFacetedMinMaxValues.ts';
 import { AuthContext } from '../../../components/AuthWrapper.tsx';
 import NumberCards from '../../../components/Cards/NumberCards.tsx';
 import clsx from 'clsx';
-import dateRangeFilterFn from '../../../common/dateRangeFilterFn.ts';
 import HyperLink from '../../../components/Basic/HyerLink.tsx';
 import { TriggerAPI, TriggerFinal } from '../../../types/TriggerFinal.ts';
 import TriggerNoteDetail from './TriggerNoteDetail.tsx';
-import { useSearch } from '@tanstack/react-router';
 import NewTriggerWordModal from './NewTriggerWordModal.tsx';
 import TableWrapper from '../../../components/Tables/TableWrapper.tsx';
 import _, { Dictionary } from 'lodash';
@@ -63,7 +65,15 @@ const initialTableState: TableState = {
   expanded: {},
   grouping: [],
   sorting: [],
-  columnFilters: [],
+  columnFilters: [
+    {
+      id: 'revision_date',
+      value: [
+        new Date(Date.now() - 1000 * 60 * 60 * 24).setHours(0, 0, 0, 0),
+        new Date().setHours(23, 59, 59, 999),
+      ],
+    },
+  ],
   columnPinning: {
     left: [],
     right: [],
@@ -110,6 +120,7 @@ const initialTableState: TableState = {
 export default function ReviewTriggers() {
   const { route, user_applications_locations, user_data } =
     useContext(AuthContext);
+  const queryClient = useQueryClient();
   const [initialFacetedCounts, setInitialFacetedCounts] = useState<
     Dictionary<number>
   >({});
@@ -123,36 +134,29 @@ export default function ReviewTriggers() {
           'revision_date',
         ]
       : ['facility_name', 'patient_name', 'trigger_word', 'revision_date'];
+  const [tableState, setTableState] = useState<TableState>(initialTableState);
 
   const { locations } = user_applications_locations.find(
     (d) => d['id'] === 'trigger_words',
   ) || { locations: [] };
 
-  const search = useSearch({
-    from: '/trigger-words/review-triggers',
-  });
-
-  const [includeCreatedDate, setIncludeCreatedDate] = useState(
-    !search['history'],
+  const RevisionDate = useMemo(
+    () =>
+      tableState.columnFilters.find((f) => f.id === 'revision_date') as {
+        value: number[];
+      },
+    [tableState.columnFilters.find((f) => f.id === 'revision_date')],
   );
-  const today = new Date();
-  let twentyFourhAgo = new Date(today.getTime() - 1000 * 60 * 60 * 24);
-  if (includeCreatedDate) {
-    twentyFourhAgo = new Date(today.getTime() - 1000 * 60 * 60 * 24);
-    twentyFourhAgo.setHours(0, 0, 0, 0);
-  } else {
-    twentyFourhAgo = new Date(today.getTime() - 1000 * 60 * 60 * 24 * 7);
-  }
-  today.setHours(23, 59, 59, 999);
+  const start = useMemo(() => new Date(RevisionDate.value[0]), [RevisionDate]);
+  const end = useMemo(() => new Date(RevisionDate.value[1]), [RevisionDate]);
+
   const fetchTriggerWord = async (signal?: AbortSignal) => {
     const params: { [key: string]: any } =
       user_data.organization_id === 'AVHC'
         ? {}
         : {
-            from_date: twentyFourhAgo,
-            to_date: today,
-            // pagelimit: tableState.pagination.pageSize,
-            // page: tableState.pagination.pageIndex + 1,
+            from_date: start,
+            to_date: end,
           };
     const response = await axios.get(`${route}/trigger_final`, {
       signal,
@@ -170,6 +174,7 @@ export default function ReviewTriggers() {
   }: UseQueryResult<TriggerAPI, unknown> = useQuery({
     queryKey: ['trigger_word_view_trigger_word_detail_final', route],
     queryFn: ({ signal }) => fetchTriggerWord(signal),
+    enabled: false,
   });
 
   const [selfDefinedKeywordsState, setSelfDefinedKeywordsState] = useState(
@@ -179,6 +184,14 @@ export default function ReviewTriggers() {
   useEffect(() => {
     setSelfDefinedKeywordsState(data?.self_defined_keywords);
   }, [data?.self_defined_keywords]);
+  useEffect(() => {
+    if (start && end) {
+      queryClient.cancelQueries({
+        queryKey: ['trigger_word_view_trigger_word_detail_final', route],
+      });
+      refetch();
+    }
+  }, [start, end, queryClient, route, refetch]);
 
   const columns = useMemo<ColumnDef<TriggerFinal>[]>(
     () => [
@@ -279,6 +292,9 @@ export default function ReviewTriggers() {
       },
       {
         accessorKey: 'created_date',
+        accessorFn: (row) => {
+          return new Date(row.created_date).getTime();
+        },
         header: 'Created Date',
         cell: (info) => {
           if (!info.getValue()) return '';
@@ -296,7 +312,7 @@ export default function ReviewTriggers() {
             />
           );
         },
-        filterFn: dateRangeFilterFn,
+        filterFn: 'inNumberRange',
         meta: {
           wrap: false,
           type: 'daterange',
@@ -343,7 +359,7 @@ export default function ReviewTriggers() {
           wrap: false,
           type: 'daterange',
         },
-        filterFn: dateRangeFilterFn,
+        filterFn: 'inNumberRange',
       },
       {
         accessorKey: 'revision_by',
@@ -509,7 +525,6 @@ export default function ReviewTriggers() {
     ],
     [],
   );
-  const [tableState, setTableState] = useState<TableState>(initialTableState);
   const [isRefetching, setIsRefetching] = useState(false);
 
   useEffect(() => {
@@ -568,10 +583,6 @@ export default function ReviewTriggers() {
     );
   }, [tableState.columnVisibility]);
 
-  useEffect(() => {
-    refetch().finally(() => setIsRefetching(false));
-  }, [includeCreatedDate, refetch]);
-
   if (isPending || isRefetching) {
     return <Loader />;
   }
@@ -586,7 +597,6 @@ export default function ReviewTriggers() {
   const uncategorized_count = table
     .getCoreRowModel()
     .rows.filter((row) => row.original.trigger_words.length === 0).length;
-
   return (
     data && (
       <DefaultLayout>
@@ -597,17 +607,14 @@ export default function ReviewTriggers() {
               <p className="text-sm	text-gray-500 ">
                 {table.getFilteredRowModel().rows.length} of {total_count}{' '}
                 {total_count >= 1
-                  ? `records starting since ${twentyFourhAgo.toLocaleString(
-                      'en-US',
-                      {
-                        month: 'short',
-                        day: 'numeric',
-                        year: 'numeric',
-                        hour: 'numeric',
-                        minute: 'numeric',
-                        timeZoneName: 'short',
-                      },
-                    )}  are `
+                  ? `records starting since ${start.toLocaleString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric',
+                      hour: 'numeric',
+                      minute: 'numeric',
+                      timeZoneName: 'short',
+                    })}  are `
                   : `record is `}
                 displayed
               </p>
@@ -871,12 +878,7 @@ export default function ReviewTriggers() {
             download={true}
             tableSetting={true}
             initialTableState={initialTableState}
-            hasHistory={user_data.organization_id !== 'AVHC'}
             setIsRefetching={setIsRefetching}
-            includeCreatedDate={
-              user_data.organization_id !== 'AVHC' ? includeCreatedDate : false
-            }
-            setIncludeCreatedDate={setIncludeCreatedDate}
             placeholder={
               'Search for any text associated with a progress note, including the patient’s name, facility, the clinician who wrote the note.'
             }

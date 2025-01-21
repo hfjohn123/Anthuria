@@ -163,14 +163,14 @@ export default function TableWrapper({
 
   return (
     <div>
-      <p className="bg-transparent">
-        {table.getFilteredRowModel().rows.length} of{' '}
-        {table.getCoreRowModel().rows.length}{' '}
-        {table.getCoreRowModel().rows.length >= 1
-          ? 'records are '
-          : 'record is '}
-        displayed
-      </p>
+      {/*<p className="bg-transparent">*/}
+      {/*  {table.getFilteredRowModel().rows.length} of{' '}*/}
+      {/*  {table.getCoreRowModel().rows.length}{' '}*/}
+      {/*  {table.getCoreRowModel().rows.length >= 1*/}
+      {/*    ? 'records are '*/}
+      {/*    : 'record is '}*/}
+      {/*  displayed*/}
+      {/*</p>*/}
       <div className=" bg-white dark:bg-boxdark h-full flex-col flex overflow-x-auto lg:overflow-clip px-7.5 py-5 gap-7.5 rounded-[30px] ">
         {title && (
           <h3 className="text-title-md text-black dark:text-white font-semibold	">

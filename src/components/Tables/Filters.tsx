@@ -1,12 +1,12 @@
 import Select from 'react-select';
 import filterSelectStyles from '../Select/filterSelectStyles.ts';
 import filterValueContainer from '../Select/FilterValueContainer.tsx';
+import FilterValueContainer from '../Select/FilterValueContainer.tsx';
 import CheckboxOption from '../Select/CheckboxOption.tsx';
 import handleFilterChange from './handleFilterChange.ts';
 import AutosizeInput from 'react-18-input-autosize';
 import { Button } from '@headlessui/react';
 import { Table, TableState } from '@tanstack/react-table';
-import FilterValueContainer from '../Select/FilterValueContainer.tsx';
 import { useNavigate, useSearch } from '@tanstack/react-router';
 import DateTimeDropdown from './DateTimeFilter/DateTimeDropdown.tsx';
 import { useRef } from 'react';
@@ -44,13 +44,34 @@ export default function Filters({
 }: FilterProps) {
   const navigate = useNavigate();
   const inputRef = useRef<HTMLInputElement>(null);
+  const setValueFunction = (
+    [start, end]: [number | null, number | null],
+    filter: string,
+  ) => {
+    const startDay = start ? new Date(start).setHours(0, 0, 0, 0) : null;
+    const endDay = end ? new Date(end).setHours(23, 59, 59, 999) : null;
+    setTableState((prev) => ({
+      ...prev,
+      columnFilters: prev.columnFilters
+        .filter((f) => f.id !== filter)
+        .concat({
+          id: filter,
+          value: [startDay, endDay],
+        }),
+    }));
+  };
 
   const search = useSearch({ strict: false });
+
   return (
     <div className="flex justify-between pr-3 gap-3 items-center">
       <div className="flex p-1 gap-1.5 flex-wrap">
-        {permanentColumnFilters.map((filter) =>
-          table.getColumn(filter)?.columnDef.meta?.type === 'categorical' ? (
+        {permanentColumnFilters.map((filter) => {
+          const value = tableState.columnFilters.find((f) => f.id === filter)
+            ?.value as [number | null, number | null];
+
+          return table.getColumn(filter)?.columnDef.meta?.type ===
+            'categorical' ? (
             <Select
               classNames={{ ...filterSelectStyles }}
               key={filter}
@@ -163,94 +184,45 @@ export default function Filters({
               )}
             </div>
           ) : table.getColumn(filter)?.columnDef.meta?.type === 'daterange' ? (
-            filter !== 'revision_date' ? (
-              <DateTimeDropdown
-                key={filter}
-                id={table.getColumn(filter)?.columnDef.header as string}
-                autoFocus={false}
-                value={
-                  tableState.columnFilters.find((f) => f.id === filter)
-                    ?.value as [Date, Date]
-                }
-                setValue={([start, end]: [Date | null, Date | null]) => {
-                  start && start.setHours(0, 0, 0, 0);
-                  end && end.setHours(23, 59, 59, 999);
-                  setTableState((prev) => ({
-                    ...prev,
-                    columnFilters: prev.columnFilters
-                      .filter((f) => f.id !== filter)
-                      .concat({
-                        id: filter,
-                        value: [start, end],
-                      }),
-                  }));
-                }}
-                clearFilter={() =>
-                  setTableState((prev) => ({
-                    ...prev,
-                    columnFilters: prev.columnFilters.filter(
-                      (f) => f.id !== filter,
-                    ),
-                  }))
-                }
-                minDate={
-                  new Date(
-                    table
+            <DateTimeDropdown
+              key={filter}
+              id={table.getColumn(filter)?.columnDef.header as string}
+              autoFocus={false}
+              value={value}
+              setValue={(value: [number | null, number | null]) =>
+                setValueFunction(value, filter)
+              }
+              clearFilter={() =>
+                filter === 'revision_date'
+                  ? setValueFunction(
+                      [Date.now() - 1000 * 60 * 60 * 24, Date.now()],
+                      filter,
+                    )
+                  : setTableState((prev) => ({
+                      ...prev,
+                      columnFilters: prev.columnFilters.filter(
+                        (f) => f.id !== filter,
+                      ),
+                    }))
+              }
+              minDate={
+                filter === 'revision_date'
+                  ? undefined
+                  : (table
                       .getColumn(filter)
                       ?.getFacetedMinMaxValues()
                       ?.flat()
-                      ?.filter((d) => d !== null)[0] ?? '',
-                  )
-                }
-                maxDate={
-                  new Date(
-                    table
-                      .getColumn(filter)
-                      ?.getFacetedMinMaxValues()
-                      ?.flat()
-                      ?.filter((d) => d !== null)[
-                      (table
-                        .getColumn(filter)
-                        ?.getFacetedMinMaxValues()
-                        ?.flat()
-                        ?.filter((d) => d !== null)?.length ?? 1) - 1
-                    ] ?? '',
-                  )
-                }
-              />
-            ) : (
-              <DateTimeDropdown
-                key={filter}
-                id={table.getColumn(filter)?.columnDef.header as string}
-                autoFocus={false}
-                value={
-                  tableState.columnFilters.find((f) => f.id === filter)
-                    ?.value as [Date, Date]
-                }
-                setValue={([start, end]: [Date | null, Date | null]) => {
-                  start && start.setHours(0, 0, 0, 0);
-                  end && end.setHours(23, 59, 59, 999);
-                  setTableState((prev) => ({
-                    ...prev,
-                    columnFilters: prev.columnFilters
-                      .filter((f) => f.id !== filter)
-                      .concat({
-                        id: filter,
-                        value: [start, end],
-                      }),
-                  }));
-                }}
-                clearFilter={() =>
-                  setTableState((prev) => ({
-                    ...prev,
-                    columnFilters: prev.columnFilters.filter(
-                      (f) => f.id !== filter,
-                    ),
-                  }))
-                }
-                maxDate={
-                  new Date(
-                    table
+                      ?.filter((d) => d !== null)[0] ?? 0)
+              }
+              maxDate={
+                filter === 'revision_date'
+                  ? Math.min(
+                      value && value[0]
+                        ? value[0] + 1000 * 60 * 60 * 24 * 7
+                        : 999999999999998,
+                      Date.now(),
+                    ) || Date.now()
+                  : (table
                       .getColumn(filter)
                       ?.getFacetedMinMaxValues()
                       ?.flat()
@@ -260,23 +232,11 @@ export default function Filters({
                         ?.getFacetedMinMaxValues()
                         ?.flat()
                         ?.filter((d) => d !== null)?.length ?? 1) - 1
-                    ] ?? '',
-                  )
-                }
-                callback={() => {
-                  if (includeCreatedDate === true) {
-                    setIsRefetching(true);
-                    setIncludeCreatedDate(false);
-                    navigate({
-                      search: { ...search, history: true },
-                      replace: true,
-                    });
-                  }
-                }}
-              />
-            )
-          ) : null,
-        )}{' '}
+                    ] ?? 0)
+              }
+            />
+          ) : null;
+        })}{' '}
         {tableState.columnFilters
           .filter((f) => !permanentColumnFilters.includes(f.id))
           .map((filter) =>
@@ -414,22 +374,10 @@ export default function Filters({
                 id={table.getColumn(filter.id)?.columnDef.header as string}
                 value={
                   tableState.columnFilters.find((f) => f.id === filter.id)
-                    ?.value as [Date, Date]
+                    ?.value as [number | null, number | null]
                 }
-                setValue={([start, end]: [Date | null, Date | null]) => {
-                  start && start.setHours(0, 0, 0, 0);
-                  end && end.setHours(23, 59, 59, 999);
-                  setTableState((prev) => ({
-                    ...prev,
-                    columnFilters: prev.columnFilters.map((f) =>
-                      f.id === filter.id
-                        ? {
-                            ...f,
-                            value: [start || null, end || null],
-                          }
-                        : f,
-                    ),
-                  }));
+                setValue={(value: [number | null, number | null]) => {
+                  setValueFunction(value, filter.id);
                 }}
                 clearFilter={() =>
                   setTableState((prev) => ({
@@ -440,28 +388,24 @@ export default function Filters({
                   }))
                 }
                 minDate={
-                  new Date(
-                    table
-                      .getColumn(filter.id)
-                      ?.getFacetedMinMaxValues()
-                      ?.flat()
-                      ?.filter((d) => d !== null)[0] ?? '',
-                  )
+                  table
+                    .getColumn(filter.id)
+                    ?.getFacetedMinMaxValues()
+                    ?.flat()
+                    ?.filter((d) => d !== null)[0] ?? 0
                 }
                 maxDate={
-                  new Date(
-                    table
+                  table
+                    .getColumn(filter.id)
+                    ?.getFacetedMinMaxValues()
+                    ?.flat()
+                    ?.filter((d) => d !== null)[
+                    (table
                       .getColumn(filter.id)
                       ?.getFacetedMinMaxValues()
                       ?.flat()
-                      ?.filter((d) => d !== null)[
-                      (table
-                        .getColumn(filter.id)
-                        ?.getFacetedMinMaxValues()
-                        ?.flat()
-                        ?.filter((d) => d !== null)?.length ?? 1) - 1
-                    ] ?? '',
-                  )
+                      ?.filter((d) => d !== null)?.length ?? 1) - 1
+                  ] ?? 0
                 }
               />
             ) : null,
