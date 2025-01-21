@@ -9,7 +9,8 @@ import { Button } from '@headlessui/react';
 import { Table, TableState } from '@tanstack/react-table';
 import { useNavigate, useSearch } from '@tanstack/react-router';
 import DateTimeDropdown from './DateTimeFilter/DateTimeDropdown.tsx';
-import { useRef } from 'react';
+import { useContext, useRef } from 'react';
+import { AuthContext } from '../AuthWrapper.tsx';
 
 // Base interface with common props
 type FilterProps = {
@@ -44,6 +45,7 @@ export default function Filters({
 }: FilterProps) {
   const navigate = useNavigate();
   const inputRef = useRef<HTMLInputElement>(null);
+  const { user_data } = useContext(AuthContext);
   const setValueFunction = (
     [start, end]: [number | null, number | null],
     filter: string,
@@ -193,7 +195,8 @@ export default function Filters({
                 setValueFunction(value, filter)
               }
               clearFilter={() =>
-                filter === 'revision_date'
+                filter === 'revision_date' &&
+                user_data.organization_id !== 'AVHC'
                   ? setValueFunction(
                       [Date.now() - 1000 * 60 * 60 * 24, Date.now()],
                       filter,
@@ -215,7 +218,8 @@ export default function Filters({
                       ?.filter((d) => d !== null)[0] ?? 0)
               }
               maxDate={
-                filter === 'revision_date'
+                filter === 'revision_date' &&
+                user_data.organization_id !== 'AVHC'
                   ? Math.min(
                       value && value[0]
                         ? value[1]

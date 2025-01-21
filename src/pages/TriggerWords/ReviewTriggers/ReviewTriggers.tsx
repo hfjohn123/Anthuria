@@ -46,80 +46,83 @@ const predefinedTriggerWords = [
   'Weight Change',
 ];
 
-const initialTableState: TableState = {
-  globalFilter: '',
-  columnSizing: {},
-  columnSizingInfo: {
-    startOffset: null,
-    startSize: null,
-    deltaOffset: null,
-    deltaPercentage: null,
-    isResizingColumn: false,
-    columnSizingStart: [],
-  },
-  rowSelection: {},
-  rowPinning: {
-    top: [],
-    bottom: [],
-  },
-  expanded: {},
-  grouping: [],
-  sorting: [],
-  columnFilters: [
-    {
-      id: 'revision_date',
-      value: [
-        new Date(Date.now() - 1000 * 60 * 60 * 24).setHours(0, 0, 0, 0),
-        new Date().setHours(23, 59, 59, 999),
-      ],
-    },
-  ],
-  columnPinning: {
-    left: [],
-    right: [],
-  },
-  columnOrder: [],
-  columnVisibility:
-    window.screen.width < 1024
-      ? {
-          facility_name: false,
-          patient_name: true,
-          progress_note_id: false,
-          created_date: false,
-          created_by: false,
-          revision_by: false,
-          revision_date: true,
-          trigger_word: true,
-          progress_note: false,
-          summary: false,
-          has_events: false,
-          has_reviewed: false,
-          operation_name: false,
-        }
-      : {
-          facility_name: true,
-          patient_name: true,
-          progress_note_id: false,
-          created_date: false,
-          created_by: false,
-          revision_by: false,
-          revision_date: true,
-          trigger_word: true,
-          progress_note: false,
-          summary: false,
-          has_events: false,
-          has_reviewed: false,
-          operation_name: false,
-        },
-  pagination: {
-    pageIndex: 0,
-    pageSize: 30,
-  },
-};
-
 export default function ReviewTriggers() {
   const { route, user_applications_locations, user_data } =
     useContext(AuthContext);
+  const initialTableState: TableState = {
+    globalFilter: '',
+    columnSizing: {},
+    columnSizingInfo: {
+      startOffset: null,
+      startSize: null,
+      deltaOffset: null,
+      deltaPercentage: null,
+      isResizingColumn: false,
+      columnSizingStart: [],
+    },
+    rowSelection: {},
+    rowPinning: {
+      top: [],
+      bottom: [],
+    },
+    expanded: {},
+    grouping: [],
+    sorting: [],
+    columnFilters:
+      user_data.organization_id !== 'AVHC'
+        ? [
+            {
+              id: 'revision_date',
+              value: [
+                new Date(Date.now() - 1000 * 60 * 60 * 24).setHours(0, 0, 0, 0),
+                new Date().setHours(23, 59, 59, 999),
+              ],
+            },
+          ]
+        : [],
+    columnPinning: {
+      left: [],
+      right: [],
+    },
+    columnOrder: [],
+    columnVisibility:
+      window.screen.width < 1024
+        ? {
+            facility_name: false,
+            patient_name: true,
+            progress_note_id: false,
+            created_date: false,
+            created_by: false,
+            revision_by: false,
+            revision_date: true,
+            trigger_word: true,
+            progress_note: false,
+            summary: false,
+            has_events: false,
+            has_reviewed: false,
+            operation_name: false,
+          }
+        : {
+            facility_name: true,
+            patient_name: true,
+            progress_note_id: false,
+            created_date: false,
+            created_by: false,
+            revision_by: false,
+            revision_date: true,
+            trigger_word: true,
+            progress_note: false,
+            summary: false,
+            has_events: false,
+            has_reviewed: false,
+            operation_name: false,
+          },
+    pagination: {
+      pageIndex: 0,
+      pageSize: 30,
+    },
+  };
+
   const queryClient = useQueryClient();
   const [initialFacetedCounts, setInitialFacetedCounts] = useState<
     Dictionary<number>
@@ -180,7 +183,7 @@ export default function ReviewTriggers() {
   }: UseQueryResult<TriggerAPI, unknown> = useQuery({
     queryKey: ['trigger_word_view_trigger_word_detail_final', route],
     queryFn: ({ signal }) => fetchTriggerWord(signal),
-    enabled: false,
+    enabled: user_data.organization_id === 'AVHC',
   });
 
   const [selfDefinedKeywordsState, setSelfDefinedKeywordsState] = useState(
@@ -191,7 +194,7 @@ export default function ReviewTriggers() {
     setSelfDefinedKeywordsState(data?.self_defined_keywords);
   }, [data?.self_defined_keywords]);
   useEffect(() => {
-    if (start && end) {
+    if (start && end && user_data.organization_id !== 'AVHC') {
       queryClient.cancelQueries({
         queryKey: ['trigger_word_view_trigger_word_detail_final', route],
       });

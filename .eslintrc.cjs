@@ -9,7 +9,7 @@ module.exports = {
     'plugin:react/recommended',
     'plugin:react/jsx-runtime',
     'plugin:react-hooks/recommended',
-    "plugin:@tanstack/eslint-plugin-query/recommended"
+    'plugin:@tanstack/eslint-plugin-query/recommended',
   ],
   overrides: [
     {
@@ -27,8 +27,10 @@ module.exports = {
     ecmaVersion: 'latest',
     sourceType: 'module',
   },
-  plugins: ['@typescript-eslint', 'react'],
-  rules: {"@typescript-eslint/no-explicit-any": "off",
-        "@typescript-eslint/no-unused-expressions": "off"
+  plugins: ['@typescript-eslint', 'react', 'eslint-plugin-react-compiler'],
+  rules: {
+    '@typescript-eslint/no-explicit-any': 'off',
+    '@typescript-eslint/no-unused-expressions': 'off',
+    'react-compiler/react-compiler': 'error',
   },
 };
