@@ -98,7 +98,12 @@ export default function TableWrapper({
 
     setTableState((prev) => ({
       ...prev,
-      columnFilters: initialFilters,
+      columnFilters: [
+        ...prev.columnFilters.filter(
+          (f) => !initialFilters.find((i) => i.id === f.id),
+        ),
+        ...initialFilters,
+      ],
     }));
 
     if (!filterRef.current) return;

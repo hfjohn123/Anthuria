@@ -20,6 +20,7 @@ import { AuthContext } from '../../../components/AuthWrapper.tsx';
 import HighlightWrapper from '../../../components/Basic/HighlightWrapper.tsx';
 import stemmedFilter from '../../../components/Tables/stemmedFilter.ts';
 import MDSDetailLoading from './MDSDetailLoading.tsx';
+import { CheckCircle, XCircle } from '@phosphor-icons/react';
 
 export default function MDSTable({ data }: { data: PDPMPatient[] }) {
   const { user_data } = useContext(AuthContext);
@@ -29,9 +30,9 @@ export default function MDSTable({ data }: { data: PDPMPatient[] }) {
           'operation_name',
           'facility_name',
           'effective_start_date',
-          'patient_name',
+          'has_suggestions',
         ]
-      : ['facility_name', 'effective_start_date', 'patient_name'];
+      : ['facility_name', 'effective_start_date', 'has_suggestions'];
   const columns: ColumnDef<PDPMPatient>[] = [
     {
       accessorKey: 'operation_name',
@@ -566,6 +567,33 @@ export default function MDSTable({ data }: { data: PDPMPatient[] }) {
         );
       },
     },
+    {
+      accessorKey: 'has_suggestions',
+      accessorFn: (row) => {
+        const count =
+          (row.original_nta_suggestions ?? 0) +
+          (row.original_slp_suggestions ?? 0) +
+          (row.original_ptot_suggestions ?? 0) +
+          (row.original_nursing_suggestions ?? 0);
+        return count > 0 ? 'Yes' : 'No';
+      },
+      header: 'Has Suggestions',
+      cell: (info) => {
+        return (
+          <span className="flex items-center gap-1">
+            {info.getValue() === 'No' ? (
+              <XCircle size={20} />
+            ) : (
+              <CheckCircle size={20} />
+            )}
+            {info.getValue() === 'No' ? 'No' : 'Yes'}
+          </span>
+        );
+      },
+      meta: {
+        type: 'categorical',
+      },
+    },
   ];
 
   const [tableState, setTableState] = useState<TableState>({
@@ -592,7 +620,12 @@ export default function MDSTable({ data }: { data: PDPMPatient[] }) {
         desc: true,
       },
     ],
-    columnFilters: [],
+    columnFilters: [
+      {
+        id: 'has_suggestions',
+        value: ['Yes'],
+      },
+    ],
     columnPinning: {
       left: [],
       right: [],
@@ -616,6 +649,7 @@ export default function MDSTable({ data }: { data: PDPMPatient[] }) {
             nursing_opp: true,
             total_opp: true,
             hipps: false,
+            has_suggestions: true,
             operation_name: user_data.organization_id === 'the_triedge_labs',
           }
         : {
@@ -634,6 +668,7 @@ export default function MDSTable({ data }: { data: PDPMPatient[] }) {
             nursing_opp: false,
             total_opp: true,
             hipps: false,
+            has_suggestions: false,
             operation_name: user_data.organization_id === 'the_triedge_labs',
           },
     pagination: {
@@ -643,9 +678,9 @@ export default function MDSTable({ data }: { data: PDPMPatient[] }) {
   });
 
   useEffect(() => {
-    if (localStorage.getItem('clearMDSStorage') !== '8') {
+    if (localStorage.getItem('clearMDSStorage') !== '9') {
       localStorage.removeItem('MDSUserVisibilitySettings');
-      localStorage.setItem('clearMDSStorage', '8');
+      localStorage.setItem('clearMDSStorage', '9');
     } else {
       const userVisibilitySettings = localStorage.getItem(
         'MDSUserVisibilitySettings',
