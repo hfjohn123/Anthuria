@@ -23,9 +23,13 @@ import MDSDetailLoading from './MDSDetailLoading.tsx';
 import { CheckCircle, XCircle } from '@phosphor-icons/react';
 import Card from '../../../components/Cards/Card.tsx';
 import { MeterGroup } from 'primereact/metergroup';
+import { SelectButton } from 'primereact/selectbutton';
+import '../../../css/style.css';
 
 export default function MDSTable({ data }: { data: PDPMPatient[] }) {
   const { user_data } = useContext(AuthContext);
+  const [toggle, setToggle] = useState<'CMG' | 'CMI' | '$'>('CMI');
+
   const PERMANENT_COLUMN_FILTERS =
     user_data.organization_id === 'the_triedge_labs'
       ? [
@@ -155,18 +159,18 @@ export default function MDSTable({ data }: { data: PDPMPatient[] }) {
         const mainString = value === 1 ? 'Suggestion' : 'Suggestions';
         const subString =
           'Current: ' +
-          info.row.original.mds_pt_group +
-          ', ' +
-          info.row.original.mds_pt_cmi +
-          ', $' +
-          info.row.original.mds_pt_pay;
+          (toggle === 'CMG'
+            ? info.row.original.mds_pt_group
+            : toggle === 'CMI'
+              ? info.row.original.mds_pt_cmi
+              : '$' + info.row.original.mds_pt_pay);
         const suggestString =
           'Suggested: ' +
-          info.row.original.suggest_pt_group +
-          ', ' +
-          info.row.original.suggest_pt_cmi +
-          ', $' +
-          info.row.original.suggest_pt_pay;
+          (toggle === 'CMG'
+            ? info.row.original.suggest_pt_group
+            : toggle === 'CMI'
+              ? info.row.original.suggest_pt_cmi
+              : '$' + info.row.original.suggest_pt_pay);
         return (
           <>
             <HighlightWrapper
@@ -200,18 +204,18 @@ export default function MDSTable({ data }: { data: PDPMPatient[] }) {
         const mainString = value === 1 ? 'Suggestion' : 'Suggestions';
         const subString =
           'Current: ' +
-          info.row.original.mds_ot_group +
-          ', ' +
-          info.row.original.mds_ot_cmi +
-          ', $' +
-          info.row.original.mds_ot_pay;
+          (toggle === 'CMG'
+            ? info.row.original.mds_ot_group
+            : toggle === 'CMI'
+              ? info.row.original.mds_ot_cmi
+              : '$' + info.row.original.mds_ot_pay);
         const suggestString =
           'Suggested: ' +
-          info.row.original.suggest_ot_group +
-          ', ' +
-          info.row.original.suggest_ot_cmi +
-          ', $' +
-          info.row.original.suggest_ot_pay;
+          (toggle === 'CMG'
+            ? info.row.original.suggest_ot_group
+            : toggle === 'CMI'
+              ? info.row.original.suggest_ot_cmi
+              : '$' + info.row.original.suggest_ot_pay);
         return (
           <>
             <HighlightWrapper
@@ -245,26 +249,28 @@ export default function MDSTable({ data }: { data: PDPMPatient[] }) {
         const mainString = value === 1 ? 'Suggestion' : 'Suggestions';
         const subString =
           'Current: ' +
-          info.row.original.mds_pt_group +
-          ', ' +
-          info.row.original.mds_pt_cmi +
-          '/' +
-          info.row.original.mds_ot_cmi +
-          ', $' +
-          info.row.original.mds_pt_pay +
-          '/$' +
-          info.row.original.mds_ot_pay;
+          (toggle === 'CMG'
+            ? info.row.original.mds_pt_group
+            : toggle === 'CMI'
+              ? info.row.original.mds_pt_cmi +
+                '/' +
+                info.row.original.mds_ot_cmi
+              : '$' +
+                info.row.original.mds_pt_pay +
+                '/' +
+                info.row.original.mds_ot_pay);
         const suggestString =
           'Suggested: ' +
-          info.row.original.suggest_pt_group +
-          ', ' +
-          info.row.original.suggest_pt_cmi +
-          '/' +
-          info.row.original.suggest_ot_cmi +
-          ', $' +
-          info.row.original.suggest_pt_pay +
-          '/$' +
-          info.row.original.suggest_ot_pay;
+          (toggle === 'CMG'
+            ? info.row.original.suggest_pt_group
+            : toggle === 'CMI'
+              ? info.row.original.suggest_pt_cmi +
+                '/' +
+                info.row.original.suggest_ot_cmi
+              : '$' +
+                info.row.original.suggest_pt_pay +
+                '/' +
+                info.row.original.suggest_ot_pay);
         return (
           <>
             <HighlightWrapper
@@ -323,18 +329,18 @@ export default function MDSTable({ data }: { data: PDPMPatient[] }) {
         const mainString = value === 1 ? 'Suggestion' : 'Suggestions';
         const subString =
           'Current: ' +
-          info.row.original.mds_slp_group +
-          ', ' +
-          info.row.original.mds_slp_cmi +
-          ', $' +
-          info.row.original.mds_slp_pay;
+          (toggle === 'CMG'
+            ? info.row.original.mds_slp_group
+            : toggle === 'CMI'
+              ? info.row.original.mds_slp_cmi
+              : '$' + info.row.original.mds_slp_pay);
         const suggestString =
           'Suggested: ' +
-          info.row.original.suggest_slp_group +
-          ', ' +
-          info.row.original.suggest_slp_cmi +
-          ', $' +
-          info.row.original.suggest_slp_pay;
+          (toggle === 'CMG'
+            ? info.row.original.suggest_slp_group
+            : toggle === 'CMI'
+              ? info.row.original.suggest_slp_cmi
+              : '$' + info.row.original.suggest_slp_pay);
         return (
           <>
             <HighlightWrapper
@@ -390,18 +396,18 @@ export default function MDSTable({ data }: { data: PDPMPatient[] }) {
         const mainString = value === 1 ? 'Suggestion' : 'Suggestions';
         const subString =
           'Current: ' +
-          info.row.original.mds_nursing_group +
-          ', ' +
-          info.row.original.mds_nursing_cmi +
-          ', $' +
-          info.row.original.mds_nursing_pay;
+          (toggle === 'CMG'
+            ? info.row.original.mds_nursing_group
+            : toggle === 'CMI'
+              ? info.row.original.mds_nursing_cmi
+              : '$' + info.row.original.mds_nursing_pay);
         const suggestString =
           'Suggested: ' +
-          info.row.original.suggest_nursing_group +
-          ', ' +
-          info.row.original.suggest_nursing_cmi +
-          ', $' +
-          info.row.original.suggest_nursing_pay;
+          (toggle === 'CMG'
+            ? info.row.original.suggest_nursing_group
+            : toggle === 'CMI'
+              ? info.row.original.suggest_nursing_cmi
+              : '$' + info.row.original.suggest_nursing_pay);
         return (
           <>
             <HighlightWrapper
@@ -457,18 +463,18 @@ export default function MDSTable({ data }: { data: PDPMPatient[] }) {
         const mainString = value === 1 ? 'Suggestion' : 'Suggestions';
         const subString =
           'Current: ' +
-          info.row.original.mds_nta_group +
-          ', ' +
-          info.row.original.mds_nta_cmi +
-          ', $' +
-          info.row.original.mds_nta_pay;
+          (toggle === 'CMG'
+            ? info.row.original.mds_nta_group
+            : toggle === 'CMI'
+              ? info.row.original.mds_nta_cmi
+              : '$' + info.row.original.mds_nta_pay);
         const suggestString =
           'Suggested: ' +
-          info.row.original.suggest_nta_group +
-          ', ' +
-          info.row.original.suggest_nta_cmi +
-          ', $' +
-          info.row.original.suggest_nta_pay;
+          (toggle === 'CMG'
+            ? info.row.original.suggest_nta_group
+            : toggle === 'CMI'
+              ? info.row.original.suggest_nta_cmi
+              : '$' + info.row.original.suggest_nta_pay);
         return (
           <>
             <HighlightWrapper
@@ -755,6 +761,14 @@ export default function MDSTable({ data }: { data: PDPMPatient[] }) {
 
       <TableWrapper
         filters={true}
+        searchRight={
+          <SelectButton
+            value={toggle}
+            onChange={(e) => setToggle(e.value)}
+            options={['CMI', 'CMG', '$']}
+            allowEmpty={false}
+          />
+        }
         table={table}
         tableState={tableState}
         setTableState={setTableState}

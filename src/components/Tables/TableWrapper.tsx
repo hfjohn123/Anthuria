@@ -38,6 +38,7 @@ export default function TableWrapper({
   setIncludeCreatedDate,
   filters = true,
   title,
+  searchRight,
   placeholder = 'Global Search...',
   ...rest
 }: {
@@ -56,6 +57,7 @@ export default function TableWrapper({
   filters?: boolean;
   title?: string;
   placeholder?: string;
+  searchRight?: React.ReactNode;
   [key: string]: any;
 }) {
   const navigate = useNavigate();
@@ -162,14 +164,6 @@ export default function TableWrapper({
   }, [tableState.columnFilters, tableState.globalFilter]);
   return (
     <div>
-      {/*<p className="bg-transparent">*/}
-      {/*  {table.getFilteredRowModel().rows.length} of{' '}*/}
-      {/*  {table.getCoreRowModel().rows.length}{' '}*/}
-      {/*  {table.getCoreRowModel().rows.length >= 1*/}
-      {/*    ? 'records are '*/}
-      {/*    : 'record is '}*/}
-      {/*  displayed*/}
-      {/*</p>*/}
       <div className=" bg-white dark:bg-boxdark h-full flex-col flex overflow-x-auto lg:overflow-clip px-7.5 py-5 gap-7.5 rounded-[30px] ">
         {title && (
           <h3 className="text-title-md text-black dark:text-white font-semibold	">
@@ -197,6 +191,7 @@ export default function TableWrapper({
                     className="w-full py-2"
                   />
                 </IconField>
+                {searchRight}
                 {download && (
                   <Button
                     type="button"

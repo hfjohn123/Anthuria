@@ -275,16 +275,19 @@ const router = createRouter({
 });
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
-  <QueryClientProvider client={queryClient}>
+  <>
     <link
       id="theme-link"
       rel="stylesheet"
       href="/themes/lara-light-blue/theme.css"
     />
-    <SuperTokensWrapper>
-      <PrimeReactProvider>
-        <RouterProvider router={router} />
-      </PrimeReactProvider>
-    </SuperTokensWrapper>
-  </QueryClientProvider>,
+    <QueryClientProvider client={queryClient}>
+      <SuperTokensWrapper>
+        <PrimeReactProvider>
+          <RouterProvider router={router} />
+        </PrimeReactProvider>
+      </SuperTokensWrapper>
+    </QueryClientProvider>
+    ,
+  </>,
 );

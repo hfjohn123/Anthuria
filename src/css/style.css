@@ -40,6 +40,9 @@
 
 
 @layer primereact {
+  .p-selectbutton > .p-button {
+    @apply py-2;
+  }
   
 }
 /* third-party libraries CSS */
