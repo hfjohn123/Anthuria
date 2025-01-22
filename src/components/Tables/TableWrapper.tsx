@@ -160,7 +160,6 @@ export default function TableWrapper({
       },
     }));
   }, [tableState.columnFilters, tableState.globalFilter]);
-  console.log(table.getHeaderGroups());
   return (
     <div>
       {/*<p className="bg-transparent">*/}
