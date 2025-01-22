@@ -615,19 +615,25 @@ export default function ReviewTriggers() {
               <h1 className="font-semibold text-2xl">Clinical Pulse</h1>
               <p className="text-sm	text-gray-500 ">
                 {table.getFilteredRowModel().rows.length} of {total_count}{' '}
-                {total_count >= 1
-                  ? `records starting since ${(
-                      start ?? new Date()
-                    ).toLocaleString('en-US', {
-                      month: 'short',
-                      day: 'numeric',
-                      year: 'numeric',
-                      hour: 'numeric',
-                      minute: 'numeric',
-                      timeZoneName: 'short',
-                    })}  are `
-                  : `record is `}
-                displayed
+                {total_count >= 1 ? `progress notes` : 'progress note'}, ranging
+                from{' '}
+                {(start ?? new Date()).toLocaleString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric',
+                })}{' '}
+                to{' '}
+                {(end ?? new Date()).toLocaleString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric',
+                })}{' '}
+                in view.
+                <br />
+                See additional notes by changing the date range of revision
+                date. <br />
+                Filter results by trigger category, by facility name, by patient
+                name, revision date, or others.
               </p>
             </div>
             <MeterGroup
