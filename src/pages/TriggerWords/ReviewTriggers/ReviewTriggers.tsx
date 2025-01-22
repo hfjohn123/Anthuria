@@ -391,13 +391,13 @@ export default function ReviewTriggers() {
         accessorFn: (row) => {
           const value = row.trigger_words.map((d) => d.trigger_word);
           if (value.length === 0) {
-            return ['Uncategorized'];
+            return ['Other'];
           }
           return value;
         },
         cell: (info) => {
           const value = info.getValue() as string[];
-          if (value[0] === 'Uncategorized') {
+          if (value[0] === 'Other') {
             return <div className="flex flex-wrap gap-2"></div>;
           }
           return (
@@ -637,14 +637,15 @@ export default function ReviewTriggers() {
               </p>
             </div>
             <MeterGroup
+              className="w-80"
               values={[
                 {
-                  label: 'Categorized',
+                  label: 'Trigger',
                   value:
                     ((total_count - uncategorized_count) / total_count) * 100,
                 },
                 {
-                  label: 'Uncategorized',
+                  label: 'Other',
                   color: '#E2E8F0',
                   value: (uncategorized_count / total_count) * 100,
                 },
@@ -811,7 +812,7 @@ export default function ReviewTriggers() {
                 })}
             <NumberCards
               keywordModal={true}
-              key="Uncategorized"
+              key="Other"
               className={clsx(
                 'col-span-1',
                 'cursor-pointer',
@@ -819,31 +820,30 @@ export default function ReviewTriggers() {
                   (tableState.columnFilters.find(
                     ({ id }) => id === 'trigger_word',
                   )?.value as string[]) || []
-                ).includes('Uncategorized')
+                ).includes('Other')
                   ? 'bg-slate-300 dark:bg-slate-600 '
                   : 'bg-whiten dark:bg-boxdark-2 hover:bg-slate-200 hover:dark:bg-slate-700',
               )}
               id={
-                'NumberCards-' +
-                'Uncategorized'.replace(' ', '-').replace(/\W/g, '-')
+                'NumberCards-' + 'Other'.replace(' ', '-').replace(/\W/g, '-')
               }
               value={
                 table
                   .getColumn('trigger_word')
                   ?.getFacetedUniqueValues()
-                  .get('Uncategorized') || 0
+                  .get('Other') || 0
               }
               initialValue={uncategorized_count}
-              title={'Uncategorized'}
+              title={'Other'}
               onClick={() => {
                 let filter =
                   (tableState.columnFilters.find(
                     ({ id }) => id === 'trigger_word',
                   )?.value as string[]) || [];
-                if (filter.includes('Uncategorized')) {
-                  filter = filter.filter((f) => f !== 'Uncategorized');
+                if (filter.includes('Other')) {
+                  filter = filter.filter((f) => f !== 'Other');
                 } else {
-                  filter.push('Uncategorized');
+                  filter.push('Other');
                 }
                 if (filter.length === 0) {
                   setTableState((prev) => ({
