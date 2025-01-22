@@ -64,7 +64,7 @@ const KeywordForm = forwardRef<
   MultiSelect,
   {
     trigger_words: string[];
-    toast: RefObject<Toast>;
+    toast: RefObject<Toast | null>;
     data: TriggerFinal[];
     initialNewTrigger: {
       group_name: string;

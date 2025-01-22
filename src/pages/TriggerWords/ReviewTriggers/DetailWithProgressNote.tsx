@@ -12,6 +12,7 @@ import CommentModal from './CommentModal.tsx';
 import highlightGenerator from '../../../common/highlightGenerator.ts';
 import clsx from 'clsx';
 import MagicButton from '../../../images/icon/MagicButton.tsx';
+import { Divider } from 'primereact/divider';
 
 export default function DetailWithProgressNote({
   row,
@@ -138,7 +139,7 @@ export default function DetailWithProgressNote({
           </div>
         </DataField>
       </div>
-      <div className="border-r  border-stroke min-h-full" />
+      <Divider layout="vertical" />
       <div className="flex flex-col gap-5 basis-2/3">
         <div className="flex flex-col gap-2">
           <DataField title="Progress Note">

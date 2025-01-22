@@ -52,35 +52,39 @@ export default function NumberCards({
   return (
     <div
       className={
-        ' relative py-6  rounded-lg px-7.5  flex flex-col justify-center items-center select-none' +
+        ' relative py-4.5  rounded-[30px] px-7.5  flex select-none ' +
         ' ' +
         className
       }
       {...props}
       onClick={onClick}
     >
-      {keywordModal && !editable && (
-        <KeywordModal
-          keywordList={keywordList}
-          header={'Keywords for ' + title}
-        />
-      )}
-      {keywordModal && editable && initialNewTrigger && (
-        <UpdateKeywordModal
-          data={data}
-          trigger_words={trigger_words}
-          initialNewTrigger={initialNewTrigger}
-          header={'Keywords for ' + title}
-          setSelfDefinedKeywordsState={setSelfDefinedKeywordsState}
-        />
-      )}
-      <h3 className="sm:whitespace-nowrap text-sm sm:text-base text-center">
-        {title}
-      </h3>
-      <p className="text-xl font-bold">
-        {value}{' '}
-        {initialValue && value !== initialValue ? `of ${initialValue} ` : ''}
-      </p>
+      <div className="flex flex-col gap-[3px] w-full">
+        <p className="text-3xl font-semibold">
+          {value}{' '}
+          {initialValue && value !== initialValue ? `of ${initialValue} ` : ''}
+        </p>
+        <div className="flex  items-center flex-nowrap justify-between">
+          <h3 className="sm:whitespace-nowrap text-sm font-medium	">{title}</h3>
+          <div>
+            {keywordModal && !editable && (
+              <KeywordModal
+                keywordList={keywordList}
+                header={'Keywords for ' + title}
+              />
+            )}
+            {keywordModal && editable && initialNewTrigger && (
+              <UpdateKeywordModal
+                data={data}
+                trigger_words={trigger_words}
+                initialNewTrigger={initialNewTrigger}
+                header={'Keywords for ' + title}
+                setSelfDefinedKeywordsState={setSelfDefinedKeywordsState}
+              />
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

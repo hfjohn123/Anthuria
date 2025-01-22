@@ -16,7 +16,7 @@ export default function KeywordModal({
   return (
     <>
       <Button
-        className="absolute top-1 right-1 p-0 bg-transparent border-0"
+        className="p-0 bg-transparent border-0"
         onClick={(event) => {
           event.stopPropagation();
           setVisible(true);

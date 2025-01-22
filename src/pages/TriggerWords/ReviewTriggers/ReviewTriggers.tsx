@@ -645,173 +645,23 @@ export default function ReviewTriggers() {
               ]}
             />
           </div>
-          <>
-            <div className="grid xl:grid-cols-5 grid-cols-3 gap-1 sm:gap-6 ">
-              {predefinedTriggerWords.map((word) => (
-                <NumberCards
-                  keywordList={
-                    data &&
-                    data.keywords
-                      .filter(
-                        (kw: { trigger_word: string; key_word: string }) =>
-                          kw.trigger_word.toLowerCase() === word.toLowerCase(),
-                      )
-                      .map(
-                        (kw: { trigger_word: string; key_word: string }) =>
-                          kw.key_word,
-                      )
-                  }
-                  keywordModal={true}
-                  key={word}
-                  className={clsx(
-                    'col-span-1',
-                    'cursor-pointer',
-                    (
-                      (tableState.columnFilters.find(
-                        ({ id }) => id === 'trigger_word',
-                      )?.value as string[]) || []
-                    ).includes(word)
-                      ? 'bg-slate-300 dark:bg-slate-600 '
-                      : 'bg-white dark:bg-boxdark hover:bg-slate-200 hover:dark:bg-slate-700',
-                  )}
-                  id={
-                    'NumberCards-' + word.replace(' ', '-').replace(/\W/g, '-')
-                  }
-                  value={
-                    table
-                      .getColumn('trigger_word')
-                      ?.getFacetedUniqueValues()
-                      .get(word) || 0
-                  }
-                  initialValue={initialFacetedCounts[word] || 0}
-                  title={word}
-                  onClick={() => {
-                    let filter =
-                      (tableState.columnFilters.find(
-                        ({ id }) => id === 'trigger_word',
-                      )?.value as string[]) || [];
-                    if (filter.includes(word)) {
-                      filter = filter.filter((f) => f !== word);
-                    } else {
-                      filter.push(word);
-                    }
-                    if (filter.length === 0) {
-                      setTableState((prev) => ({
-                        ...prev,
-                        columnFilters: prev.columnFilters.filter(
-                          ({ id }) => id !== 'trigger_word',
-                        ),
-                      }));
-                      return;
-                    }
-                    setTableState((prev) => ({
-                      ...prev,
-                      columnFilters: [
-                        ...prev.columnFilters.filter(
-                          ({ id }) => id !== 'trigger_word',
-                        ),
-                        {
-                          id: 'trigger_word',
-                          value: filter,
-                        },
-                      ],
-                    }));
-                  }}
-                />
-              ))}
-              {selfDefinedKeywordsState &&
-                selfDefinedKeywordsState
-                  .filter((kw) =>
-                    kw.internal_facility_id.some((id) =>
-                      locations
-                        .map((loc) => loc.internal_facility_id)
-                        .includes(id),
-                    ),
-                  )
-                  .map((kw) => {
-                    const new_kw = {
-                      group_name: kw.group_name,
-                      trigger_word: kw.trigger_word,
-                      internal_facility_id: kw.internal_facility_id.filter(
-                        (id) =>
-                          locations
-                            .map((loc) => loc.internal_facility_id)
-                            .includes(id),
-                      ),
-                      keyword_list: kw.keyword_list,
-                    };
-                    return (
-                      <NumberCards
-                        keywordModal
-                        editable
-                        title={kw.group_name}
-                        value={
-                          table
-                            .getColumn('trigger_word')
-                            ?.getFacetedUniqueValues()
-                            .get(kw.group_name) || 0
-                        }
-                        initialValue={initialFacetedCounts[kw.group_name] || 0}
-                        key={kw.group_name}
-                        className={clsx(
-                          'col-span-1',
-                          'cursor-pointer',
-                          (
-                            (tableState.columnFilters.find(
-                              ({ id }) => id === 'trigger_word',
-                            )?.value as string[]) || []
-                          ).includes(kw.group_name)
-                            ? 'bg-slate-300 dark:bg-slate-600 '
-                            : 'bg-white dark:bg-boxdark hover:bg-slate-200 hover:dark:bg-slate-700',
-                        )}
-                        onClick={() => {
-                          let filter =
-                            (tableState.columnFilters.find(
-                              ({ id }) => id === 'trigger_word',
-                            )?.value as string[]) || [];
-                          if (filter.includes(kw.group_name)) {
-                            filter = filter.filter((f) => f !== kw.group_name);
-                          } else {
-                            filter.push(kw.group_name);
-                          }
-                          if (filter.length === 0) {
-                            setTableState((prev) => ({
-                              ...prev,
-                              columnFilters: prev.columnFilters.filter(
-                                ({ id }) => id !== 'trigger_word',
-                              ),
-                            }));
-                            return;
-                          }
-                          setTableState((prev) => ({
-                            ...prev,
-                            columnFilters: [
-                              ...prev.columnFilters.filter(
-                                ({ id }) => id !== 'trigger_word',
-                              ),
-                              {
-                                id: 'trigger_word',
-                                value: filter,
-                              },
-                            ],
-                          }));
-                        }}
-                        initialNewTrigger={new_kw}
-                        trigger_words={predefinedTriggerWords.concat(
-                          data.self_defined_keywords?.map(
-                            (kw) => kw.group_name,
-                          ) ?? [],
-                        )}
-                        data={data.data}
-                        setSelfDefinedKeywordsState={
-                          setSelfDefinedKeywordsState
-                        }
-                      />
-                    );
-                  })}
+          <div className="grid xl:grid-cols-5 grid-cols-3 gap-1 sm:gap-6 rounded-[30px] p-6 bg-white dark:bg-boxdark">
+            {predefinedTriggerWords.map((word) => (
               <NumberCards
+                keywordList={
+                  data &&
+                  data.keywords
+                    .filter(
+                      (kw: { trigger_word: string; key_word: string }) =>
+                        kw.trigger_word.toLowerCase() === word.toLowerCase(),
+                    )
+                    .map(
+                      (kw: { trigger_word: string; key_word: string }) =>
+                        kw.key_word,
+                    )
+                }
                 keywordModal={true}
-                key="Uncategorized"
+                key={word}
                 className={clsx(
                   'col-span-1',
                   'cursor-pointer',
@@ -819,31 +669,28 @@ export default function ReviewTriggers() {
                     (tableState.columnFilters.find(
                       ({ id }) => id === 'trigger_word',
                     )?.value as string[]) || []
-                  ).includes('Uncategorized')
+                  ).includes(word)
                     ? 'bg-slate-300 dark:bg-slate-600 '
-                    : 'bg-white dark:bg-boxdark hover:bg-slate-200 hover:dark:bg-slate-700',
+                    : 'bg-whiten dark:bg-boxdark-2 hover:bg-slate-200 hover:dark:bg-slate-700',
                 )}
-                id={
-                  'NumberCards-' +
-                  'Uncategorized'.replace(' ', '-').replace(/\W/g, '-')
-                }
+                id={'NumberCards-' + word.replace(' ', '-').replace(/\W/g, '-')}
                 value={
                   table
                     .getColumn('trigger_word')
                     ?.getFacetedUniqueValues()
-                    .get('Uncategorized') || 0
+                    .get(word) || 0
                 }
-                initialValue={uncategorized_count}
-                title={'Uncategorized'}
+                initialValue={initialFacetedCounts[word] || 0}
+                title={word}
                 onClick={() => {
                   let filter =
                     (tableState.columnFilters.find(
                       ({ id }) => id === 'trigger_word',
                     )?.value as string[]) || [];
-                  if (filter.includes('Uncategorized')) {
-                    filter = filter.filter((f) => f !== 'Uncategorized');
+                  if (filter.includes(word)) {
+                    filter = filter.filter((f) => f !== word);
                   } else {
-                    filter.push('Uncategorized');
+                    filter.push(word);
                   }
                   if (filter.length === 0) {
                     setTableState((prev) => ({
@@ -868,8 +715,154 @@ export default function ReviewTriggers() {
                   }));
                 }}
               />
-            </div>
-            <div className="self-end">
+            ))}
+            {selfDefinedKeywordsState &&
+              selfDefinedKeywordsState
+                .filter((kw) =>
+                  kw.internal_facility_id.some((id) =>
+                    locations
+                      .map((loc) => loc.internal_facility_id)
+                      .includes(id),
+                  ),
+                )
+                .map((kw) => {
+                  const new_kw = {
+                    group_name: kw.group_name,
+                    trigger_word: kw.trigger_word,
+                    internal_facility_id: kw.internal_facility_id.filter((id) =>
+                      locations
+                        .map((loc) => loc.internal_facility_id)
+                        .includes(id),
+                    ),
+                    keyword_list: kw.keyword_list,
+                  };
+                  return (
+                    <NumberCards
+                      keywordModal
+                      editable
+                      title={kw.group_name}
+                      value={
+                        table
+                          .getColumn('trigger_word')
+                          ?.getFacetedUniqueValues()
+                          .get(kw.group_name) || 0
+                      }
+                      initialValue={initialFacetedCounts[kw.group_name] || 0}
+                      key={kw.group_name}
+                      className={clsx(
+                        'col-span-1',
+                        'cursor-pointer',
+                        (
+                          (tableState.columnFilters.find(
+                            ({ id }) => id === 'trigger_word',
+                          )?.value as string[]) || []
+                        ).includes(kw.group_name)
+                          ? 'bg-slate-300 dark:bg-slate-600 '
+                          : 'bg-whiten dark:bg-boxdark-2 hover:bg-slate-200 hover:dark:bg-slate-700',
+                      )}
+                      onClick={() => {
+                        let filter =
+                          (tableState.columnFilters.find(
+                            ({ id }) => id === 'trigger_word',
+                          )?.value as string[]) || [];
+                        if (filter.includes(kw.group_name)) {
+                          filter = filter.filter((f) => f !== kw.group_name);
+                        } else {
+                          filter.push(kw.group_name);
+                        }
+                        if (filter.length === 0) {
+                          setTableState((prev) => ({
+                            ...prev,
+                            columnFilters: prev.columnFilters.filter(
+                              ({ id }) => id !== 'trigger_word',
+                            ),
+                          }));
+                          return;
+                        }
+                        setTableState((prev) => ({
+                          ...prev,
+                          columnFilters: [
+                            ...prev.columnFilters.filter(
+                              ({ id }) => id !== 'trigger_word',
+                            ),
+                            {
+                              id: 'trigger_word',
+                              value: filter,
+                            },
+                          ],
+                        }));
+                      }}
+                      initialNewTrigger={new_kw}
+                      trigger_words={predefinedTriggerWords.concat(
+                        data.self_defined_keywords?.map(
+                          (kw) => kw.group_name,
+                        ) ?? [],
+                      )}
+                      data={data.data}
+                      setSelfDefinedKeywordsState={setSelfDefinedKeywordsState}
+                    />
+                  );
+                })}
+            <NumberCards
+              keywordModal={true}
+              key="Uncategorized"
+              className={clsx(
+                'col-span-1',
+                'cursor-pointer',
+                (
+                  (tableState.columnFilters.find(
+                    ({ id }) => id === 'trigger_word',
+                  )?.value as string[]) || []
+                ).includes('Uncategorized')
+                  ? 'bg-slate-300 dark:bg-slate-600 '
+                  : 'bg-whiten dark:bg-boxdark-2 hover:bg-slate-200 hover:dark:bg-slate-700',
+              )}
+              id={
+                'NumberCards-' +
+                'Uncategorized'.replace(' ', '-').replace(/\W/g, '-')
+              }
+              value={
+                table
+                  .getColumn('trigger_word')
+                  ?.getFacetedUniqueValues()
+                  .get('Uncategorized') || 0
+              }
+              initialValue={uncategorized_count}
+              title={'Uncategorized'}
+              onClick={() => {
+                let filter =
+                  (tableState.columnFilters.find(
+                    ({ id }) => id === 'trigger_word',
+                  )?.value as string[]) || [];
+                if (filter.includes('Uncategorized')) {
+                  filter = filter.filter((f) => f !== 'Uncategorized');
+                } else {
+                  filter.push('Uncategorized');
+                }
+                if (filter.length === 0) {
+                  setTableState((prev) => ({
+                    ...prev,
+                    columnFilters: prev.columnFilters.filter(
+                      ({ id }) => id !== 'trigger_word',
+                    ),
+                  }));
+                  return;
+                }
+                setTableState((prev) => ({
+                  ...prev,
+                  columnFilters: [
+                    ...prev.columnFilters.filter(
+                      ({ id }) => id !== 'trigger_word',
+                    ),
+                    {
+                      id: 'trigger_word',
+                      value: filter,
+                    },
+                  ],
+                }));
+              }}
+            />
+            <div className="flex items-center justify-center">
               <NewTriggerWordModal
                 data={data.data}
                 trigger_words={predefinedTriggerWords.concat(
@@ -878,7 +871,7 @@ export default function ReviewTriggers() {
                 setSelfDefinedKeywordsState={setSelfDefinedKeywordsState}
               />
             </div>
-          </>
+          </div>
 
           <TableWrapper
             table={table}

@@ -37,7 +37,7 @@ export default function UpdateKeywordModal({
       <Toast ref={toast} position="bottom-center" />
 
       <Button
-        className="absolute top-1 right-1 p-0 bg-transparent border-0"
+        className="p-0 bg-transparent border-0"
         onClick={(event) => {
           event.stopPropagation();
           setIsOpen(true);

@@ -1,7 +1,6 @@
 import { useRef, useState } from 'react';
 
 import { Dialog } from 'primereact/dialog';
-import { Button } from 'primereact/button';
 
 import { TriggerFinal } from '../../../types/TriggerFinal.ts';
 import { Toast } from 'primereact/toast';
@@ -37,12 +36,13 @@ export default function NewTriggerWordModal({
     <>
       <Toast ref={toast} position="bottom-center" />
 
-      <Button
-        label="Add a New Trigger Word"
-        icon="pi pi-plus"
-        className="p-1 bg-transparent border-0 text-primary dark:text-secondary col-span-12 lg:col-span-3 lg:justify-self-end justify-self-start self-center"
+      <span
+        className="p-1 bg-transparent border-0 text-primary dark:text-secondary font-normal text-base underline"
+        role="button"
         onClick={() => setIsOpen(true)}
-      />
+      >
+        Add New Trigger
+      </span>
       <Dialog
         header="Create a New Trigger Word"
         visible={isOpen}
