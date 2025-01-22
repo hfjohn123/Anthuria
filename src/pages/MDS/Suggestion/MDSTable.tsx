@@ -21,6 +21,8 @@ import HighlightWrapper from '../../../components/Basic/HighlightWrapper.tsx';
 import stemmedFilter from '../../../components/Tables/stemmedFilter.ts';
 import MDSDetailLoading from './MDSDetailLoading.tsx';
 import { CheckCircle, XCircle } from '@phosphor-icons/react';
+import Card from '../../../components/Cards/Card.tsx';
+import { MeterGroup } from 'primereact/metergroup';
 
 export default function MDSTable({ data }: { data: PDPMPatient[] }) {
   const { user_data } = useContext(AuthContext);
@@ -719,13 +721,38 @@ export default function MDSTable({ data }: { data: PDPMPatient[] }) {
       JSON.stringify(tableState.columnVisibility),
     );
   }, [tableState.columnVisibility]);
+  const hasSuggestionCount =
+    table.getColumn('has_suggestions')?.getFacetedUniqueValues().get('Yes') ??
+    0;
 
   return (
     <div className="flex flex-col gap-5">
-      <p className="italic">
-        Patients below include all eligible PDPM patients as well as any
-        patients who were PDPM eligible in the past 30 days.
-      </p>
+      <Card className="flex justify-between items-center flex-wrap gap-5">
+        <div className="flex flex-col gap-3">
+          <h1 className="font-semibold text-2xl">Minimum Data Set</h1>
+          <p className="text-sm	text-gray-500 ">
+            {table.getFilteredRowModel().rows.length} of {data.length}{' '}
+            {data.length >= 1 ? `records are` : 'record is'} in view.
+            <br />
+            Patients below include all eligible PDPM patients as well as any
+            patients who were PDPM eligible in the past 30 days.
+          </p>
+        </div>
+        <MeterGroup
+          values={[
+            {
+              label: 'Has Suggestions',
+              value: (hasSuggestionCount / data.length) * 100,
+            },
+            {
+              label: 'No Suggestions',
+              color: '#E2E8F0',
+              value: ((data.length - hasSuggestionCount) / data.length) * 100,
+            },
+          ]}
+        />
+      </Card>
+
       <TableWrapper
         filters={true}
         table={table}
