@@ -6,6 +6,7 @@ import { TriggerFinal } from '../../../types/TriggerFinal.ts';
 import { Toast } from 'primereact/toast';
 
 import KeywordForm from './KeywordForm.tsx';
+import { Button } from 'primereact/button';
 
 const initialNewTrigger: {
   group_name: string;
@@ -35,14 +36,17 @@ export default function NewTriggerWordModal({
   return (
     <>
       <Toast ref={toast} position="bottom-center" />
-
-      <span
-        className="p-1 bg-transparent border-0 text-primary dark:text-secondary font-normal text-base underline"
-        role="button"
+      <div
+        className="flex items-center justify-center py-4.5  rounded-[30px] px-7.5 bg-whiten dark:bg-boxdark-2 hover:bg-slate-200 hover:dark:bg-slate-700"
         onClick={() => setIsOpen(true)}
+        role="button"
       >
-        Add New Trigger
-      </span>
+        <Button
+          label="Add New Trigger Word"
+          className="p-1 bg-transparent border-0 text-primary dark:text-secondary   "
+          icon="pi pi-plus"
+        ></Button>
+      </div>
       <Dialog
         header="Create a New Trigger Word"
         visible={isOpen}

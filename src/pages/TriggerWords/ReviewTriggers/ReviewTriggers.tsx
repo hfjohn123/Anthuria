@@ -811,7 +811,7 @@ export default function ReviewTriggers() {
                   );
                 })}
             <NumberCards
-              keywordModal={true}
+              keywordModal={false}
               key="Other"
               className={clsx(
                 'col-span-1',
@@ -868,15 +868,13 @@ export default function ReviewTriggers() {
                 }));
               }}
             />
-            <div className="flex items-center justify-center">
-              <NewTriggerWordModal
-                data={data.data}
-                trigger_words={predefinedTriggerWords.concat(
-                  data.self_defined_keywords?.map((kw) => kw.group_name) ?? [],
-                )}
-                setSelfDefinedKeywordsState={setSelfDefinedKeywordsState}
-              />
-            </div>
+            <NewTriggerWordModal
+              data={data.data}
+              trigger_words={predefinedTriggerWords.concat(
+                data.self_defined_keywords?.map((kw) => kw.group_name) ?? [],
+              )}
+              setSelfDefinedKeywordsState={setSelfDefinedKeywordsState}
+            />
           </div>
 
           <TableWrapper

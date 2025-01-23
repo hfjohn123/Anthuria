@@ -43,7 +43,9 @@
   .p-selectbutton > .p-button {
     @apply py-2;
   }
-  
+  .bg-transparent.p-button > .p-button-label {
+    @apply text-base font-normal underline;
+  }
 }
 /* third-party libraries CSS */
 
