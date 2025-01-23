@@ -195,15 +195,18 @@ export type RestorativeCountAll = {
 
 export type NursingDepreation =
   | {
-      is_mds: boolean;
-      is_suggest: boolean;
-      slp_entry: ProgressNoteAndSummary[];
-      data?: NursingDepreation;
+      is_mds_table: number;
+      suggestion: ProgressNoteAndSummary[] | null;
+      is_thumb_up: number | null;
+      is_thumb_down: number | null;
+      comment: string | null;
     }
   | {
-      is_mds?: undefined;
-      is_suggest?: undefined;
-      slp_entry?: undefined;
+      is_mds_table?: undefined;
+      suggestion: undefined;
+      is_thumb_up: undefined;
+      is_thumb_down: undefined;
+      comment: undefined;
     };
 
 export type NursingCC = {

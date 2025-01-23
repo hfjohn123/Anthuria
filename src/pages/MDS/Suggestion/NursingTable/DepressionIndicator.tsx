@@ -9,24 +9,22 @@ export default function DepressionIndicator({
   return (
     <div>
       <p className="font-bold">Depression Indicator:</p>
-      {data.is_mds === undefined ? (
+      {data.is_mds_table === undefined ? (
         <p>No Record Found</p>
       ) : (
         <p>
-          {data.is_mds ? 'Yes' : 'No'}{' '}
-          {data.is_suggest ? (
+          {data.is_mds_table ? 'Yes' : 'No'}{' '}
+          {data.suggestion && data.suggestion.length > 0 ? (
             <EvidenceModal
               button={
                 <span>
-                  (AI suggests with {data.slp_entry.length}{' '}
-                  {data.slp_entry.length === 1 ? 'potential' : 'potentials'})
+                  (AI suggests with {data.suggestion.length}{' '}
+                  {data.suggestion.length === 1 ? 'potential' : 'potentials'})
                 </span>
               }
               icd10={{
                 icd10: 'Depression',
-                progress_note: data.slp_entry,
-                is_thumb_up: null, // or some default value
-                comment: null, // or some default value
+                progress_note: data.suggestion,
               }}
             />
           ) : null}
