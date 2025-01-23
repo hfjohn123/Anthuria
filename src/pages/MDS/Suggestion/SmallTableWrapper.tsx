@@ -30,58 +30,58 @@ export default function SmallTableWrapper({
 
   return (
     <div>
-      <div className="w-full flex items-center gap-3 mt-1">
-        {permanentColumnFilters.map((filter) => (
-          <Select
-            classNames={{ ...filterSelectStyles }}
-            key={filter}
-            placeholder={table.getColumn(filter)?.columnDef.header as string}
-            closeMenuOnSelect={false}
-            hideSelectedOptions={false}
-            components={{
-              IndicatorSeparator: () => null,
-              ValueContainer: FilterValueContainer,
-              Option: CheckboxOption,
-            }}
-            isClearable={true}
-            isMulti={true}
-            value={
-              tableState.columnFilters.find((f) => f.id === filter)
-                ? (
-                    tableState.columnFilters.find((f) => f.id === filter)
-                      ?.value as string[]
-                  ).map((s) => ({
-                    label: s,
-                    value: s,
-                  }))
-                : []
-            }
-            name={filter}
-            options={Array.from(
-              table?.getColumn(filter)?.getFacetedUniqueValues()?.keys() ?? [],
-            ).map((key) => ({
-              label: key,
-              value: key,
-            }))}
-            onChange={(selected, action) => {
-              handleFilterChange(selected, action, setTableState);
-            }}
-          />
-        ))}
+      {/*<div className="w-full flex items-center gap-3 mt-1">*/}
+      {/*  {permanentColumnFilters.map((filter) => (*/}
+      {/*    <Select*/}
+      {/*      classNames={{ ...filterSelectStyles }}*/}
+      {/*      key={filter}*/}
+      {/*      placeholder={table.getColumn(filter)?.columnDef.header as string}*/}
+      {/*      closeMenuOnSelect={false}*/}
+      {/*      hideSelectedOptions={false}*/}
+      {/*      components={{*/}
+      {/*        IndicatorSeparator: () => null,*/}
+      {/*        ValueContainer: FilterValueContainer,*/}
+      {/*        Option: CheckboxOption,*/}
+      {/*      }}*/}
+      {/*      isClearable={true}*/}
+      {/*      isMulti={true}*/}
+      {/*      value={*/}
+      {/*        tableState.columnFilters.find((f) => f.id === filter)*/}
+      {/*          ? (*/}
+      {/*              tableState.columnFilters.find((f) => f.id === filter)*/}
+      {/*                ?.value as string[]*/}
+      {/*            ).map((s) => ({*/}
+      {/*              label: s,*/}
+      {/*              value: s,*/}
+      {/*            }))*/}
+      {/*          : []*/}
+      {/*      }*/}
+      {/*      name={filter}*/}
+      {/*      options={Array.from(*/}
+      {/*        table?.getColumn(filter)?.getFacetedUniqueValues()?.keys() ?? [],*/}
+      {/*      ).map((key) => ({*/}
+      {/*        label: key,*/}
+      {/*        value: key,*/}
+      {/*      }))}*/}
+      {/*      onChange={(selected, action) => {*/}
+      {/*        handleFilterChange(selected, action, setTableState);*/}
+      {/*      }}*/}
+      {/*    />*/}
+      {/*  ))}*/}
 
-        {tableState.columnFilters.length > 0 && (
-          <Button
-            color="secondary"
-            onClick={() =>
-              setTableState((prev) => ({ ...prev, columnFilters: [] }))
-            }
-          >
-            Clear all
-          </Button>
-        )}
-      </div>
+      {/*  {tableState.columnFilters.length > 0 && (*/}
+      {/*    <Button*/}
+      {/*      color="secondary"*/}
+      {/*      onClick={() =>*/}
+      {/*        setTableState((prev) => ({ ...prev, columnFilters: [] }))*/}
+      {/*      }*/}
+      {/*    >*/}
+      {/*      Clear all*/}
+      {/*    </Button>*/}
+      {/*  )}*/}
+      {/*</div>*/}
 
-      <div className="overflow-x-auto shadow-sm border border-gray-600 rounded-lg mt-3 text-[#4b5563]">
+      <div className="overflow-x-auto shadow-sm border border-gray-600 rounded-lg  text-[#4b5563]">
         <table className="w-full border-collapse">
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
