@@ -150,7 +150,7 @@ export default function NursingTable({ data }: { data: MDSFinal }) {
                   <p className="font-bold">Suggested group: </p>
                   <p>
                     {suggestGroup} (CMI: {suggestCMI}, $
-                    {patientInfo.mds_nursing_pay})
+                    {patientInfo.suggest_nursing_pay})
                   </p>
                 </div>
               )}
@@ -225,7 +225,7 @@ export default function NursingTable({ data }: { data: MDSFinal }) {
                   <p className="font-bold">Suggested group: </p>
                   <p>
                     {suggestGroup} (CMI: {suggestCMI}, $
-                    {patientInfo.mds_nursing_pay})
+                    {patientInfo.suggest_nursing_pay})
                   </p>
                 </div>
               )}
@@ -306,7 +306,7 @@ export default function NursingTable({ data }: { data: MDSFinal }) {
                   <p className="font-bold">Suggested group: </p>
                   <p>
                     {suggestGroup} (CMI: {suggestCMI}, $
-                    {patientInfo.mds_nursing_pay})
+                    {patientInfo.suggest_nursing_pay})
                   </p>
                 </div>
               )}
@@ -389,7 +389,7 @@ export default function NursingTable({ data }: { data: MDSFinal }) {
                   <p className="font-bold">Suggested group: </p>
                   <p>
                     {suggestGroup} (CMI: {suggestCMI}, $
-                    {patientInfo.mds_nursing_pay})
+                    {patientInfo.suggest_nursing_pay})
                   </p>
                 </div>
               )}
@@ -496,7 +496,7 @@ export default function NursingTable({ data }: { data: MDSFinal }) {
                   <p className="font-bold">Suggested group: </p>
                   <p>
                     {suggestGroup} (CMI: {suggestCMI}, $
-                    {patientInfo.mds_nursing_pay})
+                    {patientInfo.suggest_nursing_pay})
                   </p>
                 </div>
               )}
@@ -577,7 +577,7 @@ export default function NursingTable({ data }: { data: MDSFinal }) {
                   <p className="font-bold">Suggested group: </p>
                   <p>
                     {suggestGroup} (CMI: {suggestCMI}, $
-                    {patientInfo.mds_nursing_pay})
+                    {patientInfo.suggest_nursing_pay})
                   </p>
                 </div>
               )}

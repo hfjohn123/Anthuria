@@ -37,7 +37,7 @@ export default function NewTriggerWordModal({
     <>
       <Toast ref={toast} position="bottom-center" />
       <div
-        className="flex items-center justify-center py-4.5  rounded-[30px] px-7.5 bg-whiten dark:bg-boxdark-2 hover:bg-slate-200 hover:dark:bg-slate-700"
+        className="flex items-center justify-center py-4.5  rounded-[30px] px-7.5 bg-whiten dark:bg-boxdark-2 hover:bg-slate-200 hover:dark:bg-slate-700 min-h-[99px]"
         onClick={() => setIsOpen(true)}
         role="button"
       >
