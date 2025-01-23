@@ -1,5 +1,6 @@
 import KeywordModal from '../../pages/TriggerWords/ReviewTriggers/KeywordModal.tsx';
 import UpdateKeywordModal from '../../pages/TriggerWords/ReviewTriggers/UpdateKeywordModal.tsx';
+import { AutoTextSize } from 'auto-text-size';
 
 export default function NumberCards({
   className,
@@ -64,9 +65,18 @@ export default function NumberCards({
           {value}{' '}
           {initialValue && value !== initialValue ? `of ${initialValue} ` : ''}
         </p>
-        <div className="flex  items-center flex-nowrap justify-between">
-          <h3 className="sm:whitespace-nowrap text-sm font-medium	">{title}</h3>
-          <div>
+        <div className="flex  items-center flex-nowrap justify-between w-full ">
+          <div className="w-[80%]">
+            <AutoTextSize
+              maxFontSizePx={14}
+              mode="oneline"
+              as={'p'}
+              className=" font-medium flex-initial "
+            >
+              {title}
+            </AutoTextSize>
+          </div>
+          <div className="size-6">
             {keywordModal && !editable && (
               <KeywordModal
                 keywordList={keywordList}

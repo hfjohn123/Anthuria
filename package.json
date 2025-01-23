@@ -23,6 +23,7 @@
     "@tanstack/react-table": "^8.20.6",
     "@tanstack/react-virtual": "^3.11.2",
     "apexcharts": "^4.3.0",
+    "auto-text-size": "^0.2.3",
     "axios": "^1.7.9",
     "billboard.js": "^3.14.3",
     "classnames": "^2.5.1",
