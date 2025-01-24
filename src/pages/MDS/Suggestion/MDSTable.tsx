@@ -728,7 +728,9 @@ export default function MDSTable({ data }: { data: PDPMPatient[] }) {
     );
   }, [tableState.columnVisibility]);
   const hasSuggestionCount =
-    table.getColumn('has_suggestions')?.getFacetedUniqueValues().get('Yes') ??
+    table
+      .getCoreRowModel()
+      .rows.filter((row) => row.getValue('has_suggestions') === 'Yes').length ??
     0;
 
   return (

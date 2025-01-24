@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useContext } from 'react';
 import { SuggestedICD10 } from '../../../types/MDSFinal.ts';
 import { CaretUp, CaretDown } from '@phosphor-icons/react';
 import NTAProgressNote from './NTATable/NTAProgressNote.tsx';
@@ -6,13 +6,14 @@ import clsx from 'clsx';
 import highlightColors from '../../../common/highlightColors.ts';
 import { Dialog } from 'primereact/dialog';
 import { Button } from 'primereact/button';
+import { MDSPatientContext } from './MDSDetailLoading.tsx';
 
 export default function EvidenceModal({
   icd10,
   button,
 }: {
   icd10: SuggestedICD10;
-  button: JSX.Element;
+  button: React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -22,7 +23,46 @@ export default function EvidenceModal({
   const observerRef = useRef<IntersectionObserver | null>(null);
   const lastScrollTop = useRef(0);
   const scrollDirection = useRef<'up' | 'down'>('down');
+  const patientInfo = useContext(MDSPatientContext);
 
+  const handleClick = (source_id: number) => {
+    const win1 = window.open('example.com', '_blank');
+
+    try {
+      // Open initial window
+
+      if (!win1) {
+        alert('Pop-up was blocked. Please allow pop-ups and try again.');
+        return;
+      }
+
+      // Handle the first navigation
+      win1.onload = function () {
+        try {
+          const clientListUrl = `https://${patientInfo.url_header}.pointclickcare.com/admin/client/clientlist.jsp?ESOLtabtype=C&ESOLglobalclientsearch=Y&ESOLclientid=${patientInfo.patient_id}&ESOLfacid=${patientInfo.internal_facility_id.split('_').pop()}&ESOLsave=P`;
+
+          // Navigate to second URL
+          win1.open(clientListUrl);
+
+          setTimeout(() => {
+            win1.close();
+            const chartUrl = `https:///${patientInfo.url_header}.pointclickcare.com/care/chart/ipn/newipn.jsp?ESOLpnid=${source_id}&ESOLclientid=${patientInfo.patient_id}`;
+            const win2 = window.open(chartUrl);
+          }, 1000);
+
+          // Handle the second navigation
+        } catch (error) {
+          console.error('Error during second navigation:', error);
+          alert(
+            'Failed to navigate to the client list. The window may need to be closed manually.',
+          );
+        }
+      };
+    } catch (error) {
+      console.error('Error initiating window sequence:', error);
+      alert('An error occurred while trying to show evidence.');
+    }
+  };
   useEffect(() => {
     const scrollContainer = scrollContainerRef.current;
 
@@ -182,7 +222,9 @@ export default function EvidenceModal({
                   return (
                     <div
                       key={item.source_category + item.source_id}
-                      ref={(el) => (itemRefs.current[index] = el)}
+                      ref={(el) => {
+                        itemRefs.current[index] = el;
+                      }}
                       className={clsx(
                         'flex flex-col gap-3 border-b border-stroke dark:border-strokedark last:border-b-0 pr-4 py-4',
                         'scroll-mt-4 transition-colors duration-200',
@@ -190,23 +232,33 @@ export default function EvidenceModal({
                           'bg-gray-50/50 dark:bg-gray-800/50',
                       )}
                     >
-                      <h3 className="font-bold text-xl">
-                        {item.highlights.split('|').map((h, hIndex, arr) => (
-                          <span key={hIndex}>
-                            <span
-                              className={clsx(
-                                highlightColors[
-                                  hIndex % highlightColors.length
-                                ],
-                                'px-1 rounded',
-                              )}
-                            >
-                              {h.trim()}
+                      <div>
+                        <h3 className="font-bold text-xl">
+                          {item.highlights.split('|').map((h, hIndex, arr) => (
+                            <span key={hIndex}>
+                              <span
+                                className={clsx(
+                                  highlightColors[
+                                    hIndex % highlightColors.length
+                                  ],
+                                  'px-1 rounded',
+                                )}
+                              >
+                                {h.trim()}
+                              </span>
+                              {hIndex !== arr.length - 1 && ' | '}
                             </span>
-                            {hIndex !== arr.length - 1 && ' | '}
-                          </span>
-                        ))}
-                      </h3>
+                          ))}
+                        </h3>
+                        <div className="flex justify-end">
+                          <Button
+                            className="bg-transparent border-0 text-primary p-1 ml-auto"
+                            onClick={() => handleClick(item.source_id)}
+                          >
+                            Show Evidence
+                          </Button>
+                        </div>
+                      </div>
                       <p className="italic">
                         <span className="font-semibold">Explanation:</span>{' '}
                         {item.explanation}
@@ -219,7 +271,9 @@ export default function EvidenceModal({
                   return (
                     <div
                       key={item.source_category + item.source_id}
-                      ref={(el) => (itemRefs.current[index] = el)}
+                      ref={(el) => {
+                        itemRefs.current[index] = el;
+                      }}
                       className={clsx(
                         'flex flex-col gap-3 border-b border-stroke dark:border-strokedark last:border-b-0 pr-4 py-4',
                         'scroll-mt-4 transition-colors duration-200',

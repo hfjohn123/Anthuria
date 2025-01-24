@@ -270,7 +270,6 @@ export default function TableWrapper({
                 ))}
               </thead>
               {table.getCoreRowModel().rows.length === 0 && <p>No Record</p>}
-
               <tbody>
                 {table.getRowModel().rows.length === 0 &&
                   table.getCoreRowModel().rows.length !== 0 && (

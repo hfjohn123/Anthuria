@@ -48,6 +48,15 @@ export const MDSPatientContext = createContext<PDPMPatient>({
   suggest_nursing_cmi: 0,
   suggest_nursing_pay: 0,
   n_nursing_suggestion: 0,
+  ptot_fs: 0,
+  nursing_fs: 0,
+  suggest_hipps: '',
+  mds_nta_score: 0,
+  suggest_nta_score: 0,
+  mds_slp_s_count: 0,
+  suggest_slp_s_count: 0,
+  mds_slp_f_count: 0,
+  suggest_slp_f_count: 0,
 });
 const MemoizedMDSDetail = memo(MDSDetail, (prevProps, nextProps) => {
   // Custom comparison logic
@@ -59,7 +68,6 @@ const MemoizedMDSDetail = memo(MDSDetail, (prevProps, nextProps) => {
 });
 
 export default function MDSDetailLoading({ row }: { row: Row<PDPMPatient> }) {
-  console.log(row);
   return (
     <MDSPatientContext.Provider value={row.original}>
       <MemoizedMDSDetail row={row} />
