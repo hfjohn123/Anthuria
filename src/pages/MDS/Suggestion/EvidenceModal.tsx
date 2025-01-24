@@ -48,6 +48,9 @@ export default function EvidenceModal({
             win1.close();
             const chartUrl = `https:///${patientInfo.url_header}.pointclickcare.com/care/chart/ipn/newipn.jsp?ESOLpnid=${source_id}&ESOLclientid=${patientInfo.patient_id}`;
             const win2 = window.open(chartUrl);
+            if (!win2) {
+              alert('Pop-up was blocked. Please allow pop-ups and try again.');
+            }
           }, 1000);
 
           // Handle the second navigation
@@ -255,7 +258,7 @@ export default function EvidenceModal({
                             className="bg-transparent border-0 text-primary p-1 ml-auto"
                             onClick={() => handleClick(item.source_id)}
                           >
-                            Show Evidence
+                            Click to PCC
                           </Button>
                         </div>
                       </div>
