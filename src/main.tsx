@@ -34,6 +34,7 @@ import MDS from './pages/MDS/Suggestion/MDS.tsx';
 import MDSChatBot from './pages/MDS/ChatBot/ChatBot.tsx';
 import { datadogRum } from '@datadog/browser-rum';
 import { PrimeReactProvider } from 'primereact/api';
+import FileReader from './pages/MDS/FileReder/FileReader.tsx';
 
 const queryClient = new QueryClient();
 datadogRum.init({
@@ -64,7 +65,7 @@ datadogRum.init({
   trackUserInteractions: true,
   trackResources: true,
   trackLongTasks: true,
-  defaultPrivacyLevel: 'mask-user-input',
+  defaultPrivacyLevel: 'allow',
 });
 SuperTokens.init({
   appInfo: {
@@ -217,6 +218,18 @@ const MDSChatBotRoute = createRoute({
     );
   },
 });
+const MDSFileReaderRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/mds/file-reader',
+  component: () => {
+    return (
+      <SessionAuth>
+        <PageTitle id="mds" />
+        <FileReader />
+      </SessionAuth>
+    );
+  },
+});
 
 const ClinicalPulseRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -262,6 +275,7 @@ const routeTree = rootRoute.addChildren([
   SignUpRoute,
   ResetPasswordRoute,
   MDSChatBotRoute,
+  MDSFileReaderRoute,
 ]);
 const router = createRouter({
   routeTree,

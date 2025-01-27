@@ -408,6 +408,21 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                 ChatBot
                               </Link>
                             </li>
+                            {(user_data.organization_id ===
+                              'the_triedge_labs' ||
+                              user_data.organization_id === 'AVHC') && (
+                              <li>
+                                <Link
+                                  to="/mds/file-reader"
+                                  activeProps={{ className: '!text-white' }}
+                                  className={
+                                    'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white '
+                                  }
+                                >
+                                  Referral File Reader
+                                </Link>
+                              </li>
+                            )}
                           </ul>
                         </div>
                       </>
