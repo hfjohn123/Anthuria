@@ -130,6 +130,7 @@ function Passwordless({ setIsLoading, isSession, setIsPasswordless }: any) {
     })
       .then((response) => {
         if (response.status === 'OK') {
+          window.location.href = '/';
           // setIsLoading(false);
         } else if (response.status === 'INCORRECT_USER_INPUT_CODE_ERROR') {
           createToast(
