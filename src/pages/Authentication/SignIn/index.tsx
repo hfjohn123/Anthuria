@@ -1,21 +1,16 @@
-import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from '@tanstack/react-router';
+import { useState } from 'react';
 import Logo from '../../../images/logo/logo.png';
 import NoBar from '../../../layout/NoBar';
 import Loader from '../../../common/Loader';
 import { createToast } from '../../../hooks/fireToast';
 import Session from 'supertokens-auth-react/recipe/session';
 import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
 import { getRoute } from '../../../components/AuthWrapper.tsx';
 import Passwordless from './Passwordless.tsx';
 import Password from './Password.tsx';
 function SignIn() {
   const [isLoading, setIsLoading] = useState(false);
   const [isPasswordless, setIsPasswordless] = useState(true);
-  const { companyId, redirect } = useParams({ strict: false });
-  console.log(redirect, companyId);
-  const navigate = useNavigate();
   const route = getRoute();
   const {
     isPending: isSessionPending,
@@ -26,48 +21,15 @@ function SignIn() {
     queryKey: ['session', route],
     queryFn: async () => await Session.doesSessionExist(),
   });
-  const {
-    isPending,
-    data: canny_jwt,
-    error,
-    isError,
-  } = useQuery({
-    queryKey: ['canny', route],
-    queryFn: () => axios.get(`${route}/canny_sso`).then((res) => res.data),
-    enabled: !!redirect && !!companyId && !isSessionPending && isSession,
-  });
+
   if (isSessionError) {
     createToast('Login Failed', sessionError.message, 3, 'Login Failed');
   }
-  if (isError) {
-    createToast(
-      'Failed to Fetch Canny Token',
-      error.message,
-      3,
-      'Login Failed',
-    );
-  }
-
-  useEffect(() => {
-    // Check if session exists
-    (async () => {
-      if (!isSessionPending && isSession) {
-        setIsLoading(true);
-        if (companyId && redirect && canny_jwt) {
-          window.location.assign(
-            `https://canny.io/api/redirects/sso?companyID=${companyId}&ssoToken=${canny_jwt}&redirect=${redirect}`,
-          );
-        } else if (!companyId && !redirect) {
-          navigate({ to: '/' });
-        }
-      }
-    })();
-  }, [isSession, canny_jwt]);
 
   if (isLoading || isSessionPending) {
     return <Loader />;
   }
-  if (isSession && isPending) {
+  if (isSession) {
     return <Loader />;
   }
 

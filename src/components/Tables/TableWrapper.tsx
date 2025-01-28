@@ -40,6 +40,7 @@ export default function TableWrapper({
   title,
   searchRight,
   placeholder = 'Global Search...',
+  splitter = false,
   ...rest
 }: {
   table: Table<any>;
@@ -58,6 +59,7 @@ export default function TableWrapper({
   title?: string;
   placeholder?: string;
   searchRight?: React.ReactNode;
+  splitter?: boolean;
   [key: string]: any;
 }) {
   const navigate = useNavigate();
@@ -289,7 +291,21 @@ export default function TableWrapper({
                               key={cell.id}
                               className={`py-2 px-3 text-sm ${cell.column.columnDef.meta?.wrap} ${row.getIsExpanded() && 'bg-slate-100 dark:bg-slate-700'} `}
                               role="button"
-                              onClick={row.getToggleExpandedHandler()}
+                              onClick={() => {
+                                if (!splitter) {
+                                  row.toggleExpanded();
+                                } else {
+                                  setTableState((prev) => ({
+                                    ...prev,
+                                    expanded: {
+                                      ...((prev.expanded as {
+                                        [key: string]: boolean;
+                                      }) || {}),
+                                      [row.id]: true,
+                                    },
+                                  }));
+                                }
+                              }}
                             >
                               {flexRender(
                                 cell.column.columnDef.cell,

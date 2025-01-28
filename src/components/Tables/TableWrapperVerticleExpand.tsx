@@ -63,7 +63,6 @@ export default function TableWrapperVerticleExpand({
   const navigate = useNavigate();
   const search = useSearch({ strict: false });
   const filterRef = useRef(null);
-  console.log(table.getRow('0'));
 
   useEffect(() => {
     const initialFilters: ColumnFiltersState = [];
@@ -229,7 +228,7 @@ export default function TableWrapperVerticleExpand({
             </div>
           )}
 
-          <Splitter className="border-0 ">
+          <Splitter className="border-0 " stateStorage="local" stateKey="split">
             <SplitterPanel>
               <div
                 className="sticky"
@@ -307,6 +306,13 @@ export default function TableWrapperVerticleExpand({
                                     className={`py-2 px-3 text-sm ${cell.column.columnDef.meta?.wrap} ${row.getIsExpanded() && 'bg-slate-100 dark:bg-slate-700'} `}
                                     role="button"
                                     onClick={() => {
+                                      if (row.getIsExpanded()) {
+                                        setTableState((prev) => ({
+                                          ...prev,
+                                          expanded: {},
+                                        }));
+                                        return;
+                                      }
                                       setTableState((prev) => ({
                                         ...prev,
                                         expanded: {
