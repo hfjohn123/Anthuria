@@ -200,12 +200,12 @@ function Passwordless({ setIsLoading, isSession, setIsPasswordless }: any) {
             }}
           />
           <h2 className="mb-9 text-2xl font-bold text-black dark:text-white sm:text-title-xl2">
-            Enter OTP
+            Enter The One Time Passcode Sent To Your Email
           </h2>
         </div>
       ) : (
         <h2 className="mb-9 text-2xl font-bold text-black dark:text-white sm:text-title-xl2">
-          Sign In to your account
+          Please Enter Your Email
         </h2>
       )}
       <form
@@ -273,7 +273,7 @@ function Passwordless({ setIsLoading, isSession, setIsPasswordless }: any) {
               value={otp}
               onChange={(event) => setOtp(event.target.value)}
               type="text"
-              placeholder="Please enter OTP sent to your email"
+              placeholder="Please Check Your Email For The One Time Passcode"
               className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
             />
 

@@ -226,7 +226,7 @@ function Password({ setIsPasswordless }: any) {
             className="text-sm text-primary dark:text-secondary cursor-pointer block"
             onClick={() => setIsPasswordless(true)}
           >
-            I would like to use a OTP.
+            I would like to use a One Time Passcode.
           </a>
         </Field>
 
