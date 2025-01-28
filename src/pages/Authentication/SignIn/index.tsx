@@ -8,9 +8,13 @@ import { useQuery } from '@tanstack/react-query';
 import { getRoute } from '../../../components/AuthWrapper.tsx';
 import Passwordless from './Passwordless.tsx';
 import Password from './Password.tsx';
+import { useSearch } from '@tanstack/react-router';
+
 function SignIn() {
   const [isLoading, setIsLoading] = useState(false);
-  const [isPasswordless, setIsPasswordless] = useState(false);
+  const searchParams = useSearch({ from: '/auth' });
+  const otp = !!searchParams.otp;
+  const [isPasswordless, setIsPasswordless] = useState(otp);
 
   const route = getRoute();
   const {
