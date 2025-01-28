@@ -69,7 +69,7 @@ datadogRum.init({
 });
 SuperTokens.init({
   appInfo: {
-    appName: 'NOAH',
+    appName: 'Anthuria',
     apiDomain: getRoute(),
     websiteDomain: window.location.origin,
     apiBasePath: '/auth',
