@@ -24,16 +24,16 @@ class MyError {
   ) {}
 }
 
-async function sendOTP(
+export async function sendOTP(
   email: string,
-  setHasOTPBeenSent: Dispatch<SetStateAction<boolean>>,
+  setHasOTPBeenSent?: Dispatch<SetStateAction<boolean>>,
 ) {
   const response = await createCode({
     email,
   });
 
   if (response.status === 'SIGN_IN_UP_NOT_ALLOWED') {
-    setHasOTPBeenSent(false);
+    setHasOTPBeenSent?.(false);
     createToast('Forbidden', response.reason, 3, 'Forbidden');
   }
 }

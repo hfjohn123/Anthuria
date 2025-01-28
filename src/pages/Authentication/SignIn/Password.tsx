@@ -5,6 +5,7 @@ import { createToast } from '../../../hooks/fireToast.tsx';
 import Modal from '../../../components/Modal/Modal.tsx';
 import sendEmailClicked from '../../../common/sendEmailClicked.ts';
 import { Button, Field, Input, Label } from '@headlessui/react';
+
 async function signInClicked(
   email: string | undefined,
   password: string | undefined,
@@ -174,10 +175,12 @@ function Password({ setIsPasswordless }: any) {
                 e.preventDefault();
                 e.stopPropagation();
                 setIsLoading(true);
-                sendEmailClicked(email, setIsSent).then(() => {
-                  setIsModalOpen(false);
-                  setIsLoading(false);
-                });
+                sendEmailClicked(email, setIsSent, setIsPasswordless).then(
+                  () => {
+                    setIsModalOpen(false);
+                    setIsLoading(false);
+                  },
+                );
               }}
             >
               <Field>
