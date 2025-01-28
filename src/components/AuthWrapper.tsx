@@ -36,10 +36,16 @@ export function getRoute() {
   }
   if (window.location.origin === 'https://brea-dev.triedgesandbox.com')
     return 'https://brea-dataservice-dev.triedgesandbox.com';
-  return 'https://dataservice.triedgesandbox.com';
+  if (window.location.origin === 'https://noah.triedgesandbox.com')
+    return 'https://dataservice.triedgesandbox.com';
+  return 'https://dataservice.anthuria.ai';
 }
 
-export default function AuthWrapper({ children }: { children: JSX.Element }) {
+export default function AuthWrapper({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const queryClient = useQueryClient();
   const sessionContext = Session.useSessionContext();
   const route = getRoute();
