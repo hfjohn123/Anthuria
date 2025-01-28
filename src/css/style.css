@@ -47,6 +47,9 @@
     .p-datepicker-inline {
         @apply !w-max;
     }
+    .bg-primary {
+        @apply text-white
+    }
 }
 
 /* third-party libraries CSS */

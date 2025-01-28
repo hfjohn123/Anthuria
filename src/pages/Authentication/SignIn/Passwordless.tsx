@@ -1,4 +1,11 @@
-import { FormEvent, Fragment, useEffect, useState } from 'react';
+import {
+  Dispatch,
+  FormEvent,
+  Fragment,
+  SetStateAction,
+  useEffect,
+  useState,
+} from 'react';
 import { createToast } from '../../../hooks/fireToast';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import { useNavigate, Link } from '@tanstack/react-router';
@@ -17,22 +24,17 @@ class MyError {
   ) {}
 }
 
-async function sendOTP(email: string) {
-  try {
-    const response = await createCode({
-      email,
-    });
-    if (response.status === 'SIGN_IN_UP_NOT_ALLOWED') {
-      createToast('Forbidden', response.reason, 3, 'Forbidden');
-    }
-  } catch (err: unknown) {
-    if (err instanceof MyError) {
-      if (err.isSuperTokensGeneralError) {
-        createToast('Error', err.message, 3, 'Login Failed');
-      } else {
-        createToast('Error', 'Oops! Something went wrong.', 3, 'Login failed');
-      }
-    }
+async function sendOTP(
+  email: string,
+  setHasOTPBeenSent: Dispatch<SetStateAction<boolean>>,
+) {
+  const response = await createCode({
+    email,
+  });
+
+  if (response.status === 'SIGN_IN_UP_NOT_ALLOWED') {
+    setHasOTPBeenSent(false);
+    createToast('Forbidden', response.reason, 3, 'Forbidden');
   }
 }
 
@@ -110,7 +112,8 @@ function Passwordless({ setIsLoading, isSession, setIsPasswordless }: any) {
       createToast('Login Failed', 'Missing Email', 3, 'Missing Email');
       return;
     }
-    sendOTP(email).catch((error) => {
+    sendOTP(email, setHasOTPBeenSent).catch((error) => {
+      setHasOTPBeenSent(false);
       createToast('Login Failed', error.message, 3, 'Login Failed');
     });
     setHasOTPBeenSent(true);
