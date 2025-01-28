@@ -10,7 +10,7 @@ import { sendOTP } from '../pages/Authentication/SignIn/Passwordless.tsx';
 export default async function sendEmailClicked(
   email: string | undefined,
   setIsSent: any,
-  setIsPasswordless: Dispatch<SetStateAction<boolean>>,
+  setIsPasswordless?: Dispatch<SetStateAction<boolean>>,
 ) {
   if (email === undefined || email === '') {
     createToast('Login Failed', 'Missing Email', 3, 'Login Failed');
@@ -29,7 +29,7 @@ export default async function sendEmailClicked(
     });
     if (!passwordDoesEmailExist.doesExist) {
       await sendOTP(email);
-      setIsPasswordless(true);
+      setIsPasswordless?.(true);
       return;
     }
     const response = await sendPasswordResetEmail({

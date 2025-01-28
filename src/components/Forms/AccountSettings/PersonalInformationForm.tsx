@@ -5,15 +5,15 @@ import sendEmailClicked from '../../../common/sendEmailClicked.ts';
 import Modal from '../../Modal/Modal.tsx';
 import { createToast } from '../../../hooks/fireToast.tsx';
 import { useQueryClient } from '@tanstack/react-query';
-import { useContext, useState } from 'react';
+import { Dispatch, SetStateAction, useContext, useState } from 'react';
 import { AuthContext } from '../../AuthWrapper.tsx';
 import { signUp } from 'supertokens-web-js/recipe/emailpassword';
 import PrimaryButton from '../../Basic/PrimaryButton.tsx';
 
-async function signUpClicked(
+export async function signUpClicked(
   email: string,
   password: string,
-  setShowPasswordModal: any,
+  setShowPasswordModal?: Dispatch<SetStateAction<boolean>>,
 ) {
   try {
     const response = await signUp({
@@ -55,7 +55,7 @@ async function signUpClicked(
     } else {
       // sign up successful. The session tokens are automatically handled by
       // the frontend SDK.
-      setShowPasswordModal(false);
+      setShowPasswordModal?.(false);
       createToast('Password Set Successful', '', 0, 'Password Set Successful');
     }
   } catch (err: any) {

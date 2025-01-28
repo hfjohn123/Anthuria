@@ -1,62 +1,11 @@
 import { Button, Field, Input, Label } from '@headlessui/react';
-import { useState } from 'react';
-import { submitNewPassword } from 'supertokens-web-js/recipe/emailpassword';
+import { useState, useContext } from 'react';
 import { createToast } from '../../hooks/fireToast.tsx';
-import { useNavigate } from '@tanstack/react-router';
-
-async function newPasswordEntered(newPassword: string, navigate: any) {
-  try {
-    const response = await submitNewPassword({
-      formFields: [
-        {
-          id: 'password',
-          value: newPassword,
-        },
-      ],
-    });
-
-    if (response.status === 'FIELD_ERROR') {
-      response.formFields.forEach((formField) => {
-        if (formField.id === 'password') {
-          // New password did not meet password criteria on the backend.
-          createToast(
-            'Password Set Failed',
-            formField.error,
-            3,
-            'Password Set Failed',
-          );
-        }
-      });
-    } else if (response.status === 'RESET_PASSWORD_INVALID_TOKEN_ERROR') {
-      // the password reset token in the URL is invalid, expired, or already consumed
-      createToast(
-        'Password Set Failed',
-        'Password reset token is invalid, expired, or already consumed',
-        3,
-        'Password Set Failed',
-      );
-      navigate({ to: '/auth' });
-    } else {
-      createToast('Password Set Successful', '', 0, 'Password Set Successful');
-      navigate({ to: '/auth' });
-    }
-  } catch (err: any) {
-    if (err.isSuperTokensGeneralError === true) {
-      // this may be a custom error message sent from the API by you.
-      createToast('Password Set Failed', err.message, 3, 'Password Set Failed');
-    } else {
-      createToast(
-        'Password Set Failed',
-        'Oops! Something went wrong.',
-        3,
-        'Password Set Failed',
-      );
-    }
-  }
-}
+import { signUpClicked } from '../../components/Forms/AccountSettings/PersonalInformationForm.tsx';
+import { AuthContext } from '../../components/AuthWrapper.tsx';
 
 export default function PasswordSetUp() {
-  const navigate = useNavigate();
+  const { user_data } = useContext(AuthContext);
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   return (
@@ -66,11 +15,21 @@ export default function PasswordSetUp() {
         onSubmit={(event) => {
           event.preventDefault();
           event.stopPropagation();
-          newPasswordEntered(password, navigate);
+          if (password !== confirmPassword) {
+            createToast('Error', 'Passwords do not match', 3, 'Error');
+            return;
+          }
+          signUpClicked(user_data.email, password)
+            .then(() => {
+              window.location.href = '/';
+            })
+            .catch((error) => {
+              createToast('Error', error.message, 3, 'Error');
+            });
         }}
       >
         <h2 className="mb-3 text-title-lg font-bold text-black dark:text-white sm:text-title-xl2 text-center">
-          Reset Password
+          Please Set Up a Password
         </h2>
         <Field className="flex flex-col">
           <Label className="mb-2.5 font-medium text-black dark:text-white flex justify-between">
@@ -81,7 +40,7 @@ export default function PasswordSetUp() {
               value={password}
               onChange={(event) => setPassword(event.target.value)}
               type="password"
-              placeholder="New password"
+              placeholder="Password"
               className="lg:min-w-100 rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-stroke dark dark:bg-form-input dark:text-white dark:focus:border-primary"
             />
 
@@ -117,7 +76,7 @@ export default function PasswordSetUp() {
               value={confirmPassword}
               onChange={(event) => setConfirmPassword(event.target.value)}
               type="password"
-              placeholder="Re-enter new password"
+              placeholder="Re-enter Password"
               className="lg:min-w-100 rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-stroke dark dark:bg-form-input dark:text-white dark:focus:border-primary"
             />
 

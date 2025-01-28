@@ -6,6 +6,7 @@ import axios from 'axios';
 import Session from 'supertokens-auth-react/recipe/session';
 import { signOut } from 'supertokens-auth-react/recipe/passwordless';
 import { datadogRum } from '@datadog/browser-rum';
+import { Navigate, useLocation } from '@tanstack/react-router';
 
 export const AuthContext = createContext({
   user_data: {
@@ -48,7 +49,13 @@ export default function AuthWrapper({
 }) {
   const queryClient = useQueryClient();
   const sessionContext = Session.useSessionContext();
+
   const route = getRoute();
+
+  // If you only need the pathname
+  const pathname = useLocation({
+    select: (location) => location.pathname,
+  });
 
   async function onLogout() {
     await signOut();
@@ -80,19 +87,6 @@ export default function AuthWrapper({
 
   useEffect(() => {
     if (user_data) {
-      // Canny('identify', {
-      //   appID: '66577caeac17c62e53e3940f',
-      //   user: {
-      //     // Replace these values with the current user's data
-      //     email: user_data.email,
-      //     name: user_data.name,
-      //     id: user_data.email,
-      //
-      //     // // These fields are optional, but recommended:
-      //     // avatarURL: user_data.avatarURL,
-      //     // created: new Date(user.created).toISOString(),
-      //   },
-      // });
       // @ts-expect-error Pendo Integration
       pendo.initialize({
         visitor: {
@@ -197,7 +191,11 @@ export default function AuthWrapper({
       <AuthContext.Provider
         value={{ user_data, user_applications_locations, route }}
       >
-        {children}
+        {user_data.hasPassword || pathname === '/setup-password' ? (
+          <>{children}</>
+        ) : (
+          <Navigate to="/setup-password" />
+        )}
       </AuthContext.Provider>
     );
   } else {

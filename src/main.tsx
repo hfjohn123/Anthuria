@@ -35,6 +35,7 @@ import MDSChatBot from './pages/MDS/ChatBot/ChatBot.tsx';
 import { datadogRum } from '@datadog/browser-rum';
 import { PrimeReactProvider } from 'primereact/api';
 import FileReader from './pages/MDS/FileReder/FileReader.tsx';
+import PasswordSetUp from './pages/Authentication/PasswordSetUp.tsx';
 
 const queryClient = new QueryClient();
 datadogRum.init({
@@ -230,6 +231,18 @@ const MDSFileReaderRoute = createRoute({
     );
   },
 });
+const SetupPasswordRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/setup-password',
+  component: () => {
+    return (
+      <SessionAuth>
+        <PageTitle id="Please setup your password" />
+        <PasswordSetUp />
+      </SessionAuth>
+    );
+  },
+});
 
 const ClinicalPulseRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -276,6 +289,7 @@ const routeTree = rootRoute.addChildren([
   ResetPasswordRoute,
   MDSChatBotRoute,
   MDSFileReaderRoute,
+  SetupPasswordRoute,
 ]);
 const router = createRouter({
   routeTree,
