@@ -41,6 +41,26 @@ export default function MDSTable({ data }: { data: PDPMPatient[] }) {
       : ['facility_name', 'effective_start_date', 'has_suggestions'];
   const columns: ColumnDef<PDPMPatient>[] = [
     {
+      accessorKey: 'any_touched',
+      accessorFn: (row) => (row.any_touched === 1 ? 'Yes' : 'No'),
+      header: 'Reviewed',
+      enableSorting: false,
+      enableHiding: false,
+      meta: {
+        wrap: 'whitespace-nowrap',
+        type: 'categorical',
+        hideHeader: true,
+      },
+      filterFn: 'arrIncludesSome',
+      cell: (info) => {
+        if (info.getValue() === 'Yes') {
+          return <div />;
+        } else {
+          return <div className="size-2 rounded-full bg-primary" />;
+        }
+      },
+    },
+    {
       accessorKey: 'operation_name',
       header: 'Operator',
       meta: { wrap: 'whitespace-nowrap', type: 'categorical' },
@@ -642,6 +662,7 @@ export default function MDSTable({ data }: { data: PDPMPatient[] }) {
     columnVisibility:
       window.screen.width < 1024
         ? {
+            any_touched: true,
             facility_name: false,
             patient_name: true,
             effective_start_date: false,
@@ -661,6 +682,7 @@ export default function MDSTable({ data }: { data: PDPMPatient[] }) {
             operation_name: user_data.organization_id === 'the_triedge_labs',
           }
         : {
+            any_touched: true,
             facility_name: false,
             patient_name: true,
             effective_start_date: false,

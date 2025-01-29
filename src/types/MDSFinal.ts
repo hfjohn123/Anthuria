@@ -66,6 +66,7 @@ export type PDPMPatient = {
   suggest_slp_s_count: number;
   mds_slp_f_count: number;
   suggest_slp_f_count: number;
+  any_touched: number;
 };
 
 export type MDSFinal = {

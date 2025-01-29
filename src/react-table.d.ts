@@ -6,5 +6,6 @@ declare module '@tanstack/react-table' {
     wrap?: boolean | string;
     download?: boolean;
     excelWidth?: number;
+    hideHeader?: boolean;
   }
 }
