@@ -519,6 +519,7 @@ export default function TableWrapper({
               <ScrollPanel
                 style={{
                   height: 'calc(100vh - var(--filter-height) - 70px)',
+                  width: '100%',
                 }}
               >
                 {renderExpandedRow({

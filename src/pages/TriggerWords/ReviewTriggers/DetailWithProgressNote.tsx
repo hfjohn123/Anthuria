@@ -18,7 +18,7 @@ export default function DetailWithProgressNote({
     .join('\n\n');
 
   return (
-    <div className="bg-transparent  p-2.5 text-sm  flex flex-col gap-5 h-full  ">
+    <div className="bg-transparent  p-2.5 text-sm  flex flex-col gap-5 h-full w-full  ">
       {explanation && (
         <DataField
           title={
