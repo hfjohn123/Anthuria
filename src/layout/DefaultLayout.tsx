@@ -16,7 +16,7 @@ const DefaultLayout = ({
       <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
       {/* <!-- ===== Content Area Start ===== --> */}
-      <div className="relative flex flex-auto flex-col h-screen max-w-[100vw] overflow-clip lg:ml-13 dark:bg-boxdark-2 dark:text-bodydark  ">
+      <div className="relative flex flex-auto flex-col h-screen max-w-[100vw] lg:ml-13 dark:bg-boxdark-2 dark:text-bodydark  ">
         {/* <!-- ===== Header Start ===== --> */}
         <Header
           sidebarOpen={sidebarOpen}
@@ -26,9 +26,7 @@ const DefaultLayout = ({
         {/* <!-- ===== Header End ===== --> */}
 
         {/* <!-- ===== Main Content Start ===== --> */}
-        <main className="flex-grow  overflow-y-auto overflow-x-clip">
-          {children}
-        </main>
+        <main className="flex-grow  ">{children}</main>
         {/* <!-- ===== Main Content End ===== --> */}
       </div>
       {/* <!-- ===== Content Area End ===== --> */}

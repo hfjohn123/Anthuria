@@ -1,4 +1,5 @@
 import DefaultLayout from '../../../layout/DefaultLayout.tsx';
+import 'primeicons/primeicons.css';
 import axios from 'axios';
 import {
   useQuery,
@@ -29,12 +30,12 @@ import HyperLink from '../../../components/Basic/HyerLink.tsx';
 import { TriggerAPI, TriggerFinal } from '../../../types/TriggerFinal.ts';
 import TriggerNoteDetail from './TriggerNoteDetail.tsx';
 import NewTriggerWordModal from './NewTriggerWordModal.tsx';
-import TableWrapper from '../../../components/Tables/TableWrapper.tsx';
 import _, { Dictionary } from 'lodash';
 import { CheckCircle, XCircle } from '@phosphor-icons/react';
 import HighlightWrapper from '../../../components/Basic/HighlightWrapper.tsx';
 import highlightGenerator from '../../../common/highlightGenerator.ts';
 import { MeterGroup } from 'primereact/metergroup';
+import TableWrapper from '../../../components/Tables/TableWrapper.tsx';
 
 const predefinedTriggerWords = [
   'Fall',
@@ -606,6 +607,7 @@ export default function ReviewTriggers() {
   const uncategorized_count = table
     .getCoreRowModel()
     .rows.filter((row) => row.original.trigger_words.length === 0).length;
+
   return (
     data && (
       <DefaultLayout>
@@ -876,7 +878,6 @@ export default function ReviewTriggers() {
               setSelfDefinedKeywordsState={setSelfDefinedKeywordsState}
             />
           </div>
-
           <TableWrapper
             table={table}
             tableState={tableState}
@@ -887,6 +888,8 @@ export default function ReviewTriggers() {
             tableSetting={true}
             initialTableState={initialTableState}
             setIsRefetching={setIsRefetching}
+            splitter={true}
+            twoPanel={Object.keys(tableState.expanded).length > 0}
             placeholder={
               'Search for any text associated with a progress note, including the patient’s name, facility, the clinician who wrote the note.'
             }

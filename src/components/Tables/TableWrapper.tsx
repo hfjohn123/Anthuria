@@ -6,6 +6,7 @@ import {
 } from '@tanstack/react-table';
 import { Button } from '@headlessui/react';
 import 'primeicons/primeicons.css';
+import { ScrollPanel } from 'primereact/scrollpanel';
 
 import { Fragment, useEffect, useRef } from 'react';
 import PageNavigation from './PageNavigation.tsx';
@@ -23,6 +24,7 @@ import SortUp from '../../images/icon/SortUp.tsx';
 import SortDown from '../../images/icon/SortDown.tsx';
 import SortDefult from '../../images/icon/SortDefult.tsx';
 import clsx from 'clsx';
+import { Splitter, SplitterPanel } from 'primereact/splitter';
 
 export default function TableWrapper({
   table,
@@ -41,6 +43,8 @@ export default function TableWrapper({
   title,
   searchRight,
   placeholder = 'Global Search...',
+  splitter = false,
+  twoPanel = false,
   ...rest
 }: {
   table: Table<any>;
@@ -59,6 +63,8 @@ export default function TableWrapper({
   title?: string;
   placeholder?: string;
   searchRight?: React.ReactNode;
+  splitter?: boolean;
+  twoPanel?: boolean;
   [key: string]: any;
 }) {
   const navigate = useNavigate();
@@ -163,7 +169,7 @@ export default function TableWrapper({
       },
     }));
   }, [tableState.columnFilters, tableState.globalFilter]);
-  return (
+  return !twoPanel ? (
     <div>
       <div className=" bg-white dark:bg-boxdark h-full flex-col flex overflow-x-auto lg:overflow-clip px-7.5 py-5 gap-7.5 rounded-[30px] ">
         {title && (
@@ -309,7 +315,21 @@ export default function TableWrapper({
                                   : 'py-3 px-3',
                               )}
                               role="button"
-                              onClick={row.getToggleExpandedHandler()}
+                              onClick={() => {
+                                if (!splitter) {
+                                  row.toggleExpanded();
+                                } else {
+                                  setTableState((prev) => ({
+                                    ...prev,
+                                    expanded: {
+                                      ...((prev.expanded as {
+                                        [key: string]: boolean;
+                                      }) || {}),
+                                      [row.id]: true,
+                                    },
+                                  }));
+                                }
+                              }}
                             >
                               {flexRender(
                                 cell.column.columnDef.cell,
@@ -338,6 +358,197 @@ export default function TableWrapper({
           <div className="flex-none">
             <PageNavigation table={table} tableState={tableState} />
           </div>
+        </div>
+      </div>
+    </div>
+  ) : (
+    <div>
+      <div className=" bg-white dark:bg-boxdark h-full flex-col flex overflow-x-auto lg:overflow-clip px-7.5 py-5 gap-7.5 rounded-[30px] ">
+        {title && (
+          <h3 className="text-title-md text-black dark:text-white font-semibold	">
+            {title}
+          </h3>
+        )}
+        <div>
+          {filters && (
+            <div
+              ref={filterRef}
+              className="sticky  top-0 left-0 flex-none bg-white dark:bg-boxdark z-1 "
+            >
+              <div className="flex items-center  py-1 gap-4 ">
+                <IconField iconPosition="left" className=" flex-1 ">
+                  <InputIcon className="pi pi-search" />
+                  <DebouncedInputText
+                    setValue={(e) => {
+                      setTableState((prev) => ({
+                        ...prev,
+                        globalFilter: e.target.value,
+                      }));
+                    }}
+                    value={tableState.globalFilter}
+                    placeholder={placeholder}
+                    className="w-full py-2"
+                  />
+                </IconField>
+                {searchRight}
+                {download && (
+                  <Button
+                    type="button"
+                    className="hover:text-primary"
+                    onClick={() =>
+                      exportExcel(
+                        table,
+                        'review_triggers_' + new Date().toLocaleString(),
+                      )
+                    }
+                  >
+                    <DownloadSimple size={22} />
+                  </Button>
+                )}
+                {tableSetting && (
+                  <TableSettingModal
+                    table={table}
+                    tableState={tableState}
+                    setTableState={setTableState}
+                    initialTableState={initialTableState}
+                  />
+                )}
+              </div>
+              <Filters
+                permanentColumnFilters={permanentColumnFilters}
+                table={table}
+                tableState={tableState}
+                setTableState={setTableState}
+                hasHistory={hasHistory}
+                setIsRefetching={setIsRefetching}
+                includeCreatedDate={includeCreatedDate}
+                setIncludeCreatedDate={setIncludeCreatedDate}
+              />
+            </div>
+          )}
+
+          <Splitter className="border-0 " stateStorage="local" stateKey="split">
+            <SplitterPanel>
+              <ScrollPanel
+                style={{
+                  height: 'calc(100vh - var(--filter-height) - 70px)',
+                }}
+              >
+                <div>
+                  <div className="flex-1 relative">
+                    <table className="w-full border-b-2 border-b-stroke ">
+                      <thead className=" bg-white dark:bg-graydark sticky z-1 top-0">
+                        {table.getHeaderGroups().map((headerGroup) => (
+                          <tr key={headerGroup.id}>
+                            {headerGroup.headers.map((header) => {
+                              return (
+                                <th
+                                  key={header.id}
+                                  colSpan={header.colSpan}
+                                  className="py-3 shadow-table_header  shadow-stroke z-1 px-3  text-left select-none group whitespace-nowrap "
+                                  role="button"
+                                  onClick={header.column.getToggleSortingHandler()}
+                                >
+                                  {header.isPlaceholder ? null : (
+                                    <div className="flex items-center w-full justify-between">
+                                      <div>
+                                        {flexRender(
+                                          header.column.columnDef.header,
+                                          header.getContext(),
+                                        )}
+                                        {{
+                                          asc: (
+                                            <SortUp className="inline size-5" />
+                                          ),
+                                          desc: (
+                                            <SortDown className="inline size-5" />
+                                          ),
+                                        }[
+                                          header.column.getIsSorted() as string
+                                        ] ?? (
+                                          <SortDefult className="inline size-5" />
+                                        )}
+                                      </div>
+                                    </div>
+                                  )}
+                                </th>
+                              );
+                            })}
+                          </tr>
+                        ))}
+                      </thead>
+                      {table.getCoreRowModel().rows.length === 0 && (
+                        <p>No Record</p>
+                      )}
+                      <tbody>
+                        {table.getRowModel().rows.length === 0 &&
+                          table.getCoreRowModel().rows.length !== 0 && (
+                            <tr>
+                              <td className="whitespace-nowrap">
+                                No Record matches your filter
+                              </td>
+                            </tr>
+                          )}
+                        {table.getRowModel().rows.map((row) => {
+                          return (
+                            <Fragment key={row.id}>
+                              <tr className="border-t-stroke border-t ">
+                                {row.getVisibleCells().map((cell) => {
+                                  return (
+                                    <td
+                                      key={cell.id}
+                                      className={`py-2 px-3 text-sm ${cell.column.columnDef.meta?.wrap} ${row.getIsExpanded() && 'bg-slate-100 dark:bg-slate-700'} `}
+                                      role="button"
+                                      onClick={() => {
+                                        if (row.getIsExpanded()) {
+                                          setTableState((prev) => ({
+                                            ...prev,
+                                            expanded: {},
+                                          }));
+                                          return;
+                                        }
+                                        setTableState((prev) => ({
+                                          ...prev,
+                                          expanded: {
+                                            [row.id]: true,
+                                          },
+                                        }));
+                                      }}
+                                    >
+                                      {flexRender(
+                                        cell.column.columnDef.cell,
+                                        cell.getContext(),
+                                      )}
+                                    </td>
+                                  );
+                                })}
+                              </tr>
+                            </Fragment>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                  <div className="flex-none">
+                    <PageNavigation table={table} tableState={tableState} />
+                  </div>
+                </div>
+              </ScrollPanel>
+            </SplitterPanel>
+            <SplitterPanel>
+              <ScrollPanel
+                style={{
+                  height: 'calc(100vh - var(--filter-height) - 70px)',
+                  width: '100%',
+                }}
+              >
+                {renderExpandedRow({
+                  row: table.getRow(Object.keys(tableState.expanded)[0]),
+                  tableState,
+                })}
+              </ScrollPanel>
+            </SplitterPanel>
+          </Splitter>
         </div>
       </div>
     </div>

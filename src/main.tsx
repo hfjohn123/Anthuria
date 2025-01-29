@@ -1,5 +1,6 @@
 import ReactDOM from 'react-dom/client';
 import './css/style.css';
+import 'primeicons/primeicons.css';
 import 'flatpickr/dist/flatpickr.min.css';
 import Home from './pages/Home';
 import NHQI from './pages/Dashboard/NHQI';

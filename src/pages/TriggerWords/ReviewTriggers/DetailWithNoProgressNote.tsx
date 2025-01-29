@@ -79,7 +79,7 @@ export default function DetailWithNoProgressNote({
   });
 
   return (
-    <div className="bg-slate-50 dark:bg-slate-900 p-2.5 text-sm flex flex-wrap">
+    <div className="bg-transparent p-2.5 text-sm flex flex-wrap">
       <table className="basis-full pb-3 border-stroke border-spacing-y-2.5 border-separate">
         <thead>
           <tr>
