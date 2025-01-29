@@ -161,9 +161,11 @@ export type PTOTFinal = {
 export type FunctionalScore = {
   function_area: string;
   mds_item: string;
-  individual_function_score: string;
+  individual_function_score: string | null;
+  suggest_individual_function_score: string | null;
+  suggest_average_function_score: string | null;
   suggestion?: ProgressNoteAndSummary[];
-  average_function_score: string;
+  average_function_score: string | null;
   is_thumb_up: number;
   is_thumb_down: number;
   comment: string;

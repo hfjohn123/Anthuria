@@ -111,12 +111,16 @@ export default function FunctionalScoreTable({
     },
     {
       accessorKey: 'individual_function_score',
-      header: 'Current Function Score',
-      cell: (info) => (
-        <td className="py-2 px-4 border-t border-l border-gray-600  whitespace-nowrap">
-          {info.getValue() as string}
-        </td>
-      ),
+      header: 'Current-Suggested Function Score',
+      cell: (info) =>
+        info.row.original.individual_function_score ? (
+          <td className="py-2 px-4 border-t border-l  whitespace-nowrap border-gray-600">
+            {info.getValue() as string} -{' '}
+            {info.row.original.suggest_individual_function_score}
+          </td>
+        ) : (
+          <td className="py-2 px-4 border-t border-l  whitespace-nowrap border-gray-600"></td>
+        ),
       filterFn: 'arrIncludesSome',
       meta: {
         type: 'categorical',
@@ -129,7 +133,7 @@ export default function FunctionalScoreTable({
     },
     {
       accessorKey: 'average_function_score',
-      header: 'Current Average Score',
+      header: 'Current-Suggested Average Score',
       cell: (info) => {
         const rowIndex = info.row.index;
         if (
@@ -140,13 +144,19 @@ export default function FunctionalScoreTable({
 
         const rowSpan = getRowSpan(rowIndex, data.function_score_all);
 
-        return (
+        return info.row.original.average_function_score ? (
           <td
             rowSpan={rowSpan}
             className="py-2 px-4 border-t border-l  bg-blue-50 align-top border-gray-600"
           >
-            {info.getValue() as string}
+            {info.getValue() as string} -{' '}
+            {info.row.original.suggest_average_function_score}
           </td>
+        ) : (
+          <td
+            rowSpan={rowSpan}
+            className="py-2 px-4 border-t border-l  bg-blue-50 align-top border-gray-600"
+          ></td>
         );
       },
       footer: () => {

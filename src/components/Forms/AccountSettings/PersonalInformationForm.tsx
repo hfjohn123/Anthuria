@@ -57,6 +57,7 @@ export async function signUpClicked(
       // the frontend SDK.
       setShowPasswordModal?.(false);
       createToast('Password Set Successful', '', 0, 'Password Set Successful');
+      window.location.href = '/';
     }
   } catch (err: any) {
     if (err.isSuperTokensGeneralError === true) {

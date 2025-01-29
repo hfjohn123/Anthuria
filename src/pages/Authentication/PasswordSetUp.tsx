@@ -19,13 +19,9 @@ export default function PasswordSetUp() {
             createToast('Error', 'Passwords do not match', 3, 'Error');
             return;
           }
-          signUpClicked(user_data.email, password)
-            .then(() => {
-              window.location.href = '/';
-            })
-            .catch((error) => {
-              createToast('Error', error.message, 3, 'Error');
-            });
+          signUpClicked(user_data.email, password).catch((error) => {
+            createToast('Error', error.message, 3, 'Error');
+          });
         }}
       >
         <h2 className="mb-3 text-title-lg font-bold text-black dark:text-white sm:text-title-xl2 text-center">
