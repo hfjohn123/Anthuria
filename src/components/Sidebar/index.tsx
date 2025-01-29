@@ -2,10 +2,11 @@ import { useContext, useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from '@tanstack/react-router';
 import SidebarLinkGroup from './SidebarLinkGroup';
 import Logo from '../../images/logo/logo.png';
+import Mark from '../../images/logo/mark.png';
 import { CurrencyDollarIcon } from '@heroicons/react/24/outline';
 import CaretDown from '../../images/icon/CaretDown.tsx';
 import { AuthContext } from '../AuthWrapper.tsx';
-import { HardDrives } from '@phosphor-icons/react';
+import { FileText, HardDrives } from '@phosphor-icons/react';
 import clsx from 'clsx';
 
 interface SidebarProps {
@@ -81,21 +82,21 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
       >
         <Link to="/" className={'flex items-center'}>
           <img
-            src={Logo}
+            src={Mark}
             alt="Logo"
             className={clsx(
-              !expanded && !sidebarOpen ? 'w-11' : 'w-20',
+              !expanded && !sidebarOpen ? 'w-11' : 'hidden',
               'ease-in-out duration-300',
             )}
           />
-          <span
+          <img
+            src={Logo}
+            alt="Logo"
             className={clsx(
-              'text-3xl font-bold text-white ease-in-out duration-300',
-              !expanded && !sidebarOpen && 'hidden',
+              !expanded && !sidebarOpen ? 'hidden' : '',
+              'ease-in-out duration-300',
             )}
-          >
-            NOAH
-          </span>
+          />
         </Link>
 
         <button
@@ -149,9 +150,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
               <li>
                 <Link
                   to="/dashboard"
-                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-gray-700 dark:hover:bg-meta-4 ${
                     pathname.includes('dashboard') &&
-                    'bg-graydark dark:bg-meta-4'
+                    'bg-gray-700 dark:bg-meta-4'
                   }`}
                 >
                   <svg
@@ -208,10 +209,10 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                       <>
                         <Link
                           to="#"
-                          className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                          className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-gray-700 dark:hover:bg-meta-4 ${
                             (pathname === '/trigger-words' ||
                               pathname.includes('trigger-words')) &&
-                            'bg-graydark dark:bg-meta-4'
+                            'bg-gray-700 dark:bg-meta-4'
                           }`}
                           onClick={(e) => {
                             e.preventDefault();
@@ -315,9 +316,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
               <li>
                 <Link
                   to="/cashflow-forecast"
-                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-gray-700 dark:hover:bg-meta-4 ${
                     pathname.includes('cashflow-forecast') &&
-                    'bg-graydark dark:bg-meta-4'
+                    'bg-gray-700 dark:bg-meta-4'
                   }`}
                 >
                   <CurrencyDollarIcon
@@ -351,9 +352,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                       <>
                         <Link
                           to="#"
-                          className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-3 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                          className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-3 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-gray-700 dark:hover:bg-meta-4 ${
                             (pathname === '/mds' || pathname.includes('mds')) &&
-                            'bg-graydark dark:bg-meta-4'
+                            'bg-gray-700 dark:bg-meta-4'
                           }`}
                           onClick={(e) => {
                             e.preventDefault();
@@ -408,27 +409,35 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                 ChatBot
                               </Link>
                             </li>
-                            {(user_data.organization_id ===
-                              'the_triedge_labs' ||
-                              user_data.organization_id === 'AVHC') && (
-                              <li>
-                                <Link
-                                  to="/mds/file-reader"
-                                  activeProps={{ className: '!text-white' }}
-                                  className={
-                                    'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white '
-                                  }
-                                >
-                                  Referral File Reader
-                                </Link>
-                              </li>
-                            )}
                           </ul>
                         </div>
                       </>
                     );
                   }}
                 </SidebarLinkGroup>
+              </li>
+            )}
+            {user_applications_locations.some(
+              (location) => location.id === 'file_reader',
+            ) && (
+              <li>
+                <Link
+                  to="/file-reader"
+                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-gray-700 dark:hover:bg-meta-4 ${
+                    pathname.includes('file-reader') &&
+                    'bg-gray-700 dark:bg-meta-4'
+                  }`}
+                >
+                  <FileText className="size-5.5 -ml-0.5" />
+                  <span
+                    className={clsx(
+                      !expanded && !sidebarOpen && 'hidden',
+                      'transition-all ease-in-out duration-300 overflow-x-hidden whitespace-nowrap',
+                    )}
+                  >
+                    Referral File Reader
+                  </span>
+                </Link>
               </li>
             )}
           </ul>
@@ -450,8 +459,8 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
             <li>
               <Link
                 to="/settings"
-                className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
-                  pathname.includes('settings') && 'bg-graydark dark:bg-meta-4'
+                className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-gray-700 dark:hover:bg-meta-4 ${
+                  pathname.includes('settings') && 'bg-gray-700 dark:bg-meta-4'
                 }`}
               >
                 <svg
@@ -497,7 +506,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
             {/* <!-- Menu Item Auth Pages --> */}
             <Link
               to="/"
-              className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4`}
+              className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-gray-700 dark:hover:bg-meta-4`}
             >
               <svg
                 className="fill-current"

@@ -221,7 +221,7 @@ const MDSChatBotRoute = createRoute({
 });
 const MDSFileReaderRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/mds/file-reader',
+  path: '/file-reader',
   component: () => {
     return (
       <SessionAuth>

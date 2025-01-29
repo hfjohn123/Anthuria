@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import Logo from '../../../images/logo/logo.png';
+import Logo from '../../../images/logo/logo_dark.png';
 import NoBar from '../../../layout/NoBar';
 import Loader from '../../../common/Loader';
 import { createToast } from '../../../hooks/fireToast';
@@ -44,8 +44,7 @@ function SignIn() {
           <div className="hidden w-full xl:block xl:w-1/2">
             <div className="py-17.5 px-26 text-center">
               <div className="flex items-center justify-center">
-                <img src={Logo} alt="Logo" className="w-35" />
-                <span className="text-6xl font-bold text-black">NOAH</span>
+                <img src={Logo} alt="Logo" />
               </div>
             </div>
           </div>

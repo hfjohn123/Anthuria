@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { Link } from '@tanstack/react-router';
-import Logo from '../../images/logo/logo.png';
+import Logo from '../../images/logo/logo_dark.png';
 import NoBar from '../../layout/NoBar';
 const SignUp: React.FC = () => {
   const emailInputRef = useRef<HTMLInputElement>(null);
@@ -19,8 +19,7 @@ const SignUp: React.FC = () => {
           <div className="hidden w-full xl:block xl:w-1/2">
             <div className="py-17.5 px-26 text-center">
               <div className="flex items-center justify-center">
-                <img src={Logo} alt="Logo" className="w-35" />
-                <span className="text-6xl font-bold text-black">NOAH</span>
+                <img src={Logo} alt="Logo" />
               </div>
               {/*<p className="2xl:px-20">*/}
               {/*  Lorem ipsum dolor sit amet, consectetur adipiscing elit*/}
