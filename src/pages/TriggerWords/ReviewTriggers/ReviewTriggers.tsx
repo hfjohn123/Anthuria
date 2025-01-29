@@ -35,7 +35,6 @@ import { CheckCircle, XCircle } from '@phosphor-icons/react';
 import HighlightWrapper from '../../../components/Basic/HighlightWrapper.tsx';
 import highlightGenerator from '../../../common/highlightGenerator.ts';
 import { MeterGroup } from 'primereact/metergroup';
-import TableWrapperVerticleExpand from '../../../components/Tables/TableWrapperVerticleExpand.tsx';
 import TableWrapper from '../../../components/Tables/TableWrapper.tsx';
 
 const predefinedTriggerWords = [
@@ -609,7 +608,6 @@ export default function ReviewTriggers() {
     .getCoreRowModel()
     .rows.filter((row) => row.original.trigger_words.length === 0).length;
 
-  console.log(tableState.expanded);
   return (
     data && (
       <DefaultLayout>
@@ -880,38 +878,22 @@ export default function ReviewTriggers() {
               setSelfDefinedKeywordsState={setSelfDefinedKeywordsState}
             />
           </div>
-          {Object.keys(tableState.expanded).length > 0 ? (
-            <TableWrapperVerticleExpand
-              table={table}
-              tableState={tableState}
-              setTableState={setTableState}
-              permanentColumnFilters={PERMANENT_COLUMN_FILTERS}
-              renderExpandedRow={TriggerNoteDetail}
-              download={true}
-              tableSetting={true}
-              initialTableState={initialTableState}
-              setIsRefetching={setIsRefetching}
-              placeholder={
-                'Search for any text associated with a progress note, including the patient’s name, facility, the clinician who wrote the note.'
-              }
-            />
-          ) : (
-            <TableWrapper
-              table={table}
-              tableState={tableState}
-              setTableState={setTableState}
-              permanentColumnFilters={PERMANENT_COLUMN_FILTERS}
-              renderExpandedRow={TriggerNoteDetail}
-              download={true}
-              tableSetting={true}
-              initialTableState={initialTableState}
-              setIsRefetching={setIsRefetching}
-              splitter={true}
-              placeholder={
-                'Search for any text associated with a progress note, including the patient’s name, facility, the clinician who wrote the note.'
-              }
-            />
-          )}
+          <TableWrapper
+            table={table}
+            tableState={tableState}
+            setTableState={setTableState}
+            permanentColumnFilters={PERMANENT_COLUMN_FILTERS}
+            renderExpandedRow={TriggerNoteDetail}
+            download={true}
+            tableSetting={true}
+            initialTableState={initialTableState}
+            setIsRefetching={setIsRefetching}
+            splitter={true}
+            twoPanel={Object.keys(tableState.expanded).length > 0}
+            placeholder={
+              'Search for any text associated with a progress note, including the patient’s name, facility, the clinician who wrote the note.'
+            }
+          />
         </div>
       </DefaultLayout>
     )

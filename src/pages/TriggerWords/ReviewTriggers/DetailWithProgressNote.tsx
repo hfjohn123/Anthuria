@@ -18,10 +18,7 @@ export default function DetailWithProgressNote({
     .join('\n\n');
 
   return (
-    <div
-      className="bg-transparent  p-2.5 text-sm  flex flex-col gap-5  overflow-visible sticky self-start "
-      style={{ top: 'calc(var(--filter-height, 0px))' }}
-    >
+    <div className="bg-transparent  p-2.5 text-sm  flex flex-col gap-5 h-full  ">
       {explanation && (
         <DataField
           title={
