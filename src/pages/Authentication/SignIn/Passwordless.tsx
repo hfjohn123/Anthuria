@@ -200,12 +200,12 @@ function Passwordless({ setIsLoading, isSession, setIsPasswordless }: any) {
             }}
           />
           <h2 className="mb-9 text-2xl font-bold text-black dark:text-white sm:text-title-xl2">
-            Enter The One Time Passcode Sent To Your Email
+            Enter the one time passcode sent to your email
           </h2>
         </div>
       ) : (
         <h2 className="mb-9 text-2xl font-bold text-black dark:text-white sm:text-title-xl2">
-          Please Enter Your Email
+          Welcome to Anthuria
         </h2>
       )}
       <form
