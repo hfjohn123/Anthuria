@@ -18,6 +18,9 @@ import clsx from 'clsx';
 import _ from 'lodash';
 import { useContext } from 'react';
 import { MDSPatientContext } from './MDSDetailLoading.tsx';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import axios from 'axios';
+import { AuthContext } from '../../../components/AuthWrapper.tsx';
 
 const SLPSkeleton = [
   { item: 'ci', condition: 'Cognitive Impairment' },
@@ -26,7 +29,6 @@ const SLPSkeleton = [
   { item: 'mad', condition: 'Mechanically Altered Diet' },
   { item: 'sd', condition: 'Swallowing Disorder' },
 ];
-
 const PTOTSkeleton = [
   {
     function_area: 'Eating',
@@ -72,6 +74,28 @@ const PTOTSkeleton = [
 
 export default function MDSSuggestion({ row }: { row: MDSFinal }) {
   const patientInfo = useContext(MDSPatientContext);
+  const { route, user_data } = useContext(AuthContext);
+  const queryClient = useQueryClient();
+
+  const touchLog = useMutation({
+    mutationFn: async (component: string) => {
+      return axios.put(`${route}/mds/touch_log`, {
+        internal_facility_id: patientInfo.internal_facility_id,
+        internal_patient_id: patientInfo.internal_patient_id,
+        component,
+      });
+    },
+    onMutate: async () => {
+      await queryClient.cancelQueries({
+        queryKey: ['/mds/view_pdpm_mds_patient_list', route],
+      });
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['/mds/view_pdpm_mds_patient_list', route],
+      });
+    },
+  });
   const ptot_joined = _.values(
     _.merge(
       {},
@@ -168,142 +192,225 @@ export default function MDSSuggestion({ row }: { row: MDSFinal }) {
       />
 
       <div className="flex flex-col">
-        <Disclosure defaultOpen={ptotSuggestionCount > 0}>
-          <DisclosureButton className="group ">
-            <div className="flex items-center py-2 gap-2 hover:bg-[#E6F3FF] ">
-              <CaretRight className="ease-in-out transition-all duration-200  group-data-[open]:rotate-90" />
-              <h3 className="text-base font-semibold">PT/OT</h3>
-              <div
-                className={clsx(
-                  ' py-1.5 px-3 rounded flex gap-1 items-center suggestion-counter',
-                  ptotSuggestionCount > 0
-                    ? 'bg-slate-200 text-gray-600  font-semibold'
-                    : 'bg-slate-200 text-gray-400',
-                )}
-                data-pr-tooltip={formatCounts(ptotCount)}
+        <Disclosure>
+          {({ open }) => (
+            <>
+              <DisclosureButton
+                className="group "
+                onClick={() => {
+                  if (
+                    patientInfo.pt_touched !== 1 &&
+                    !open &&
+                    user_data.organization_id !== 'the_triedge_labs' &&
+                    (!user_data.email.endsWith('theportopiccologroup.com') ||
+                      user_data.email ===
+                        'testavetura@theportopiccologroup.com') &&
+                    !user_data.email.endsWith('anthuria.ai')
+                  ) {
+                    touchLog.mutate('ptot');
+                  }
+                }}
               >
-                {ptotSuggestionCount > 0 && <MagicButton className="size-4" />}
-                {ptotSuggestionCount} AI SUGGESTION
-                {ptotSuggestionCount !== 1 && 'S'}
-              </div>
-              <p className="text-gray-600 ">
-                RATE OPP:{' '}
-                {parseInt(PTOTValue.toFixed()) >= 0
-                  ? '$' + PTOTValue.toFixed(2).replace('-', '')
-                  : '-$' + PTOTValue.toFixed(2).replace('-', '')}
-              </p>
-            </div>
-          </DisclosureButton>
-          <DisclosurePanel
-            transition
-            className="origin-top transition duration-200 ease-out data-[closed]:-translate-y-3 data-[closed]:opacity-0"
-          >
-            <PTOTTable data={ptot_data} />
-          </DisclosurePanel>
+                <div className="flex items-center py-2 gap-2 hover:bg-[#E6F3FF] ">
+                  <CaretRight className="ease-in-out transition-all duration-200  group-data-[open]:rotate-90" />
+                  <h3 className="text-base font-semibold">PT/OT</h3>
+                  <div
+                    className={clsx(
+                      ' py-1.5 px-3 rounded flex gap-1 items-center suggestion-counter',
+                      ptotSuggestionCount > 0
+                        ? 'bg-slate-200 text-gray-600  font-semibold'
+                        : 'bg-slate-200 text-gray-400',
+                    )}
+                    data-pr-tooltip={formatCounts(ptotCount)}
+                  >
+                    {ptotSuggestionCount > 0 && (
+                      <MagicButton className="size-4" />
+                    )}
+                    {ptotSuggestionCount} AI SUGGESTION
+                    {ptotSuggestionCount !== 1 && 'S'}
+                  </div>
+                  <p className="text-gray-600 ">
+                    RATE OPP:{' '}
+                    {parseInt(PTOTValue.toFixed()) >= 0
+                      ? '$' + PTOTValue.toFixed(2).replace('-', '')
+                      : '-$' + PTOTValue.toFixed(2).replace('-', '')}
+                  </p>
+                </div>
+              </DisclosureButton>
+              <DisclosurePanel
+                transition
+                className="origin-top transition duration-200 ease-out data-[closed]:-translate-y-3 data-[closed]:opacity-0"
+              >
+                <PTOTTable data={ptot_data} />
+              </DisclosurePanel>
+            </>
+          )}
+        </Disclosure>
+        <Disclosure>
+          {({ open }) => (
+            <>
+              <DisclosureButton
+                className="group "
+                onClick={() => {
+                  if (
+                    patientInfo.slp_touched !== 1 &&
+                    !open &&
+                    user_data.organization_id !== 'the_triedge_labs' &&
+                    (!user_data.email.endsWith('theportopiccologroup.com') ||
+                      user_data.email ===
+                        'testavetura@theportopiccologroup.com') &&
+                    !user_data.email.endsWith('anthuria.ai')
+                  ) {
+                    touchLog.mutate('slp');
+                  }
+                }}
+              >
+                <div className="flex items-center py-2 gap-2 hover:bg-[#E6F3FF] ">
+                  <CaretRight className="ease-in-out transition-all duration-200  group-data-[open]:rotate-90" />
+                  <h3 className="text-base font-semibold">SLP</h3>
+                  <div
+                    className={clsx(
+                      ' py-1.5 px-3 rounded flex gap-1 items-center suggestion-counter',
+                      SLPSuggestionCount > 0
+                        ? 'bg-slate-200 text-gray-600  font-semibold'
+                        : 'bg-slate-200 text-gray-400',
+                    )}
+                    data-pr-tooltip={formatCounts(slp_count)}
+                  >
+                    {SLPSuggestionCount > 0 && (
+                      <MagicButton className="size-4" />
+                    )}
+                    {SLPSuggestionCount} AI SUGGESTION
+                    {SLPSuggestionCount !== 1 && 'S'}
+                  </div>
+                  <p className="text-gray-600 ">
+                    RATE OPP:{' '}
+                    {parseInt(SLPValue.toFixed()) >= 0
+                      ? '$' + SLPValue.toFixed(2).replace('-', '')
+                      : '-$' + SLPValue.toFixed(2).replace('-', '')}
+                  </p>
+                </div>
+              </DisclosureButton>
+              <DisclosurePanel
+                transition
+                className="origin-top transition duration-200 ease-out data-[closed]:-translate-y-3 data-[closed]:opacity-0"
+              >
+                <SLPTable data={_.values(slp_joined)} />
+              </DisclosurePanel>
+            </>
+          )}
         </Disclosure>
 
-        <Disclosure defaultOpen={SLPSuggestionCount > 0}>
-          <DisclosureButton className="group ">
-            <div className="flex items-center py-2 gap-2 hover:bg-[#E6F3FF] ">
-              <CaretRight className="ease-in-out transition-all duration-200  group-data-[open]:rotate-90" />
-              <h3 className="text-base font-semibold">SLP</h3>
-              <div
-                className={clsx(
-                  ' py-1.5 px-3 rounded flex gap-1 items-center suggestion-counter',
-                  SLPSuggestionCount > 0
-                    ? 'bg-slate-200 text-gray-600  font-semibold'
-                    : 'bg-slate-200 text-gray-400',
-                )}
-                data-pr-tooltip={formatCounts(slp_count)}
+        <Disclosure>
+          {({ open }) => (
+            <>
+              <DisclosureButton
+                className="group "
+                onClick={() => {
+                  if (
+                    patientInfo.nursing_touched !== 1 &&
+                    !open &&
+                    user_data.organization_id !== 'the_triedge_labs' &&
+                    (!user_data.email.endsWith('theportopiccologroup.com') ||
+                      user_data.email ===
+                        'testavetura@theportopiccologroup.com') &&
+                    !user_data.email.endsWith('anthuria.ai')
+                  ) {
+                    touchLog.mutate('nursing');
+                  }
+                }}
               >
-                {SLPSuggestionCount > 0 && <MagicButton className="size-4" />}
-                {SLPSuggestionCount} AI SUGGESTION
-                {SLPSuggestionCount !== 1 && 'S'}
-              </div>
-              <p className="text-gray-600 ">
-                RATE OPP:{' '}
-                {parseInt(SLPValue.toFixed()) >= 0
-                  ? '$' + SLPValue.toFixed(2).replace('-', '')
-                  : '-$' + SLPValue.toFixed(2).replace('-', '')}
-              </p>
-            </div>
-          </DisclosureButton>
-          <DisclosurePanel
-            transition
-            className="origin-top transition duration-200 ease-out data-[closed]:-translate-y-3 data-[closed]:opacity-0"
-          >
-            <SLPTable data={_.values(slp_joined)} />
-          </DisclosurePanel>
+                <div className="flex items-center py-2 gap-2 hover:bg-[#E6F3FF] ">
+                  <CaretRight className="ease-in-out transition-all duration-200  group-data-[open]:rotate-90" />
+                  <h3 className="text-base font-semibold">Nursing </h3>
+                  <div
+                    className={clsx(
+                      ' py-1.5 px-3 rounded flex gap-1 items-center suggestion-counter',
+                      NursingSuggestionCount > 0
+                        ? 'bg-slate-200 text-gray-600  font-semibold'
+                        : 'bg-slate-200 text-gray-400',
+                    )}
+                    data-pr-tooltip={NursingCount || ''}
+                  >
+                    {NursingSuggestionCount > 0 && (
+                      <MagicButton className="size-4" />
+                    )}
+                    {NursingSuggestionCount} AI SUGGESTION
+                    {NursingSuggestionCount !== 1 && 'S'}
+                  </div>
+                  <p className="text-gray-600 ">
+                    RATE OPP:{' '}
+                    {parseInt(NursingValue.toFixed()) >= 0
+                      ? '$' + NursingValue.toFixed(2).replace('-', '')
+                      : '-$' + NursingValue.toFixed(2).replace('-', '')}
+                  </p>
+                </div>
+              </DisclosureButton>
+              <DisclosurePanel
+                transition
+                className="origin-top transition duration-200 ease-out data-[closed]:-translate-y-3 data-[closed]:opacity-0"
+              >
+                <NursingTable data={row} />
+              </DisclosurePanel>
+            </>
+          )}
         </Disclosure>
-        <Disclosure defaultOpen={NursingSuggestionCount > 0}>
-          <DisclosureButton className="group ">
-            <div className="flex items-center py-2 gap-2 hover:bg-[#E6F3FF] ">
-              <CaretRight className="ease-in-out transition-all duration-200  group-data-[open]:rotate-90" />
-              <h3 className="text-base font-semibold">Nursing </h3>
-              <div
-                className={clsx(
-                  ' py-1.5 px-3 rounded flex gap-1 items-center suggestion-counter',
-                  NursingSuggestionCount > 0
-                    ? 'bg-slate-200 text-gray-600  font-semibold'
-                    : 'bg-slate-200 text-gray-400',
-                )}
-                data-pr-tooltip={NursingCount || ''}
-              >
-                {NursingSuggestionCount > 0 && (
-                  <MagicButton className="size-4" />
-                )}
-                {NursingSuggestionCount} AI SUGGESTION
-                {NursingSuggestionCount !== 1 && 'S'}
-              </div>
-              <p className="text-gray-600 ">
-                RATE OPP:{' '}
-                {parseInt(NursingValue.toFixed()) >= 0
-                  ? '$' + NursingValue.toFixed(2).replace('-', '')
-                  : '-$' + NursingValue.toFixed(2).replace('-', '')}
-              </p>
-            </div>
-          </DisclosureButton>
-          <DisclosurePanel
-            transition
-            className="origin-top transition duration-200 ease-out data-[closed]:-translate-y-3 data-[closed]:opacity-0"
-          >
-            <NursingTable data={row} />
-          </DisclosurePanel>
-        </Disclosure>
-        <Disclosure defaultOpen={NTASuggestionCount > 0}>
-          <DisclosureButton className="group">
-            <div className="flex items-center py-2 gap-2 hover:bg-[#E6F3FF] ">
-              <CaretRight className="ease-in-out transition-all duration-200  group-data-[open]:rotate-90" />
 
-              <h3 className="text-base font-semibold">NTA</h3>
-
-              <div
-                className={clsx(
-                  'py-1.5 px-3 rounded flex gap-1 items-center suggestion-counter',
-                  NTASuggestionCount > 0
-                    ? 'bg-slate-200 text-gray-600  font-semibold'
-                    : 'bg-slate-200 text-gray-400',
-                )}
-                data-pr-tooltip={formatCounts(nta_count)}
+        <Disclosure>
+          {({ open }) => (
+            <>
+              <DisclosureButton
+                className="group"
+                onClick={() => {
+                  if (
+                    patientInfo.nta_touched !== 1 &&
+                    !open &&
+                    user_data.organization_id !== 'the_triedge_labs' &&
+                    (!user_data.email.endsWith('theportopiccologroup.com') ||
+                      user_data.email ===
+                        'testavetura@theportopiccologroup.com') &&
+                    !user_data.email.endsWith('anthuria.ai')
+                  ) {
+                    touchLog.mutate('nta');
+                  }
+                }}
               >
-                {NTASuggestionCount > 0 && <MagicButton className="size-4" />}
-                {NTASuggestionCount} AI SUGGESTION
-                {NTASuggestionCount !== 1 && 'S'}
-              </div>
-              <p className="text-gray-600 ">
-                RATE OPP:{' '}
-                {parseInt(NTAValue.toFixed()) >= 0
-                  ? '$' + NTAValue.toFixed(2).replace('-', '')
-                  : '-$' + NTAValue.toFixed(2).replace('-', '')}
-              </p>
-            </div>
-          </DisclosureButton>
-          <DisclosurePanel
-            transition
-            className="origin-top transition duration-200 ease-out data-[closed]:-translate-y-3 data-[closed]:opacity-0"
-          >
-            <NTATable data={row.nta_final_entry} />
-          </DisclosurePanel>
+                <div className="flex items-center py-2 gap-2 hover:bg-[#E6F3FF] ">
+                  <CaretRight className="ease-in-out transition-all duration-200  group-data-[open]:rotate-90" />
+
+                  <h3 className="text-base font-semibold">NTA</h3>
+
+                  <div
+                    className={clsx(
+                      'py-1.5 px-3 rounded flex gap-1 items-center suggestion-counter',
+                      NTASuggestionCount > 0
+                        ? 'bg-slate-200 text-gray-600  font-semibold'
+                        : 'bg-slate-200 text-gray-400',
+                    )}
+                    data-pr-tooltip={formatCounts(nta_count)}
+                  >
+                    {NTASuggestionCount > 0 && (
+                      <MagicButton className="size-4" />
+                    )}
+                    {NTASuggestionCount} AI SUGGESTION
+                    {NTASuggestionCount !== 1 && 'S'}
+                  </div>
+                  <p className="text-gray-600 ">
+                    RATE OPP:{' '}
+                    {parseInt(NTAValue.toFixed()) >= 0
+                      ? '$' + NTAValue.toFixed(2).replace('-', '')
+                      : '-$' + NTAValue.toFixed(2).replace('-', '')}
+                  </p>
+                </div>
+              </DisclosureButton>
+              <DisclosurePanel
+                transition
+                className="origin-top transition duration-200 ease-out data-[closed]:-translate-y-3 data-[closed]:opacity-0"
+              >
+                <NTATable data={row.nta_final_entry} />
+              </DisclosurePanel>
+            </>
+          )}
         </Disclosure>
       </div>
     </div>

@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import Logo from '../../../images/logo/logo_dark.png';
 import NoBar from '../../../layout/NoBar';
 import Loader from '../../../common/Loader';
 import { createToast } from '../../../hooks/fireToast';
@@ -8,7 +7,8 @@ import { useQuery } from '@tanstack/react-query';
 import { getRoute } from '../../../components/AuthWrapper.tsx';
 import Passwordless from './Passwordless.tsx';
 import Password from './Password.tsx';
-import { useSearch } from '@tanstack/react-router';
+import Logo from '../../../images/logo/logo_dark.png';
+import { Navigate, useSearch } from '@tanstack/react-router';
 
 function SignIn() {
   const [isLoading, setIsLoading] = useState(false);
@@ -34,37 +34,29 @@ function SignIn() {
     return <Loader />;
   }
   if (isSession) {
-    return <Loader />;
+    return <Navigate to="/" />;
   }
 
   return (
     <NoBar>
-      <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark mt-10">
-        <div className="flex flex-wrap items-center">
-          <div className="hidden w-full xl:block xl:w-1/2">
-            <div className="py-17.5 px-26 text-center">
-              <div className="flex items-center justify-center">
-                <img src={Logo} alt="Logo" />
-              </div>
-            </div>
-          </div>
+      <div className="px-10 pt-5">
+        <img src={Logo} alt="logo" className="w-50" />
 
-          <div className="w-full border-stroke dark:border-strokedark xl:w-1/2 xl:border-l-2">
-            <div className="w-full p-4 sm:p-12.5 xl:p-17.5">
-              {isPasswordless ? (
-                <>
-                  <Passwordless
-                    setIsLoading={setIsLoading}
-                    isSession={isSession}
-                    setIsPasswordless={setIsPasswordless}
-                  />
-                </>
-              ) : (
-                <>
-                  <Password setIsPasswordless={setIsPasswordless} />
-                </>
-              )}
-            </div>
+        <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark mx-auto mt-20 max-w-screen-md">
+          <div className="w-full p-4 sm:p-12.5 xl:p-17.5">
+            {isPasswordless ? (
+              <>
+                <Passwordless
+                  setIsLoading={setIsLoading}
+                  isSession={isSession}
+                  setIsPasswordless={setIsPasswordless}
+                />
+              </>
+            ) : (
+              <>
+                <Password setIsPasswordless={setIsPasswordless} />
+              </>
+            )}
           </div>
         </div>
       </div>

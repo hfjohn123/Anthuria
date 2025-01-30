@@ -1,17 +1,7 @@
-import { flexRender, Table, TableState } from '@tanstack/react-table';
+import { flexRender, Table } from '@tanstack/react-table';
 import { Fragment } from 'react';
 
-export default function SmallTableWrapper({
-  permanentColumnFilters,
-  table,
-  tableState,
-  setTableState,
-}: {
-  permanentColumnFilters: string[];
-  table: Table<any>;
-  tableState: TableState;
-  setTableState: React.Dispatch<React.SetStateAction<TableState>>;
-}) {
+export default function SmallTableWrapper({ table }: { table: Table<any> }) {
   const hasFooterContent = (table: Table<any>) => {
     return table
       .getFooterGroups()
@@ -24,57 +14,6 @@ export default function SmallTableWrapper({
 
   return (
     <div>
-      {/*<div className="w-full flex items-center gap-3 mt-1">*/}
-      {/*  {permanentColumnFilters.map((filter) => (*/}
-      {/*    <Select*/}
-      {/*      classNames={{ ...filterSelectStyles }}*/}
-      {/*      key={filter}*/}
-      {/*      placeholder={table.getColumn(filter)?.columnDef.header as string}*/}
-      {/*      closeMenuOnSelect={false}*/}
-      {/*      hideSelectedOptions={false}*/}
-      {/*      components={{*/}
-      {/*        IndicatorSeparator: () => null,*/}
-      {/*        ValueContainer: FilterValueContainer,*/}
-      {/*        Option: CheckboxOption,*/}
-      {/*      }}*/}
-      {/*      isClearable={true}*/}
-      {/*      isMulti={true}*/}
-      {/*      value={*/}
-      {/*        tableState.columnFilters.find((f) => f.id === filter)*/}
-      {/*          ? (*/}
-      {/*              tableState.columnFilters.find((f) => f.id === filter)*/}
-      {/*                ?.value as string[]*/}
-      {/*            ).map((s) => ({*/}
-      {/*              label: s,*/}
-      {/*              value: s,*/}
-      {/*            }))*/}
-      {/*          : []*/}
-      {/*      }*/}
-      {/*      name={filter}*/}
-      {/*      options={Array.from(*/}
-      {/*        table?.getColumn(filter)?.getFacetedUniqueValues()?.keys() ?? [],*/}
-      {/*      ).map((key) => ({*/}
-      {/*        label: key,*/}
-      {/*        value: key,*/}
-      {/*      }))}*/}
-      {/*      onChange={(selected, action) => {*/}
-      {/*        handleFilterChange(selected, action, setTableState);*/}
-      {/*      }}*/}
-      {/*    />*/}
-      {/*  ))}*/}
-
-      {/*  {tableState.columnFilters.length > 0 && (*/}
-      {/*    <Button*/}
-      {/*      color="secondary"*/}
-      {/*      onClick={() =>*/}
-      {/*        setTableState((prev) => ({ ...prev, columnFilters: [] }))*/}
-      {/*      }*/}
-      {/*    >*/}
-      {/*      Clear all*/}
-      {/*    </Button>*/}
-      {/*  )}*/}
-      {/*</div>*/}
-
       <div className="overflow-x-auto shadow-sm border border-gray-600 rounded-lg  text-[#4b5563]">
         <table className="w-full border-collapse">
           <thead>

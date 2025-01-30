@@ -4,6 +4,23 @@ import { PDPMPatient } from '../../../types/MDSFinal.ts';
 import { createContext, memo } from 'react';
 
 export const MDSPatientContext = createContext<PDPMPatient>({
+  nta_touched: 0,
+  nursing_touched: 0,
+  pt_touched: 0,
+  slp_touched: 0,
+  any_touched: 0,
+  mds_hipps: '',
+  original_nta_opportunities: 0,
+  original_nta_suggestions: 0,
+  original_nursing_opportunities: 0,
+  original_nursing_suggestions: 0,
+  original_ot_opportunities: 0,
+  original_pt_opportunities: 0,
+  original_ptot_opportunities: 0,
+  original_ptot_suggestions: 0,
+  original_slp_opportunities: 0,
+  original_slp_suggestions: 0,
+  original_total_opportunities: 0,
   internal_facility_id: '',
   internal_patient_id: '',
   patient_id: '',
