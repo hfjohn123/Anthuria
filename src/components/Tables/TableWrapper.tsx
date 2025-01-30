@@ -8,7 +8,7 @@ import { Button } from '@headlessui/react';
 import 'primeicons/primeicons.css';
 import { ScrollPanel } from 'primereact/scrollpanel';
 
-import { Fragment, useEffect, useRef } from 'react';
+import { Fragment, useEffect, useRef, useState } from 'react';
 import PageNavigation from './PageNavigation.tsx';
 import SearchParams from '../../types/SearchParams.ts';
 import { useNavigate, useSearch } from '@tanstack/react-router';
@@ -70,6 +70,17 @@ export default function TableWrapper({
   const navigate = useNavigate();
   const search = useSearch({ strict: false });
   const filterRef = useRef(null);
+  const [screenWidth, setScreenWidth] = useState(window.innerWidth);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setScreenWidth(window.innerWidth);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   useEffect(() => {
     const initialFilters: ColumnFiltersState = [];
@@ -169,7 +180,7 @@ export default function TableWrapper({
       },
     }));
   }, [tableState.columnFilters, tableState.globalFilter]);
-  return !twoPanel ? (
+  return !twoPanel || screenWidth < 1024 ? (
     <div>
       <div className=" bg-white dark:bg-boxdark h-full flex-col flex overflow-x-auto lg:overflow-clip px-7.5 py-5 gap-7.5 rounded-[30px] ">
         {title && (
@@ -316,7 +327,7 @@ export default function TableWrapper({
                               )}
                               role="button"
                               onClick={() => {
-                                if (!splitter) {
+                                if (!splitter || screenWidth < 1024) {
                                   row.toggleExpanded();
                                 } else {
                                   setTableState((prev) => ({
@@ -432,6 +443,7 @@ export default function TableWrapper({
               <ScrollPanel
                 style={{
                   height: 'calc(100vh - var(--filter-height) - 70px)',
+                  width: '100%',
                 }}
               >
                 <div>

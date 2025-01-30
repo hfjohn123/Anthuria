@@ -1,9 +1,3 @@
-import Select from 'react-select';
-import filterSelectStyles from '../../../components/Select/filterSelectStyles.ts';
-import FilterValueContainer from '../../../components/Select/FilterValueContainer.tsx';
-import CheckboxOption from '../../../components/Select/CheckboxOption.tsx';
-import handleFilterChange from '../../../components/Tables/handleFilterChange.ts';
-import { Button } from '@headlessui/react';
 import { flexRender, Table, TableState } from '@tanstack/react-table';
 import { Fragment } from 'react';
 

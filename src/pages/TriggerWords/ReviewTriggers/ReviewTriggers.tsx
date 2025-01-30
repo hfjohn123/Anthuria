@@ -654,7 +654,7 @@ export default function ReviewTriggers() {
               ]}
             />
           </div>
-          <div className="grid xl:grid-cols-5 grid-cols-3 gap-1 sm:gap-6 rounded-[30px] p-6 bg-white dark:bg-boxdark">
+          <div className="grid  grid-cols-1 sm:grid-cols-3 xl:grid-cols-5 gap-1 sm:gap-6 rounded-[30px] p-6 bg-white dark:bg-boxdark">
             {predefinedTriggerWords.map((word) => (
               <NumberCards
                 keywordList={
