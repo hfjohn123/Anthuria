@@ -110,7 +110,7 @@ export default function ReviewTriggers() {
           }
         : {
             touched: true,
-            facility_name: true,
+            facility_name: false,
             patient_name: true,
             progress_note_id: false,
             created_date: false,
@@ -213,8 +213,8 @@ export default function ReviewTriggers() {
     () => [
       {
         accessorKey: 'touched',
-        accessorFn: (row) => (row.touched === 1 ? 'Yes' : 'No'),
-        header: 'Reviewed',
+        accessorFn: (row) => (row.touched === 1 ? 'No' : 'Yes'),
+        header: 'Unread',
         enableSorting: false,
         enableHiding: false,
         meta: {
@@ -224,7 +224,7 @@ export default function ReviewTriggers() {
         },
         filterFn: 'arrIncludesSome',
         cell: (info) => {
-          if (info.getValue() === 'Yes') {
+          if (info.getValue() === 'No') {
             return <div />;
           } else {
             return <div className="size-2 rounded-full bg-primary" />;
@@ -246,6 +246,7 @@ export default function ReviewTriggers() {
       {
         accessorKey: 'facility_name',
         header: 'Facility',
+        enableHiding: false,
         meta: {
           wrap: false,
           type: 'categorical',
@@ -265,37 +266,70 @@ export default function ReviewTriggers() {
         cell: (info) => {
           if (info.row.original.upstream === 'MTX') {
             return (
-              <HyperLink
-                className="patient_link"
-                tooltip_content={'View Patient in MaxtrixCare'}
-                href={`https://clearviewhcm.matrixcare.com/core/selectResident.action?residentID=${info.row.original.patient_id}`}
-              >
-                <HighlightWrapper
-                  text={info.getValue() as string}
-                  searchTerm={info.table.getState().globalFilter}
-                />
-              </HyperLink>
+              <>
+                <HyperLink
+                  className="patient_link"
+                  tooltip_content={'View Patient in MaxtrixCare'}
+                  href={`https://clearviewhcm.matrixcare.com/core/selectResident.action?residentID=${info.row.original.patient_id}`}
+                >
+                  <HighlightWrapper
+                    className={
+                      info.row.original.touched === 1 ? 'semifont-bold' : ''
+                    }
+                    text={info.getValue() as string}
+                    searchTerm={info.table.getState().globalFilter}
+                  />
+                </HyperLink>
+                <p className="text-body-2">
+                  <HighlightWrapper
+                    text={info.row.getValue('facility_name') as string}
+                    searchTerm={info.table.getState().globalFilter}
+                  />
+                </p>
+              </>
             );
           }
           if (info.row.original.upstream === 'PCC') {
             return (
-              <HyperLink
-                className="patient_link"
-                tooltip_content={'View Patient in PCC'}
-                href={`https://${info.row.original.url_header}.pointclickcare.com/admin/client/clientlist.jsp?ESOLtabtype=C&ESOLglobalclientsearch=Y&ESOLclientid=${info.row.original.patient_id}&ESOLfacid=${info.row.original.internal_facility_id.split('_').pop()}&ESOLsave=P`}
-              >
-                <HighlightWrapper
-                  text={info.getValue() as string}
-                  searchTerm={info.table.getState().globalFilter}
-                />
-              </HyperLink>
+              <>
+                <HyperLink
+                  className="patient_link"
+                  tooltip_content={'View Patient in PCC'}
+                  href={`https://${info.row.original.url_header}.pointclickcare.com/admin/client/clientlist.jsp?ESOLtabtype=C&ESOLglobalclientsearch=Y&ESOLclientid=${info.row.original.patient_id}&ESOLfacid=${info.row.original.internal_facility_id.split('_').pop()}&ESOLsave=P`}
+                >
+                  <HighlightWrapper
+                    className={
+                      info.row.original.touched === 0 ? 'font-semibold' : ''
+                    }
+                    text={info.getValue() as string}
+                    searchTerm={info.table.getState().globalFilter}
+                  />
+                </HyperLink>
+                <p className="text-body-2">
+                  <HighlightWrapper
+                    text={info.row.getValue('facility_name') as string}
+                    searchTerm={info.table.getState().globalFilter}
+                  />
+                </p>
+              </>
             );
           }
           return (
-            <HighlightWrapper
-              text={info.getValue() as string}
-              searchTerm={info.table.getState().globalFilter}
-            />
+            <>
+              <HighlightWrapper
+                className={
+                  info.row.original.touched === 1 ? 'font-semibold' : ''
+                }
+                text={info.getValue() as string}
+                searchTerm={info.table.getState().globalFilter}
+              />
+              <p className="text-body-2">
+                <HighlightWrapper
+                  text={info.row.getValue('facility_name') as string}
+                  searchTerm={info.table.getState().globalFilter}
+                />
+              </p>
+            </>
           );
         },
         header: 'Patient',
@@ -564,9 +598,9 @@ export default function ReviewTriggers() {
   const [isRefetching, setIsRefetching] = useState(false);
 
   useEffect(() => {
-    if (localStorage.getItem('clearStorage') !== '5') {
+    if (localStorage.getItem('clearStorage') !== '6') {
       localStorage.removeItem('userVisibilitySettings');
-      localStorage.setItem('clearStorage', '5');
+      localStorage.setItem('clearStorage', '6');
     } else {
       const userVisibilitySettings = localStorage.getItem(
         'userVisibilitySettings',
@@ -601,6 +635,7 @@ export default function ReviewTriggers() {
     getFacetedMinMaxValues: getFacetedMinMaxValues(), // generate min/max values for numeric range filter
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    getRowId: (row) => row.internal_patient_id + row.progress_note_id,
   });
   useEffect(() => {
     const result = _(data?.data)

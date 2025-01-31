@@ -100,6 +100,9 @@ export default function MDSTable({ data }: { data: PDPMPatient[] }) {
                 href={`https://clearviewhcm.matrixcare.com/core/selectResident.action?residentID=${info.row.original.patient_id}`}
               >
                 <HighlightWrapper
+                  className={
+                    info.row.original.any_touched === 0 ? 'font-bold' : ''
+                  }
                   text={info.getValue() as string}
                   searchTerm={info.table.getState().globalFilter}
                 />
@@ -122,6 +125,9 @@ export default function MDSTable({ data }: { data: PDPMPatient[] }) {
                 href={`https://${info.row.original.url_header}.pointclickcare.com/admin/client/clientlist.jsp?ESOLtabtype=C&ESOLglobalclientsearch=Y&ESOLclientid=${info.row.original.patient_id}&ESOLfacid=${info.row.original.internal_facility_id.split('_').pop()}&ESOLsave=P`}
               >
                 <HighlightWrapper
+                  className={
+                    info.row.original.any_touched === 0 ? 'font-bold' : ''
+                  }
                   text={info.getValue() as string}
                   searchTerm={info.table.getState().globalFilter}
                 />
