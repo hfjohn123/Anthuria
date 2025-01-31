@@ -79,7 +79,20 @@ export default function TableWrapper({
       setScreenWidth(window.innerWidth);
     };
     window.addEventListener('resize', handleResize);
+    if (!filterRef.current) return;
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        // Update CSS variable with current filter height
+        document.documentElement.style.setProperty(
+          '--filter-height',
+          `${entry.contentRect.height}px`,
+        );
+      }
+    });
+
+    resizeObserver.observe(filterRef.current);
     return () => {
+      resizeObserver.disconnect();
       window.removeEventListener('resize', handleResize);
     };
   }, []);
@@ -128,21 +141,6 @@ export default function TableWrapper({
       ],
     }));
     setIsFirstRender?.(true);
-
-    if (!filterRef.current) return;
-    const resizeObserver = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        // Update CSS variable with current filter height
-        document.documentElement.style.setProperty(
-          '--filter-height',
-          `${entry.contentRect.height}px`,
-        );
-      }
-    });
-
-    resizeObserver.observe(filterRef.current);
-
-    return () => resizeObserver.disconnect();
   }, []);
   useEffect(() => {
     const searchParams: SearchParams = {};

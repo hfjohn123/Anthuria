@@ -45,6 +45,7 @@ const predefinedTriggerWords = [
   'Neglect',
   'Wound/Ulcer',
   'Weight Change',
+  'IV Fluids',
 ];
 
 export default function ReviewTriggers() {
