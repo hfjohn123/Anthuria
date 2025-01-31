@@ -48,8 +48,11 @@ const predefinedTriggerWords = [
 ];
 
 export default function ReviewTriggers() {
+  const [isFirstRender, setIsFirstRender] = useState(false);
+
   const { route, user_applications_locations, user_data } =
     useContext(AuthContext);
+
   const initialTableState: TableState = {
     globalFilter: '',
     columnSizing: {},
@@ -89,6 +92,7 @@ export default function ReviewTriggers() {
     columnVisibility:
       window.screen.width < 1024
         ? {
+            touched: true,
             facility_name: false,
             patient_name: true,
             progress_note_id: false,
@@ -104,6 +108,7 @@ export default function ReviewTriggers() {
             operation_name: false,
           }
         : {
+            touched: true,
             facility_name: true,
             patient_name: true,
             progress_note_id: false,
@@ -180,11 +185,9 @@ export default function ReviewTriggers() {
     isError,
     data,
     error,
-    refetch,
   }: UseQueryResult<TriggerAPI, unknown> = useQuery({
     queryKey: ['trigger_word_view_trigger_word_detail_final', route],
     queryFn: ({ signal }) => fetchTriggerWord(signal),
-    enabled: user_data.organization_id === 'AVHC',
   });
 
   const [selfDefinedKeywordsState, setSelfDefinedKeywordsState] = useState(
@@ -195,16 +198,38 @@ export default function ReviewTriggers() {
     setSelfDefinedKeywordsState(data?.self_defined_keywords);
   }, [data?.self_defined_keywords]);
   useEffect(() => {
-    if (start && end && user_data.organization_id !== 'AVHC') {
+    if (start && end && user_data.organization_id !== 'AVHC' && isFirstRender) {
       queryClient.cancelQueries({
         queryKey: ['trigger_word_view_trigger_word_detail_final', route],
       });
-      refetch();
+      queryClient.invalidateQueries({
+        queryKey: ['trigger_word_view_trigger_word_detail_final', route],
+      });
     }
-  }, [start, end, queryClient, route, refetch]);
+  }, [start, end]);
 
   const columns = useMemo<ColumnDef<TriggerFinal>[]>(
     () => [
+      {
+        accessorKey: 'touched',
+        accessorFn: (row) => (row.touched === 1 ? 'Yes' : 'No'),
+        header: 'Reviewed',
+        enableSorting: false,
+        enableHiding: false,
+        meta: {
+          wrap: 'whitespace-nowrap',
+          type: 'categorical',
+          hideHeader: true,
+        },
+        filterFn: 'arrIncludesSome',
+        cell: (info) => {
+          if (info.getValue() === 'Yes') {
+            return <div />;
+          } else {
+            return <div className="size-2 rounded-full bg-primary" />;
+          }
+        },
+      },
       {
         accessorKey: 'operation_name',
         header: 'Operator',
@@ -893,6 +918,7 @@ export default function ReviewTriggers() {
             placeholder={
               'Search for any text associated with a progress note, including the patient’s name, facility, the clinician who wrote the note.'
             }
+            setIsFirstRender={setIsFirstRender}
           />
         </div>
       </DefaultLayout>

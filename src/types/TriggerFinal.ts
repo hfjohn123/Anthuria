@@ -1,6 +1,7 @@
 export type TriggerFinal = {
   progress_note_id: number;
   internal_facility_id: string;
+  internal_patient_id: string;
   facility_name: string;
   upstream: string;
   patient_name: string;
@@ -20,6 +21,7 @@ export type TriggerFinal = {
   }[];
   operation_name: string;
   url_header?: string;
+  touched: number;
 };
 
 export type TriggerAPI = {

@@ -45,6 +45,7 @@ export default function TableWrapper({
   placeholder = 'Global Search...',
   splitter = false,
   twoPanel = false,
+  setIsFirstRender,
   ...rest
 }: {
   table: Table<any>;
@@ -65,6 +66,7 @@ export default function TableWrapper({
   searchRight?: React.ReactNode;
   splitter?: boolean;
   twoPanel?: boolean;
+  setIsFirstRender?: React.Dispatch<React.SetStateAction<boolean>>;
   [key: string]: any;
 }) {
   const navigate = useNavigate();
@@ -125,6 +127,7 @@ export default function TableWrapper({
         ...initialFilters,
       ],
     }));
+    setIsFirstRender?.(true);
 
     if (!filterRef.current) return;
     const resizeObserver = new ResizeObserver((entries) => {
@@ -457,13 +460,25 @@ export default function TableWrapper({
                                 <th
                                   key={header.id}
                                   colSpan={header.colSpan}
-                                  className="py-3 shadow-table_header  shadow-stroke z-1 px-3  text-left select-none group whitespace-nowrap "
+                                  className={clsx(
+                                    'shadow-table_header  shadow-stroke z-1   text-left select-none group whitespace-nowrap ',
+                                    header.column.columnDef.meta?.hideHeader
+                                      ? ''
+                                      : 'py-3 px-3',
+                                  )}
                                   role="button"
                                   onClick={header.column.getToggleSortingHandler()}
                                 >
                                   {header.isPlaceholder ? null : (
                                     <div className="flex items-center w-full justify-between">
-                                      <div>
+                                      <div
+                                        className={
+                                          header.column.columnDef.meta
+                                            ?.hideHeader
+                                            ? 'hidden'
+                                            : ''
+                                        }
+                                      >
                                         {flexRender(
                                           header.column.columnDef.header,
                                           header.getContext(),
@@ -509,7 +524,15 @@ export default function TableWrapper({
                                   return (
                                     <td
                                       key={cell.id}
-                                      className={`py-2 px-3 text-sm ${cell.column.columnDef.meta?.wrap} ${row.getIsExpanded() && 'bg-slate-100 dark:bg-slate-700'} `}
+                                      className={clsx(
+                                        `text-sm `,
+                                        cell.column.columnDef.meta?.wrap,
+                                        row.getIsExpanded() &&
+                                          'bg-slate-100 dark:bg-slate-700',
+                                        cell.column.columnDef.meta?.hideHeader
+                                          ? 'pl-3'
+                                          : 'py-3 px-3',
+                                      )}
                                       role="button"
                                       onClick={() => {
                                         if (row.getIsExpanded()) {
