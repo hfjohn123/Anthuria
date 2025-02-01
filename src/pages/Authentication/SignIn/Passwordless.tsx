@@ -8,7 +8,7 @@ import {
 } from 'react';
 import { createToast } from '../../../hooks/fireToast';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
-import { useNavigate, Link } from '@tanstack/react-router';
+import { useNavigate } from '@tanstack/react-router';
 import {
   clearLoginAttemptInfo,
   consumeCode,
@@ -133,7 +133,7 @@ function Passwordless({ setIsLoading, isSession, setIsPasswordless }: any) {
     })
       .then((response) => {
         if (response.status === 'OK') {
-          window.location.href = '/';
+          navigate({ to: '/' });
           // setIsLoading(false);
         } else if (response.status === 'INCORRECT_USER_INPUT_CODE_ERROR') {
           createToast(
@@ -311,10 +311,10 @@ function Passwordless({ setIsLoading, isSession, setIsPasswordless }: any) {
 
         <div className="mt-6 text-center">
           <p>
-            Don’t have any account?{' '}
-            <Link to="/signup" className="text-primary">
-              Contact us to sign up!
-            </Link>
+            Don’t have an account?{' '}
+            <a href="mailto:support@anthuria.ai" className="text-primary">
+              Contact us.
+            </a>
           </p>
         </div>
       </form>

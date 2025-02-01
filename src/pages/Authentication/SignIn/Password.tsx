@@ -1,14 +1,15 @@
 import { useState } from 'react';
-import { Link } from '@tanstack/react-router';
 import { signIn } from 'supertokens-web-js/recipe/emailpassword';
 import { createToast } from '../../../hooks/fireToast.tsx';
 import Modal from '../../../components/Modal/Modal.tsx';
 import sendEmailClicked from '../../../common/sendEmailClicked.ts';
 import { Button, Field, Input, Label } from '@headlessui/react';
+import { useNavigate } from '@tanstack/react-router';
 
 async function signInClicked(
   email: string | undefined,
   password: string | undefined,
+  navigate: any,
 ) {
   if (
     email === undefined ||
@@ -50,7 +51,7 @@ async function signInClicked(
     } else {
       // sign in successful. The session tokens are automatically handled by
       // the frontend SDK.
-      window.location.href = '/';
+      navigate({ to: '/' });
     }
   } catch (err: any) {
     if (err.isSuperTokensGeneralError === true) {
@@ -73,6 +74,7 @@ function Password({ setIsPasswordless }: any) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSent, setIsSent] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
   if (isLoading) {
     return <h3>Loading...</h3>;
   }
@@ -87,7 +89,7 @@ function Password({ setIsPasswordless }: any) {
       <form
         onSubmit={(event) => {
           event.preventDefault();
-          signInClicked(email, password);
+          signInClicked(email, password, navigate);
         }}
       >
         <Field className={`mb-4 `}>
@@ -241,9 +243,9 @@ function Password({ setIsPasswordless }: any) {
         <div className="mt-6 text-center">
           <p>
             Don’t have an account?{' '}
-            <Link to="/signup" className="text-primary">
+            <a href="mailto:support@anthuria.ai" className="text-primary">
               Contact us.
-            </Link>
+            </a>
           </p>
         </div>
       </form>
