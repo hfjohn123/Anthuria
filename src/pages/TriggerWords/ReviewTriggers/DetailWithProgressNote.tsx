@@ -9,6 +9,8 @@ import { useContext, useEffect } from 'react';
 import { AuthContext } from '../../../components/AuthWrapper.tsx';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
+import { handleClick } from '../../MDS/Suggestion/EvidenceModal.tsx';
+import { Button } from 'primereact/button';
 
 export default function DetailWithProgressNote({
   row,
@@ -155,13 +157,23 @@ export default function DetailWithProgressNote({
           )}
           searchTerm={tableState.globalFilter || ''}
         />
-        <DataField
-          className="flex-1"
-          title="Progress Note ID"
-          content={row.getValue('progress_note_id')}
-          searchTerm={tableState.globalFilter || ''}
-        />
+        <DataField title={'Progress Note ID'}>
+          <Button
+            className="bg-transparent border-0 text-primary p-1"
+            onClick={() =>
+              handleClick(
+                row.original.progress_note_id,
+                row.original.url_header || '',
+                row.original.patient_id,
+                row.original.internal_facility_id,
+              )
+            }
+          >
+            {row.original.progress_note_id}
+          </Button>
+        </DataField>
       </div>
+      <br />
     </div>
   );
 }

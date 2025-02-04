@@ -8,6 +8,53 @@ import { Dialog } from 'primereact/dialog';
 import { Button } from 'primereact/button';
 import { MDSPatientContext } from './MDSDetailLoading.tsx';
 
+export const handleClick = (
+  source_id: number,
+  url_header: string,
+  patient_id: string,
+  internal_facility_id: string,
+) => {
+  const win1 = window.open('example.com', '_blank');
+
+  try {
+    // Open initial window
+
+    if (!win1) {
+      alert('Pop-up was blocked. Please allow pop-ups and try again.');
+      return;
+    }
+
+    // Handle the first navigation
+    win1.onload = function () {
+      try {
+        const clientListUrl = `https://${url_header}.pointclickcare.com/admin/client/clientlist.jsp?ESOLtabtype=C&ESOLglobalclientsearch=Y&ESOLclientid=${patient_id}&ESOLfacid=${internal_facility_id.split('_').pop()}&ESOLsave=P`;
+
+        // Navigate to second URL
+        win1.open(clientListUrl);
+
+        setTimeout(() => {
+          win1.close();
+          const chartUrl = `https:///${url_header}.pointclickcare.com/care/chart/ipn/newipn.jsp?ESOLpnid=${source_id}&ESOLclientid=${patient_id}`;
+          const win2 = window.open(chartUrl);
+          if (!win2) {
+            alert('Pop-up was blocked. Please allow pop-ups and try again.');
+          }
+        }, 1000);
+
+        // Handle the second navigation
+      } catch (error) {
+        console.error('Error during second navigation:', error);
+        alert(
+          'Failed to navigate to the client list. The window may need to be closed manually.',
+        );
+      }
+    };
+  } catch (error) {
+    console.error('Error initiating window sequence:', error);
+    alert('An error occurred while trying to show evidence.');
+  }
+};
+
 export default function EvidenceModal({
   icd10,
   button,
@@ -25,47 +72,6 @@ export default function EvidenceModal({
   const scrollDirection = useRef<'up' | 'down'>('down');
   const patientInfo = useContext(MDSPatientContext);
 
-  const handleClick = (source_id: number) => {
-    const win1 = window.open('example.com', '_blank');
-
-    try {
-      // Open initial window
-
-      if (!win1) {
-        alert('Pop-up was blocked. Please allow pop-ups and try again.');
-        return;
-      }
-
-      // Handle the first navigation
-      win1.onload = function () {
-        try {
-          const clientListUrl = `https://${patientInfo.url_header}.pointclickcare.com/admin/client/clientlist.jsp?ESOLtabtype=C&ESOLglobalclientsearch=Y&ESOLclientid=${patientInfo.patient_id}&ESOLfacid=${patientInfo.internal_facility_id.split('_').pop()}&ESOLsave=P`;
-
-          // Navigate to second URL
-          win1.open(clientListUrl);
-
-          setTimeout(() => {
-            win1.close();
-            const chartUrl = `https:///${patientInfo.url_header}.pointclickcare.com/care/chart/ipn/newipn.jsp?ESOLpnid=${source_id}&ESOLclientid=${patientInfo.patient_id}`;
-            const win2 = window.open(chartUrl);
-            if (!win2) {
-              alert('Pop-up was blocked. Please allow pop-ups and try again.');
-            }
-          }, 1000);
-
-          // Handle the second navigation
-        } catch (error) {
-          console.error('Error during second navigation:', error);
-          alert(
-            'Failed to navigate to the client list. The window may need to be closed manually.',
-          );
-        }
-      };
-    } catch (error) {
-      console.error('Error initiating window sequence:', error);
-      alert('An error occurred while trying to show evidence.');
-    }
-  };
   useEffect(() => {
     const scrollContainer = scrollContainerRef.current;
 
@@ -256,7 +262,14 @@ export default function EvidenceModal({
                         <div className="flex justify-end">
                           <Button
                             className="bg-transparent border-0 text-primary p-1 ml-auto"
-                            onClick={() => handleClick(item.source_id)}
+                            onClick={() =>
+                              handleClick(
+                                item.source_id,
+                                patientInfo.url_header,
+                                patientInfo.patient_id,
+                                patientInfo.internal_facility_id,
+                              )
+                            }
                           >
                             Click to PCC
                           </Button>
@@ -270,7 +283,7 @@ export default function EvidenceModal({
                       <NTAProgressNote progress_note={item} />
                     </div>
                   );
-                if (item.source_category !== 'P' || !item.highlights)
+                if (item.source_category === 'D')
                   return (
                     <div
                       key={item.source_category + item.source_id}
@@ -286,6 +299,46 @@ export default function EvidenceModal({
                     >
                       <h3 className="font-bold text-xl">
                         Diagnosis about {icd10.icd10}
+                      </h3>
+                      <p className="italic">{item.explanation}</p>
+                    </div>
+                  );
+                if (item.source_category === 'PO')
+                  return (
+                    <div
+                      key={item.source_category + item.source_id}
+                      ref={(el) => {
+                        itemRefs.current[index] = el;
+                      }}
+                      className={clsx(
+                        'flex flex-col gap-3 border-b border-stroke dark:border-strokedark last:border-b-0 pr-4 py-4',
+                        'scroll-mt-4 transition-colors duration-200',
+                        index === currentIndex &&
+                          'bg-gray-50/50 dark:bg-gray-800/50',
+                      )}
+                    >
+                      <h3 className="font-bold text-xl">
+                        Physician Order about {icd10.icd10}
+                      </h3>
+                      <p className="italic">{item.explanation}</p>
+                    </div>
+                  );
+                if (item.source_category === 'A')
+                  return (
+                    <div
+                      key={item.source_category + item.source_id}
+                      ref={(el) => {
+                        itemRefs.current[index] = el;
+                      }}
+                      className={clsx(
+                        'flex flex-col gap-3 border-b border-stroke dark:border-strokedark last:border-b-0 pr-4 py-4',
+                        'scroll-mt-4 transition-colors duration-200',
+                        index === currentIndex &&
+                          'bg-gray-50/50 dark:bg-gray-800/50',
+                      )}
+                    >
+                      <h3 className="font-bold text-xl">
+                        Assessment about {icd10.icd10}
                       </h3>
                       <p className="italic">{item.explanation}</p>
                     </div>

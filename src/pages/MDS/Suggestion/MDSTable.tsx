@@ -9,7 +9,7 @@ import {
   TableState,
   useReactTable,
 } from '@tanstack/react-table';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import getFacetedUniqueValues from '../../../common/getFacetedUniqueValues.ts';
 import getFacetedMinMaxValues from '../../../common/getFacetedMinMaxValues.ts';
 import HyperLink from '../../../components/Basic/HyerLink.tsx';
@@ -39,596 +39,599 @@ export default function MDSTable({ data }: { data: PDPMPatient[] }) {
           'has_suggestions',
         ]
       : ['facility_name', 'effective_start_date', 'has_suggestions'];
-  const columns: ColumnDef<PDPMPatient>[] = [
-    {
-      accessorKey: 'any_touched',
-      accessorFn: (row) => (row.any_touched === 1 ? 'Yes' : 'No'),
-      header: 'Reviewed',
-      enableSorting: false,
-      enableHiding: false,
-      meta: {
-        wrap: 'whitespace-nowrap',
-        type: 'categorical',
-        hideHeader: true,
+  const columns: ColumnDef<PDPMPatient>[] = useMemo(
+    () => [
+      {
+        accessorKey: 'any_touched',
+        accessorFn: (row) => (row.any_touched === 1 ? 'Yes' : 'No'),
+        header: 'Reviewed',
+        enableSorting: false,
+        enableHiding: false,
+        meta: {
+          wrap: 'whitespace-nowrap',
+          type: 'categorical',
+          hideHeader: true,
+        },
+        filterFn: 'arrIncludesSome',
+        cell: (info) => {
+          if (info.getValue() === 'Yes') {
+            return <div />;
+          } else {
+            return <div className="size-2 rounded-full bg-primary" />;
+          }
+        },
       },
-      filterFn: 'arrIncludesSome',
-      cell: (info) => {
-        if (info.getValue() === 'Yes') {
-          return <div />;
-        } else {
-          return <div className="size-2 rounded-full bg-primary" />;
-        }
-      },
-    },
-    {
-      accessorKey: 'operation_name',
-      header: 'Operator',
-      meta: { wrap: 'whitespace-nowrap', type: 'categorical' },
-      filterFn: 'arrIncludesSome',
-      cell: (info) => (
-        <HighlightWrapper
-          text={info.getValue() as string}
-          searchTerm={info.table.getState().globalFilter}
-        />
-      ),
-    },
-    {
-      accessorKey: 'facility_name',
-      header: 'Facility',
-      meta: {
-        type: 'categorical',
-      },
-      enableHiding: false,
-      enableColumnFilter: false,
-      filterFn: 'arrIncludesSome',
-      cell: (info) => (
-        <HighlightWrapper
-          text={info.getValue() as string}
-          searchTerm={info.table.getState().globalFilter}
-        />
-      ),
-    },
-    {
-      accessorKey: 'patient_name',
-      cell: (info) => {
-        if (info.row.original.upstream === 'MTX') {
-          return (
-            <>
-              <HyperLink
-                tooltip_content={'View Patient in MaxtrixCare'}
-                className="patient_link"
-                href={`https://clearviewhcm.matrixcare.com/core/selectResident.action?residentID=${info.row.original.patient_id}`}
-              >
-                <HighlightWrapper
-                  className={
-                    info.row.original.any_touched === 0 ? 'font-bold' : ''
-                  }
-                  text={info.getValue() as string}
-                  searchTerm={info.table.getState().globalFilter}
-                />
-              </HyperLink>
-              <p className="text-body-2">
-                <HighlightWrapper
-                  text={info.row.getValue('facility_name') as string}
-                  searchTerm={info.table.getState().globalFilter}
-                />
-              </p>
-            </>
-          );
-        }
-        if (info.row.original.upstream === 'PCC') {
-          return (
-            <>
-              <HyperLink
-                tooltip_content={'View Patient in PCC'}
-                className="patient_link"
-                href={`https://${info.row.original.url_header}.pointclickcare.com/admin/client/clientlist.jsp?ESOLtabtype=C&ESOLglobalclientsearch=Y&ESOLclientid=${info.row.original.patient_id}&ESOLfacid=${info.row.original.internal_facility_id.split('_').pop()}&ESOLsave=P`}
-              >
-                <HighlightWrapper
-                  className={
-                    info.row.original.any_touched === 0 ? 'font-bold' : ''
-                  }
-                  text={info.getValue() as string}
-                  searchTerm={info.table.getState().globalFilter}
-                />
-              </HyperLink>
-              <p className="text-body-2">
-                <HighlightWrapper
-                  text={info.row.getValue('facility_name') as string}
-                  searchTerm={info.table.getState().globalFilter}
-                />
-              </p>
-            </>
-          );
-        }
-        return info.renderValue();
-      },
-      header: 'Patient',
-      filterFn: 'includesString',
-      meta: {
-        type: 'text',
-      },
-    },
-    {
-      accessorKey: 'effective_start_date',
-      header: 'Eligibility Start Date',
-      accessorFn: (row) => new Date(row.effective_start_date),
-      cell: (info) => {
-        const date = info.getValue() as Date;
-        return (
+      {
+        accessorKey: 'operation_name',
+        header: 'Operator',
+        meta: { wrap: 'whitespace-nowrap', type: 'categorical' },
+        filterFn: 'arrIncludesSome',
+        cell: (info) => (
           <HighlightWrapper
-            text={`${date.toLocaleDateString()} ${date.toLocaleTimeString(
-              navigator.language,
-              {
-                hour: '2-digit',
-                minute: '2-digit',
-              },
-            )}`}
+            text={info.getValue() as string}
             searchTerm={info.table.getState().globalFilter}
           />
-        );
+        ),
       },
-      filterFn: dateRangeFilterFn,
-      meta: {
-        wrap: 'whitespace-nowrap',
-        type: 'daterange',
+      {
+        accessorKey: 'facility_name',
+        header: 'Facility',
+        meta: {
+          type: 'categorical',
+        },
+        enableHiding: false,
+        enableColumnFilter: false,
+        filterFn: 'arrIncludesSome',
+        cell: (info) => (
+          <HighlightWrapper
+            text={info.getValue() as string}
+            searchTerm={info.table.getState().globalFilter}
+          />
+        ),
       },
-    },
-    {
-      accessorKey: 'pt',
-      accessorFn: (row) => row.original_ptot_suggestions,
-      header: 'PT',
-      enableColumnFilter: false,
+      {
+        accessorKey: 'patient_name',
+        cell: (info) => {
+          if (info.row.original.upstream === 'MTX') {
+            return (
+              <>
+                <HyperLink
+                  tooltip_content={'View Patient in MaxtrixCare'}
+                  className="patient_link"
+                  href={`https://clearviewhcm.matrixcare.com/core/selectResident.action?residentID=${info.row.original.patient_id}`}
+                >
+                  <HighlightWrapper
+                    className={
+                      info.row.original.any_touched === 0 ? 'font-bold' : ''
+                    }
+                    text={info.getValue() as string}
+                    searchTerm={info.table.getState().globalFilter}
+                  />
+                </HyperLink>
+                <p className="text-body-2">
+                  <HighlightWrapper
+                    text={info.row.getValue('facility_name') as string}
+                    searchTerm={info.table.getState().globalFilter}
+                  />
+                </p>
+              </>
+            );
+          }
+          if (info.row.original.upstream === 'PCC') {
+            return (
+              <>
+                <HyperLink
+                  tooltip_content={'View Patient in PCC'}
+                  className="patient_link"
+                  href={`https://${info.row.original.url_header}.pointclickcare.com/admin/client/clientlist.jsp?ESOLtabtype=C&ESOLglobalclientsearch=Y&ESOLclientid=${info.row.original.patient_id}&ESOLfacid=${info.row.original.internal_facility_id.split('_').pop()}&ESOLsave=P`}
+                >
+                  <HighlightWrapper
+                    className={
+                      info.row.original.any_touched === 0 ? 'font-bold' : ''
+                    }
+                    text={info.getValue() as string}
+                    searchTerm={info.table.getState().globalFilter}
+                  />
+                </HyperLink>
+                <p className="text-body-2">
+                  <HighlightWrapper
+                    text={info.row.getValue('facility_name') as string}
+                    searchTerm={info.table.getState().globalFilter}
+                  />
+                </p>
+              </>
+            );
+          }
+          return info.renderValue();
+        },
+        header: 'Patient',
+        filterFn: 'includesString',
+        meta: {
+          type: 'text',
+        },
+      },
+      {
+        accessorKey: 'effective_start_date',
+        header: 'Eligibility Start Date',
+        accessorFn: (row) => new Date(row.effective_start_date),
+        cell: (info) => {
+          const date = info.getValue() as Date;
+          return (
+            <HighlightWrapper
+              text={`${date.toLocaleDateString()} ${date.toLocaleTimeString(
+                navigator.language,
+                {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                },
+              )}`}
+              searchTerm={info.table.getState().globalFilter}
+            />
+          );
+        },
+        filterFn: dateRangeFilterFn,
+        meta: {
+          wrap: 'whitespace-nowrap',
+          type: 'daterange',
+        },
+      },
+      {
+        accessorKey: 'pt',
+        accessorFn: (row) => row.original_ptot_suggestions,
+        header: 'PT',
+        enableColumnFilter: false,
 
-      cell: (info) => {
-        const value = info.row.original.n_pt_suggestion as number;
-        const mainString = value === 1 ? 'Suggestion' : 'Suggestions';
-        const subString =
-          'Current: ' +
-          (toggle === 'CMG'
-            ? info.row.original.mds_pt_group
-            : toggle === 'CMI'
-              ? info.row.original.mds_pt_cmi
-              : '$' + info.row.original.mds_pt_pay);
-        const suggestString =
-          'Suggested: ' +
-          (toggle === 'CMG'
-            ? info.row.original.suggest_pt_group
-            : toggle === 'CMI'
-              ? info.row.original.suggest_pt_cmi
-              : '$' + info.row.original.suggest_pt_pay);
-        return (
-          <>
-            <HighlightWrapper
-              text={value + ' ' + mainString}
-              searchTerm={info.table.getState().globalFilter}
-            />
-            <p className="text-body-2">
+        cell: (info) => {
+          const value = info.row.original.n_pt_suggestion as number;
+          const mainString = value === 1 ? 'Suggestion' : 'Suggestions';
+          const subString =
+            'Current: ' +
+            (toggle === 'CMG'
+              ? info.row.original.mds_pt_group
+              : toggle === 'CMI'
+                ? info.row.original.mds_pt_cmi
+                : '$' + info.row.original.mds_pt_pay);
+          const suggestString =
+            'Suggested: ' +
+            (toggle === 'CMG'
+              ? info.row.original.suggest_pt_group
+              : toggle === 'CMI'
+                ? info.row.original.suggest_pt_cmi
+                : '$' + info.row.original.suggest_pt_pay);
+          return (
+            <>
               <HighlightWrapper
-                text={subString}
+                text={value + ' ' + mainString}
                 searchTerm={info.table.getState().globalFilter}
               />
-            </p>{' '}
-            <p className="text-body-2">
-              <HighlightWrapper
-                text={suggestString}
-                searchTerm={info.table.getState().globalFilter}
-              />
-            </p>
-          </>
-        );
+              <p className="text-body-2">
+                <HighlightWrapper
+                  text={subString}
+                  searchTerm={info.table.getState().globalFilter}
+                />
+              </p>{' '}
+              <p className="text-body-2">
+                <HighlightWrapper
+                  text={suggestString}
+                  searchTerm={info.table.getState().globalFilter}
+                />
+              </p>
+            </>
+          );
+        },
       },
-    },
-    {
-      accessorKey: 'ot',
-      accessorFn: (row) => row.original_ptot_suggestions,
-      header: 'OT',
-      enableColumnFilter: false,
+      {
+        accessorKey: 'ot',
+        accessorFn: (row) => row.original_ptot_suggestions,
+        header: 'OT',
+        enableColumnFilter: false,
 
-      cell: (info) => {
-        const value = info.row.original.n_ot_suggestion as number;
-        const mainString = value === 1 ? 'Suggestion' : 'Suggestions';
-        const subString =
-          'Current: ' +
-          (toggle === 'CMG'
-            ? info.row.original.mds_ot_group
-            : toggle === 'CMI'
-              ? info.row.original.mds_ot_cmi
-              : '$' + info.row.original.mds_ot_pay);
-        const suggestString =
-          'Suggested: ' +
-          (toggle === 'CMG'
-            ? info.row.original.suggest_ot_group
-            : toggle === 'CMI'
-              ? info.row.original.suggest_ot_cmi
-              : '$' + info.row.original.suggest_ot_pay);
-        return (
-          <>
-            <HighlightWrapper
-              text={value + ' ' + mainString}
-              searchTerm={info.table.getState().globalFilter}
-            />
-            <p className="text-body-2">
+        cell: (info) => {
+          const value = info.row.original.n_ot_suggestion as number;
+          const mainString = value === 1 ? 'Suggestion' : 'Suggestions';
+          const subString =
+            'Current: ' +
+            (toggle === 'CMG'
+              ? info.row.original.mds_ot_group
+              : toggle === 'CMI'
+                ? info.row.original.mds_ot_cmi
+                : '$' + info.row.original.mds_ot_pay);
+          const suggestString =
+            'Suggested: ' +
+            (toggle === 'CMG'
+              ? info.row.original.suggest_ot_group
+              : toggle === 'CMI'
+                ? info.row.original.suggest_ot_cmi
+                : '$' + info.row.original.suggest_ot_pay);
+          return (
+            <>
               <HighlightWrapper
-                text={subString}
+                text={value + ' ' + mainString}
                 searchTerm={info.table.getState().globalFilter}
               />
-            </p>{' '}
-            <p className="text-body-2">
-              <HighlightWrapper
-                text={suggestString}
-                searchTerm={info.table.getState().globalFilter}
-              />
-            </p>
-          </>
-        );
+              <p className="text-body-2">
+                <HighlightWrapper
+                  text={subString}
+                  searchTerm={info.table.getState().globalFilter}
+                />
+              </p>{' '}
+              <p className="text-body-2">
+                <HighlightWrapper
+                  text={suggestString}
+                  searchTerm={info.table.getState().globalFilter}
+                />
+              </p>
+            </>
+          );
+        },
       },
-    },
-    {
-      accessorKey: 'ptot',
-      accessorFn: (row) => row.original_ptot_suggestions,
-      header: 'PT/OT',
-      enableColumnFilter: false,
-      sortDescFirst: true,
-      cell: (info) => {
-        const value = info.row.original.n_ot_suggestion as number;
-        const mainString = value === 1 ? 'Suggestion' : 'Suggestions';
-        const subString =
-          'Current: ' +
-          (toggle === 'CMG'
-            ? info.row.original.mds_pt_group
-            : toggle === 'CMI'
-              ? info.row.original.mds_pt_cmi +
-                '/' +
-                info.row.original.mds_ot_cmi
-              : '$' +
-                info.row.original.mds_pt_pay +
-                '/' +
-                info.row.original.mds_ot_pay);
-        const suggestString =
-          'Suggested: ' +
-          (toggle === 'CMG'
-            ? info.row.original.suggest_pt_group
-            : toggle === 'CMI'
-              ? info.row.original.suggest_pt_cmi +
-                '/' +
-                info.row.original.suggest_ot_cmi
-              : '$' +
-                info.row.original.suggest_pt_pay +
-                '/' +
-                info.row.original.suggest_ot_pay);
-        return (
-          <>
-            <HighlightWrapper
-              text={value + ' ' + mainString}
-              searchTerm={info.table.getState().globalFilter}
-            />
-            <p className="text-body-2">
+      {
+        accessorKey: 'ptot',
+        accessorFn: (row) => row.original_ptot_suggestions,
+        header: 'PT/OT',
+        enableColumnFilter: false,
+        sortDescFirst: true,
+        cell: (info) => {
+          const value = info.row.original.n_ot_suggestion as number;
+          const mainString = value === 1 ? 'Suggestion' : 'Suggestions';
+          const subString =
+            'Current: ' +
+            (toggle === 'CMG'
+              ? info.row.original.mds_pt_group
+              : toggle === 'CMI'
+                ? info.row.original.mds_pt_cmi +
+                  '/' +
+                  info.row.original.mds_ot_cmi
+                : '$' +
+                  info.row.original.mds_pt_pay +
+                  '/' +
+                  info.row.original.mds_ot_pay);
+          const suggestString =
+            'Suggested: ' +
+            (toggle === 'CMG'
+              ? info.row.original.suggest_pt_group
+              : toggle === 'CMI'
+                ? info.row.original.suggest_pt_cmi +
+                  '/' +
+                  info.row.original.suggest_ot_cmi
+                : '$' +
+                  info.row.original.suggest_pt_pay +
+                  '/' +
+                  info.row.original.suggest_ot_pay);
+          return (
+            <>
               <HighlightWrapper
-                text={subString}
+                text={value + ' ' + mainString}
                 searchTerm={info.table.getState().globalFilter}
               />
-            </p>{' '}
-            <p className="text-body-2">
+              <p className="text-body-2">
+                <HighlightWrapper
+                  text={subString}
+                  searchTerm={info.table.getState().globalFilter}
+                />
+              </p>{' '}
+              <p className="text-body-2">
+                <HighlightWrapper
+                  text={suggestString}
+                  searchTerm={info.table.getState().globalFilter}
+                />
+              </p>
+            </>
+          );
+        },
+      },
+      {
+        accessorKey: 'ptot_opp',
+        accessorFn: (row) => row.original_ptot_opportunities,
+        header: 'PT/OT OPP',
+        enableColumnFilter: false,
+        cell: (info) => {
+          const value =
+            info.row.original.suggest_pt_pay +
+            info.row.original.suggest_ot_pay -
+            info.row.original.mds_pt_pay -
+            info.row.original.mds_ot_pay;
+          const string =
+            parseInt(value.toFixed()) >= 0
+              ? '$' + value.toFixed(2).replace('-0', '0')
+              : '-$' + Math.abs(value).toFixed(2);
+          return (
+            <>
               <HighlightWrapper
-                text={suggestString}
+                text={string}
                 searchTerm={info.table.getState().globalFilter}
               />
-            </p>
-          </>
-        );
+            </>
+          );
+        },
       },
-    },
-    {
-      accessorKey: 'ptot_opp',
-      accessorFn: (row) => row.original_ptot_opportunities,
-      header: 'PT/OT OPP',
-      enableColumnFilter: false,
-      cell: (info) => {
-        const value =
-          info.row.original.suggest_pt_pay +
-          info.row.original.suggest_ot_pay -
-          info.row.original.mds_pt_pay -
-          info.row.original.mds_ot_pay;
-        const string =
-          parseInt(value.toFixed()) >= 0
-            ? '$' + value.toFixed(2).replace('-0', '0')
-            : '-$' + Math.abs(value).toFixed(2);
-        return (
-          <>
-            <HighlightWrapper
-              text={string}
-              searchTerm={info.table.getState().globalFilter}
-            />
-          </>
-        );
-      },
-    },
-    {
-      accessorKey: 'slp',
-      accessorFn: (row) => row.original_slp_suggestions,
-      header: 'SLP',
-      enableColumnFilter: false,
+      {
+        accessorKey: 'slp',
+        accessorFn: (row) => row.original_slp_suggestions,
+        header: 'SLP',
+        enableColumnFilter: false,
 
-      cell: (info) => {
-        const value = info.row.original.n_slp_suggestion as number;
-        const mainString = value === 1 ? 'Suggestion' : 'Suggestions';
-        const subString =
-          'Current: ' +
-          (toggle === 'CMG'
-            ? info.row.original.mds_slp_group
-            : toggle === 'CMI'
-              ? info.row.original.mds_slp_cmi
-              : '$' + info.row.original.mds_slp_pay);
-        const suggestString =
-          'Suggested: ' +
-          (toggle === 'CMG'
-            ? info.row.original.suggest_slp_group
-            : toggle === 'CMI'
-              ? info.row.original.suggest_slp_cmi
-              : '$' + info.row.original.suggest_slp_pay);
-        return (
-          <>
-            <HighlightWrapper
-              text={value + ' ' + mainString}
-              searchTerm={info.table.getState().globalFilter}
-            />
-            <p className="text-body-2">
+        cell: (info) => {
+          const value = info.row.original.n_slp_suggestion as number;
+          const mainString = value === 1 ? 'Suggestion' : 'Suggestions';
+          const subString =
+            'Current: ' +
+            (toggle === 'CMG'
+              ? info.row.original.mds_slp_group
+              : toggle === 'CMI'
+                ? info.row.original.mds_slp_cmi
+                : '$' + info.row.original.mds_slp_pay);
+          const suggestString =
+            'Suggested: ' +
+            (toggle === 'CMG'
+              ? info.row.original.suggest_slp_group
+              : toggle === 'CMI'
+                ? info.row.original.suggest_slp_cmi
+                : '$' + info.row.original.suggest_slp_pay);
+          return (
+            <>
               <HighlightWrapper
-                text={subString}
+                text={value + ' ' + mainString}
                 searchTerm={info.table.getState().globalFilter}
               />
-            </p>{' '}
-            <p className="text-body-2">
+              <p className="text-body-2">
+                <HighlightWrapper
+                  text={subString}
+                  searchTerm={info.table.getState().globalFilter}
+                />
+              </p>{' '}
+              <p className="text-body-2">
+                <HighlightWrapper
+                  text={suggestString}
+                  searchTerm={info.table.getState().globalFilter}
+                />
+              </p>
+            </>
+          );
+        },
+      },
+      {
+        accessorKey: 'slp_opp',
+        accessorFn: (row) => row.original_slp_opportunities,
+        header: 'SLP OPP',
+        enableColumnFilter: false,
+        cell: (info) => {
+          const value =
+            info.row.original.suggest_slp_pay - info.row.original.mds_slp_pay;
+          const string =
+            parseInt(value.toFixed()) >= 0
+              ? '$' + value.toFixed(2).replace('-0', '0')
+              : '-$' + Math.abs(value).toFixed(2);
+          return (
+            <>
               <HighlightWrapper
-                text={suggestString}
+                text={string}
                 searchTerm={info.table.getState().globalFilter}
               />
-            </p>
-          </>
-        );
+            </>
+          );
+        },
       },
-    },
-    {
-      accessorKey: 'slp_opp',
-      accessorFn: (row) => row.original_slp_opportunities,
-      header: 'SLP OPP',
-      enableColumnFilter: false,
-      cell: (info) => {
-        const value =
-          info.row.original.suggest_slp_pay - info.row.original.mds_slp_pay;
-        const string =
-          parseInt(value.toFixed()) >= 0
-            ? '$' + value.toFixed(2).replace('-0', '0')
-            : '-$' + Math.abs(value).toFixed(2);
-        return (
-          <>
-            <HighlightWrapper
-              text={string}
-              searchTerm={info.table.getState().globalFilter}
-            />
-          </>
-        );
-      },
-    },
-    {
-      accessorKey: 'nursing',
-      accessorFn: (row) => row.original_nursing_suggestions,
-      header: 'Nursing',
-      enableColumnFilter: false,
-      sortDescFirst: true,
-      cell: (info) => {
-        const value = info.row.original.n_nursing_suggestion as number;
-        const mainString = value === 1 ? 'Suggestion' : 'Suggestions';
-        const subString =
-          'Current: ' +
-          (toggle === 'CMG'
-            ? info.row.original.mds_nursing_group
-            : toggle === 'CMI'
-              ? info.row.original.mds_nursing_cmi
-              : '$' + info.row.original.mds_nursing_pay);
-        const suggestString =
-          'Suggested: ' +
-          (toggle === 'CMG'
-            ? info.row.original.suggest_nursing_group
-            : toggle === 'CMI'
-              ? info.row.original.suggest_nursing_cmi
-              : '$' + info.row.original.suggest_nursing_pay);
-        return (
-          <>
-            <HighlightWrapper
-              text={value + ' ' + mainString}
-              searchTerm={info.table.getState().globalFilter}
-            />
-            <p className="text-body-2">
+      {
+        accessorKey: 'nursing',
+        accessorFn: (row) => row.original_nursing_suggestions,
+        header: 'Nursing',
+        enableColumnFilter: false,
+        sortDescFirst: true,
+        cell: (info) => {
+          const value = info.row.original.n_nursing_suggestion as number;
+          const mainString = value === 1 ? 'Suggestion' : 'Suggestions';
+          const subString =
+            'Current: ' +
+            (toggle === 'CMG'
+              ? info.row.original.mds_nursing_group
+              : toggle === 'CMI'
+                ? info.row.original.mds_nursing_cmi
+                : '$' + info.row.original.mds_nursing_pay);
+          const suggestString =
+            'Suggested: ' +
+            (toggle === 'CMG'
+              ? info.row.original.suggest_nursing_group
+              : toggle === 'CMI'
+                ? info.row.original.suggest_nursing_cmi
+                : '$' + info.row.original.suggest_nursing_pay);
+          return (
+            <>
               <HighlightWrapper
-                text={subString}
+                text={value + ' ' + mainString}
                 searchTerm={info.table.getState().globalFilter}
               />
-            </p>{' '}
-            <p className="text-body-2">
+              <p className="text-body-2">
+                <HighlightWrapper
+                  text={subString}
+                  searchTerm={info.table.getState().globalFilter}
+                />
+              </p>{' '}
+              <p className="text-body-2">
+                <HighlightWrapper
+                  text={suggestString}
+                  searchTerm={info.table.getState().globalFilter}
+                />
+              </p>
+            </>
+          );
+        },
+      },
+      {
+        accessorKey: 'nursing_opp',
+        accessorFn: (row) => row.original_nursing_opportunities,
+        header: 'Nursing OPP',
+        enableColumnFilter: false,
+        cell: (info) => {
+          const value =
+            info.row.original.suggest_nursing_pay -
+            info.row.original.mds_nursing_pay;
+          const string =
+            parseInt(value.toFixed()) >= 0
+              ? '$' + value.toFixed(2).replace('-0', '0')
+              : '-$' + Math.abs(value).toFixed(2);
+          return (
+            <>
               <HighlightWrapper
-                text={suggestString}
+                text={string}
                 searchTerm={info.table.getState().globalFilter}
               />
-            </p>
-          </>
-        );
+            </>
+          );
+        },
       },
-    },
-    {
-      accessorKey: 'nursing_opp',
-      accessorFn: (row) => row.original_nursing_opportunities,
-      header: 'Nursing OPP',
-      enableColumnFilter: false,
-      cell: (info) => {
-        const value =
-          info.row.original.suggest_nursing_pay -
-          info.row.original.mds_nursing_pay;
-        const string =
-          parseInt(value.toFixed()) >= 0
-            ? '$' + value.toFixed(2).replace('-0', '0')
-            : '-$' + Math.abs(value).toFixed(2);
-        return (
-          <>
-            <HighlightWrapper
-              text={string}
-              searchTerm={info.table.getState().globalFilter}
-            />
-          </>
-        );
-      },
-    },
-    {
-      accessorKey: 'nta',
-      enableColumnFilter: false,
-      accessorFn: (row) => row.original_nta_suggestions,
-      header: 'NTA',
-      cell: (info) => {
-        const value = info.row.original.n_nta_suggestion as number;
-        const mainString = value === 1 ? 'Suggestion' : 'Suggestions';
-        const subString =
-          'Current: ' +
-          (toggle === 'CMG'
-            ? info.row.original.mds_nta_group
-            : toggle === 'CMI'
-              ? info.row.original.mds_nta_cmi
-              : '$' + info.row.original.mds_nta_pay);
-        const suggestString =
-          'Suggested: ' +
-          (toggle === 'CMG'
-            ? info.row.original.suggest_nta_group
-            : toggle === 'CMI'
-              ? info.row.original.suggest_nta_cmi
-              : '$' + info.row.original.suggest_nta_pay);
-        return (
-          <>
-            <HighlightWrapper
-              text={value + ' ' + mainString}
-              searchTerm={info.table.getState().globalFilter}
-            />
-            <p className="text-body-2">
+      {
+        accessorKey: 'nta',
+        enableColumnFilter: false,
+        accessorFn: (row) => row.original_nta_suggestions,
+        header: 'NTA',
+        cell: (info) => {
+          const value = info.row.original.n_nta_suggestion as number;
+          const mainString = value === 1 ? 'Suggestion' : 'Suggestions';
+          const subString =
+            'Current: ' +
+            (toggle === 'CMG'
+              ? info.row.original.mds_nta_group
+              : toggle === 'CMI'
+                ? info.row.original.mds_nta_cmi
+                : '$' + info.row.original.mds_nta_pay);
+          const suggestString =
+            'Suggested: ' +
+            (toggle === 'CMG'
+              ? info.row.original.suggest_nta_group
+              : toggle === 'CMI'
+                ? info.row.original.suggest_nta_cmi
+                : '$' + info.row.original.suggest_nta_pay);
+          return (
+            <>
               <HighlightWrapper
-                text={subString}
+                text={value + ' ' + mainString}
                 searchTerm={info.table.getState().globalFilter}
               />
-            </p>{' '}
-            <p className="text-body-2">
+              <p className="text-body-2">
+                <HighlightWrapper
+                  text={subString}
+                  searchTerm={info.table.getState().globalFilter}
+                />
+              </p>{' '}
+              <p className="text-body-2">
+                <HighlightWrapper
+                  text={suggestString}
+                  searchTerm={info.table.getState().globalFilter}
+                />
+              </p>
+            </>
+          );
+        },
+      },
+      {
+        accessorKey: 'nta_opp',
+        accessorFn: (row) => row.original_nta_opportunities,
+        header: 'NTA OPP',
+        enableColumnFilter: false,
+        cell: (info) => {
+          const value =
+            info.row.original.suggest_nta_pay - info.row.original.mds_nta_pay;
+          const string =
+            parseInt(value.toFixed()) >= 0
+              ? '$' + value.toFixed(2).replace('-0', '0')
+              : '-$' + Math.abs(value).toFixed(2);
+          return (
+            <>
               <HighlightWrapper
-                text={suggestString}
+                text={string}
                 searchTerm={info.table.getState().globalFilter}
               />
-            </p>
-          </>
-        );
+            </>
+          );
+        },
       },
-    },
-    {
-      accessorKey: 'nta_opp',
-      accessorFn: (row) => row.original_nta_opportunities,
-      header: 'NTA OPP',
-      enableColumnFilter: false,
-      cell: (info) => {
-        const value =
-          info.row.original.suggest_nta_pay - info.row.original.mds_nta_pay;
-        const string =
-          parseInt(value.toFixed()) >= 0
-            ? '$' + value.toFixed(2).replace('-0', '0')
-            : '-$' + Math.abs(value).toFixed(2);
-        return (
-          <>
-            <HighlightWrapper
-              text={string}
-              searchTerm={info.table.getState().globalFilter}
-            />
-          </>
-        );
+      {
+        accessorKey: 'hipps',
+        accessorFn: (row) => row.original_total_opportunities,
+        header: 'HIPPS',
+        enableColumnFilter: false,
+        cell: (info) => {
+          return (
+            <>
+              <HighlightWrapper
+                text={
+                  'Current: ' + (info.row.original.mds_hipps ?? 'Not Submitted')
+                }
+                searchTerm={info.table.getState().globalFilter}
+                className={'whitespace-nowrap'}
+              />
+              <br />
+              <HighlightWrapper
+                className="whitespace-nowrap"
+                text={'Suggested: ' + info.row.original.suggest_hipps}
+                searchTerm={info.table.getState().globalFilter}
+              />
+            </>
+          );
+        },
       },
-    },
-    {
-      accessorKey: 'hipps',
-      accessorFn: (row) => row.original_total_opportunities,
-      header: 'HIPPS',
-      enableColumnFilter: false,
-      cell: (info) => {
-        return (
-          <>
-            <HighlightWrapper
-              text={
-                'Current: ' + (info.row.original.mds_hipps ?? 'Not Subbmitted')
-              }
-              searchTerm={info.table.getState().globalFilter}
-              className={'whitespace-nowrap'}
-            />
-            <br />
-            <HighlightWrapper
-              className="whitespace-nowrap"
-              text={'Suggested: ' + info.row.original.suggest_hipps}
-              searchTerm={info.table.getState().globalFilter}
-            />
-          </>
-        );
+      {
+        accessorKey: 'total_opp',
+        accessorFn: (row) => row.original_total_opportunities,
+        header: 'Rate Change',
+        enableColumnFilter: false,
+        cell: (info) => {
+          const value =
+            info.row.original.suggest_nta_pay +
+            info.row.original.suggest_slp_pay +
+            info.row.original.suggest_pt_pay +
+            info.row.original.suggest_ot_pay +
+            info.row.original.suggest_nursing_pay -
+            info.row.original.mds_nta_pay -
+            info.row.original.mds_slp_pay -
+            info.row.original.mds_pt_pay -
+            info.row.original.mds_ot_pay -
+            info.row.original.mds_nursing_pay;
+          const string =
+            parseInt(value.toFixed()) >= 0
+              ? '$' + value.toFixed(2).replace('-', '')
+              : '-$' + value.toFixed(2).replace('-', '');
+          return (
+            <>
+              <HighlightWrapper
+                text={string}
+                searchTerm={info.table.getState().globalFilter}
+              />
+            </>
+          );
+        },
       },
-    },
-    {
-      accessorKey: 'total_opp',
-      accessorFn: (row) => row.original_total_opportunities,
-      header: 'Rate Change',
-      enableColumnFilter: false,
-      cell: (info) => {
-        const value =
-          info.row.original.suggest_nta_pay +
-          info.row.original.suggest_slp_pay +
-          info.row.original.suggest_pt_pay +
-          info.row.original.suggest_ot_pay +
-          info.row.original.suggest_nursing_pay -
-          info.row.original.mds_nta_pay -
-          info.row.original.mds_slp_pay -
-          info.row.original.mds_pt_pay -
-          info.row.original.mds_ot_pay -
-          info.row.original.mds_nursing_pay;
-        const string =
-          parseInt(value.toFixed()) >= 0
-            ? '$' + value.toFixed(2).replace('-', '')
-            : '-$' + value.toFixed(2).replace('-', '');
-        return (
-          <>
-            <HighlightWrapper
-              text={string}
-              searchTerm={info.table.getState().globalFilter}
-            />
-          </>
-        );
+      {
+        accessorKey: 'has_suggestions',
+        accessorFn: (row) => {
+          const count =
+            (row.original_nta_suggestions ?? 0) +
+            (row.original_slp_suggestions ?? 0) +
+            (row.original_ptot_suggestions ?? 0) +
+            (row.original_nursing_suggestions ?? 0);
+          return count > 0 ? 'Yes' : 'No';
+        },
+        header: 'Has Suggestions',
+        cell: (info) => {
+          return (
+            <span className="flex items-center gap-1">
+              {info.getValue() === 'No' ? (
+                <XCircle size={20} />
+              ) : (
+                <CheckCircle size={20} />
+              )}
+              {info.getValue() === 'No' ? 'No' : 'Yes'}
+            </span>
+          );
+        },
+        meta: {
+          type: 'categorical',
+        },
       },
-    },
-    {
-      accessorKey: 'has_suggestions',
-      accessorFn: (row) => {
-        const count =
-          (row.original_nta_suggestions ?? 0) +
-          (row.original_slp_suggestions ?? 0) +
-          (row.original_ptot_suggestions ?? 0) +
-          (row.original_nursing_suggestions ?? 0);
-        return count > 0 ? 'Yes' : 'No';
-      },
-      header: 'Has Suggestions',
-      cell: (info) => {
-        return (
-          <span className="flex items-center gap-1">
-            {info.getValue() === 'No' ? (
-              <XCircle size={20} />
-            ) : (
-              <CheckCircle size={20} />
-            )}
-            {info.getValue() === 'No' ? 'No' : 'Yes'}
-          </span>
-        );
-      },
-      meta: {
-        type: 'categorical',
-      },
-    },
-  ];
+    ],
+    [toggle],
+  );
 
   const [tableState, setTableState] = useState<TableState>({
     globalFilter: '',
@@ -765,7 +768,7 @@ export default function MDSTable({ data }: { data: PDPMPatient[] }) {
     <div className="flex flex-col gap-5">
       <Card className="flex justify-between items-center flex-wrap gap-5">
         <div className="flex flex-col gap-3">
-          <h1 className="font-semibold text-2xl">Minimum Data Set</h1>
+          <h1 className="font-semibold text-2xl">MDS 3.0 Discovery</h1>
           <p className="text-sm	text-gray-500 ">
             {table.getFilteredRowModel().rows.length} of {data.length}{' '}
             {data.length >= 1 ? `records are` : 'record is'} in view.
@@ -792,12 +795,19 @@ export default function MDSTable({ data }: { data: PDPMPatient[] }) {
       <TableWrapper
         filters={true}
         searchRight={
-          <SelectButton
-            value={toggle}
-            onChange={(e) => setToggle(e.value)}
-            options={['CMI', 'CMG', '$']}
-            allowEmpty={false}
-          />
+          (tableState.columnVisibility['nta'] ||
+            tableState.columnVisibility['slp'] ||
+            tableState.columnVisibility['ptot'] ||
+            tableState.columnVisibility['pt'] ||
+            tableState.columnVisibility['ot'] ||
+            tableState.columnVisibility['nursing']) && (
+            <SelectButton
+              value={toggle}
+              onChange={(e) => setToggle(e.value)}
+              options={['CMI', 'CMG', '$']}
+              allowEmpty={false}
+            />
+          )
         }
         table={table}
         tableState={tableState}
