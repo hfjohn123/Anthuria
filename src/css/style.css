@@ -4,11 +4,9 @@
 @layer tailwind-base {
     @tailwind base;
     body {
-        @apply font-normal text-base text-black bg-whiten  relative z-1;
+        @apply font-normal text-base text-black bg-whiten  relative z-1 font-inter;
     }
-    * :not(.pi){
-        @apply !font-inter
-    }
+
 
 }
 

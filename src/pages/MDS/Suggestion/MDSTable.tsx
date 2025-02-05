@@ -26,7 +26,13 @@ import { MeterGroup } from 'primereact/metergroup';
 import { SelectButton } from 'primereact/selectbutton';
 import '../../../css/style.css';
 
-export default function MDSTable({ data }: { data: PDPMPatient[] }) {
+export default function MDSTable({
+  data,
+  lastRefresh,
+}: {
+  data: PDPMPatient[];
+  lastRefresh: any;
+}) {
   const { user_data } = useContext(AuthContext);
   const [toggle, setToggle] = useState<'CMG' | 'CMI' | '$'>('CMI');
 
@@ -775,6 +781,16 @@ export default function MDSTable({ data }: { data: PDPMPatient[] }) {
             <br />
             Patients below include all eligible PDPM patients as well as any
             patients who were PDPM eligible in the past 30 days.
+            <br /> Data last refreshed as of{' '}
+            {new Date(lastRefresh?.['update_time']).toLocaleString('en-US', {
+              month: 'short',
+              day: 'numeric',
+              year: 'numeric',
+              hour: 'numeric',
+              minute: 'numeric',
+              timeZoneName: 'short',
+            })}
+            .
           </p>
         </div>
         <MeterGroup

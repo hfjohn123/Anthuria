@@ -6,7 +6,7 @@ module.exports = {
   darkMode: 'class',
   theme: {
     fontFamily: {
-      inter: ['Inter', 'sans-serif'],
+      inter: ['InterVariable', 'sans-serif'],
     },
     screens: {
       '2xsm': '375px',
@@ -265,5 +265,5 @@ module.exports = {
       },
     },
   },
-  plugins: [],
+  plugins: [require('tailwindcss-font-inter')],
 };

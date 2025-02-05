@@ -150,22 +150,6 @@ export default function ReviewTriggers() {
     (d) => d['id'] === 'trigger_words',
   ) || { locations: [] };
 
-  const [startValue, endValue] = useMemo(() => {
-    const revisionFilter = tableState.columnFilters.find(
-      (f) => f.id === 'revision_date',
-    ) as { id: string; value: any[] };
-    return [
-      revisionFilter?.value?.[0] ?? null,
-      revisionFilter?.value?.[1] ?? null,
-    ];
-  }, [tableState.columnFilters]);
-  const start = useMemo(
-    () => (startValue ? new Date(startValue) : null),
-    [startValue],
-  );
-
-  const end = useMemo(() => (endValue ? new Date(endValue) : null), [endValue]);
-
   const fetchTriggerWord = async (signal?: AbortSignal) => {
     const params: { [key: string]: any } =
       user_data.organization_id === 'AVHC'
@@ -191,9 +175,44 @@ export default function ReviewTriggers() {
     queryFn: ({ signal }) => fetchTriggerWord(signal),
   });
 
+  const { data: lastRefresh } = useQuery({
+    queryKey: ['/dim/view_module_update_time', 'trigger_words', route],
+    queryFn: () =>
+      axios
+        .get(`${route}/dim/view_module_update_time`, {
+          params: { module: 'trigger_words' },
+        })
+        .then((res) => res.data),
+    networkMode: 'offlineFirst', // Lower priority
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    gcTime: 1000 * 60 * 10, // Longer cache time
+  });
+
   const [selfDefinedKeywordsState, setSelfDefinedKeywordsState] = useState(
     data?.self_defined_keywords,
   );
+  const [startValue, endValue] = useMemo(() => {
+    if (user_data.organization_id === 'AVHC') {
+      return [
+        _.minBy(data?.data, 'revision_date')?.revision_date,
+        _.maxBy(data?.data, 'revision_date')?.revision_date,
+      ];
+    }
+    const revisionFilter = tableState.columnFilters.find(
+      (f) => f.id === 'revision_date',
+    ) as { id: string; value: any[] };
+    return [
+      revisionFilter?.value?.[0] ?? null,
+      revisionFilter?.value?.[1] ?? null,
+    ];
+  }, [tableState.columnFilters]);
+
+  const start = useMemo(
+    () => (startValue ? new Date(startValue) : null),
+    [startValue],
+  );
+
+  const end = useMemo(() => (endValue ? new Date(endValue) : null), [endValue]);
 
   useEffect(() => {
     setSelfDefinedKeywordsState(data?.self_defined_keywords);
@@ -693,10 +712,23 @@ export default function ReviewTriggers() {
                 })}{' '}
                 in view.
                 <br />
-                See additional notes by changing the date range of revision
-                date. <br />
-                Filter results by trigger category, by facility name, by patient
-                name, revision date, or others.
+                Data last refreshed as of{' '}
+                {new Date(lastRefresh?.['update_time']).toLocaleString(
+                  'en-US',
+                  {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric',
+                    hour: 'numeric',
+                    minute: 'numeric',
+                    timeZoneName: 'short',
+                  },
+                )}
+                .
+                {/*See additional notes by changing the date range of revision*/}
+                {/*date. <br />*/}
+                {/*Filter results by trigger category, by facility name, by patient*/}
+                {/*name, revision date, or others.*/}
               </p>
             </div>
             <MeterGroup

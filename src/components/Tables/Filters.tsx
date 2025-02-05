@@ -209,7 +209,8 @@ export default function Filters({
                     }))
               }
               minDate={
-                filter === 'revision_date'
+                filter === 'revision_date' &&
+                user_data.organization_id !== 'AVHC'
                   ? undefined
                   : (table
                       .getColumn(filter)

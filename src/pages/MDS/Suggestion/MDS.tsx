@@ -29,6 +29,19 @@ export default function MDS() {
         .get(`${route}/mds/view_pdpm_mds_patient_list`, { signal })
         .then((res) => res.data),
   });
+
+  const { data: lastRefresh } = useQuery({
+    queryKey: ['/dim/view_module_update_time', 'mds', route],
+    queryFn: () =>
+      axios
+        .get(`${route}/dim/view_module_update_time`, {
+          params: { module: 'mds' },
+        })
+        .then((res) => res.data),
+    networkMode: 'offlineFirst', // Lower priority
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    gcTime: 1000 * 60 * 10, // Longer cache time
+  });
   useEffect(() => {
     if (data) {
       setStableData((prevState) => {
@@ -91,7 +104,7 @@ export default function MDS() {
     stableData && (
       <DefaultLayout>
         <div className="flex flex-col gap-5 my-3 sm:my-5 max-w-screen-3xl sm:px-5 mx-auto ">
-          <MDSTable data={stableData} />
+          <MDSTable data={stableData} lastRefresh={lastRefresh} />
         </div>
       </DefaultLayout>
     )
