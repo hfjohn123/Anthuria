@@ -25,6 +25,7 @@ import Card from '../../../components/Cards/Card.tsx';
 import { MeterGroup } from 'primereact/metergroup';
 import { SelectButton } from 'primereact/selectbutton';
 import '../../../css/style.css';
+import useInitializeTableFilters from '../../../hooks/useInitializeTableFilters.tsx';
 
 export default function MDSTable({
   data,
@@ -638,6 +639,7 @@ export default function MDSTable({
     ],
     [toggle],
   );
+  const initialFilter = useInitializeTableFilters();
 
   const [tableState, setTableState] = useState<TableState>({
     globalFilter: '',
@@ -663,12 +665,15 @@ export default function MDSTable({
         desc: true,
       },
     ],
-    columnFilters: [
-      {
-        id: 'has_suggestions',
-        value: ['Yes'],
-      },
-    ],
+    columnFilters:
+      initialFilter.length > 0
+        ? initialFilter
+        : [
+            {
+              id: 'has_suggestions',
+              value: ['Yes'],
+            },
+          ],
     columnPinning: {
       left: [],
       right: [],
@@ -721,7 +726,6 @@ export default function MDSTable({
       pageSize: 30,
     },
   });
-
   useEffect(() => {
     if (localStorage.getItem('clearMDSStorage') !== '9') {
       localStorage.removeItem('MDSUserVisibilitySettings');

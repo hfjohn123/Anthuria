@@ -1,9 +1,4 @@
-import {
-  ColumnFiltersState,
-  flexRender,
-  Table,
-  TableState,
-} from '@tanstack/react-table';
+import { flexRender, Table, TableState } from '@tanstack/react-table';
 import { Button } from '@headlessui/react';
 import 'primeicons/primeicons.css';
 import { ScrollPanel } from 'primereact/scrollpanel';
@@ -11,7 +6,7 @@ import { ScrollPanel } from 'primereact/scrollpanel';
 import { Fragment, useEffect, useRef, useState } from 'react';
 import PageNavigation from './PageNavigation.tsx';
 import SearchParams from '../../types/SearchParams.ts';
-import { useNavigate, useSearch } from '@tanstack/react-router';
+import { useNavigate } from '@tanstack/react-router';
 import exportExcel from '../../common/excelExport.ts';
 import { DownloadSimple } from '@phosphor-icons/react';
 import TableSettingModal from './TableSettingModal.tsx';
@@ -19,7 +14,6 @@ import Filters from './Filters.tsx';
 import { IconField } from 'primereact/iconfield';
 import { InputIcon } from 'primereact/inputicon';
 import DebouncedInputText from '../Forms/Input/DebouncedInputText.tsx';
-import { isBoolean } from 'lodash';
 import SortUp from '../../images/icon/SortUp.tsx';
 import SortDown from '../../images/icon/SortDown.tsx';
 import SortDefult from '../../images/icon/SortDefult.tsx';
@@ -35,17 +29,12 @@ export default function TableWrapper({
   download = false,
   tableSetting = false,
   initialTableState,
-  hasHistory = false,
-  setIsRefetching,
-  includeCreatedDate,
-  setIncludeCreatedDate,
   filters = true,
   title,
   searchRight,
   placeholder = 'Global Search...',
   splitter = false,
   twoPanel = false,
-  setIsFirstRender,
   ...rest
 }: {
   table: Table<any>;
@@ -56,21 +45,15 @@ export default function TableWrapper({
   download?: boolean;
   tableSetting?: boolean;
   initialTableState?: TableState;
-  hasHistory?: boolean;
-  setIsRefetching?: React.Dispatch<React.SetStateAction<boolean>>;
-  includeCreatedDate?: boolean;
-  setIncludeCreatedDate?: React.Dispatch<React.SetStateAction<boolean>>;
   filters?: boolean;
   title?: string;
   placeholder?: string;
   searchRight?: React.ReactNode;
   splitter?: boolean;
   twoPanel?: boolean;
-  setIsFirstRender?: React.Dispatch<React.SetStateAction<boolean>>;
   [key: string]: any;
 }) {
   const navigate = useNavigate();
-  const search = useSearch({ strict: false });
   const filterRef = useRef(null);
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
 
@@ -98,51 +81,6 @@ export default function TableWrapper({
   }, []);
 
   useEffect(() => {
-    const initialFilters: ColumnFiltersState = [];
-
-    Object.entries(search).forEach(([key, value]) => {
-      if (value !== undefined && value !== null && !isBoolean(value)) {
-        if (value === 'yesterday') {
-          value = [new Date(Date.now() - 1000 * 60 * 60 * 24), new Date()];
-        } else if (value === 'last_3_days') {
-          value = [new Date(Date.now() - 1000 * 60 * 60 * 24 * 3), new Date()];
-        } else if (value === 'last_7_days') {
-          value = [new Date(Date.now() - 1000 * 60 * 60 * 24 * 7), new Date()];
-        } else if (
-          (value as string).startsWith('[') &&
-          (value as string).endsWith(']')
-        ) {
-          value = (value as string)
-            .substring(1, (value as string).length - 1)
-            .split(',');
-          if (
-            !isNaN(parseInt((value as string[])[0])) &&
-            new Date(parseInt((value as string[])[0])).getTime() > 0
-          ) {
-            value = (value as string[]).map(
-              (v) => new Date(parseInt(v as string)),
-            );
-          }
-        }
-        initialFilters.push({
-          id: key,
-          value: value,
-        });
-      }
-    });
-
-    setTableState((prev) => ({
-      ...prev,
-      columnFilters: [
-        ...prev.columnFilters.filter(
-          (f) => !initialFilters.find((i) => i.id === f.id),
-        ),
-        ...initialFilters,
-      ],
-    }));
-    setIsFirstRender?.(true);
-  }, []);
-  useEffect(() => {
     const searchParams: SearchParams = {};
     tableState.columnFilters.forEach((filter) => {
       if (filter.id !== 'patient_name') {
@@ -166,12 +104,8 @@ export default function TableWrapper({
     });
 
     navigate({
-      search: {
-        ...searchParams,
-        // @ts-expect-error TS2339: Property 'search' does not exist on type 'SearchParams'.
-        history: search['history'],
-      },
       replace: true,
+      search: searchParams,
     });
     setTableState((prev) => ({
       ...prev,
@@ -239,10 +173,6 @@ export default function TableWrapper({
                 table={table}
                 tableState={tableState}
                 setTableState={setTableState}
-                hasHistory={hasHistory}
-                setIsRefetching={setIsRefetching}
-                includeCreatedDate={includeCreatedDate}
-                setIncludeCreatedDate={setIncludeCreatedDate}
               />
             </div>
           )}

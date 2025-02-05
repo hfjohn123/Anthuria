@@ -5,9 +5,7 @@ import FilterValueContainer from '../Select/FilterValueContainer.tsx';
 import CheckboxOption from '../Select/CheckboxOption.tsx';
 import handleFilterChange from './handleFilterChange.ts';
 import AutosizeInput from 'react-18-input-autosize';
-import { Button } from '@headlessui/react';
 import { Table, TableState } from '@tanstack/react-table';
-import { useNavigate, useSearch } from '@tanstack/react-router';
 import DateTimeDropdown from './DateTimeFilter/DateTimeDropdown.tsx';
 import { useContext, useRef } from 'react';
 import { AuthContext } from '../AuthWrapper.tsx';
@@ -18,32 +16,14 @@ type FilterProps = {
   permanentColumnFilters: string[];
   setTableState: React.Dispatch<React.SetStateAction<TableState>>;
   tableState: TableState;
-} & (
-  | {
-      hasHistory: true;
-      setIsRefetching: React.Dispatch<React.SetStateAction<boolean>>;
-      includeCreatedDate: boolean;
-      setIncludeCreatedDate: React.Dispatch<React.SetStateAction<boolean>>;
-    }
-  | {
-      hasHistory?: boolean;
-      setIsRefetching?: any;
-      includeCreatedDate?: any;
-      setIncludeCreatedDate?: any;
-    }
-);
+};
 
 export default function Filters({
   table,
   permanentColumnFilters,
   setTableState,
   tableState,
-  hasHistory,
-  setIsRefetching,
-  includeCreatedDate,
-  setIncludeCreatedDate,
 }: FilterProps) {
-  const navigate = useNavigate();
   const inputRef = useRef<HTMLInputElement>(null);
   const { user_data } = useContext(AuthContext);
   const setValueFunction = (
@@ -62,8 +42,6 @@ export default function Filters({
         }),
     }));
   };
-
-  const search = useSearch({ strict: false });
 
   return (
     <div className="flex justify-between pr-3 gap-3 items-center">
@@ -476,21 +454,6 @@ export default function Filters({
           </button>
         )}
       </div>
-      {hasHistory && (
-        <Button
-          className="whitespace-nowrap text-primary"
-          onClick={() => {
-            setIsRefetching(true);
-            setIncludeCreatedDate(!includeCreatedDate);
-            navigate({
-              search: { ...search, history: includeCreatedDate },
-              replace: true,
-            });
-          }}
-        >
-          {includeCreatedDate ? 'Show Historical' : 'Show Today'}
-        </Button>
-      )}
     </div>
   );
 }

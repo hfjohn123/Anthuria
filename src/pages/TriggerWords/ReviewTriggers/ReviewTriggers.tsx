@@ -1,11 +1,7 @@
 import DefaultLayout from '../../../layout/DefaultLayout.tsx';
 import 'primeicons/primeicons.css';
 import axios from 'axios';
-import {
-  useQuery,
-  useQueryClient,
-  UseQueryResult,
-} from '@tanstack/react-query';
+import { useQuery, UseQueryResult } from '@tanstack/react-query';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import Loader from '../../../common/Loader';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -36,6 +32,7 @@ import HighlightWrapper from '../../../components/Basic/HighlightWrapper.tsx';
 import highlightGenerator from '../../../common/highlightGenerator.ts';
 import { MeterGroup } from 'primereact/metergroup';
 import TableWrapper from '../../../components/Tables/TableWrapper.tsx';
+import useInitializeTableFilters from '../../../hooks/useInitializeTableFilters.tsx';
 
 const predefinedTriggerWords = [
   'Fall',
@@ -47,12 +44,36 @@ const predefinedTriggerWords = [
   'Weight Change',
   'IV Fluids',
 ];
-
+export const fetchTriggerWord = async (
+  organization_id: string,
+  route: string,
+  start: Date | null,
+  end: Date | null,
+  signal?: AbortSignal,
+) => {
+  if (!start || !end) {
+    return;
+  }
+  const params: { [key: string]: any } =
+    organization_id === 'AVHC'
+      ? {}
+      : {
+          from_date: start,
+          to_date: end,
+        };
+  const response = await axios.get(`${route}/trigger_final`, {
+    signal,
+    params,
+  });
+  return response.data;
+};
 export default function ReviewTriggers() {
-  const [isFirstRender, setIsFirstRender] = useState(false);
-
   const { route, user_applications_locations, user_data } =
     useContext(AuthContext);
+  const { locations } = user_applications_locations.find(
+    (d) => d['id'] === 'trigger_words',
+  ) || { locations: [] };
+  const initialFilter = useInitializeTableFilters();
 
   const initialTableState: TableState = {
     globalFilter: '',
@@ -75,15 +96,22 @@ export default function ReviewTriggers() {
     sorting: [],
     columnFilters:
       user_data.organization_id !== 'AVHC'
-        ? [
-            {
-              id: 'revision_date',
-              value: [
-                new Date(Date.now() - 1000 * 60 * 60 * 24).setHours(0, 0, 0, 0),
-                new Date().setHours(23, 59, 59, 999),
-              ],
-            },
-          ]
+        ? initialFilter.length > 0
+          ? initialFilter
+          : [
+              {
+                id: 'revision_date',
+                value: [
+                  new Date(Date.now() - 1000 * 60 * 60 * 24).setHours(
+                    0,
+                    0,
+                    0,
+                    0,
+                  ),
+                  new Date().setHours(23, 59, 59, 999),
+                ],
+              },
+            ]
         : [],
     columnPinning: {
       left: [],
@@ -130,7 +158,8 @@ export default function ReviewTriggers() {
     },
   };
 
-  const queryClient = useQueryClient();
+  const [tableState, setTableState] = useState<TableState>(initialTableState);
+
   const [initialFacetedCounts, setInitialFacetedCounts] = useState<
     Dictionary<number>
   >({});
@@ -144,26 +173,24 @@ export default function ReviewTriggers() {
           'revision_date',
         ]
       : ['facility_name', 'patient_name', 'trigger_word', 'revision_date'];
-  const [tableState, setTableState] = useState<TableState>(initialTableState);
 
-  const { locations } = user_applications_locations.find(
-    (d) => d['id'] === 'trigger_words',
-  ) || { locations: [] };
+  const [startValue, endValue] = useMemo(() => {
+    const revisionFilter = tableState.columnFilters.find(
+      (f) => f.id === 'revision_date',
+    ) as { id: string; value: any[] };
 
-  const fetchTriggerWord = async (signal?: AbortSignal) => {
-    const params: { [key: string]: any } =
-      user_data.organization_id === 'AVHC'
-        ? {}
-        : {
-            from_date: start,
-            to_date: end,
-          };
-    const response = await axios.get(`${route}/trigger_final`, {
-      signal,
-      params,
-    });
-    return response.data;
-  };
+    return [
+      revisionFilter?.value?.[0] ?? null,
+      revisionFilter?.value?.[1] ?? null,
+    ];
+  }, [tableState.columnFilters]);
+
+  const start = useMemo(
+    () => (startValue ? new Date(startValue) : null),
+    [startValue],
+  );
+
+  const end = useMemo(() => (endValue ? new Date(endValue) : null), [endValue]);
 
   const {
     isPending,
@@ -171,8 +198,15 @@ export default function ReviewTriggers() {
     data,
     error,
   }: UseQueryResult<TriggerAPI, unknown> = useQuery({
-    queryKey: ['trigger_word_view_trigger_word_detail_final', route],
-    queryFn: ({ signal }) => fetchTriggerWord(signal),
+    queryKey: [
+      'trigger_word_view_trigger_word_detail_final',
+      { start, end },
+      route,
+    ],
+    placeholderData: (prevData) => prevData,
+    enabled: Boolean(start && end && start <= end),
+    queryFn: ({ signal }) =>
+      fetchTriggerWord(user_data.organization_id, route, start, end, signal),
   });
 
   const { data: lastRefresh } = useQuery({
@@ -191,42 +225,20 @@ export default function ReviewTriggers() {
   const [selfDefinedKeywordsState, setSelfDefinedKeywordsState] = useState(
     data?.self_defined_keywords,
   );
-  const [startValue, endValue] = useMemo(() => {
-    if (user_data.organization_id === 'AVHC') {
-      return [
-        _.minBy(data?.data, 'revision_date')?.revision_date,
-        _.maxBy(data?.data, 'revision_date')?.revision_date,
-      ];
-    }
-    const revisionFilter = tableState.columnFilters.find(
-      (f) => f.id === 'revision_date',
-    ) as { id: string; value: any[] };
-    return [
-      revisionFilter?.value?.[0] ?? null,
-      revisionFilter?.value?.[1] ?? null,
-    ];
-  }, [tableState.columnFilters]);
-
-  const start = useMemo(
-    () => (startValue ? new Date(startValue) : null),
-    [startValue],
-  );
-
-  const end = useMemo(() => (endValue ? new Date(endValue) : null), [endValue]);
 
   useEffect(() => {
     setSelfDefinedKeywordsState(data?.self_defined_keywords);
   }, [data?.self_defined_keywords]);
-  useEffect(() => {
-    if (start && end && user_data.organization_id !== 'AVHC' && isFirstRender) {
-      queryClient.cancelQueries({
-        queryKey: ['trigger_word_view_trigger_word_detail_final', route],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ['trigger_word_view_trigger_word_detail_final', route],
-      });
-    }
-  }, [start, end]);
+  // useEffect(() => {
+  //   if (start && end && user_data.organization_id !== 'AVHC' && isFirstRender) {
+  //     queryClient.cancelQueries({
+  //       queryKey: ['trigger_word_view_trigger_word_detail_final', route],
+  //     });
+  //     queryClient.invalidateQueries({
+  //       queryKey: ['trigger_word_view_trigger_word_detail_final', route],
+  //     });
+  //   }
+  // }, [start, end]);
 
   const columns = useMemo<ColumnDef<TriggerFinal>[]>(
     () => [
@@ -614,7 +626,6 @@ export default function ReviewTriggers() {
     ],
     [],
   );
-  const [isRefetching, setIsRefetching] = useState(false);
 
   useEffect(() => {
     if (localStorage.getItem('clearStorage') !== '6') {
@@ -673,7 +684,7 @@ export default function ReviewTriggers() {
     );
   }, [tableState.columnVisibility]);
 
-  if (isPending || isRefetching) {
+  if (isPending) {
     return <Loader />;
   }
   if (isError) {
@@ -699,17 +710,35 @@ export default function ReviewTriggers() {
                 {table.getFilteredRowModel().rows.length} of {total_count}{' '}
                 {total_count >= 1 ? `progress notes` : 'progress note'}, ranging
                 from{' '}
-                {(start ?? new Date()).toLocaleString('en-US', {
-                  month: 'short',
-                  day: 'numeric',
-                  year: 'numeric',
-                })}{' '}
+                {user_data.organization_id !== 'AVHC'
+                  ? (start ?? new Date()).toLocaleString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric',
+                    })
+                  : new Date(
+                      _.minBy(data?.data, 'revision_date')?.revision_date ??
+                        new Date(),
+                    ).toLocaleString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric',
+                    })}{' '}
                 to{' '}
-                {(end ?? new Date()).toLocaleString('en-US', {
-                  month: 'short',
-                  day: 'numeric',
-                  year: 'numeric',
-                })}{' '}
+                {user_data.organization_id !== 'AVHC'
+                  ? (end ?? new Date()).toLocaleString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric',
+                    })
+                  : new Date(
+                      _.maxBy(data?.data, 'revision_date')?.revision_date ??
+                        new Date(),
+                    ).toLocaleString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric',
+                    })}{' '}
                 in view.
                 <br />
                 Data last refreshed as of{' '}
@@ -980,13 +1009,11 @@ export default function ReviewTriggers() {
             download={true}
             tableSetting={true}
             initialTableState={initialTableState}
-            setIsRefetching={setIsRefetching}
             splitter={true}
             twoPanel={Object.keys(tableState.expanded).length > 0}
             placeholder={
               'Search for any text associated with a progress note, including the patient’s name, facility, the clinician who wrote the note.'
             }
-            setIsFirstRender={setIsFirstRender}
           />
         </div>
       </DefaultLayout>

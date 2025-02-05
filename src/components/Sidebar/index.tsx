@@ -1,10 +1,9 @@
 import { useContext, useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from '@tanstack/react-router';
-import SidebarLinkGroup from './SidebarLinkGroup';
+// import SidebarLinkGroup from './SidebarLinkGroup';
 import Logo from '../../images/logo/logo.png';
 import Mark from '../../images/logo/mark.png';
 import { CurrencyDollarIcon } from '@heroicons/react/24/outline';
-import CaretDown from '../../images/icon/CaretDown.tsx';
 import { AuthContext } from '../AuthWrapper.tsx';
 import { FileText, HardDrives } from '@phosphor-icons/react';
 import clsx from 'clsx';
