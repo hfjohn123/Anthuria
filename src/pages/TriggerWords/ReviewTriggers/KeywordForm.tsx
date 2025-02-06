@@ -75,6 +75,7 @@ const KeywordForm = forwardRef<
     callback?: () => void;
     isNew?: boolean;
     setSelfDefinedKeywordsState?: any;
+    resetTableFilters?: () => void;
   }
 >(
   (
@@ -86,6 +87,7 @@ const KeywordForm = forwardRef<
       callback,
       isNew,
       setSelfDefinedKeywordsState,
+      resetTableFilters,
     },
     ref,
   ) => {
@@ -347,7 +349,7 @@ const KeywordForm = forwardRef<
               pt={{
                 container: () => 'flex flex-wrap gap-1.5 w-full ',
                 token: () =>
-                  'has-[.bg-yellow-200]:bg-yellow-200 has-[.bg-green-200]:bg-green-200 has-[.bg-blue-200]:bg-blue-200 has-[.bg-pink-200]:bg-pink-200 has-[.bg-purple-200]:bg-purple-200 has-[.bg-orange-200]:bg-orange-200',
+                  'has-[.bg-yellow-200]:bg-yellow-200 has-[.bg-green-200]:bg-green-200 has-[.bg-blue-200]:bg-blue-200 has-[.bg-pink-200]:bg-pink-200 has-[.bg-purple-200]:bg-purple-200 has-[.bg-orange-200]:bg-orange-200 has-[.bg-teal-200]:bg-teal-200',
               }}
               itemTemplate={(item) =>
                 customTemplate(item, newTriggerWord.keyword_list)
@@ -400,6 +402,8 @@ const KeywordForm = forwardRef<
               <button
                 onClick={(event) => {
                   event.preventDefault();
+                  resetTableFilters?.();
+
                   removeTemporary.mutate({
                     facilities: initialNewTrigger.internal_facility_id,
                   });

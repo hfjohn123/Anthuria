@@ -178,6 +178,7 @@ export default function EvidenceModal({
         pt={{
           content: () => 'pr-0 pb-0',
         }}
+        blockScroll
         onMaximize={(e) => setIsMaximized(e.maximized)}
       >
         {/* Navigation buttons */}

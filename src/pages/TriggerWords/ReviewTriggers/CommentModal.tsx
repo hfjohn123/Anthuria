@@ -50,6 +50,7 @@ export default function CommentModal({
         visible={showModal}
         dismissableMask
         resizable
+        blockScroll
         className="w-[60rem] overflow-hidden"
         onHide={() => {
           if (!showModal) return;

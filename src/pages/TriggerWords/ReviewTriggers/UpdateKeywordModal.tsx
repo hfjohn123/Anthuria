@@ -16,6 +16,7 @@ export default function UpdateKeywordModal({
   initialNewTrigger,
   header,
   setSelfDefinedKeywordsState,
+  resetTableFilters,
 }: {
   data: TriggerFinal[];
   trigger_words: string[];
@@ -27,6 +28,7 @@ export default function UpdateKeywordModal({
   };
   header: string;
   setSelfDefinedKeywordsState?: any;
+  resetTableFilters?: () => void;
 }) {
   const toast = useRef<Toast>(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -55,6 +57,7 @@ export default function UpdateKeywordModal({
           dismissableMask
           resizable
           className="w-[60rem] overflow-hidden"
+          blockScroll
           onHide={() => {
             if (!isOpen) return;
             setIsOpen(false);
@@ -77,6 +80,7 @@ export default function UpdateKeywordModal({
             ref={formRef}
             callback={() => setIsOpen(false)}
             setSelfDefinedKeywordsState={setSelfDefinedKeywordsState}
+            resetTableFilters={resetTableFilters}
           />
         </Dialog>
       </div>

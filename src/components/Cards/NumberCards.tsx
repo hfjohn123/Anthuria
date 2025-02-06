@@ -15,6 +15,7 @@ export default function NumberCards({
   trigger_words = [],
   initialNewTrigger,
   setSelfDefinedKeywordsState,
+  resetTableFilters,
   ...props
 }: {
   className?: string;
@@ -24,6 +25,7 @@ export default function NumberCards({
   keywordModal?: boolean;
   keywordList?: string[];
   onClick?: () => void;
+  resetTableFilters?: () => void;
   [key: string]: any;
 } & (
   | {
@@ -90,6 +92,7 @@ export default function NumberCards({
                 initialNewTrigger={initialNewTrigger}
                 header={'Keywords for ' + title}
                 setSelfDefinedKeywordsState={setSelfDefinedKeywordsState}
+                resetTableFilters={resetTableFilters}
               />
             )}
           </div>

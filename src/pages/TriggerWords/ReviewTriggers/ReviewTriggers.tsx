@@ -162,6 +162,15 @@ export default function ReviewTriggers() {
 
   const [tableState, setTableState] = useState<TableState>(initialTableState);
 
+  const resetTableFilters = () => {
+    setTableState((prevState) => ({
+      ...prevState,
+      columnFilters: prevState.columnFilters.filter(
+        (f) => f.id === 'revision_date',
+      ),
+    }));
+  };
+
   const [initialFacetedCounts, setInitialFacetedCounts] = useState<
     Dictionary<number>
   >({});
@@ -930,6 +939,7 @@ export default function ReviewTriggers() {
                   return (
                     <NumberCards
                       keywordModal
+                      resetTableFilters={resetTableFilters}
                       editable
                       title={kw.group_name}
                       value={
@@ -1056,6 +1066,7 @@ export default function ReviewTriggers() {
             table={table}
             tableState={tableState}
             setTableState={setTableState}
+            resetTableFilters={resetTableFilters}
             permanentColumnFilters={PERMANENT_COLUMN_FILTERS}
             renderExpandedRow={TriggerNoteDetail}
             download={true}

@@ -35,6 +35,7 @@ export default function TableWrapper({
   placeholder = 'Global Search...',
   splitter = false,
   twoPanel = false,
+  resetTableFilters,
   ...rest
 }: {
   table: Table<any>;
@@ -51,6 +52,7 @@ export default function TableWrapper({
   searchRight?: React.ReactNode;
   splitter?: boolean;
   twoPanel?: boolean;
+  resetTableFilters?: () => void;
   [key: string]: any;
 }) {
   const navigate = useNavigate();
@@ -190,7 +192,6 @@ export default function TableWrapper({
                 table={table}
                 tableState={tableState}
                 setTableState={setTableState}
-                initialTableState={initialTableState}
               />
             </div>
           )}

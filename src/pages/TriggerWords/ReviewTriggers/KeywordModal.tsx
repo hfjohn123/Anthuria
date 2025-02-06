@@ -35,6 +35,7 @@ export default function KeywordModal({
           resizable
           className="w-[60rem]"
           dismissableMask
+          blockScroll={true}
           onHide={() => {
             setVisible(false);
           }}

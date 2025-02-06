@@ -59,7 +59,6 @@ export default function MDSCommentModal({
     },
     onMutate: async () => {
       setThumbDownState(is_thumb_down === 1 ? 0 : 1);
-      console.log('test');
       setThumbUpState(0);
 
       await queryClient.cancelQueries({
@@ -146,6 +145,7 @@ export default function MDSCommentModal({
         header="What was inaccurate about this suggestion?"
         visible={showModal}
         dismissableMask
+        blockScroll
         resizable
         className="w-[60rem] overflow-hidden"
         onHide={() => {

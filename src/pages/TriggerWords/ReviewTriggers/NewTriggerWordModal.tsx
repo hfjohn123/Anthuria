@@ -57,6 +57,7 @@ export default function NewTriggerWordModal({
           if (!isOpen) return;
           setIsOpen(false);
         }}
+        blockScroll
         maximizable
       >
         <KeywordForm
