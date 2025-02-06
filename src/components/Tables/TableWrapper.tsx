@@ -114,6 +114,22 @@ export default function TableWrapper({
         pageSize: prev.pagination.pageSize,
       },
     }));
+    if (
+      Object.keys(tableState.expanded).length > 0 &&
+      splitter &&
+      screenWidth >= 1024
+    ) {
+      if (
+        Object.values(
+          table.getRow(Object.keys(tableState.expanded)[0]).columnFilters,
+        ).some((f) => !f)
+      ) {
+        setTableState((prev) => ({
+          ...prev,
+          expanded: {},
+        }));
+      }
+    }
   }, [tableState.columnFilters, tableState.globalFilter]);
   return (
     <div>
