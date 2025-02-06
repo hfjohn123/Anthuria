@@ -290,8 +290,6 @@ export default function ReviewTriggers() {
     });
   }
 
-  console.log(isPending);
-
   const [selfDefinedKeywordsState, setSelfDefinedKeywordsState] = useState(
     data?.self_defined_keywords,
   );
