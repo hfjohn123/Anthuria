@@ -30,12 +30,15 @@ export default function Home() {
   );
 
   usePrefetchQuery({
-    queryKey: [
-      'trigger_word_view_trigger_word_detail_final',
-      twentyFourHours,
-      today,
-      route,
-    ],
+    queryKey:
+      user_data.organization_id !== 'AVHC'
+        ? [
+            'trigger_word_view_trigger_word_detail_final',
+            twentyFourHours,
+            today,
+            route,
+          ]
+        : ['trigger_word_view_trigger_word_detail_final', route],
     queryFn: ({ signal }) =>
       fetchTriggerWord(
         user_data.organization_id,

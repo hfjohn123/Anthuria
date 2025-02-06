@@ -56,9 +56,6 @@ export const fetchTriggerWord = async (
   end: Date | null,
   signal?: AbortSignal,
 ) => {
-  if (!start || !end) {
-    return;
-  }
   const params: { [key: string]: any } =
     organization_id === 'AVHC'
       ? {}
@@ -203,14 +200,14 @@ export default function ReviewTriggers() {
     data,
     error,
   }: UseQueryResult<TriggerAPI, unknown> = useQuery({
-    queryKey: [
-      'trigger_word_view_trigger_word_detail_final',
-      start,
-      end,
-      route,
-    ],
+    queryKey:
+      user_data.organization_id !== 'AVHC'
+        ? ['trigger_word_view_trigger_word_detail_final', start, end, route]
+        : ['trigger_word_view_trigger_word_detail_final', route],
     placeholderData: (prevData) => prevData,
-    enabled: Boolean(start && end && start <= end),
+    enabled: Boolean(
+      user_data.organization_id === 'AVHC' || (start && end && start <= end),
+    ),
     queryFn: ({ signal }) =>
       fetchTriggerWord(user_data.organization_id, route, start, end, signal),
   });
@@ -238,57 +235,62 @@ export default function ReviewTriggers() {
     staleTime: 1000 * 60 * 5, // 5 minutes
     gcTime: 1000 * 60 * 10, // Longer cache time
   });
-  usePrefetchQuery({
-    queryKey: [
-      'trigger_word_view_trigger_word_detail_final',
-      twentyFourHours,
-      today,
-      route,
-    ],
-    queryFn: ({ signal }) =>
-      fetchTriggerWord(
-        user_data.organization_id,
-        route,
+
+  if (user_data.organization_id !== 'AVHC') {
+    usePrefetchQuery({
+      queryKey: [
+        'trigger_word_view_trigger_word_detail_final',
         twentyFourHours,
         today,
-        signal,
-      ),
-    staleTime: 5 * 60 * 1000,
-  });
-  usePrefetchQuery({
-    queryKey: [
-      'trigger_word_view_trigger_word_detail_final',
-      seventyTwoHours,
-      today,
-      route,
-    ],
-    queryFn: ({ signal }) =>
-      fetchTriggerWord(
-        user_data.organization_id,
         route,
+      ],
+      queryFn: ({ signal }) =>
+        fetchTriggerWord(
+          user_data.organization_id,
+          route,
+          twentyFourHours,
+          today,
+          signal,
+        ),
+      staleTime: 5 * 60 * 1000,
+    });
+    usePrefetchQuery({
+      queryKey: [
+        'trigger_word_view_trigger_word_detail_final',
         seventyTwoHours,
         today,
-        signal,
-      ),
-    staleTime: 5 * 60 * 1000,
-  });
-
-  usePrefetchQuery({
-    queryKey: [
-      'trigger_word_view_trigger_word_detail_final',
-      aWeekAgo,
-      today,
-      route,
-    ],
-    queryFn: ({ signal }) =>
-      fetchTriggerWord(
-        user_data.organization_id,
         route,
+      ],
+      queryFn: ({ signal }) =>
+        fetchTriggerWord(
+          user_data.organization_id,
+          route,
+          seventyTwoHours,
+          today,
+          signal,
+        ),
+      staleTime: 5 * 60 * 1000,
+    });
+
+    usePrefetchQuery({
+      queryKey: [
+        'trigger_word_view_trigger_word_detail_final',
         aWeekAgo,
         today,
-        signal,
-      ),
-  });
+        route,
+      ],
+      queryFn: ({ signal }) =>
+        fetchTriggerWord(
+          user_data.organization_id,
+          route,
+          aWeekAgo,
+          today,
+          signal,
+        ),
+    });
+  }
+
+  console.log(isPending);
 
   const [selfDefinedKeywordsState, setSelfDefinedKeywordsState] = useState(
     data?.self_defined_keywords,
@@ -560,7 +562,6 @@ export default function ReviewTriggers() {
                     ?.value || []) as string[]),
                   info.table.getState().globalFilter,
                 ]).map((segment, index) => {
-                  console.log(segment);
                   return (
                     <span
                       key={index}
