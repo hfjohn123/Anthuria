@@ -104,7 +104,7 @@ export default function TableWrapper({
     });
 
     navigate({
-      replace: true,
+      // @ts-expect-error Don't know why
       search: searchParams,
     });
     setTableState((prev) => ({
