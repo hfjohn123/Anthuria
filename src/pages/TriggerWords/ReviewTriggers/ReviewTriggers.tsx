@@ -1,7 +1,11 @@
 import DefaultLayout from '../../../layout/DefaultLayout.tsx';
 import 'primeicons/primeicons.css';
 import axios from 'axios';
-import { useQuery, UseQueryResult } from '@tanstack/react-query';
+import {
+  usePrefetchQuery,
+  useQuery,
+  UseQueryResult,
+} from '@tanstack/react-query';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import Loader from '../../../common/Loader';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -200,7 +204,8 @@ export default function ReviewTriggers() {
   }: UseQueryResult<TriggerAPI, unknown> = useQuery({
     queryKey: [
       'trigger_word_view_trigger_word_detail_final',
-      { start, end },
+      start,
+      end,
       route,
     ],
     placeholderData: (prevData) => prevData,
@@ -208,6 +213,17 @@ export default function ReviewTriggers() {
     queryFn: ({ signal }) =>
       fetchTriggerWord(user_data.organization_id, route, start, end, signal),
   });
+
+  const today = new Date(new Date().setHours(23, 59, 59, 999));
+  const twentyFourHours = new Date(
+    new Date(Date.now() - 1000 * 60 * 60 * 24).setHours(0, 0, 0, 0),
+  );
+  const seventyTwoHours = new Date(
+    new Date(Date.now() - 1000 * 60 * 60 * 72).setHours(0, 0, 0, 0),
+  );
+  const aWeekAgo = new Date(
+    new Date(Date.now() - 1000 * 60 * 60 * 24 * 7).setHours(0, 0, 0, 0),
+  );
 
   const { data: lastRefresh } = useQuery({
     queryKey: ['/dim/view_module_update_time', 'trigger_words', route],
@@ -220,6 +236,57 @@ export default function ReviewTriggers() {
     networkMode: 'offlineFirst', // Lower priority
     staleTime: 1000 * 60 * 5, // 5 minutes
     gcTime: 1000 * 60 * 10, // Longer cache time
+  });
+  usePrefetchQuery({
+    queryKey: [
+      'trigger_word_view_trigger_word_detail_final',
+      twentyFourHours,
+      today,
+      route,
+    ],
+    queryFn: ({ signal }) =>
+      fetchTriggerWord(
+        user_data.organization_id,
+        route,
+        twentyFourHours,
+        today,
+        signal,
+      ),
+    staleTime: 5 * 60 * 1000,
+  });
+  usePrefetchQuery({
+    queryKey: [
+      'trigger_word_view_trigger_word_detail_final',
+      seventyTwoHours,
+      today,
+      route,
+    ],
+    queryFn: ({ signal }) =>
+      fetchTriggerWord(
+        user_data.organization_id,
+        route,
+        seventyTwoHours,
+        today,
+        signal,
+      ),
+    staleTime: 5 * 60 * 1000,
+  });
+
+  usePrefetchQuery({
+    queryKey: [
+      'trigger_word_view_trigger_word_detail_final',
+      aWeekAgo,
+      today,
+      route,
+    ],
+    queryFn: ({ signal }) =>
+      fetchTriggerWord(
+        user_data.organization_id,
+        route,
+        aWeekAgo,
+        today,
+        signal,
+      ),
   });
 
   const [selfDefinedKeywordsState, setSelfDefinedKeywordsState] = useState(

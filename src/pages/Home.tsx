@@ -7,10 +7,12 @@ import { usePrefetchQuery, useQuery } from '@tanstack/react-query';
 import Loader from '../common/Loader';
 import { AuthContext } from '../components/AuthWrapper';
 import { fetchTriggerWord } from './TriggerWords/ReviewTriggers/ReviewTriggers.tsx';
+
 export default function Home() {
   const recent = JSON.parse(localStorage.getItem('recent') || '[]');
   const { user_applications_locations, user_data, route } =
     useContext(AuthContext);
+
   const {
     data: stars,
     isPending,
@@ -18,65 +20,31 @@ export default function Home() {
     isError,
   } = useQuery({
     queryKey: ['user_stars', route],
-    queryFn: () => axios.get(`${route}/user_stars`).then((res) => res.data),
-    retryDelay: 3000,
+    queryFn: ({ signal }) =>
+      axios.get(`${route}/user_stars`, { signal }).then((res) => res.data),
   });
-  // const today = new Date(new Date().setHours(23, 59, 59, 999));
-  // const twentyFourHours = new Date(
-  //   new Date(Date.now() - 1000 * 60 * 60 * 24).setHours(0, 0, 0, 0),
-  // );
-  // const fourtyEightHours = new Date(
-  //   new Date(Date.now() - 1000 * 60 * 60 * 48).setHours(0, 0, 0, 0),
-  // );
-  // const aWeekAgo = new Date(
-  //   new Date(Date.now() - 1000 * 60 * 60 * 24 * 7).setHours(0, 0, 0, 0),
-  // );
-  //
-  // usePrefetchQuery({
-  //   queryKey: [
-  //     'trigger_word_view_trigger_word_detail_final',
-  //     { twentyFourHours, today },
-  //     route,
-  //   ],
-  //   queryFn: ({ signal }) =>
-  //     fetchTriggerWord(
-  //       user_data.organization_id,
-  //       route,
-  //       twentyFourHours,
-  //       today,
-  //       signal,
-  //     ),
-  // });
-  // usePrefetchQuery({
-  //   queryKey: [
-  //     'trigger_word_view_trigger_word_detail_final',
-  //     { fourtyEightHours, today },
-  //     route,
-  //   ],
-  //   queryFn: ({ signal }) =>
-  //     fetchTriggerWord(
-  //       user_data.organization_id,
-  //       route,
-  //       fourtyEightHours,
-  //       today,
-  //       signal,
-  //     ),
-  // });
-  // usePrefetchQuery({
-  //   queryKey: [
-  //     'trigger_word_view_trigger_word_detail_final',
-  //     { aWeekAgo, today },
-  //     route,
-  //   ],
-  //   queryFn: ({ signal }) =>
-  //     fetchTriggerWord(
-  //       user_data.organization_id,
-  //       route,
-  //       aWeekAgo,
-  //       today,
-  //       signal,
-  //     ),
-  // });
+
+  const today = new Date(new Date().setHours(23, 59, 59, 999));
+  const twentyFourHours = new Date(
+    new Date(Date.now() - 1000 * 60 * 60 * 24).setHours(0, 0, 0, 0),
+  );
+
+  usePrefetchQuery({
+    queryKey: [
+      'trigger_word_view_trigger_word_detail_final',
+      twentyFourHours,
+      today,
+      route,
+    ],
+    queryFn: ({ signal }) =>
+      fetchTriggerWord(
+        user_data.organization_id,
+        route,
+        twentyFourHours,
+        today,
+        signal,
+      ),
+  });
 
   if (isPending) {
     return <Loader />;
