@@ -37,6 +37,7 @@ import highlightGenerator from '../../../common/highlightGenerator.ts';
 import { MeterGroup } from 'primereact/metergroup';
 import TableWrapper from '../../../components/Tables/TableWrapper.tsx';
 import useInitializeTableFilters from '../../../hooks/useInitializeTableFilters.tsx';
+import highlightColors from '../../../common/highlightColors.ts';
 
 const predefinedTriggerWords = [
   'Fall',
@@ -296,16 +297,6 @@ export default function ReviewTriggers() {
   useEffect(() => {
     setSelfDefinedKeywordsState(data?.self_defined_keywords);
   }, [data?.self_defined_keywords]);
-  // useEffect(() => {
-  //   if (start && end && user_data.organization_id !== 'AVHC' && isFirstRender) {
-  //     queryClient.cancelQueries({
-  //       queryKey: ['trigger_word_view_trigger_word_detail_final', route],
-  //     });
-  //     queryClient.invalidateQueries({
-  //       queryKey: ['trigger_word_view_trigger_word_detail_final', route],
-  //     });
-  //   }
-  // }, [start, end]);
 
   const columns = useMemo<ColumnDef<TriggerFinal>[]>(
     () => [
@@ -574,7 +565,9 @@ export default function ReviewTriggers() {
                     className={clsx(
                       'px-2.5 rounded-lg',
                       segment.isMatch && segment.termIndex !== undefined
-                        ? `bg-yellow-200`
+                        ? highlightColors[
+                            segment.termIndex % highlightColors.length
+                          ]
                         : 'bg-slate-100',
                     )}
                     title={
@@ -766,6 +759,10 @@ export default function ReviewTriggers() {
     .getCoreRowModel()
     .rows.filter((row) => row.original.trigger_words.length === 0).length;
 
+  const triggerWordFilter =
+    (tableState.columnFilters.find((f) => f.id === 'trigger_word')
+      ?.value as string[]) || [];
+
   return (
     data && (
       <DefaultLayout>
@@ -821,10 +818,6 @@ export default function ReviewTriggers() {
                   },
                 )}
                 .
-                {/*See additional notes by changing the date range of revision*/}
-                {/*date. <br />*/}
-                {/*Filter results by trigger category, by facility name, by patient*/}
-                {/*name, revision date, or others.*/}
               </p>
             </div>
             <MeterGroup
@@ -863,12 +856,10 @@ export default function ReviewTriggers() {
                 className={clsx(
                   'col-span-1',
                   'cursor-pointer',
-                  (
-                    (tableState.columnFilters.find(
-                      ({ id }) => id === 'trigger_word',
-                    )?.value as string[]) || []
-                  ).includes(word)
-                    ? 'bg-slate-300 dark:bg-slate-600 '
+                  triggerWordFilter.includes(word)
+                    ? highlightColors[
+                        triggerWordFilter.indexOf(word) % highlightColors.length
+                      ]
                     : 'bg-whiten dark:bg-boxdark-2 hover:bg-slate-200 hover:dark:bg-slate-700',
                 )}
                 id={'NumberCards-' + word.replace(' ', '-').replace(/\W/g, '-')}
@@ -881,10 +872,7 @@ export default function ReviewTriggers() {
                 initialValue={initialFacetedCounts[word] || 0}
                 title={word}
                 onClick={() => {
-                  let filter =
-                    (tableState.columnFilters.find(
-                      ({ id }) => id === 'trigger_word',
-                    )?.value as string[]) || [];
+                  let filter = triggerWordFilter;
                   if (filter.includes(word)) {
                     filter = filter.filter((f) => f !== word);
                   } else {
@@ -950,19 +938,15 @@ export default function ReviewTriggers() {
                       className={clsx(
                         'col-span-1',
                         'cursor-pointer',
-                        (
-                          (tableState.columnFilters.find(
-                            ({ id }) => id === 'trigger_word',
-                          )?.value as string[]) || []
-                        ).includes(kw.group_name)
-                          ? 'bg-slate-300 dark:bg-slate-600 '
+                        triggerWordFilter.includes(kw.group_name)
+                          ? highlightColors[
+                              triggerWordFilter.indexOf(kw.group_name) %
+                                highlightColors.length
+                            ]
                           : 'bg-whiten dark:bg-boxdark-2 hover:bg-slate-200 hover:dark:bg-slate-700',
                       )}
                       onClick={() => {
-                        let filter =
-                          (tableState.columnFilters.find(
-                            ({ id }) => id === 'trigger_word',
-                          )?.value as string[]) || [];
+                        let filter = triggerWordFilter;
                         if (filter.includes(kw.group_name)) {
                           filter = filter.filter((f) => f !== kw.group_name);
                         } else {
@@ -1007,12 +991,11 @@ export default function ReviewTriggers() {
               className={clsx(
                 'col-span-1',
                 'cursor-pointer',
-                (
-                  (tableState.columnFilters.find(
-                    ({ id }) => id === 'trigger_word',
-                  )?.value as string[]) || []
-                ).includes('Other')
-                  ? 'bg-slate-300 dark:bg-slate-600 '
+                triggerWordFilter.includes('Other')
+                  ? highlightColors[
+                      triggerWordFilter.indexOf('Other') %
+                        highlightColors.length
+                    ]
                   : 'bg-whiten dark:bg-boxdark-2 hover:bg-slate-200 hover:dark:bg-slate-700',
               )}
               id={
@@ -1027,10 +1010,7 @@ export default function ReviewTriggers() {
               initialValue={uncategorized_count}
               title={'Other'}
               onClick={() => {
-                let filter =
-                  (tableState.columnFilters.find(
-                    ({ id }) => id === 'trigger_word',
-                  )?.value as string[]) || [];
+                let filter = triggerWordFilter;
                 if (filter.includes('Other')) {
                   filter = filter.filter((f) => f !== 'Other');
                 } else {

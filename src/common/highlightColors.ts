@@ -5,5 +5,6 @@ const highlightColors = [
   'bg-pink-200',
   'bg-purple-200',
   'bg-orange-200',
+  'bg-teal-200',
 ];
 export default highlightColors;
