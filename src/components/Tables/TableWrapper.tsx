@@ -190,6 +190,7 @@ export default function TableWrapper({
                 table={table}
                 tableState={tableState}
                 setTableState={setTableState}
+                initialTableState={initialTableState}
               />
             </div>
           )}

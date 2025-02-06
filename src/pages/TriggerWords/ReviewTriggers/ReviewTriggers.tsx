@@ -559,24 +559,30 @@ export default function ReviewTriggers() {
                     .columnFilters.find((f) => f.id === 'trigger_word')
                     ?.value || []) as string[]),
                   info.table.getState().globalFilter,
-                ]).map((segment, index) => (
-                  <span
-                    key={index}
-                    className={clsx(
-                      'px-2.5 rounded-lg',
-                      segment.isMatch && segment.termIndex !== undefined
-                        ? highlightColors[
-                            segment.termIndex % highlightColors.length
-                          ]
-                        : 'bg-slate-100',
-                    )}
-                    title={
-                      segment.isMatch ? `Match: ${segment.term}` : undefined
-                    }
-                  >
-                    {segment.text}
-                  </span>
-                )),
+                ]).map((segment, index) => {
+                  console.log(segment);
+                  return (
+                    <span
+                      key={index}
+                      className={clsx(
+                        'px-2.5 rounded-lg',
+                        segment.isMatch &&
+                          segment.termIndex !== undefined &&
+                          (segment.term === segment.text ||
+                            segment.term === info.table.getState().globalFilter)
+                          ? highlightColors[
+                              segment.termIndex % highlightColors.length
+                            ]
+                          : 'bg-slate-100',
+                      )}
+                      title={
+                        segment.isMatch ? `Match: ${segment.term}` : undefined
+                      }
+                    >
+                      {segment.text}
+                    </span>
+                  );
+                }),
               )}
             </div>
           );

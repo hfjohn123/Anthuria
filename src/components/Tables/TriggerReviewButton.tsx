@@ -8,6 +8,7 @@ import CommentModal from '../../pages/TriggerWords/ReviewTriggers/CommentModal.t
 import usePutComment from '../../hooks/interface/usePutComment.ts';
 import { AuthContext } from '../AuthWrapper.tsx';
 import { useQueryClient } from '@tanstack/react-query';
+import highlightColors from '../../common/highlightColors.ts';
 
 export default function TriggerReviewButton({
   t,
@@ -44,8 +45,11 @@ export default function TriggerReviewButton({
           key={index}
           className={clsx(
             'px-2.5 rounded-lg',
-            segment.isMatch && segment.termIndex !== undefined
-              ? `bg-yellow-200`
+            segment.isMatch &&
+              segment.termIndex !== undefined &&
+              (segment.term === segment.text ||
+                segment.term === tableState.globalFilter)
+              ? highlightColors[segment.termIndex % highlightColors.length]
               : 'bg-slate-300',
           )}
           title={segment.isMatch ? `Match: ${segment.term}` : undefined}

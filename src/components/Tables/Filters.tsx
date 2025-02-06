@@ -16,6 +16,7 @@ type FilterProps = {
   permanentColumnFilters: string[];
   setTableState: React.Dispatch<React.SetStateAction<TableState>>;
   tableState: TableState;
+  initialTableState: TableState;
 };
 
 export default function Filters({
@@ -23,6 +24,7 @@ export default function Filters({
   permanentColumnFilters,
   setTableState,
   tableState,
+  initialTableState,
 }: FilterProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const { user_data } = useContext(AuthContext);
@@ -447,7 +449,11 @@ export default function Filters({
           <button
             className="text-sm"
             onClick={() =>
-              setTableState((prev) => ({ ...prev, columnFilters: [] }))
+              setTableState((prev) => ({
+                ...prev,
+                columnFilters: initialTableState.columnFilters,
+                globalFilter: initialTableState.globalFilter,
+              }))
             }
           >
             Clear all

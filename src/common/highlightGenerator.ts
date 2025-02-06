@@ -3,6 +3,7 @@ import stemFiltering from './stemFiltering.ts';
 export default function highlightGenerator(
   text: string,
   searchTerms: string[],
+  numberCard?: boolean[],
 ) {
   const findMatches = () => {
     let segments: {
