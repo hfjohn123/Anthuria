@@ -114,7 +114,7 @@ export function AppTile({ title, stars, link, icon, id }: AppTileProps) {
         />
       ) : (
         <div className="flex h-11.5 w-11.5 items-center justify-center rounded-full bg-meta-2 dark:bg-meta-4 font-bold">
-          {title[0].toUpperCase()}
+          {title ? title[0].toUpperCase() : ' '}
         </div>
       )}
 
