@@ -122,7 +122,7 @@ export default function Filters({
                   (
                     tableState.columnFilters.find((f) => f.id === filter)
                       ?.value as string
-                  ).length === 0 &&
+                  )?.length === 0 &&
                     setTableState((prev) => ({
                       ...prev,
                       columnFilters: prev.columnFilters.filter(

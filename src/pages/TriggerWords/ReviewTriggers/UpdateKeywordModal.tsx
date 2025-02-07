@@ -66,13 +66,13 @@ export default function UpdateKeywordModal({
             if (!isOpen) return;
             setIsOpen(false);
           }}
-          onClick={(event) => {
-            if (
-              !(event.target as HTMLElement).className.includes('p-multiselect')
-            ) {
-              formRef.current?.hide();
-            }
-          }}
+          // onClick={(event) => {
+          //   if (
+          //     !(event.target as HTMLElement).className.includes('p-multiselect')
+          //   ) {
+          //     formRef.current?.hide();
+          //   }
+          // }}
           maximizable
         >
           <KeywordForm
