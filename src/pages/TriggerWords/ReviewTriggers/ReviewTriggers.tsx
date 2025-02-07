@@ -279,7 +279,6 @@ export default function ReviewTriggers() {
           today,
           signal,
         ),
-      staleTime: 5 * 60 * 1000,
     });
     usePrefetchQuery({
       queryKey: [
@@ -296,7 +295,6 @@ export default function ReviewTriggers() {
           today,
           signal,
         ),
-      staleTime: 5 * 60 * 1000,
     });
 
     usePrefetchQuery({
