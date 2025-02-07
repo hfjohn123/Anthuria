@@ -311,7 +311,7 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
       href="/themes/lara-light-blue/theme.css"
     />
     <SuperTokensWrapper>
-      <PrimeReactProvider>
+      <PrimeReactProvider value={{ hideOverlaysOnDocumentScrolling: true }}>
         <RouterProvider router={router} />
       </PrimeReactProvider>
     </SuperTokensWrapper>

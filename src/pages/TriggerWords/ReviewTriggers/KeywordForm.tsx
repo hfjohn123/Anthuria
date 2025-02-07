@@ -307,6 +307,7 @@ const KeywordForm = forwardRef<
               value={newTriggerWord.internal_facility_id}
               optionLabel="label"
               optionValue="value"
+              // appendTo="self"
               display="chip"
               ref={ref}
               onChange={(e) => {
