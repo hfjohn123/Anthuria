@@ -250,14 +250,6 @@ export default function FunctionalScoreTable({
           </td>
         );
       },
-
-      // footer: () => {
-      //   return (
-      //     <td className="py-2 px-4  border-r  last:border-r-0 font-medium">
-      //       Case Mix Group: {data.mix_group}
-      //     </td>
-      //   );
-      // },
     },
   ];
 
@@ -315,7 +307,7 @@ export default function FunctionalScoreTable({
   return (
     <div className={clsx('flex flex-col', data.function_score_all && 'gap-3')}>
       <p className="font-semibold">
-        Functional Score: {data.final_score || 'Not Available (99)'}
+        Functional Score: {patientInfo?.nursing_fs || 'Not Available (99)'}
       </p>
       {data.function_score_all ? (
         <SmallTableWrapper
