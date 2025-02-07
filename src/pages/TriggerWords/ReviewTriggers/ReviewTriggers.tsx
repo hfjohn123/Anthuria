@@ -34,10 +34,10 @@ import _, { Dictionary } from 'lodash';
 import { CheckCircle, XCircle } from '@phosphor-icons/react';
 import HighlightWrapper from '../../../components/Basic/HighlightWrapper.tsx';
 import highlightGenerator from '../../../common/highlightGenerator.ts';
-import { MeterGroup } from 'primereact/metergroup';
 import TableWrapper from '../../../components/Tables/TableWrapper.tsx';
 import useInitializeTableFilters from '../../../hooks/useInitializeTableFilters.tsx';
 import highlightColors from '../../../common/highlightColors.ts';
+import SmallMeterGroup from '../../../components/Charts/SmallMeterGroup.tsx';
 
 const triggerExplanation: { [key: string]: string } = {
   'Unwanted Behavior':
@@ -87,6 +87,7 @@ export const fetchTriggerWord = async (
   });
   return response.data;
 };
+
 export default function ReviewTriggers() {
   const { route, user_applications_locations, user_data } =
     useContext(AuthContext);
@@ -850,8 +851,7 @@ export default function ReviewTriggers() {
                 .
               </p>
             </div>
-            <MeterGroup
-              className="w-80"
+            <SmallMeterGroup
               values={[
                 {
                   label: 'Trigger',

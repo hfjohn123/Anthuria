@@ -22,10 +22,10 @@ import stemmedFilter from '../../../components/Tables/stemmedFilter.ts';
 import MDSDetailLoading from './MDSDetailLoading.tsx';
 import { CheckCircle, XCircle } from '@phosphor-icons/react';
 import Card from '../../../components/Cards/Card.tsx';
-import { MeterGroup } from 'primereact/metergroup';
 import { SelectButton } from 'primereact/selectbutton';
 import '../../../css/style.css';
 import useInitializeTableFilters from '../../../hooks/useInitializeTableFilters.tsx';
+import SmallMeterGroup from '../../../components/Charts/SmallMeterGroup.tsx';
 
 export default function MDSTable({
   data,
@@ -797,7 +797,7 @@ export default function MDSTable({
             .
           </p>
         </div>
-        <MeterGroup
+        <SmallMeterGroup
           values={[
             {
               label: 'Has Suggestions',
