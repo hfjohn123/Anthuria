@@ -16,7 +16,7 @@ interface SidebarProps {
 const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   const location = useLocation();
   const { pathname } = location;
-  const { user_applications_locations, user_data } = useContext(AuthContext);
+  const { user_applications_locations } = useContext(AuthContext);
   const trigger = useRef<any>(null);
   const sidebar = useRef<any>(null);
 
@@ -75,7 +75,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
       {/* <!-- SIDEBAR HEADER --> */}
       <div
         className={clsx(
-          'flex items-center justify-between py-5.5 lg:py-6.5',
+          'flex items-center justify-center py-5.5 lg:py-6.5',
           (expanded || sidebarOpen) && 'px-8',
         )}
       >
@@ -84,7 +84,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
             src={Mark}
             alt="Logo"
             className={clsx(
-              !expanded && !sidebarOpen ? 'w-11' : 'hidden',
+              !expanded && !sidebarOpen ? 'w-12' : 'hidden',
               'ease-in-out duration-300',
             )}
           />
