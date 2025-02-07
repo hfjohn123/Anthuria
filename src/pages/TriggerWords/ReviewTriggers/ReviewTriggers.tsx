@@ -39,6 +39,24 @@ import TableWrapper from '../../../components/Tables/TableWrapper.tsx';
 import useInitializeTableFilters from '../../../hooks/useInitializeTableFilters.tsx';
 import highlightColors from '../../../common/highlightColors.ts';
 
+const triggerExplanation: { [key: string]: string } = {
+  'Unwanted Behavior':
+    'Notes indicate unwanted behavior initiated by residents  excluding those notes talking about past incidents, undetailed incidents or related monitoring procedure/check/follow-up.\nUnwanted behaviors considered include, but are not limited to actions, such as crying, screaming, yelling, hollering, combative actions, refusal of care, inappropriate comments or touching, disrobing, exit seeking and wandering, and other aggressive behaviors.',
+  Fall: 'Notes indicate any potential patient incidents involving a fall excluding those notes talking about past falls or post-fall monitoring procedure/check/chart/follow-up.',
+  'Condition Change':
+    'Notes indicate any potential patient incidents involving a medical condition change excluding those notes talking about a past incident or related post-incident procedure/check.',
+  Abuse:
+    "Notes indicate any abuse towards residents that caused physical harm, pain or mental anguish to residents, excluding those notes talking about any unwanted behavior initiated by residents to staff, any residents' refusal of care, undetailed incidents or related monitoring procedure/check/follow-up.",
+  Neglect:
+    "Notes indicate any neglect of residents that failed to provide  goods and services to residents, which are necessary to avoid physical harm, pain, mental anguish or emotional distress, excluding  those notes talking about past incidents, residents' unwanted behavior towards staff, residents' refusal of care, undetailed incidents or related monitoring procedure/check/follow-up.",
+  'Wound/Ulcer':
+    'Notes indicate any patient incidents involving a new wound or ulcer  excluding those notes talking about past wounds/ulcers or related post-incident procedure/check.',
+  'Weight Change':
+    'Notes indicate any patient incidents involving a weight change  (gain/loss) excluding those notes talking about a past incident or related post-incident procedure/check.',
+  'IV Fluids':
+    'Notes indicate recent or ongoing IV Fluids, incuding Parenteral/IV Feedings, IV Medications, and IV Treatment received by patients,  excluding those notes talking about past events/orders or post-event monitoring procedure/check/chart/follow-up.',
+};
+
 const predefinedTriggerWords = [
   'Fall',
   'Unwanted Behavior',
@@ -866,6 +884,7 @@ export default function ReviewTriggers() {
                     )
                 }
                 keywordModal={true}
+                tooltip={triggerExplanation[word]}
                 key={word}
                 className={clsx(
                   'col-span-1',

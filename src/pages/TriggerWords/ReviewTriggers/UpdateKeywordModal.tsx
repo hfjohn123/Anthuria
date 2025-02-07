@@ -17,6 +17,7 @@ export default function UpdateKeywordModal({
   header,
   setSelfDefinedKeywordsState,
   resetTableFilters,
+  tooltip = 'This is a Self-Defined Category.\nPlease click for more details.',
 }: {
   data: TriggerFinal[];
   trigger_words: string[];
@@ -29,6 +30,7 @@ export default function UpdateKeywordModal({
   header: string;
   setSelfDefinedKeywordsState?: any;
   resetTableFilters?: () => void;
+  tooltip?: string;
 }) {
   const toast = useRef<Toast>(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -40,6 +42,8 @@ export default function UpdateKeywordModal({
 
       <Button
         className="p-0 bg-transparent border-0"
+        tooltip={tooltip}
+        tooltipOptions={{ position: 'top' }}
         onClick={(event) => {
           event.stopPropagation();
           setIsOpen(true);

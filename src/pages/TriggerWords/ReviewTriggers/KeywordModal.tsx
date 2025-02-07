@@ -7,9 +7,11 @@ import { Chips } from 'primereact/chips';
 export default function KeywordModal({
   header,
   keywordList,
+  tooltip = 'This is a Self-Defined Category.\nPlease click for more details.',
 }: {
   header: string;
   keywordList: string[];
+  tooltip?: string;
 }) {
   const [visible, setVisible] = useState(false);
 
@@ -17,6 +19,8 @@ export default function KeywordModal({
     <>
       <Button
         className="p-0 bg-transparent border-0"
+        tooltip={tooltip}
+        tooltipOptions={{ position: 'top', className: 'w-100' }}
         onClick={(event) => {
           event.stopPropagation();
           setVisible(true);
