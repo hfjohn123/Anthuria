@@ -53,7 +53,7 @@ export default function MDSTable({
         accessorFn: (row) => (row.any_touched === 1 ? 'Yes' : 'No'),
         header: 'Reviewed',
         enableSorting: false,
-        enableHiding: false,
+        // enableHiding: false,
         meta: {
           wrap: 'whitespace-nowrap',
           type: 'categorical',

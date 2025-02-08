@@ -55,7 +55,7 @@ export default function TableSettingModal({
           closeMenuOnSelect={false}
           classNames={{ control: () => 'sm:w-[50vw]' }}
           value={Object.entries(tableState.columnVisibility)
-            .filter(([k, v]) => table.getColumn(k)?.getCanHide() && v)
+            .filter(([_, v]) => v)
             .map(([k]) => {
               return {
                 label: table.getColumn(k)?.columnDef.header,

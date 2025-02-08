@@ -331,7 +331,7 @@ export default function ReviewTriggers() {
         accessorFn: (row) => (row.touched === 1 ? 'No' : 'Yes'),
         header: 'Unread',
         enableSorting: false,
-        enableHiding: false,
+        // enableHiding: false,
         meta: {
           wrap: 'whitespace-nowrap',
           type: 'categorical',
