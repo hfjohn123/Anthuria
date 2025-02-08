@@ -813,6 +813,7 @@ export default function MDSTable({
       </Card>
 
       <TableWrapper
+        title={'MDS 3.0 Discovery'}
         filters={true}
         searchRight={
           (tableState.columnVisibility['nta'] ||

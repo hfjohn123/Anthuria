@@ -12,11 +12,13 @@ import { Button } from '@headlessui/react';
 import { useState } from 'react';
 
 export default function TableSettingModal({
+  title,
   table,
   tableState,
   setTableState,
   initialTableState,
 }: {
+  title?: string;
   table: Table<any>;
   tableState: TableState;
   setTableState: React.Dispatch<React.SetStateAction<TableState>>;
@@ -27,7 +29,7 @@ export default function TableSettingModal({
     <Modal
       isOpen={showSettingsModal}
       setIsOpen={setShowSettingsModal}
-      title={'Clinical Pulse Settings'}
+      title={(title || '') + ' Settings'}
       button={<Cog6ToothIcon />}
       classNameses={{
         button: 'size-6 mr-2 text-gray-900 hover:text-primary',
@@ -53,7 +55,7 @@ export default function TableSettingModal({
           closeMenuOnSelect={false}
           classNames={{ control: () => 'sm:w-[50vw]' }}
           value={Object.entries(tableState.columnVisibility)
-            .filter(([, v]) => v)
+            .filter(([k, v]) => table.getColumn(k)?.getCanHide() && v)
             .map(([k]) => {
               return {
                 label: table.getColumn(k)?.columnDef.header,

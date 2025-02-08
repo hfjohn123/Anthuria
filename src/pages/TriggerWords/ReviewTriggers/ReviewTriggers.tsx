@@ -1080,6 +1080,7 @@ export default function ReviewTriggers() {
             />
           </div>
           <TableWrapper
+            title="Clinical Pulse"
             table={table}
             tableState={tableState}
             setTableState={setTableState}
