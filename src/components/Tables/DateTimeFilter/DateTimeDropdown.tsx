@@ -36,8 +36,8 @@ export default function DateTimeDropdown({
               if (autoFocus) e?.click();
             }}
             className={clsx(
-              'text-sm data-[open]:!shadow-filter data-[open]:!shadow-blue-500 flex flex-nowrap items-center gap-1 px-2 py-0.5 rounded-lg border border-stroke outline-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary',
-              value && value.length > 0 && 'border-body',
+              'text-sm data-[open]:!shadow-filter data-[open]:!shadow-blue-500 flex flex-nowrap items-center gap-1 px-2 py-0.5 rounded-lg border  outline-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary',
+              value && value.length > 0 ? 'border-black' : 'border-stroke ',
             )}
           >
             <span className="">

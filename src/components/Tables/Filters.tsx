@@ -9,6 +9,7 @@ import { Table, TableState } from '@tanstack/react-table';
 import DateTimeDropdown from './DateTimeFilter/DateTimeDropdown.tsx';
 import { useContext, useRef } from 'react';
 import { AuthContext } from '../AuthWrapper.tsx';
+import clsx from 'clsx';
 
 // Base interface with common props
 type FilterProps = {
@@ -93,7 +94,14 @@ export default function Filters({
             <div
               key={filter}
               onClick={() => inputRef.current?.focus()}
-              className="cursor-pointer text-sm has-[:focus]:!shadow-filter has-[:focus]:!shadow-blue-500 flex flex-nowrap items-center gap-1 px-2 rounded-lg border border-stroke dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+              className={clsx(
+                'cursor-pointer text-sm has-[:focus]:outline outline-1 outline-blue-500 flex flex-nowrap items-center gap-1 px-2 rounded-lg border dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary',
+                tableState.columnFilters.find((f) => f.id === filter) &&
+                  (tableState.columnFilters.find((f) => f.id === filter)
+                    ?.value as string) !== ''
+                  ? 'border-black'
+                  : 'border-stroke',
+              )}
             >
               <span className="text-nowrap">
                 {table.getColumn(filter)?.columnDef.header as string}{' '}
@@ -286,7 +294,7 @@ export default function Filters({
               'text' ? (
               <div
                 key={filter.id}
-                className="cursor-pointer text-sm has-[:focus]:!shadow-filter has-[:focus]:!shadow-blue-500 flex flex-nowrap items-center gap-1 px-2 rounded-lg border border-stroke dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                className="cursor-pointer text-sm has-[:focus]:outline outline-1 outline-blue-500 flex flex-nowrap items-center gap-1 px-2 rounded-lg border border-black dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
               >
                 <span className="text-nowrap">
                   {table.getColumn(filter.id)?.columnDef.header as string}{' '}

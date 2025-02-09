@@ -67,11 +67,11 @@ export default function UpdateKeywordModal({
             setIsOpen(false);
           }}
           onClick={(event) => {
+            const target = event.target as HTMLElement;
             if (
-              (event.target as HTMLElement)?.className &&
-              !(event.target as HTMLElement)?.className?.includes(
-                'p-multiselect',
-              )
+              target &&
+              typeof target.className === 'string' &&
+              !target.className.includes('p-multiselect')
             ) {
               formRef.current?.hide();
             }
