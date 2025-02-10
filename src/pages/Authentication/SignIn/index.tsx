@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import NoBar from '../../../layout/NoBar';
 import Loader from '../../../common/Loader';
 import { createToast } from '../../../hooks/fireToast';
@@ -8,11 +8,12 @@ import { getRoute } from '../../../components/AuthWrapper.tsx';
 import Passwordless from './Passwordless.tsx';
 import Password from './Password.tsx';
 import Logo from '../../../images/logo/logo_dark.png';
-import { Navigate, useSearch } from '@tanstack/react-router';
+import { Navigate, useNavigate, useSearch } from '@tanstack/react-router';
 
 function SignIn() {
   const [isLoading, setIsLoading] = useState(false);
   const searchParams = useSearch({ from: '/auth' });
+  const navigate = useNavigate();
   const otp = !!searchParams.otp;
   const [isPasswordless, setIsPasswordless] = useState(otp);
 
@@ -29,6 +30,12 @@ function SignIn() {
   if (isSessionError) {
     createToast('Login Failed', sessionError.message, 3, 'Login Failed');
   }
+  useEffect(() => {
+    navigate({
+      // @ts-expect-error Tanstack router types are wrong
+      search: { otp: isPasswordless },
+    });
+  }, [isPasswordless, navigate]);
 
   if (isLoading || isSessionPending) {
     return <Loader />;

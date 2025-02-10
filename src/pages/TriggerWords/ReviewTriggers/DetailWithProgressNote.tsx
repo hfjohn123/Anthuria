@@ -11,6 +11,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { handleClick } from '../../MDS/Suggestion/EvidenceModal.tsx';
 import { Button } from 'primereact/button';
+import { StartEnd } from './ReviewTriggers.tsx';
 
 export default function DetailWithProgressNote({
   row,
@@ -24,6 +25,7 @@ export default function DetailWithProgressNote({
     .map((t) => t.trigger_word + ': ' + t.summary)
     .join('\n\n');
   const { route } = useContext(AuthContext);
+  const { start, end } = useContext(StartEnd);
   const queryClient = useQueryClient();
   const putTouchLog = useMutation({
     mutationFn: async () => {
@@ -35,14 +37,17 @@ export default function DetailWithProgressNote({
     },
     onMutate: async () => {
       await queryClient.cancelQueries({
-        queryKey: ['trigger_word_view_trigger_word_detail_final', route],
+        queryKey: ['trigger_word_view_trigger_word_detail_final'],
       });
-      const previousData = queryClient.getQueryData([
-        'trigger_word_view_trigger_word_detail_final',
-        route,
-      ]);
+      const previousData = queryClient.getQueryData(
+        user_data.organization_id === 'AVHC'
+          ? ['trigger_word_view_trigger_word_detail_final', route]
+          : ['trigger_word_view_trigger_word_detail_final', start, end, route],
+      );
       queryClient.setQueryData(
-        ['trigger_word_view_trigger_word_detail_final', route],
+        user_data.organization_id === 'AVHC'
+          ? ['trigger_word_view_trigger_word_detail_final', route]
+          : ['trigger_word_view_trigger_word_detail_final', start, end, route],
         (oldData: TriggerAPI) => {
           if (oldData) {
             return {
@@ -69,7 +74,7 @@ export default function DetailWithProgressNote({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['trigger_word_view_trigger_word_detail_final', route],
+        queryKey: ['trigger_word_view_trigger_word_detail_final'],
         type: 'all',
       });
     },
@@ -77,7 +82,9 @@ export default function DetailWithProgressNote({
   useEffect(() => {
     if (
       row.original.touched === 0 &&
-      user_data.organization_id !== 'the_triedge_labs' &&
+      (user_data.organization_id !== 'the_triedge_labs' ||
+        user_data.email === 'qi.song@triedgelab.com' ||
+        user_data.email === 'sam.pan@triedgelab.com') &&
       (!user_data.email.endsWith('theportopiccologroup.com') ||
         user_data.email === 'testavetura@theportopiccologroup.com') &&
       !user_data.email.endsWith('anthuria.ai')

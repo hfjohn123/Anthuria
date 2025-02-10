@@ -91,8 +91,7 @@ const KeywordForm = forwardRef<
     },
     ref,
   ) => {
-    const { user_applications_locations, user_data, route } =
-      useContext(AuthContext);
+    const { user_applications_locations, user_data } = useContext(AuthContext);
     const { locations } = user_applications_locations.find(
       (d) => d['id'] === 'trigger_words',
     ) || { locations: [] };
@@ -136,7 +135,7 @@ const KeywordForm = forwardRef<
         ),
       onMutate: async () => {
         await queryClient.cancelQueries({
-          queryKey: ['trigger_word_view_trigger_word_detail_final', route],
+          queryKey: ['trigger_word_view_trigger_word_detail_final'],
         });
         setSelfDefinedKeywordsState((prev) => [
           ...prev.filter((d) => d.group_name !== initialNewTrigger.group_name),
@@ -150,7 +149,7 @@ const KeywordForm = forwardRef<
       },
       onSettled: () => {
         queryClient.invalidateQueries({
-          queryKey: ['trigger_word_view_trigger_word_detail_final', route],
+          queryKey: ['trigger_word_view_trigger_word_detail_final'],
         });
       },
       scope: {
@@ -168,7 +167,7 @@ const KeywordForm = forwardRef<
         ),
       onMutate: async () => {
         await queryClient.cancelQueries({
-          queryKey: ['trigger_word_view_trigger_word_detail_final', route],
+          queryKey: ['trigger_word_view_trigger_word_detail_final'],
         });
         setSelfDefinedKeywordsState((prev) => [
           ...prev.filter((d) => d.group_name !== initialNewTrigger.group_name),
@@ -176,7 +175,7 @@ const KeywordForm = forwardRef<
       },
       onSettled: () => {
         queryClient.invalidateQueries({
-          queryKey: ['trigger_word_view_trigger_word_detail_final', route],
+          queryKey: ['trigger_word_view_trigger_word_detail_final'],
         });
       },
       scope: {
@@ -360,7 +359,7 @@ const KeywordForm = forwardRef<
           {newTriggerWord.keyword_list.length > 0 &&
             filteredData.length > 0 && (
               <>
-                <p>{filteredData.length} Results Found</p>
+                <p>{filteredData.length} Preview Results Found</p>
                 <DataTable
                   value={filteredData}
                   paginator
@@ -386,7 +385,7 @@ const KeywordForm = forwardRef<
               </>
             )}
           {newTriggerWord.keyword_list.length > 0 &&
-            filteredData.length === 0 && <p>No Results Found</p>}
+            filteredData.length === 0 && <p>No Preview Results Found</p>}
           <div className="flex gap-4 justify-end">
             <button
               type="reset"

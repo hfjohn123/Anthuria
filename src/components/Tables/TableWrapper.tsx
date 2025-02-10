@@ -120,11 +120,18 @@ export default function TableWrapper({
       splitter &&
       screenWidth >= 1024
     ) {
-      if (
-        Object.values(
-          table.getRow(Object.keys(tableState.expanded)[0]).columnFilters,
-        ).some((f) => !f)
-      ) {
+      try {
+        if (
+          Object.values(
+            table.getRow(Object.keys(tableState.expanded)[0]).columnFilters,
+          ).some((f) => !f)
+        ) {
+          setTableState((prev) => ({
+            ...prev,
+            expanded: {},
+          }));
+        }
+      } catch (e) {
         setTableState((prev) => ({
           ...prev,
           expanded: {},
@@ -475,10 +482,13 @@ export default function TableWrapper({
                     width: '100%',
                   }}
                 >
-                  {renderExpandedRow({
-                    row: table.getRow(Object.keys(tableState.expanded)[0]),
-                    tableState,
-                  })}
+                  {table.getRowModel().rowsById[
+                    Object.keys(tableState.expanded)[0]
+                  ] &&
+                    renderExpandedRow({
+                      row: table.getRow(Object.keys(tableState.expanded)[0]),
+                      tableState,
+                    })}
                 </ScrollPanel>
               </SplitterPanel>
             </Splitter>

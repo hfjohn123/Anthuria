@@ -16,6 +16,7 @@
     "@datadog/browser-rum": "^5.35.0",
     "@headlessui/react": "^2.2.0",
     "@heroicons/react": "^2.2.0",
+    "@intercom/messenger-js-sdk": "^0.0.14",
     "@phosphor-icons/react": "^2.1.7",
     "@re-dev/react-truncate": "^0.4.6",
     "@tanstack/match-sorter-utils": "^8.19.4",

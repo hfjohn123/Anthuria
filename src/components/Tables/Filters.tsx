@@ -180,6 +180,12 @@ export default function Filters({
               setValue={(value: [number | null, number | null]) =>
                 setValueFunction(value, filter)
               }
+              // callback={() => {
+              //   setTableState((prev) => ({
+              //     ...prev,
+              //     expanded: {},
+              //   }));
+              // }}
               clearFilter={() =>
                 filter === 'revision_date' &&
                 user_data.organization_id !== 'AVHC'

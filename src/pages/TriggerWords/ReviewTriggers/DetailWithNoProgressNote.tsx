@@ -39,7 +39,7 @@ export default function DetailWithNoProgressNote({
       internal_facility_id: string;
     }) => {
       await queryClient.cancelQueries({
-        queryKey: ['trigger_word_view_trigger_word_detail_final', route],
+        queryKey: ['trigger_word_view_trigger_word_detail_final'],
       });
       const previousData = queryClient.getQueryData([
         'trigger_word_view_trigger_word_detail_final',

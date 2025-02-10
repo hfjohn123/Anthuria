@@ -6,6 +6,7 @@ import axios from 'axios';
 import Session from 'supertokens-auth-react/recipe/session';
 import { signOut } from 'supertokens-auth-react/recipe/passwordless';
 import { datadogRum } from '@datadog/browser-rum';
+import Intercom from '@intercom/messenger-js-sdk';
 import { Navigate, useLocation } from '@tanstack/react-router';
 
 export const AuthContext = createContext({
@@ -60,6 +61,7 @@ export default function AuthWrapper({
   async function onLogout() {
     await signOut();
   }
+
   const {
     isPending,
     isError,
@@ -107,16 +109,15 @@ export default function AuthWrapper({
     });
   }, [user_data]);
 
-  // useEffect(() => {
-  //   user_data && shutdown();
-  //   user_data &&
-  //     Intercom({
-  //       app_id: 'x02d82le',
-  //       user_id: user_data.email, // IMPORTANT: Replace "user.id" with the variable you use to capture the user's ID
-  //       name: user_data.name, // IMPORTANT: Replace "user.name" with the variable you use to capture the user's name
-  //       email: user_data.email, // IMPORTANT: Replace "user.email" with the variable you use to capture the user's email
-  //     });
-  // }, [pathname, user_data]);
+  useEffect(() => {
+    user_data &&
+      Intercom({
+        app_id: 'x02d82le',
+        user_id: user_data.email, // IMPORTANT: Replace "user.id" with the variable you use to capture the user's ID
+        name: user_data.name, // IMPORTANT: Replace "user.name" with the variable you use to capture the user's name
+        email: user_data.email, // IMPORTANT: Replace "user.email" with the variable you use to capture the user's email
+      });
+  }, [user_data]);
 
   useEffect(() => {
     if (queryClient && user_applications_locations && user_data) {

@@ -1,11 +1,10 @@
 import { Dialog } from 'primereact/dialog';
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import { ThumbsDown } from '@phosphor-icons/react';
 import { Button } from 'primereact/button';
 import clsx from 'clsx';
 import CommentForm from '../../../components/Forms/CommentForm.tsx';
 import { useQueryClient } from '@tanstack/react-query';
-import { AuthContext } from '../../../components/AuthWrapper.tsx';
 
 export default function CommentModal({
   data,
@@ -24,14 +23,13 @@ export default function CommentModal({
 }) {
   const [showModal, setShowModal] = useState(false);
   const queryClient = useQueryClient();
-  const { route } = useContext(AuthContext);
   return (
     <>
       <Button
         onClick={(event) => {
           event.stopPropagation();
           queryClient.cancelQueries({
-            queryKey: ['trigger_word_view_trigger_word_detail_final', route],
+            queryKey: ['trigger_word_view_trigger_word_detail_final'],
           });
           setShowModal(true);
         }}

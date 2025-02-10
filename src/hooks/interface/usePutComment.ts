@@ -25,12 +25,12 @@ const usePutComment = (route: string, queryClient: any) => {
     },
     onMutate: async () => {
       await queryClient.cancelQueries({
-        queryKey: ['trigger_word_view_trigger_word_detail_final', route],
+        queryKey: ['trigger_word_view_trigger_word_detail_final'],
       });
     },
     onSettled: () => {
       queryClient.invalidateQueries({
-        queryKey: ['trigger_word_view_trigger_word_detail_final', route],
+        queryKey: ['trigger_word_view_trigger_word_detail_final'],
       });
     },
   });

@@ -49,7 +49,7 @@ export default function Home() {
       ),
   });
 
-  if (isPending) {
+  if (isPending || !user_applications_locations) {
     return <Loader />;
   }
   if (isError) {
@@ -58,65 +58,67 @@ export default function Home() {
 
   return (
     <NoSidebar>
-      <div className="flex flex-col gap-5">
-        {stars && stars.length > 0 && (
-          <div>
-            <p>Starred Applications</p>
-            <div className="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6 xl:grid-cols-8 2xl:gap-7.5">
-              {user_applications_locations.map(
-                (application) =>
-                  stars.includes(application['id']) && (
-                    <AppTile
-                      key={application['id']}
-                      title={application['display_name']}
-                      stars={stars}
-                      link={application['uri']}
-                      icon={application['icon']}
-                      id={application['id']}
-                    />
-                  ),
-              )}
+      {user_applications_locations &&
+        user_applications_locations.length > 0 && (
+          <div className="flex flex-col gap-5">
+            {stars && stars.length > 0 && (
+              <div>
+                <p>Starred Applications</p>
+                <div className="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6 xl:grid-cols-8 2xl:gap-7.5">
+                  {user_applications_locations.map(
+                    (application) =>
+                      stars.includes(application['id']) && (
+                        <AppTile
+                          key={application['id']}
+                          title={application['display_name']}
+                          stars={stars}
+                          link={application['uri']}
+                          icon={application['icon']}
+                          id={application['id']}
+                        />
+                      ),
+                  )}
+                </div>
+              </div>
+            )}
+            {recent.length > 0 && (
+              <div>
+                <p>Recent Applications</p>
+                <div className="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6 xl:grid-cols-8 2xl:gap-7.5">
+                  {user_applications_locations.map(
+                    (application) =>
+                      recent.includes(application['id']) && (
+                        <AppTile
+                          key={application['id']}
+                          title={application['display_name']}
+                          stars={stars}
+                          link={application['uri']}
+                          icon={application['icon']}
+                          id={application['id']}
+                        />
+                      ),
+                  )}
+                </div>
+              </div>
+            )}
+
+            <div>
+              <p>All Applications</p>
+              <div className="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6 xl:grid-cols-8 2xl:gap-7.5">
+                {user_applications_locations.map((application) => (
+                  <AppTile
+                    key={application['id']}
+                    title={application['display_name']}
+                    stars={stars}
+                    link={application['uri']}
+                    icon={application['icon']}
+                    id={application['id']}
+                  />
+                ))}
+              </div>
             </div>
           </div>
         )}
-        {recent.length > 0 && (
-          <div>
-            <p>Recent Applications</p>
-            <div className="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6 xl:grid-cols-8 2xl:gap-7.5">
-              {user_applications_locations.map(
-                (application) =>
-                  recent.includes(application['id']) && (
-                    <AppTile
-                      key={application['id']}
-                      title={application['display_name']}
-                      stars={stars}
-                      link={application['uri']}
-                      icon={application['icon']}
-                      id={application['id']}
-                    />
-                  ),
-              )}
-            </div>
-          </div>
-        )}
-        {user_applications_locations && (
-          <div>
-            <p>All Applications</p>
-            <div className="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6 xl:grid-cols-8 2xl:gap-7.5">
-              {user_applications_locations.map((application) => (
-                <AppTile
-                  key={application['id']}
-                  title={application['display_name']}
-                  stars={stars}
-                  link={application['uri']}
-                  icon={application['icon']}
-                  id={application['id']}
-                />
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
     </NoSidebar>
   );
 }

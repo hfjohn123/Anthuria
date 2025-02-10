@@ -201,7 +201,9 @@ export default function MDSSuggestion({ row }: { row: MDSFinal }) {
                   if (
                     patientInfo.pt_touched !== 1 &&
                     !open &&
-                    user_data.organization_id !== 'the_triedge_labs' &&
+                    (user_data.organization_id !== 'the_triedge_labs' ||
+                      user_data.email === 'qi.song@triedgelab.com' ||
+                      user_data.email === 'sam.pan@triedgelab.com') &&
                     (!user_data.email.endsWith('theportopiccologroup.com') ||
                       user_data.email ===
                         'testavetura@theportopiccologroup.com') &&
@@ -255,7 +257,9 @@ export default function MDSSuggestion({ row }: { row: MDSFinal }) {
                   if (
                     patientInfo.slp_touched !== 1 &&
                     !open &&
-                    user_data.organization_id !== 'the_triedge_labs' &&
+                    (user_data.organization_id !== 'the_triedge_labs' ||
+                      user_data.email === 'qi.song@triedgelab.com' ||
+                      user_data.email === 'sam.pan@triedgelab.com') &&
                     (!user_data.email.endsWith('theportopiccologroup.com') ||
                       user_data.email ===
                         'testavetura@theportopiccologroup.com') &&
@@ -310,7 +314,9 @@ export default function MDSSuggestion({ row }: { row: MDSFinal }) {
                   if (
                     patientInfo.nursing_touched !== 1 &&
                     !open &&
-                    user_data.organization_id !== 'the_triedge_labs' &&
+                    (user_data.organization_id !== 'the_triedge_labs' ||
+                      user_data.email === 'qi.song@triedgelab.com' ||
+                      user_data.email === 'sam.pan@triedgelab.com') &&
                     (!user_data.email.endsWith('theportopiccologroup.com') ||
                       user_data.email ===
                         'testavetura@theportopiccologroup.com') &&
@@ -365,7 +371,9 @@ export default function MDSSuggestion({ row }: { row: MDSFinal }) {
                   if (
                     patientInfo.nta_touched !== 1 &&
                     !open &&
-                    user_data.organization_id !== 'the_triedge_labs' &&
+                    (user_data.organization_id !== 'the_triedge_labs' ||
+                      user_data.email === 'qi.song@triedgelab.com' ||
+                      user_data.email === 'sam.pan@triedgelab.com') &&
                     (!user_data.email.endsWith('theportopiccologroup.com') ||
                       user_data.email ===
                         'testavetura@theportopiccologroup.com') &&

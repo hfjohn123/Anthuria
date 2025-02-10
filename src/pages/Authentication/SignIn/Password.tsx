@@ -75,6 +75,7 @@ function Password({ setIsPasswordless }: any) {
   const [isSent, setIsSent] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+
   if (isLoading) {
     return <h3>Loading...</h3>;
   }
