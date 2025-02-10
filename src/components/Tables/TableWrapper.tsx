@@ -471,7 +471,7 @@ export default function TableWrapper({
                   className="sticky"
                   style={{
                     top: 'var(--filter-height)',
-                    height: 'calc(100vh - var(--filter-height) - 70px)',
+                    height: 'calc(100vh - var(--filter-height) - 1rem)',
                     width: '100%',
                   }}
                 >

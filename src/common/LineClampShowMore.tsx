@@ -14,8 +14,9 @@ export default function LineClampShowMore({
   const contentElementRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const contentElement = contentElementRef.current;
+
     const checkOverflow = () => {
-      const contentElement = contentElementRef.current;
       if (contentElement) {
         const style = getComputedStyle(contentElement);
         const lineHeight = parseInt(style.lineHeight, 10);
@@ -25,9 +26,16 @@ export default function LineClampShowMore({
       }
     };
 
-    checkOverflow();
-    window.addEventListener('resize', checkOverflow);
-    return () => window.removeEventListener('resize', checkOverflow);
+    const resizeObserver = new ResizeObserver(() => {
+      checkOverflow();
+    });
+
+    if (contentElement) {
+      resizeObserver.observe(contentElement);
+      return () => {
+        resizeObserver.unobserve(contentElement);
+      };
+    }
   }, [maxLines, children]);
 
   const lineClampStyle: CSSProperties = !isExpanded
