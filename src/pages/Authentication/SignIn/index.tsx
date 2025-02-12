@@ -41,7 +41,7 @@ function SignIn() {
     return <Loader />;
   }
   if (isSession) {
-    return <Navigate to="/" />;
+    return <Navigate to="/" reloadDocument={true} />;
   }
 
   return (
