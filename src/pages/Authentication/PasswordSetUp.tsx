@@ -1,8 +1,12 @@
-import { Button, Field, Input, Label } from '@headlessui/react';
+import { Button, Field, Label } from '@headlessui/react';
 import { useState, useContext } from 'react';
 import { createToast } from '../../hooks/fireToast.tsx';
 import { signUpClicked } from '../../components/Forms/AccountSettings/PersonalInformationForm.tsx';
 import { AuthContext } from '../../components/AuthWrapper.tsx';
+import { Password } from 'primereact/password';
+import { InputText } from 'primereact/inputtext';
+import PasswordChecklist from 'react-password-checklist';
+import clsx from 'clsx';
 
 export default function PasswordSetUp() {
   const { user_data } = useContext(AuthContext);
@@ -32,14 +36,13 @@ export default function PasswordSetUp() {
             Password
           </Label>
           <div className="relative">
-            <Input
+            <Password
               value={password}
               onChange={(event) => setPassword(event.target.value)}
               type="password"
+              className="w-full"
               placeholder="Password"
-              className="lg:min-w-100 rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-stroke dark dark:bg-form-input dark:text-white dark:focus:border-primary"
             />
-
             <span className="absolute right-4 top-4">
               <svg
                 className="fill-current"
@@ -68,14 +71,13 @@ export default function PasswordSetUp() {
             Confirm Password
           </Label>
           <div className="relative">
-            <Input
+            <InputText
               value={confirmPassword}
               onChange={(event) => setConfirmPassword(event.target.value)}
               type="password"
               placeholder="Re-enter Password"
-              className="lg:min-w-100 rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-stroke dark dark:bg-form-input dark:text-white dark:focus:border-primary"
+              className="w-full"
             />
-
             <span className="absolute right-4 top-4">
               <svg
                 className="fill-current"
@@ -99,6 +101,16 @@ export default function PasswordSetUp() {
             </span>
           </div>
         </Field>
+        <PasswordChecklist
+          className={clsx(
+            'transition-all  duration-300 transition-discrete ease-in-out',
+            confirmPassword || password ? 'block' : 'hidden',
+          )}
+          rules={['minLength', 'lowercase', 'number', 'match']}
+          minLength={8}
+          value={password}
+          valueAgain={confirmPassword}
+        />
 
         <Button
           className="flex justify-center rounded bg-primary py-2 px-6 font-medium text-gray hover:bg-opacity-90"

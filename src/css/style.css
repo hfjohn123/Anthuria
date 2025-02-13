@@ -55,6 +55,9 @@
     .p-password > .p-icon-field.p-icon-field-right{
         @apply w-full
     }
+    .p-password > .p-password-input{
+        @apply w-full
+    }
 }
 
 /* third-party libraries CSS */
