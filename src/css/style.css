@@ -52,6 +52,9 @@
     .bg-primary {
         @apply text-white
     }
+    .p-password > .p-icon-field.p-icon-field-right{
+        @apply w-full
+    }
 }
 
 /* third-party libraries CSS */

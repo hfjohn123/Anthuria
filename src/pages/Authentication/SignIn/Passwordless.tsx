@@ -222,7 +222,6 @@ function Passwordless({ setIsLoading, isSession, setIsPasswordless }: any) {
               autoComplete="email webauthn"
               value={email}
               onChange={(event) => setEmail(event.target.value.trim())}
-              type="email"
               placeholder="Enter your email"
               className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
             />

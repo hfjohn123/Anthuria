@@ -46,10 +46,10 @@ function SignIn() {
 
   return (
     <NoBar>
-      <div className="px-10 pt-5">
+      <div className="sm:px-10 pt-5">
         <img src={Logo} alt="logo" className="w-50" />
 
-        <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark mx-auto mt-20 max-w-screen-md">
+        <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark sm:mx-auto mt-20 max-w-screen-md">
           <div className="w-full p-4 sm:p-12.5 xl:p-17.5">
             {isPasswordless ? (
               <>
