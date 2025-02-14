@@ -9,15 +9,34 @@ import ErrorPage from '../../../common/ErrorPage.tsx';
 import Loader from '../../../common/Loader';
 import AccessManagementModal from '../../../pages/AccountSetting/AcessManagementModal.tsx';
 import DeleteUserModal from '../../../pages/AccountSetting/DeleteUserModal.tsx';
-import InviteUserModal from '../../../pages/AccountSetting/InviteUserModal.tsx';
+// import InviteUserModal from '../../../pages/AccountSetting/InviteUserModal.tsx';
+// import { DataTable } from 'primereact/datatable';
+// import { Column } from 'primereact/column';
 
 export default function AccessManagement() {
   const { user_data, route } = useContext(AuthContext);
 
+  // const actionTemplate = (rowData: any) => {
+  //   return (
+  //     <div className="mt-3 col-span-full lg:col-span-2 flex items-center gap-1">
+  //       {/*<p className="text-xs lg:hidden">Actions</p>*/}
+  //       <AccessManagementModal
+  //         allApplications={allApplications}
+  //         member={rowData}
+  //       />
+  //       {rowData.email !== user_data.email && (
+  //         <DeleteUserModal member={rowData} />
+  //       )}
+  //     </div>
+  //   );
+  // };
+
   const { isPending, isError, data, error }: any = useQuery({
     queryKey: ['access_management', route],
-    queryFn: () =>
-      axios.get(`${route}/access_management`).then((res) => res.data),
+    queryFn: ({ signal }) =>
+      axios
+        .get(`${route}/access_management`, { signal })
+        .then((res) => res.data),
   });
 
   const allApplications =
@@ -48,6 +67,28 @@ export default function AccessManagement() {
           </p>
         </div>
         <div className="px-7 lg:pt-7 pb-7">
+          {/*<DataTable value={data.members}>*/}
+          {/*  <Column*/}
+          {/*    field="name"*/}
+          {/*    header="Name"*/}
+          {/*    filter*/}
+          {/*    filterPlaceholder="Search by name"*/}
+          {/*    style={{ minWidth: '12rem' }}*/}
+          {/*  />*/}
+          {/*  <Column*/}
+          {/*    field="email"*/}
+          {/*    header="Email"*/}
+          {/*    filter*/}
+          {/*    filterPlaceholder="Search by Email"*/}
+          {/*    style={{ minWidth: '12rem' }}*/}
+          {/*  />*/}
+          {/*  <Column*/}
+          {/*    field="action"*/}
+          {/*    header="Action"*/}
+          {/*    body={actionTemplate}*/}
+          {/*    style={{ minWidth: '12rem' }}*/}
+          {/*  />*/}
+          {/*</DataTable>*/}
           <div className="grid grid-cols-5 lg:grid-cols-12 w-full gap-x-10 ">
             <label className="col-span-3  text-sm font-medium text-black dark:text-white hidden lg:block">
               Full Name
@@ -104,7 +145,10 @@ export default function AccessManagement() {
           <div className="flex flex-col sm:flex-row justify-end gap-4.5 mt-7">
             {(data.organization.seats === 0 ||
               data.members.length < data.organization.seats) && (
-              <InviteUserModal />
+              <AccessManagementModal
+                allApplications={allApplications}
+                newUser
+              />
             )}
           </div>
         </div>

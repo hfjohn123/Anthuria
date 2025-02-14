@@ -9,7 +9,6 @@ import {
   ComboboxOptions,
   Field,
   Input,
-  Label,
   Listbox,
   ListboxButton,
   ListboxOption,
@@ -18,7 +17,7 @@ import {
 import UserName from '../../images/icon/UserName.tsx';
 import EmailIcon from '../../images/icon/EmailIcon.tsx';
 import clsx from 'clsx';
-import { useEffect, useState, useContext, memo } from 'react';
+import { memo, useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../../components/AuthWrapper.tsx';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios, { AxiosError } from 'axios';
@@ -28,6 +27,7 @@ import PrimaryButton from '../../components/Basic/PrimaryButton.tsx';
 const AccessManagementModal = memo(function AccessManagementModal({
   allApplications,
   member,
+  newUser = false,
 }: any) {
   const { user_applications_locations, route } = useContext(AuthContext);
   const queryClient = useQueryClient();
@@ -65,18 +65,36 @@ const AccessManagementModal = memo(function AccessManagementModal({
 
   const updateUserAccess = useMutation({
     mutationFn: (data: any) => {
-      return axios.post(`${route}/update_user_access`, data);
+      return newUser
+        ? axios.post(`${route}/create_user`, data)
+        : axios.post(`${route}/update_user_access`, data);
+    },
+    onMutate: () => {
+      queryClient.cancelQueries({
+        queryKey: ['access_management', route],
+      });
     },
     onError: (err: AxiosError) => {
-      createToast('Update Failed', err.message, 3, 'Update Failed');
+      newUser
+        ? createToast('Invite Failed', err.message, 3, 'Invite Failed')
+        : createToast('Update Failed', err.message, 3, 'Update Failed');
     },
     onSuccess: () => {
-      createToast(
-        'Update Successful',
-        'Update Successful',
-        0,
-        'Update Successful',
-      );
+      newUser
+        ? createToast('Invite Successful', 'Invite Successful', 0, 'Invite')
+        : createToast(
+            'Update Successful',
+            'Update Successful',
+            0,
+            'Update Successful',
+          );
+      newUser &&
+        setEditModalData({
+          name: '',
+          email: '',
+          phone: '',
+          applications: [],
+        });
     },
     onSettled: () => {
       queryClient.invalidateQueries({
@@ -102,7 +120,13 @@ const AccessManagementModal = memo(function AccessManagementModal({
       isOpen={editModal}
       setIsOpen={setEditModal}
       title={'Member Information'}
-      button={<PenSquare />}
+      classNameses={{
+        button: clsx(
+          newUser &&
+            'flex whitespace-nowrap justify-center rounded border border-stroke py-2 px-6 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white',
+        ),
+      }}
+      button={newUser ? <p>Invite A New User</p> : <PenSquare />}
       onOpenCallback={() => {
         setEditModalData({
           ...member,
@@ -136,9 +160,9 @@ const AccessManagementModal = memo(function AccessManagementModal({
       >
         <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row ">
           <Field className="relative w-full sm:w-1/2">
-            <Label className="mb-3 block text-sm font-medium text-black dark:text-white">
+            <label className="mb-3 block text-sm font-medium text-black dark:text-white">
               Full Name
-            </Label>
+            </label>
             <UserName className="absolute left-4.5 top-11.5" />
             <Input
               className="w-full rounded border border-stroke  py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
@@ -153,9 +177,9 @@ const AccessManagementModal = memo(function AccessManagementModal({
             />
           </Field>
           <Field className="w-full sm:w-1/2">
-            <Label className="mb-3 block text-sm font-medium text-black dark:text-white">
+            <label className="mb-3 block text-sm font-medium text-black dark:text-white">
               Phone Number
-            </Label>
+            </label>
             <Input
               className="w-full rounded border border-stroke py-3 px-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
               type="tel"
@@ -170,26 +194,32 @@ const AccessManagementModal = memo(function AccessManagementModal({
           </Field>
         </div>
         <Field className="relative mb-5.5">
-          <Label className="mb-3 block text-sm font-medium text-black dark:text-white">
+          <label className="mb-3 block text-sm font-medium text-black dark:text-white">
             Email Address
-          </Label>
+          </label>
           <EmailIcon className="absolute left-4.5 top-11.5" />
           <div className="flex items-center flex-wrap">
             <Input
               className="basis-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
               type="email"
-              disabled
+              disabled={!newUser}
               value={editModalData.email}
+              onChange={(e) => {
+                setEditModalData((prev) => ({
+                  ...prev,
+                  email: e.target.value,
+                }));
+              }}
             />
           </div>
         </Field>
         <div className="grid grid-cols-9 gap-4">
-          <Label className="col-span-4 block text-sm font-medium text-black dark:text-white">
+          <label className="col-span-4 block text-sm font-medium text-black dark:text-white">
             Applications
-          </Label>
-          <Label className="col-span-4 block text-sm font-medium text-black dark:text-white">
+          </label>
+          <label className="col-span-4 block text-sm font-medium text-black dark:text-white">
             Facilities
-          </Label>
+          </label>
 
           {editModalData.applications
             ?.filter((app: any) => app.id !== 'access_management')
@@ -413,7 +443,7 @@ const AccessManagementModal = memo(function AccessManagementModal({
             Cancel
           </Button>
           <PrimaryButton className="py-2 px-6 font-medium" type="submit">
-            Save
+            {newUser ? 'Invite' : 'Save'}
           </PrimaryButton>
         </div>
       </form>
