@@ -1,11 +1,4 @@
-import {
-  Dispatch,
-  FormEvent,
-  Fragment,
-  SetStateAction,
-  useEffect,
-  useState,
-} from 'react';
+import { FormEvent, Fragment, useEffect, useState } from 'react';
 import { createToast } from '../../../hooks/fireToast';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import { useNavigate } from '@tanstack/react-router';
@@ -17,62 +10,21 @@ import {
   resendCode,
 } from 'supertokens-web-js/recipe/passwordless';
 
-class MyError {
-  constructor(
-    public message: string,
-    public isSuperTokensGeneralError: boolean,
-  ) {}
-}
-
-export async function sendOTP(
-  email: string,
-  setHasOTPBeenSent?: Dispatch<SetStateAction<boolean>>,
-) {
-  const response = await createCode({
+export async function sendOTP(email: string) {
+  await createCode({
     email,
   });
-
-  if (response.status === 'SIGN_IN_UP_NOT_ALLOWED') {
-    setHasOTPBeenSent?.(false);
-    createToast('Forbidden', response.reason, 3, 'Forbidden');
-  }
 }
 
 async function hasInitialOTPBeenSent() {
   return (await getLoginAttemptInfo()) !== undefined;
 }
 
-async function resendOTP(navigate: any) {
-  try {
-    const response = await resendCode();
+async function resendOTP() {
+  const response = await resendCode();
 
-    if (response.status === 'RESTART_FLOW_ERROR') {
-      await clearLoginAttemptInfo();
-      createToast(
-        'Login Failed',
-        'Login failed. Please try again',
-        3,
-        'Login Failed',
-      );
-      navigate({ to: '/auth' });
-    } else {
-      // OTP resent successfully.
-      createToast(
-        'OTP Sent',
-        'Please check your email for the OTP',
-        1,
-        'OTP Sent',
-      );
-    }
-  } catch (err) {
-    if (err instanceof MyError) {
-      if (err.isSuperTokensGeneralError) {
-        // this may be a custom error message sent from the API by you.
-        createToast('Error', err.message, 3, 'Login Failed');
-      } else {
-        createToast('Error', 'Oops! Something went wrong.', 3, 'Login failed');
-      }
-    }
+  if (response.status === 'RESTART_FLOW_ERROR') {
+    await clearLoginAttemptInfo();
   }
 }
 
@@ -112,13 +64,25 @@ function Passwordless({ setIsLoading, isSession, setIsPasswordless }: any) {
       createToast('Login Failed', 'Missing Email', 3, 'Missing Email');
       return;
     }
-    sendOTP(email, setHasOTPBeenSent).catch((error) => {
-      setHasOTPBeenSent(false);
-      createToast('Login Failed', error.message, 3, 'Login Failed');
-    });
-    setHasOTPBeenSent(true);
-    setOtp('');
-    setTimer(30);
+    sendOTP(email)
+      .then(() => {
+        setHasOTPBeenSent(true);
+        setOtp('');
+        setTimer(30);
+      })
+      .catch((error) => {
+        setHasOTPBeenSent(false);
+        if (error.message === 'Sign ups disabled. Please contact admin.') {
+          createToast(
+            'Login Failed',
+            'Email does not match any user',
+            3,
+            'Login Failed',
+          );
+        } else {
+          createToast('Login Failed', error.message, 3, 'Login Failed');
+        }
+      });
   }
 
   function handleOTPSubmit(e: FormEvent<HTMLFormElement>) {
@@ -175,8 +139,20 @@ function Passwordless({ setIsLoading, isSession, setIsPasswordless }: any) {
   }
 
   function handleResendOTP() {
-    resendOTP(navigate);
-    setTimer(30);
+    resendOTP()
+      .then(() => {
+        setTimer(30);
+        createToast(
+          'OTP Sent',
+          'Please check your email for the OTP',
+          1,
+          'OTP Sent',
+        );
+      })
+      .catch((error) => {
+        createToast('Resend Failed', error.message, 3, 'Login Failed');
+        navigate({ to: '/auth' });
+      });
   }
 
   return (
@@ -255,15 +231,18 @@ function Passwordless({ setIsLoading, isSession, setIsPasswordless }: any) {
           <label className="mb-2.5 font-medium text-black dark:text-white flex justify-between">
             <span>OTP</span>
             {timer > 0 ? (
-              <span>{timer}s to resend</span>
+              <span>OTP will expire in 15 mins, wait {timer}s to resend</span>
             ) : (
-              <a
-                className="text-primary"
-                onClick={handleResendOTP}
-                role="button"
-              >
-                Resend
-              </a>
+              <>
+                <span>OTP will expire in 15 mins, </span>
+                <a
+                  className="text-primary"
+                  onClick={handleResendOTP}
+                  role="button"
+                >
+                  Resend
+                </a>
+              </>
             )}
           </label>
 
