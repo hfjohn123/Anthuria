@@ -91,7 +91,7 @@ function Passwordless({ setIsLoading, isSession, setIsPasswordless }: any) {
       createToast('Login Failed', 'Please enter OPT', 3, 'Missing OPT');
       return;
     }
-    setIsLoading(true);
+    // setIsLoading(true);
     consumeCode({
       userInputCode: otp,
     })
@@ -233,7 +233,7 @@ function Passwordless({ setIsLoading, isSession, setIsPasswordless }: any) {
             {timer > 0 ? (
               <span>OTP will expire in 15 mins, wait {timer}s to resend</span>
             ) : (
-              <>
+              <div>
                 <span>OTP will expire in 15 mins, </span>
                 <a
                   className="text-primary"
@@ -242,7 +242,7 @@ function Passwordless({ setIsLoading, isSession, setIsPasswordless }: any) {
                 >
                   Resend
                 </a>
-              </>
+              </div>
             )}
           </label>
 
