@@ -3,7 +3,10 @@ import { useRef, useState } from 'react';
 import { Dialog } from 'primereact/dialog';
 import { Button } from 'primereact/button';
 
-import { TriggerFinal } from '../../../types/TriggerFinal.ts';
+import {
+  selfDefinedKeyword,
+  TriggerFinal,
+} from '../../../types/TriggerFinal.ts';
 import { Toast } from 'primereact/toast';
 
 import KeywordForm from './KeywordForm.tsx';
@@ -28,7 +31,9 @@ export default function UpdateKeywordModal({
     keyword_list: string[];
   };
   header: string;
-  setSelfDefinedKeywordsState?: any;
+  setSelfDefinedKeywordsState?: React.Dispatch<
+    React.SetStateAction<selfDefinedKeyword[]>
+  >;
   resetTableFilters?: () => void;
   tooltip?: string;
 }) {

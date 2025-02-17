@@ -219,7 +219,7 @@ export type NursingDepreation =
 export type NursingCC = {
   mds_item: string;
   is_mds: boolean;
-  nursing_mds_suggestion: ProgressNoteAndSummary[];
+  nursing_mds_suggestion: SuggestedICD10[];
   is_thumb_up: boolean | null;
   comment: string | null;
 };

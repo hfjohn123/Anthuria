@@ -49,7 +49,6 @@ const isFirstInGroup = (
   return prevRow[id] !== currentRow[id];
 };
 
-const permanentColumnFilters = ['function_area', 'mds_item'];
 export default function FunctionalScoreTable({
   data,
 }: {
@@ -310,12 +309,7 @@ export default function FunctionalScoreTable({
         Functional Score: {patientInfo?.nursing_fs || 'Not Available (99)'}
       </p>
       {data.function_score_all ? (
-        <SmallTableWrapper
-          permanentColumnFilters={permanentColumnFilters}
-          table={table}
-          tableState={tableState}
-          setTableState={setTableState}
-        />
+        <SmallTableWrapper table={table} />
       ) : (
         <p>No Functional Score Available</p>
       )}

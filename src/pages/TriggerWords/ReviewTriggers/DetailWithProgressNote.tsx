@@ -5,7 +5,7 @@ import LineClampShowMore from '../../../common/LineClampShowMore.tsx';
 import DataField from './DataField.tsx';
 import MagicButton from '../../../images/icon/MagicButton.tsx';
 import TriggerReviewButton from '../../../components/Tables/TriggerReviewButton.tsx';
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, useMemo } from 'react';
 import { AuthContext } from '../../../components/AuthWrapper.tsx';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
@@ -20,16 +20,17 @@ export default function DetailWithProgressNote({
   row: Row<TriggerFinal>;
   tableState: TableState;
 }) {
-  const { user_data } = useContext(AuthContext);
-  const explanation = row.original.trigger_words
-    .map((t) => t.trigger_word + ': ' + t.summary)
-    .join('\n\n');
-  const { route } = useContext(AuthContext);
+  const { user_data, route } = useContext(AuthContext);
+  const explanation = useMemo(() => {
+    return row.original.trigger_words
+      .map((t) => `${t.trigger_word}: ${t.summary}`)
+      .join('\n\n');
+  }, [row.original.trigger_words]);
   const { start, end } = useContext(StartEnd);
   const queryClient = useQueryClient();
   const putTouchLog = useMutation({
     mutationFn: async () => {
-      return await axios.put(`${route}/touch_log`, {
+      return axios.put(`${route}/touch_log`, {
         internal_facility_id: row.original.internal_facility_id,
         internal_patient_id: row.original.internal_patient_id,
         progress_note_id: row.original.progress_note_id,
@@ -72,7 +73,10 @@ export default function DetailWithProgressNote({
       );
       return { previousData };
     },
-    onSuccess: () => {
+    onSuccess: async () => {
+      await queryClient.cancelQueries({
+        queryKey: ['trigger_word_view_trigger_word_detail_final'],
+      });
       queryClient.invalidateQueries({
         queryKey: ['trigger_word_view_trigger_word_detail_final'],
         type: 'all',

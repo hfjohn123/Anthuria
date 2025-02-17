@@ -4,7 +4,10 @@ import stemFiltering from '../../../common/stemFiltering.ts';
 import { forwardRef, RefObject, useContext, useState } from 'react';
 import { AuthContext } from '../../../components/AuthWrapper.tsx';
 import { Toast } from 'primereact/toast';
-import { TriggerFinal } from '../../../types/TriggerFinal.ts';
+import {
+  selfDefinedKeyword,
+  TriggerFinal,
+} from '../../../types/TriggerFinal.ts';
 import { Field, Label } from '@headlessui/react';
 import { InputText } from 'primereact/inputtext';
 import { MultiSelect } from 'primereact/multiselect';
@@ -15,9 +18,17 @@ import { Column } from 'primereact/column';
 import highlightGenerator from '../../../common/highlightGenerator.ts';
 import LineClampShowMore from '../../../common/LineClampShowMore.tsx';
 
-const getColorClass = (index: number) => {
-  return highlightColors[index % highlightColors.length];
-};
+const getColorClass = (() => {
+  const cache = new Map<number, string>();
+  return (index: number) => {
+    if (cache.has(index)) {
+      return cache.get(index)!;
+    }
+    const colorClass = highlightColors[index % highlightColors.length];
+    cache.set(index, colorClass);
+    return colorClass;
+  };
+})();
 
 const customTemplate = (item: string, result: string[]) => {
   const index = result.indexOf(item);
@@ -74,7 +85,9 @@ const KeywordForm = forwardRef<
     };
     callback?: () => void;
     isNew?: boolean;
-    setSelfDefinedKeywordsState?: any;
+    setSelfDefinedKeywordsState?: React.Dispatch<
+      React.SetStateAction<selfDefinedKeyword[]>
+    >;
     resetTableFilters?: () => void;
   }
 >(
@@ -137,7 +150,7 @@ const KeywordForm = forwardRef<
         await queryClient.cancelQueries({
           queryKey: ['trigger_word_view_trigger_word_detail_final'],
         });
-        setSelfDefinedKeywordsState((prev) => [
+        setSelfDefinedKeywordsState?.((prev) => [
           ...prev.filter((d) => d.group_name !== initialNewTrigger.group_name),
           {
             group_name: newTriggerWord.group_name,
@@ -169,7 +182,7 @@ const KeywordForm = forwardRef<
         await queryClient.cancelQueries({
           queryKey: ['trigger_word_view_trigger_word_detail_final'],
         });
-        setSelfDefinedKeywordsState((prev) => [
+        setSelfDefinedKeywordsState?.((prev) => [
           ...prev.filter((d) => d.group_name !== initialNewTrigger.group_name),
         ]);
       },

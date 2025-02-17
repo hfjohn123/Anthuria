@@ -1,5 +1,8 @@
 import { useState } from 'react';
-import { signIn } from 'supertokens-web-js/recipe/emailpassword';
+import {
+  signIn,
+  doesEmailExist,
+} from 'supertokens-web-js/recipe/emailpassword';
 import { createToast } from '../../../hooks/fireToast.tsx';
 import Modal from '../../../components/Modal/Modal.tsx';
 import sendEmailClicked from '../../../common/sendEmailClicked.ts';
@@ -44,7 +47,17 @@ async function signInClicked(
         }
       });
     } else if (response.status === 'WRONG_CREDENTIALS_ERROR') {
-      createToast('Login Failed', 'Wrong Credentials', 3, 'Login Failed');
+      const checkEmail = await doesEmailExist({ email });
+      if (!checkEmail.doesExist) {
+        createToast(
+          'Login Failed',
+          'Email does not match any user',
+          3,
+          'Login Failed',
+        );
+        return;
+      }
+      createToast('Login Failed', 'Wrong Email or Password', 3, 'Login Failed');
     } else if (response.status === 'SIGN_IN_NOT_ALLOWED') {
       // the reason string is a user friendly message
       // about what went wrong. It can also contain a support code which users

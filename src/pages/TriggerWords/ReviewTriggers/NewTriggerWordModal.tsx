@@ -2,7 +2,10 @@ import { useRef, useState } from 'react';
 
 import { Dialog } from 'primereact/dialog';
 
-import { TriggerFinal } from '../../../types/TriggerFinal.ts';
+import {
+  selfDefinedKeyword,
+  TriggerFinal,
+} from '../../../types/TriggerFinal.ts';
 import { Toast } from 'primereact/toast';
 
 import KeywordForm from './KeywordForm.tsx';
@@ -28,7 +31,9 @@ export default function NewTriggerWordModal({
 }: {
   data: TriggerFinal[];
   trigger_words: string[];
-  setSelfDefinedKeywordsState: any;
+  setSelfDefinedKeywordsState: React.Dispatch<
+    React.SetStateAction<selfDefinedKeyword[]>
+  >;
 }) {
   const toast = useRef<Toast>(null);
   const [isOpen, setIsOpen] = useState(false);

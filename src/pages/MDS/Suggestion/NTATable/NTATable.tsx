@@ -19,8 +19,6 @@ import MDSCommentModal from '../MDSCommentModal.tsx';
 import { MDSContext } from '../MDSDetail.tsx';
 import { MDSPatientContext } from '../MDSDetailLoading.tsx';
 
-const permanentColumnFilters = ['comorbidity', 'is_mds_table'];
-
 export default function NTATable({ data }: { data: NTAEntry[] }) {
   const row_data = useContext(MDSContext);
   const patientInfo = useContext(MDSPatientContext);
@@ -245,12 +243,5 @@ export default function NTATable({ data }: { data: NTAEntry[] }) {
     getFacetedMinMaxValues: getFacetedMinMaxValues(), // generate min/max values for numeric range filter
     getSortedRowModel: getSortedRowModel(),
   });
-  return (
-    <SmallTableWrapper
-      permanentColumnFilters={permanentColumnFilters}
-      table={table}
-      tableState={tableState}
-      setTableState={setTableState}
-    />
-  );
+  return <SmallTableWrapper table={table} />;
 }

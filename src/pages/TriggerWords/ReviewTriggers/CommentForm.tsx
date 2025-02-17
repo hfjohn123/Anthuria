@@ -1,25 +1,17 @@
 import { useContext, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { AuthContext } from '../AuthWrapper.tsx';
-import usePutComment from '../../hooks/interface/usePutComment.ts';
 import { InputTextarea } from 'primereact/inputtextarea';
 import { FloatLabel } from 'primereact/floatlabel';
+import { AuthContext } from '../../../components/AuthWrapper.tsx';
+import usePutComment from '../../../hooks/interface/usePutComment.ts';
+import { CommentFormProps } from './type/Comment.tsx';
 
 export default function CommentForm({
   comment,
   setIsOpen,
   setThumbUp,
   setCommentState,
-}: {
-  comment: {
-    progress_note_id: number;
-    trigger_word: string;
-    comment: string;
-  };
-  setIsOpen: any;
-  setThumbUp: any;
-  setCommentState: any;
-}) {
+}: CommentFormProps) {
   const { route } = useContext(AuthContext);
   const queryClient = useQueryClient();
   const [commentTemp, setCommentTemp] = useState(comment.comment);

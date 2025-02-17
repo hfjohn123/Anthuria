@@ -3,8 +3,9 @@ import { useState } from 'react';
 import { ThumbsDown } from '@phosphor-icons/react';
 import { Button } from 'primereact/button';
 import clsx from 'clsx';
-import CommentForm from '../../../components/Forms/CommentForm.tsx';
 import { useQueryClient } from '@tanstack/react-query';
+import CommentForm from './CommentForm.tsx';
+import { Comment } from './type/Comment.tsx';
 
 export default function CommentModal({
   data,
@@ -12,27 +13,29 @@ export default function CommentModal({
   setThumbUp,
   setCommentState,
 }: {
-  data: {
-    comment: string;
-    trigger_word: string;
-    progress_note_id: number;
-  };
+  data: Comment;
   active: boolean;
-  setThumbUp: any;
-  setCommentState: any;
+  setThumbUp: React.Dispatch<React.SetStateAction<boolean>>;
+  setCommentState: React.Dispatch<React.SetStateAction<unknown>>;
 }) {
   const [showModal, setShowModal] = useState(false);
   const queryClient = useQueryClient();
+
+  const handleButtonClick = (event: React.MouseEvent) => {
+    event.stopPropagation();
+    queryClient.cancelQueries({
+      queryKey: ['trigger_word_view_trigger_word_detail_final'],
+    });
+    setShowModal(true);
+  };
+
+  const handleDialogHide = () => {
+    setShowModal(false);
+  };
   return (
     <>
       <Button
-        onClick={(event) => {
-          event.stopPropagation();
-          queryClient.cancelQueries({
-            queryKey: ['trigger_word_view_trigger_word_detail_final'],
-          });
-          setShowModal(true);
-        }}
+        onClick={handleButtonClick}
         className="bg-transparent border-0 p-0 m-0"
       >
         <ThumbsDown
@@ -50,10 +53,7 @@ export default function CommentModal({
         resizable
         blockScroll
         className="w-[60rem] overflow-hidden"
-        onHide={() => {
-          if (!showModal) return;
-          setShowModal(false);
-        }}
+        onHide={handleDialogHide}
         maximizable
       >
         <div>

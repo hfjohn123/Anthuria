@@ -194,9 +194,9 @@ export default function MDSSuggestion({ row }: { row: MDSFinal }) {
       <div className="flex flex-col">
         <Disclosure>
           {({ open }) => (
-            <>
+            <div>
               <DisclosureButton
-                className="group "
+                className="group w-full"
                 onClick={() => {
                   if (
                     patientInfo.pt_touched !== 1 &&
@@ -245,14 +245,14 @@ export default function MDSSuggestion({ row }: { row: MDSFinal }) {
               >
                 <PTOTTable data={ptot_data} />
               </DisclosurePanel>
-            </>
+            </div>
           )}
         </Disclosure>
         <Disclosure>
           {({ open }) => (
-            <>
+            <div>
               <DisclosureButton
-                className="group "
+                className="group  w-full"
                 onClick={() => {
                   if (
                     patientInfo.slp_touched !== 1 &&
@@ -301,15 +301,15 @@ export default function MDSSuggestion({ row }: { row: MDSFinal }) {
               >
                 <SLPTable data={_.values(slp_joined)} />
               </DisclosurePanel>
-            </>
+            </div>
           )}
         </Disclosure>
 
         <Disclosure>
           {({ open }) => (
-            <>
+            <div>
               <DisclosureButton
-                className="group "
+                className="group  w-full"
                 onClick={() => {
                   if (
                     patientInfo.nursing_touched !== 1 &&
@@ -358,15 +358,15 @@ export default function MDSSuggestion({ row }: { row: MDSFinal }) {
               >
                 <NursingTable data={row} />
               </DisclosurePanel>
-            </>
+            </div>
           )}
         </Disclosure>
 
         <Disclosure>
           {({ open }) => (
-            <>
+            <div>
               <DisclosureButton
-                className="group"
+                className="group  w-full"
                 onClick={() => {
                   if (
                     patientInfo.nta_touched !== 1 &&
@@ -417,7 +417,7 @@ export default function MDSSuggestion({ row }: { row: MDSFinal }) {
               >
                 <NTATable data={row.nta_final_entry} />
               </DisclosurePanel>
-            </>
+            </div>
           )}
         </Disclosure>
       </div>

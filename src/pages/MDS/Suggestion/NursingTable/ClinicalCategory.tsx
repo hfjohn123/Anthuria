@@ -1,6 +1,7 @@
 import NursingTableWrapper from './NursingTableWrapper.tsx';
 import { NursingBSCP, NursingCC } from '../../../../types/MDSFinal.ts';
 import _ from 'lodash';
+import { ReactNode } from 'react';
 
 const extensiveServices = [
   { mds_item: 'O0110E1B', description: 'Tracheostomy care while a resident' },
@@ -223,7 +224,7 @@ type NursingType =
 
 const typeMap: Record<
   NursingType,
-  { mds_item: string; description: string | JSX.Element }[]
+  { mds_item: string; description: string | ReactNode }[]
 > = {
   extensiveServices,
   specialCareHigh,

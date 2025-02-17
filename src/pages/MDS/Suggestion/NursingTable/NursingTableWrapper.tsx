@@ -7,21 +7,19 @@ import {
   TableState,
   useReactTable,
 } from '@tanstack/react-table';
-import { useContext, useState } from 'react';
+import { Fragment, useContext, useState } from 'react';
 import getFacetedUniqueValues from '../../../../common/getFacetedUniqueValues.ts';
 import getFacetedMinMaxValues from '../../../../common/getFacetedMinMaxValues.ts';
 import {
   NursingBSCP,
   NursingCC,
-  ProgressNoteAndSummary,
   RestorativeCountAll,
+  SuggestedICD10,
 } from '../../../../types/MDSFinal.ts';
 import EvidenceModal from '../EvidenceModal.tsx';
 import UpVoteButton from '../UpVoteButton.tsx';
 import MDSCommentModal from '../MDSCommentModal.tsx';
 import { NursingTableContext } from './NursingTable.tsx';
-
-const permanentColumnFilters = ['mds_item'];
 
 export default function NursingTableWrapper({
   data,
@@ -73,29 +71,16 @@ export default function NursingTableWrapper({
       accessorKey: 'nursing_mds_suggestion',
       header: 'AI Suggested Conditions',
       cell: (info) => {
-        if (!info.getValue())
-          return (
-            <td className="py-2 px-4 border-t border-l border-gray-600"></td>
-          );
-        const count = (info.getValue() as ProgressNoteAndSummary[]).length;
-        if (count === 0)
-          return (
-            <td className="py-2 px-4 border-t border-l border-gray-600"></td>
-          );
         return (
-          <td className="py-2 px-4 border-t border-l border-gray-600">
-            <EvidenceModal
-              button={
-                <span>
-                  {count} {count === 1 ? 'potential ' : 'potentials '}
-                  found
-                </span>
-              }
-              icd10={{
-                icd10: info.row.original.mds_item,
-                progress_note: info.getValue() as ProgressNoteAndSummary[],
-              }}
-            />
+          <td className="whitespace-nowrap  px-4 border-t border-l border-gray-600">
+            {(info.getValue() as SuggestedICD10[])?.map((d, index, array) => {
+              return (
+                <Fragment key={d.icd10}>
+                  <EvidenceModal icd10={d} button={<span>{d.icd10}</span>} />
+                  {index < array.length - 1 && ', '}
+                </Fragment>
+              );
+            })}
           </td>
         );
       },
@@ -197,12 +182,7 @@ export default function NursingTableWrapper({
   return (
     <div>
       {/*<span className="font-bold">Conditions and services:</span>*/}
-      <SmallTableWrapper
-        permanentColumnFilters={permanentColumnFilters}
-        table={table}
-        tableState={tableState}
-        setTableState={setTableState}
-      />
+      <SmallTableWrapper table={table} />
     </div>
   );
 }

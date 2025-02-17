@@ -1,5 +1,4 @@
-import { FormEvent, Fragment, useEffect, useState } from 'react';
-import { createToast } from '../../../hooks/fireToast';
+import { FormEvent, Fragment, useEffect, useRef, useState } from 'react';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import { useNavigate } from '@tanstack/react-router';
 import {
@@ -9,6 +8,7 @@ import {
   getLoginAttemptInfo,
   resendCode,
 } from 'supertokens-web-js/recipe/passwordless';
+import { Toast } from 'primereact/toast';
 
 export async function sendOTP(email: string) {
   await createCode({
@@ -34,6 +34,7 @@ function Passwordless({ setIsLoading, isSession, setIsPasswordless }: any) {
   const [hasOTPBeenSent, setHasOTPBeenSent] = useState(false);
   const [timer, setTimer] = useState(30);
   const navigate = useNavigate();
+  const toast = useRef<Toast>(null);
   useEffect(() => {
     const interval = setInterval(() => {
       if (timer > 0) {
@@ -50,7 +51,12 @@ function Passwordless({ setIsLoading, isSession, setIsPasswordless }: any) {
       setHasOTPBeenSent(await hasInitialOTPBeenSent());
     })()
       .catch((error) => {
-        createToast('Login Failed', error.message, 3, 'Login Failed');
+        toast.current?.show({
+          severity: 'error',
+          summary: 'Error',
+          detail: error.message,
+          life: 3000,
+        });
         setHasOTPBeenSent(false);
       })
       .finally(() => {
@@ -61,7 +67,12 @@ function Passwordless({ setIsLoading, isSession, setIsPasswordless }: any) {
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!email) {
-      createToast('Login Failed', 'Missing Email', 3, 'Missing Email');
+      toast.current?.show({
+        severity: 'error',
+        summary: 'Missing Email',
+        detail: 'Please enter your email',
+        life: 3000,
+      });
       return;
     }
     sendOTP(email)
@@ -73,14 +84,19 @@ function Passwordless({ setIsLoading, isSession, setIsPasswordless }: any) {
       .catch((error) => {
         setHasOTPBeenSent(false);
         if (error.message === 'Sign ups disabled. Please contact admin.') {
-          createToast(
-            'Login Failed',
-            'Email does not match any user',
-            3,
-            'Login Failed',
-          );
+          toast.current?.show({
+            severity: 'error',
+            summary: 'No user found',
+            detail: 'Email does not match any user',
+            life: 3000,
+          });
         } else {
-          createToast('Login Failed', error.message, 3, 'Login Failed');
+          toast.current?.show({
+            severity: 'error',
+            summary: 'Login Failed',
+            detail: error.message,
+            life: 3000,
+          });
         }
       });
   }
@@ -88,7 +104,12 @@ function Passwordless({ setIsLoading, isSession, setIsPasswordless }: any) {
   function handleOTPSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!otp) {
-      createToast('Login Failed', 'Please enter OPT', 3, 'Missing OPT');
+      toast.current?.show({
+        severity: 'error',
+        summary: 'Missing OPT',
+        detail: 'Please enter OPT',
+        life: 3000,
+      });
       return;
     }
     // setIsLoading(true);
@@ -100,40 +121,46 @@ function Passwordless({ setIsLoading, isSession, setIsPasswordless }: any) {
           navigate({ to: '/' });
           // setIsLoading(false);
         } else if (response.status === 'INCORRECT_USER_INPUT_CODE_ERROR') {
-          createToast(
-            'Error',
-            'Wrong OTP! Please try again. Number of attempts left: ' +
+          toast.current?.show({
+            severity: 'error',
+            summary: 'Wrong OTP!',
+            detail:
+              'Please try again. Number of attempts left: ' +
               (response.maximumCodeInputAttempts -
                 response.failedCodeInputAttemptCount),
-            3,
-            'Wrong OTP!',
-          );
+            life: 3000,
+          });
         } else if (response.status === 'EXPIRED_USER_INPUT_CODE_ERROR') {
           clearLoginAttemptInfo()
             .then(() => setHasOTPBeenSent(false))
             .catch(() => {
-              createToast(
-                'Error',
-                'Failed to clear login attempt info',
-                3,
-                'Failed to clear login attempt info',
-              );
+              toast.current?.show({
+                severity: 'error',
+                summary: 'Error',
+                detail: 'Failed to clear login attempt info',
+                life: 3000,
+              });
             });
         } else {
           clearLoginAttemptInfo()
             .then(() => setHasOTPBeenSent(false))
             .catch(() => {
-              createToast(
-                'Error',
-                'Failed to clear login attempt info',
-                3,
-                'Failed to clear login attempt info',
-              );
+              toast.current?.show({
+                severity: 'error',
+                summary: 'Error',
+                detail: 'Failed to clear login attempt info',
+                life: 3000,
+              });
             });
         }
       })
       .catch((error) => {
-        createToast('Login Failed', error.message, 3, 'Login Failed');
+        toast.current?.show({
+          severity: 'error',
+          summary: 'Login Failed',
+          detail: error.message,
+          life: 3000,
+        });
       })
       .finally(() => setIsLoading(false));
   }
@@ -142,21 +169,27 @@ function Passwordless({ setIsLoading, isSession, setIsPasswordless }: any) {
     resendOTP()
       .then(() => {
         setTimer(30);
-        createToast(
-          'OTP Sent',
-          'Please check your email for the OTP',
-          1,
-          'OTP Sent',
-        );
+        toast.current?.show({
+          severity: 'info',
+          summary: 'OTP Sent',
+          detail: 'Please check your email for the OTP',
+          life: 3000,
+        });
       })
       .catch((error) => {
-        createToast('Resend Failed', error.message, 3, 'Login Failed');
+        toast.current?.show({
+          severity: 'error',
+          summary: 'Resend Failed',
+          detail: error.message,
+          life: 3000,
+        });
         navigate({ to: '/auth' });
       });
   }
 
   return (
     <Fragment>
+      <Toast ref={toast} position="bottom-center" />
       {hasOTPBeenSent ? (
         <div className="flex gap-4 items-center">
           <ArrowLeftIcon
@@ -166,12 +199,12 @@ function Passwordless({ setIsLoading, isSession, setIsPasswordless }: any) {
               clearLoginAttemptInfo()
                 .then(() => setHasOTPBeenSent(false))
                 .catch((error) =>
-                  createToast(
-                    'Failed to clear login attempt info',
-                    error.message,
-                    3,
-                    'Failed to clear login attempt info',
-                  ),
+                  toast.current?.show({
+                    severity: 'error',
+                    summary: 'Failed to clear login attempt info',
+                    detail: error.message,
+                    life: 3000,
+                  }),
                 );
             }}
           />

@@ -30,12 +30,12 @@ export type TriggerAPI = {
     trigger_word: string;
     key_word: string;
   }[];
-  self_defined_keywords?:
-    | {
-        group_name: string;
-        trigger_word: string;
-        keyword_list: string[];
-        internal_facility_id: string[];
-      }[]
-    | null;
+  self_defined_keywords?: selfDefinedKeyword[] | null;
+};
+
+export type selfDefinedKeyword = {
+  group_name: string;
+  trigger_word: string;
+  keyword_list: string[];
+  internal_facility_id: string[];
 };
