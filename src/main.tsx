@@ -86,14 +86,17 @@ SuperTokens.init({
     Session.init(),
   ],
 });
-
 const rootRoute = createRootRoute({
   component: () => (
     <>
-      <Toaster position="bottom-center" />
-      <ToastProvider>
-        <Outlet />
-      </ToastProvider>
+      <AuthWrapper>
+        <>
+          <Toaster position="bottom-center" />
+          <ToastProvider>
+            <Outlet />
+          </ToastProvider>
+        </>
+      </AuthWrapper>
     </>
   ),
 });
@@ -104,10 +107,8 @@ const indexRoute = createRoute({
   component: () => {
     return (
       <SessionAuth>
-        <AuthWrapper>
-          <PageTitle title="Home" />
-          <Home />
-        </AuthWrapper>
+        <PageTitle title="Home" />
+        <Home />
       </SessionAuth>
     );
   },
@@ -119,10 +120,8 @@ const NHQIRoute = createRoute({
   component: () => {
     return (
       <SessionAuth>
-        <AuthWrapper>
-          <PageTitle id="nhqi" />
-          <NHQI />
-        </AuthWrapper>
+        <PageTitle id="nhqi" />
+        <NHQI />
       </SessionAuth>
     );
   },
@@ -134,10 +133,8 @@ const ReviewTriggersRoute = createRoute({
   component: () => {
     return (
       <SessionAuth>
-        <AuthWrapper>
-          <PageTitle id="trigger_words" />
-          <ReviewTriggers />
-        </AuthWrapper>
+        <PageTitle id="trigger_words" />
+        <ReviewTriggers />
       </SessionAuth>
     );
   },
@@ -149,10 +146,8 @@ const EventTrackerRoute = createRoute({
   component: () => {
     return (
       <SessionAuth>
-        <AuthWrapper>
-          <PageTitle id="trigger_words" />
-          <EventTracker />
-        </AuthWrapper>
+        <PageTitle id="trigger_words" />
+        <EventTracker />
       </SessionAuth>
     );
   },
@@ -164,10 +159,8 @@ const IncidentTrackerRoute = createRoute({
   component: () => {
     return (
       <SessionAuth>
-        <AuthWrapper>
-          <PageTitle id="trigger_words" />
-          <IncidentTracker />
-        </AuthWrapper>
+        <PageTitle id="trigger_words" />
+        <IncidentTracker />
       </SessionAuth>
     );
   },
@@ -179,10 +172,8 @@ const CashflowForecastRoute = createRoute({
   component: () => {
     return (
       <SessionAuth>
-        <AuthWrapper>
-          <PageTitle id="cashflow_forecast" />
-          <CashflowForecast />
-        </AuthWrapper>
+        <PageTitle id="cashflow_forecast" />
+        <CashflowForecast />
       </SessionAuth>
     );
   },
@@ -194,10 +185,8 @@ const AccountSettingRoute = createRoute({
   component: () => {
     return (
       <SessionAuth>
-        <AuthWrapper>
-          <PageTitle title="Settings" />
-          <AccountSetting />
-        </AuthWrapper>
+        <PageTitle title="Settings" />
+        <AccountSetting />
       </SessionAuth>
     );
   },
@@ -215,10 +204,8 @@ const MDSRoute = createRoute({
   component: () => {
     return (
       <SessionAuth>
-        <AuthWrapper>
-          <PageTitle id="mds" />
-          <MDS />
-        </AuthWrapper>
+        <PageTitle id="mds" />
+        <MDS />
       </SessionAuth>
     );
   },
@@ -230,10 +217,8 @@ const MDSChatBotRoute = createRoute({
   component: () => {
     return (
       <SessionAuth>
-        <AuthWrapper>
-          <PageTitle id="mds" />
-          <MDSChatBot />
-        </AuthWrapper>
+        <PageTitle id="mds" />
+        <MDSChatBot />
       </SessionAuth>
     );
   },
@@ -244,10 +229,8 @@ const MDSFileReaderRoute = createRoute({
   component: () => {
     return (
       <SessionAuth>
-        <AuthWrapper>
-          <PageTitle id="mds" />
-          <FileReader />
-        </AuthWrapper>
+        <PageTitle id="mds" />
+        <FileReader />
       </SessionAuth>
     );
   },
@@ -258,10 +241,8 @@ const SetupPasswordRoute = createRoute({
   component: () => {
     return (
       <SessionAuth>
-        <AuthWrapper>
-          <PageTitle id="Please setup your password" />
-          <PasswordSetUp />
-        </AuthWrapper>
+        <PageTitle id="Please setup your password" />
+        <PasswordSetUp />
       </SessionAuth>
     );
   },
@@ -321,7 +302,6 @@ const router = createRouter({
       <PrimaryButton>
         <Link to={'/'}>Back to Home</Link>
       </PrimaryButton>
-      A
     </ErrorPage>
   ),
 });
