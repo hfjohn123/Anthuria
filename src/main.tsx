@@ -36,7 +36,7 @@ import MDSChatBot from './pages/MDS/ChatBot/ChatBot.tsx';
 import { datadogRum } from '@datadog/browser-rum';
 import { PrimeReactProvider } from 'primereact/api';
 import FileReader from './pages/MDS/FileReder/FileReader.tsx';
-import PasswordSetUp from './pages/Authentication/PasswordSetUp.tsx';
+import PasswordSetUp from './pages/Authentication/SignIn/PasswordSetUp.tsx';
 import { ToastProvider } from './components/ToastProvider.tsx';
 
 const queryClient = new QueryClient();

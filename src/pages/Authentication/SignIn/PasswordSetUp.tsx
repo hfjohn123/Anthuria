@@ -1,17 +1,58 @@
-import { Button, Field, Label } from '@headlessui/react';
-import { useState, useContext } from 'react';
-import { createToast } from '../../hooks/fireToast.tsx';
-import { signUpClicked } from '../../components/Forms/AccountSettings/PersonalInformationForm.tsx';
-import { AuthContext } from '../../components/AuthWrapper.tsx';
+import { Field, Label } from '@headlessui/react';
+import { useContext, useState } from 'react';
+import { AuthContext } from '../../../components/AuthWrapper.tsx';
 import { Password } from 'primereact/password';
 import { InputText } from 'primereact/inputtext';
 import PasswordChecklist from 'react-password-checklist';
 import clsx from 'clsx';
+import { useToast } from '../../../components/ToastProvider.tsx';
+import { Button } from 'primereact/button';
+import { signUp } from 'supertokens-web-js/recipe/emailpassword';
+
+async function signUpClicked(email: string, password: string) {
+  try {
+    const response = await signUp({
+      formFields: [
+        {
+          id: 'email',
+          value: email,
+        },
+        {
+          id: 'password',
+          value: password,
+        },
+      ],
+    });
+
+    if (response.status === 'FIELD_ERROR') {
+      // one of the input formFields failed validaiton
+      response.formFields.forEach((formField) => {
+        if (formField.id === 'email') {
+          // Email validation failed (for example incorrect email syntax),
+          // or the email is not unique.
+          throw new Error(formField.error);
+        } else if (formField.id === 'password') {
+          // Password validation failed.
+          // Maybe it didn't match the password strength
+          throw new Error(formField.error);
+        }
+      });
+    } else if (response.status === 'SIGN_UP_NOT_ALLOWED') {
+      // the reason string is a user friendly message
+      // about what went wrong. It can also contain a support code which users
+      // can tell you so you know why their sign up was not allowed.
+      throw new Error('Sign ups disabled. Please contact admin.');
+    }
+  } catch (err: any) {
+    throw new Error(err.message);
+  }
+}
 
 export default function PasswordSetUp() {
   const { user_data } = useContext(AuthContext);
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const toast = useToast();
   return (
     <div className="flex justify-center items-center h-screen">
       <form
@@ -20,12 +61,32 @@ export default function PasswordSetUp() {
           event.preventDefault();
           event.stopPropagation();
           if (password !== confirmPassword) {
-            createToast('Error', 'Passwords do not match', 3, 'Error');
+            toast?.show({
+              severity: 'error',
+              summary: 'Error',
+              detail: 'Passwords do not match',
+              life: 3000,
+            });
             return;
           }
-          signUpClicked(user_data.email, password).catch((error) => {
-            createToast('Error', error.message, 3, 'Error');
-          });
+          signUpClicked(user_data.email, password)
+            .then(() => {
+              toast?.show({
+                severity: 'success',
+                summary: 'Success',
+                detail: 'Password Set Successfully',
+                life: 3000,
+              });
+              window.location.href = '/';
+            })
+            .catch((error) => {
+              toast?.show({
+                severity: 'error',
+                summary: 'Error',
+                detail: error.message,
+                life: 3000,
+              });
+            });
         }}
       >
         <h2 className="mb-3 text-title-lg font-bold text-black dark:text-white sm:text-title-xl2 text-center">
@@ -41,9 +102,10 @@ export default function PasswordSetUp() {
               onChange={(event) => setPassword(event.target.value)}
               type="password"
               className="w-full"
+              pt={{ input: () => 'pr-10' }}
               placeholder="Password"
             />
-            <span className="absolute right-4 top-4">
+            <span className="absolute right-4 top-3.5">
               <svg
                 className="fill-current"
                 width="22"
@@ -76,9 +138,9 @@ export default function PasswordSetUp() {
               onChange={(event) => setConfirmPassword(event.target.value)}
               type="password"
               placeholder="Re-enter Password"
-              className="w-full"
+              className="w-full pr-10"
             />
-            <span className="absolute right-4 top-4">
+            <span className="absolute right-4 top-3.5">
               <svg
                 className="fill-current"
                 width="22"
@@ -106,14 +168,14 @@ export default function PasswordSetUp() {
             'transition-all  duration-300 transition-discrete ease-in-out',
             confirmPassword || password ? 'block' : 'hidden',
           )}
-          rules={['minLength', 'lowercase', 'number', 'match']}
+          rules={['minLength', 'letter', 'number', 'match']}
           minLength={8}
           value={password}
           valueAgain={confirmPassword}
         />
 
         <Button
-          className="flex justify-center rounded bg-primary py-2 px-6 font-medium text-gray hover:bg-opacity-90"
+          className="flex justify-center bg-primary py-2 font-medium hover:bg-opacity-90"
           type="submit"
         >
           Submit

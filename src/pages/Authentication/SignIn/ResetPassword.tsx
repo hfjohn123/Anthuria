@@ -1,10 +1,15 @@
 import { Button, Field, Input, Label } from '@headlessui/react';
 import { useState } from 'react';
 import { submitNewPassword } from 'supertokens-web-js/recipe/emailpassword';
-import { createToast } from '../../../hooks/fireToast.tsx';
 import { useNavigate } from '@tanstack/react-router';
+import { Toast } from 'primereact/toast';
+import { useToast } from '../../../components/ToastProvider.tsx';
 
-async function newPasswordEntered(newPassword: string, navigate: any) {
+async function newPasswordEntered(
+  newPassword: string,
+  navigate: any,
+  toast: Toast | null,
+) {
   try {
     const response = await submitNewPassword({
       formFields: [
@@ -19,38 +24,48 @@ async function newPasswordEntered(newPassword: string, navigate: any) {
       response.formFields.forEach((formField) => {
         if (formField.id === 'password') {
           // New password did not meet password criteria on the backend.
-          createToast(
-            'Password Set Failed',
-            formField.error,
-            3,
-            'Password Set Failed',
-          );
+          toast?.show({
+            severity: 'error',
+            summary: 'Password Reset Failed',
+            detail: formField.error,
+            life: 3000,
+          });
         }
       });
     } else if (response.status === 'RESET_PASSWORD_INVALID_TOKEN_ERROR') {
       // the password reset token in the URL is invalid, expired, or already consumed
-      createToast(
-        'Password Set Failed',
-        'Password reset token is invalid, expired, or already consumed',
-        3,
-        'Password Set Failed',
-      );
+      toast?.show({
+        severity: 'error',
+        summary: 'Password Reset Failed',
+        detail: 'Password reset token is invalid, expired, or already consumed',
+        life: 3000,
+      });
       navigate({ to: '/auth' });
     } else {
-      createToast('Password Set Successful', '', 0, 'Password Set Successful');
+      toast?.show({
+        severity: 'success',
+        summary: 'Success',
+        detail: 'Password Reset Successfully',
+        life: 3000,
+      });
       navigate({ to: '/auth' });
     }
   } catch (err: any) {
     if (err.isSuperTokensGeneralError === true) {
       // this may be a custom error message sent from the API by you.
-      createToast('Password Set Failed', err.message, 3, 'Password Set Failed');
+      toast?.show({
+        severity: 'error',
+        summary: 'Password Reset Failed',
+        detail: err.message,
+        life: 3000,
+      });
     } else {
-      createToast(
-        'Password Set Failed',
-        'Oops! Something went wrong.',
-        3,
-        'Password Set Failed',
-      );
+      toast?.show({
+        severity: 'error',
+        summary: 'Password Reset Failed',
+        detail: 'Something went wrong',
+        life: 3000,
+      });
     }
   }
 }
@@ -59,6 +74,7 @@ export default function ResetPassword() {
   const navigate = useNavigate();
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const toast = useToast();
   return (
     <div className="flex justify-center items-center h-screen">
       <form
@@ -66,7 +82,7 @@ export default function ResetPassword() {
         onSubmit={(event) => {
           event.preventDefault();
           event.stopPropagation();
-          newPasswordEntered(password, navigate);
+          newPasswordEntered(password, navigate, toast);
         }}
       >
         <h2 className="mb-3 text-title-lg font-bold text-black dark:text-white sm:text-title-xl2 text-center">

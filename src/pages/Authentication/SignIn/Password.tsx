@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { SetStateAction, useState } from 'react';
 import {
   doesEmailExist,
   signIn,
@@ -19,6 +19,8 @@ async function signInClicked(
   password: string | undefined,
   navigate: any,
   toast: Toast | null,
+  setInvalidEmail: React.Dispatch<SetStateAction<boolean>>,
+  setInvalidPassword: React.Dispatch<SetStateAction<boolean>>,
 ) {
   if (
     email === undefined ||
@@ -32,6 +34,8 @@ async function signInClicked(
       detail: 'Missing Email or Password',
       life: 3000,
     });
+    setInvalidEmail(true);
+    setInvalidPassword(true);
     return;
   }
   try {
@@ -52,6 +56,7 @@ async function signInClicked(
       response.formFields.forEach((formField) => {
         if (formField.id === 'email') {
           // Email validation failed (for example incorrect email syntax).
+          setInvalidEmail(true);
           toast?.show({
             severity: 'error',
             summary: 'Login Failed',
@@ -63,6 +68,7 @@ async function signInClicked(
     } else if (response.status === 'WRONG_CREDENTIALS_ERROR') {
       const checkEmail = await doesEmailExist({ email });
       if (!checkEmail.doesExist) {
+        setInvalidEmail(true);
         toast?.show({
           severity: 'error',
           summary: 'Login Failed',
@@ -71,6 +77,7 @@ async function signInClicked(
         });
         return;
       }
+      setInvalidPassword(true);
       toast?.show({
         severity: 'error',
         summary: 'Login Failed',
@@ -115,6 +122,8 @@ function Password({ setIsPasswordless }: any) {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const toast = useToast();
+  const [invalidEmail, setInvalidEmail] = useState(false);
+  const [invalidPassword, setInvalidPassword] = useState(false);
 
   if (isLoading) {
     return <h3>Loading...</h3>;
@@ -130,7 +139,14 @@ function Password({ setIsPasswordless }: any) {
       <form
         onSubmit={(event) => {
           event.preventDefault();
-          signInClicked(email, password, navigate, toast);
+          signInClicked(
+            email,
+            password,
+            navigate,
+            toast,
+            setInvalidEmail,
+            setInvalidPassword,
+          );
         }}
       >
         <Field className={`mb-4 `}>
@@ -141,7 +157,11 @@ function Password({ setIsPasswordless }: any) {
             <InputText
               autoComplete="email webauthn"
               value={email}
-              onChange={(event) => setEmail(event.target.value.trim())}
+              invalid={invalidEmail}
+              onChange={(event) => {
+                setEmail(event.target.value.trim());
+                setInvalidEmail(false);
+              }}
               placeholder="Enter your email"
               className="w-full pr-10"
             />
@@ -171,6 +191,7 @@ function Password({ setIsPasswordless }: any) {
           </Label>
           <PrimePassword
             value={password}
+            invalid={invalidPassword}
             feedback={false}
             className="w-full"
             pt={{
@@ -179,7 +200,10 @@ function Password({ setIsPasswordless }: any) {
               hideIcon: () => 'size-5  -mt-2 mr-1',
             }}
             placeholder="Enter your password"
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              setInvalidPassword(false);
+            }}
             toggleMask
           />
           <Modal
