@@ -37,6 +37,7 @@ import { datadogRum } from '@datadog/browser-rum';
 import { PrimeReactProvider } from 'primereact/api';
 import FileReader from './pages/MDS/FileReder/FileReader.tsx';
 import PasswordSetUp from './pages/Authentication/PasswordSetUp.tsx';
+import { ToastProvider } from './components/ToastProvider.tsx';
 
 const queryClient = new QueryClient();
 datadogRum.init({
@@ -85,15 +86,14 @@ SuperTokens.init({
     Session.init(),
   ],
 });
+
 const rootRoute = createRootRoute({
   component: () => (
     <>
-      <AuthWrapper>
-        <>
-          <Toaster position="bottom-center" />
-          <Outlet />
-        </>
-      </AuthWrapper>
+      <Toaster position="bottom-center" />
+      <ToastProvider>
+        <Outlet />
+      </ToastProvider>
     </>
   ),
 });
@@ -104,8 +104,10 @@ const indexRoute = createRoute({
   component: () => {
     return (
       <SessionAuth>
-        <PageTitle title="Home" />
-        <Home />
+        <AuthWrapper>
+          <PageTitle title="Home" />
+          <Home />
+        </AuthWrapper>
       </SessionAuth>
     );
   },
@@ -117,8 +119,10 @@ const NHQIRoute = createRoute({
   component: () => {
     return (
       <SessionAuth>
-        <PageTitle id="nhqi" />
-        <NHQI />
+        <AuthWrapper>
+          <PageTitle id="nhqi" />
+          <NHQI />
+        </AuthWrapper>
       </SessionAuth>
     );
   },
@@ -130,8 +134,10 @@ const ReviewTriggersRoute = createRoute({
   component: () => {
     return (
       <SessionAuth>
-        <PageTitle id="trigger_words" />
-        <ReviewTriggers />
+        <AuthWrapper>
+          <PageTitle id="trigger_words" />
+          <ReviewTriggers />
+        </AuthWrapper>
       </SessionAuth>
     );
   },
@@ -143,8 +149,10 @@ const EventTrackerRoute = createRoute({
   component: () => {
     return (
       <SessionAuth>
-        <PageTitle id="trigger_words" />
-        <EventTracker />
+        <AuthWrapper>
+          <PageTitle id="trigger_words" />
+          <EventTracker />
+        </AuthWrapper>
       </SessionAuth>
     );
   },
@@ -156,8 +164,10 @@ const IncidentTrackerRoute = createRoute({
   component: () => {
     return (
       <SessionAuth>
-        <PageTitle id="trigger_words" />
-        <IncidentTracker />
+        <AuthWrapper>
+          <PageTitle id="trigger_words" />
+          <IncidentTracker />
+        </AuthWrapper>
       </SessionAuth>
     );
   },
@@ -169,8 +179,10 @@ const CashflowForecastRoute = createRoute({
   component: () => {
     return (
       <SessionAuth>
-        <PageTitle id="cashflow_forecast" />
-        <CashflowForecast />
+        <AuthWrapper>
+          <PageTitle id="cashflow_forecast" />
+          <CashflowForecast />
+        </AuthWrapper>
       </SessionAuth>
     );
   },
@@ -182,8 +194,10 @@ const AccountSettingRoute = createRoute({
   component: () => {
     return (
       <SessionAuth>
-        <PageTitle title="Settings" />
-        <AccountSetting />
+        <AuthWrapper>
+          <PageTitle title="Settings" />
+          <AccountSetting />
+        </AuthWrapper>
       </SessionAuth>
     );
   },
@@ -201,8 +215,10 @@ const MDSRoute = createRoute({
   component: () => {
     return (
       <SessionAuth>
-        <PageTitle id="mds" />
-        <MDS />
+        <AuthWrapper>
+          <PageTitle id="mds" />
+          <MDS />
+        </AuthWrapper>
       </SessionAuth>
     );
   },
@@ -214,8 +230,10 @@ const MDSChatBotRoute = createRoute({
   component: () => {
     return (
       <SessionAuth>
-        <PageTitle id="mds" />
-        <MDSChatBot />
+        <AuthWrapper>
+          <PageTitle id="mds" />
+          <MDSChatBot />
+        </AuthWrapper>
       </SessionAuth>
     );
   },
@@ -226,8 +244,10 @@ const MDSFileReaderRoute = createRoute({
   component: () => {
     return (
       <SessionAuth>
-        <PageTitle id="mds" />
-        <FileReader />
+        <AuthWrapper>
+          <PageTitle id="mds" />
+          <FileReader />
+        </AuthWrapper>
       </SessionAuth>
     );
   },
@@ -238,8 +258,10 @@ const SetupPasswordRoute = createRoute({
   component: () => {
     return (
       <SessionAuth>
-        <PageTitle id="Please setup your password" />
-        <PasswordSetUp />
+        <AuthWrapper>
+          <PageTitle id="Please setup your password" />
+          <PasswordSetUp />
+        </AuthWrapper>
       </SessionAuth>
     );
   },
@@ -299,6 +321,7 @@ const router = createRouter({
       <PrimaryButton>
         <Link to={'/'}>Back to Home</Link>
       </PrimaryButton>
+      A
     </ErrorPage>
   ),
 });

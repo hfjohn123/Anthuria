@@ -1,4 +1,4 @@
-import { FormEvent, Fragment, useEffect, useRef, useState } from 'react';
+import { FormEvent, Fragment, useEffect, useState } from 'react';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import { useNavigate } from '@tanstack/react-router';
 import {
@@ -8,7 +8,9 @@ import {
   getLoginAttemptInfo,
   resendCode,
 } from 'supertokens-web-js/recipe/passwordless';
-import { Toast } from 'primereact/toast';
+import { InputText } from 'primereact/inputtext';
+import { Button } from 'primereact/button';
+import { useToast } from '../../../components/ToastProvider.tsx';
 
 export async function sendOTP(email: string) {
   await createCode({
@@ -29,12 +31,12 @@ async function resendOTP() {
 }
 
 function Passwordless({ setIsLoading, isSession, setIsPasswordless }: any) {
-  const [email, setEmail] = useState<string | undefined>();
-  const [otp, setOtp] = useState<string | undefined>();
+  const [email, setEmail] = useState<string>('');
+  const [otp, setOtp] = useState<string>('');
   const [hasOTPBeenSent, setHasOTPBeenSent] = useState(false);
   const [timer, setTimer] = useState(30);
   const navigate = useNavigate();
-  const toast = useRef<Toast>(null);
+  const toast = useToast();
   useEffect(() => {
     const interval = setInterval(() => {
       if (timer > 0) {
@@ -51,7 +53,7 @@ function Passwordless({ setIsLoading, isSession, setIsPasswordless }: any) {
       setHasOTPBeenSent(await hasInitialOTPBeenSent());
     })()
       .catch((error) => {
-        toast.current?.show({
+        toast?.show({
           severity: 'error',
           summary: 'Error',
           detail: error.message,
@@ -67,7 +69,7 @@ function Passwordless({ setIsLoading, isSession, setIsPasswordless }: any) {
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!email) {
-      toast.current?.show({
+      toast?.show({
         severity: 'error',
         summary: 'Missing Email',
         detail: 'Please enter your email',
@@ -84,14 +86,14 @@ function Passwordless({ setIsLoading, isSession, setIsPasswordless }: any) {
       .catch((error) => {
         setHasOTPBeenSent(false);
         if (error.message === 'Sign ups disabled. Please contact admin.') {
-          toast.current?.show({
+          toast?.show({
             severity: 'error',
             summary: 'No user found',
             detail: 'Email does not match any user',
             life: 3000,
           });
         } else {
-          toast.current?.show({
+          toast?.show({
             severity: 'error',
             summary: 'Login Failed',
             detail: error.message,
@@ -104,7 +106,7 @@ function Passwordless({ setIsLoading, isSession, setIsPasswordless }: any) {
   function handleOTPSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!otp) {
-      toast.current?.show({
+      toast?.show({
         severity: 'error',
         summary: 'Missing OPT',
         detail: 'Please enter OPT',
@@ -121,7 +123,7 @@ function Passwordless({ setIsLoading, isSession, setIsPasswordless }: any) {
           navigate({ to: '/' });
           // setIsLoading(false);
         } else if (response.status === 'INCORRECT_USER_INPUT_CODE_ERROR') {
-          toast.current?.show({
+          toast?.show({
             severity: 'error',
             summary: 'Wrong OTP!',
             detail:
@@ -134,7 +136,7 @@ function Passwordless({ setIsLoading, isSession, setIsPasswordless }: any) {
           clearLoginAttemptInfo()
             .then(() => setHasOTPBeenSent(false))
             .catch(() => {
-              toast.current?.show({
+              toast?.show({
                 severity: 'error',
                 summary: 'Error',
                 detail: 'Failed to clear login attempt info',
@@ -145,7 +147,7 @@ function Passwordless({ setIsLoading, isSession, setIsPasswordless }: any) {
           clearLoginAttemptInfo()
             .then(() => setHasOTPBeenSent(false))
             .catch(() => {
-              toast.current?.show({
+              toast?.show({
                 severity: 'error',
                 summary: 'Error',
                 detail: 'Failed to clear login attempt info',
@@ -155,7 +157,7 @@ function Passwordless({ setIsLoading, isSession, setIsPasswordless }: any) {
         }
       })
       .catch((error) => {
-        toast.current?.show({
+        toast?.show({
           severity: 'error',
           summary: 'Login Failed',
           detail: error.message,
@@ -169,7 +171,7 @@ function Passwordless({ setIsLoading, isSession, setIsPasswordless }: any) {
     resendOTP()
       .then(() => {
         setTimer(30);
-        toast.current?.show({
+        toast?.show({
           severity: 'info',
           summary: 'OTP Sent',
           detail: 'Please check your email for the OTP',
@@ -177,7 +179,7 @@ function Passwordless({ setIsLoading, isSession, setIsPasswordless }: any) {
         });
       })
       .catch((error) => {
-        toast.current?.show({
+        toast?.show({
           severity: 'error',
           summary: 'Resend Failed',
           detail: error.message,
@@ -189,7 +191,6 @@ function Passwordless({ setIsLoading, isSession, setIsPasswordless }: any) {
 
   return (
     <Fragment>
-      <Toast ref={toast} position="bottom-center" />
       {hasOTPBeenSent ? (
         <div className="flex gap-4 items-center">
           <ArrowLeftIcon
@@ -199,7 +200,7 @@ function Passwordless({ setIsLoading, isSession, setIsPasswordless }: any) {
               clearLoginAttemptInfo()
                 .then(() => setHasOTPBeenSent(false))
                 .catch((error) =>
-                  toast.current?.show({
+                  toast?.show({
                     severity: 'error',
                     summary: 'Failed to clear login attempt info',
                     detail: error.message,
@@ -227,15 +228,15 @@ function Passwordless({ setIsLoading, isSession, setIsPasswordless }: any) {
             Email
           </label>
           <div className="relative">
-            <input
+            <InputText
               autoComplete="email webauthn"
               value={email}
               onChange={(event) => setEmail(event.target.value.trim())}
               placeholder="Enter your email"
-              className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+              className="w-full pr-10"
             />
 
-            <span className="absolute right-4 top-4">
+            <span className="absolute right-4 top-3.5">
               <svg
                 className="fill-current"
                 width="22"
@@ -280,15 +281,15 @@ function Passwordless({ setIsLoading, isSession, setIsPasswordless }: any) {
           </label>
 
           <div className="relative">
-            <input
+            <InputText
               value={otp}
               onChange={(event) => setOtp(event.target.value)}
               type="text"
               placeholder="Please Check Your Email For The One Time Passcode"
-              className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+              className="w-full r-10"
             />
 
-            <span className="absolute right-4 top-4">
+            <span className="absolute right-4 top-3.5">
               <svg
                 className="fill-current"
                 width="22"
@@ -313,10 +314,11 @@ function Passwordless({ setIsLoading, isSession, setIsPasswordless }: any) {
         </div>
 
         <div className="mb-5 mt-5">
-          <input
+          <Button
             type="submit"
-            value="Sign In"
-            className="w-full cursor-pointer rounded-lg border border-primary bg-primary p-4 text-white transition hover:bg-opacity-90"
+            label="Sign In"
+            className="w-full bg-primary  transition hover:bg-opacity-80"
+            pt={{ label: () => 'font-medium' }}
           />
         </div>
 

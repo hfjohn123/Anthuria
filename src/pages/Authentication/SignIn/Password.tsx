@@ -1,20 +1,24 @@
 import { useState } from 'react';
 import {
-  signIn,
   doesEmailExist,
+  signIn,
 } from 'supertokens-web-js/recipe/emailpassword';
 import { createToast } from '../../../hooks/fireToast.tsx';
 import Modal from '../../../components/Modal/Modal.tsx';
 import sendEmailClicked from '../../../common/sendEmailClicked.ts';
-import { Button, Field, Input, Label } from '@headlessui/react';
+import { Field, Label } from '@headlessui/react';
 import { useNavigate } from '@tanstack/react-router';
 import { Password as PrimePassword } from 'primereact/password';
 import { InputText } from 'primereact/inputtext';
+import { Button } from 'primereact/button';
+import { useToast } from '../../../components/ToastProvider.tsx';
+import { Toast } from 'primereact/toast';
 
 async function signInClicked(
   email: string | undefined,
   password: string | undefined,
   navigate: any,
+  toast: Toast | null,
 ) {
   if (
     email === undefined ||
@@ -22,7 +26,12 @@ async function signInClicked(
     email === '' ||
     password === ''
   ) {
-    createToast('Login Failed', 'Missing Email or Password', 3, 'Login Failed');
+    toast?.show({
+      severity: 'error',
+      summary: 'Login Failed',
+      detail: 'Missing Email or Password',
+      life: 3000,
+    });
     return;
   }
   try {
@@ -43,21 +52,31 @@ async function signInClicked(
       response.formFields.forEach((formField) => {
         if (formField.id === 'email') {
           // Email validation failed (for example incorrect email syntax).
-          createToast('Login Failed', formField.error, 3, 'Login Failed');
+          toast?.show({
+            severity: 'error',
+            summary: 'Login Failed',
+            detail: formField.error,
+            life: 3000,
+          });
         }
       });
     } else if (response.status === 'WRONG_CREDENTIALS_ERROR') {
       const checkEmail = await doesEmailExist({ email });
       if (!checkEmail.doesExist) {
-        createToast(
-          'Login Failed',
-          'Email does not match any user',
-          3,
-          'Login Failed',
-        );
+        toast?.show({
+          severity: 'error',
+          summary: 'Login Failed',
+          detail: 'Email does not match any user',
+          life: 3000,
+        });
         return;
       }
-      createToast('Login Failed', 'Wrong Email or Password', 3, 'Login Failed');
+      toast?.show({
+        severity: 'error',
+        summary: 'Login Failed',
+        detail: 'Wrong Password',
+        life: 3000,
+      });
     } else if (response.status === 'SIGN_IN_NOT_ALLOWED') {
       // the reason string is a user friendly message
       // about what went wrong. It can also contain a support code which users
@@ -71,25 +90,31 @@ async function signInClicked(
   } catch (err: any) {
     if (err.isSuperTokensGeneralError === true) {
       // this may be a custom error message sent from the API by you.
-      createToast('Login Failed', err.message, 3, 'Login Failed');
+      toast?.show({
+        severity: 'error',
+        summary: 'Login Failed',
+        detail: err.message,
+        life: 3000,
+      });
     } else {
-      createToast(
-        'Login Failed',
-        'Oops! Something went wrong.',
-        3,
-        'Login Failed',
-      );
+      toast?.show({
+        severity: 'error',
+        summary: 'Login Failed',
+        detail: 'Oops! Something went wrong.',
+        life: 3000,
+      });
     }
   }
 }
 
 function Password({ setIsPasswordless }: any) {
-  const [email, setEmail] = useState<string | undefined>();
-  const [password, setPassword] = useState<string | undefined>();
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSent, setIsSent] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const toast = useToast();
 
   if (isLoading) {
     return <h3>Loading...</h3>;
@@ -105,7 +130,7 @@ function Password({ setIsPasswordless }: any) {
       <form
         onSubmit={(event) => {
           event.preventDefault();
-          signInClicked(email, password, navigate);
+          signInClicked(email, password, navigate, toast);
         }}
       >
         <Field className={`mb-4 `}>
@@ -118,10 +143,10 @@ function Password({ setIsPasswordless }: any) {
               value={email}
               onChange={(event) => setEmail(event.target.value.trim())}
               placeholder="Enter your email"
-              className="w-full "
+              className="w-full pr-10"
             />
 
-            <span className="absolute right-4 top-4">
+            <span className="absolute right-4 top-3.5">
               <svg
                 className="fill-current"
                 width="22"
@@ -168,7 +193,7 @@ function Password({ setIsPasswordless }: any) {
             title="Forgot Password"
           >
             <form
-              className="flex flex-col gap-4 px-4"
+              className="flex flex-col gap-4 px-4 w-100"
               onSubmit={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -184,16 +209,15 @@ function Password({ setIsPasswordless }: any) {
               <Field>
                 <Label>Email</Label>
                 <div className="relative">
-                  <Input
+                  <InputText
                     autoComplete="email webauthn"
                     value={email}
                     onChange={(event) => setEmail(event.target.value.trim())}
-                    type="email"
                     placeholder="Enter your email"
-                    className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none"
+                    className="w-full  pr-10 "
                   />
 
-                  <span className="absolute right-4 top-4">
+                  <span className="absolute right-4 top-3.5">
                     <svg
                       className="fill-current"
                       width="22"
@@ -213,7 +237,7 @@ function Password({ setIsPasswordless }: any) {
                 </div>
               </Field>
               <Button
-                className="rounded bg-primary py-2 px-6 font-medium text-gray hover:bg-opacity-90 w-min self-end"
+                className="bg-primary font-medium hover:bg-opacity-80 w-min self-end p-3"
                 type="submit"
               >
                 Submit
@@ -229,10 +253,11 @@ function Password({ setIsPasswordless }: any) {
         </Field>
 
         <div className="mb-5 mt-5">
-          <input
+          <Button
             type="submit"
-            value="Sign In"
-            className="w-full cursor-pointer rounded-lg border border-primary bg-primary p-4 text-white transition hover:bg-opacity-90"
+            label="Sign In"
+            className="w-full bg-primary  transition hover:bg-opacity-80"
+            pt={{ label: () => 'font-medium' }}
           />
         </div>
 

@@ -22,11 +22,11 @@ const Modal = memo(function Modal({
   onCloseCallback,
   disabled = false,
 }: {
-  children: JSX.Element;
+  children: React.ReactNode;
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
   title?: string;
-  button: JSX.Element;
+  button: React.ReactNode;
   hasCloseButton?: boolean;
   classNameses?: {
     title?: string;
