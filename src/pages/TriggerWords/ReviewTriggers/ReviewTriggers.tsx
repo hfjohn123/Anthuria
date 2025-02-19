@@ -8,7 +8,6 @@ import {
 } from '@tanstack/react-query';
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import Loader from '../../../common/Loader';
-import 'react-datepicker/dist/react-datepicker.css';
 import stemmedFilter from '../../../components/Tables/stemmedFilter.ts';
 import {
   ColumnDef,
@@ -220,11 +219,14 @@ export default function ReviewTriggers() {
   }, [tableState.columnFilters]);
 
   const start = useMemo(
-    () => (startValue ? new Date(startValue) : null),
+    () => (startValue ? new Date(startValue) : new Date()),
     [startValue],
   );
 
-  const end = useMemo(() => (endValue ? new Date(endValue) : null), [endValue]);
+  const end = useMemo(
+    () => (endValue ? new Date(endValue) : new Date()),
+    [endValue],
+  );
 
   const {
     isPending,
@@ -874,18 +876,6 @@ export default function ReviewTriggers() {
             <div className="grid  grid-cols-1 sm:grid-cols-3 xl:grid-cols-5 gap-1 sm:gap-6 rounded-[30px] p-6 bg-white dark:bg-boxdark">
               {predefinedTriggerWords.map((word) => (
                 <NumberCards
-                  keywordList={
-                    data &&
-                    data.keywords
-                      .filter(
-                        (kw: { trigger_word: string; key_word: string }) =>
-                          kw.trigger_word.toLowerCase() === word.toLowerCase(),
-                      )
-                      .map(
-                        (kw: { trigger_word: string; key_word: string }) =>
-                          kw.key_word,
-                      )
-                  }
                   keywordModal={true}
                   tooltip={triggerExplanation[word]}
                   key={word}

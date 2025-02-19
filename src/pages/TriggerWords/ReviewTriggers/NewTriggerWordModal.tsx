@@ -32,7 +32,7 @@ export default function NewTriggerWordModal({
   data: TriggerFinal[];
   trigger_words: string[];
   setSelfDefinedKeywordsState: React.Dispatch<
-    React.SetStateAction<selfDefinedKeyword[]>
+    React.SetStateAction<selfDefinedKeyword[] | undefined>
   >;
 }) {
   const toast = useRef<Toast>(null);

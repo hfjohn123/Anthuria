@@ -1,9 +1,14 @@
-import { Button, Field, Input, Label } from '@headlessui/react';
+import { Field, Label } from '@headlessui/react';
 import { useState } from 'react';
 import { submitNewPassword } from 'supertokens-web-js/recipe/emailpassword';
 import { useNavigate } from '@tanstack/react-router';
 import { Toast } from 'primereact/toast';
 import { useToast } from '../../../components/ToastProvider.tsx';
+import { Password } from 'primereact/password';
+import { InputText } from 'primereact/inputtext';
+import { Button } from 'primereact/button';
+import PasswordChecklist from 'react-password-checklist';
+import clsx from 'clsx';
 
 async function newPasswordEntered(
   newPassword: string,
@@ -33,6 +38,7 @@ async function newPasswordEntered(
         }
       });
     } else if (response.status === 'RESET_PASSWORD_INVALID_TOKEN_ERROR') {
+      navigate({ to: '/auth' });
       // the password reset token in the URL is invalid, expired, or already consumed
       toast?.show({
         severity: 'error',
@@ -40,15 +46,14 @@ async function newPasswordEntered(
         detail: 'Password reset token is invalid, expired, or already consumed',
         life: 3000,
       });
-      navigate({ to: '/auth' });
     } else {
+      navigate({ to: '/auth' });
       toast?.show({
         severity: 'success',
         summary: 'Success',
         detail: 'Password Reset Successfully',
         life: 3000,
       });
-      navigate({ to: '/auth' });
     }
   } catch (err: any) {
     if (err.isSuperTokensGeneralError === true) {
@@ -78,7 +83,7 @@ export default function ResetPassword() {
   return (
     <div className="flex justify-center items-center h-screen">
       <form
-        className="flex flex-col gap-5 bg-white rounded-sm border border-stroke shadow-default p-10 "
+        className="flex flex-col gap-5 bg-white rounded-sm border border-stroke shadow-default p-10 w-125"
         onSubmit={(event) => {
           event.preventDefault();
           event.stopPropagation();
@@ -93,15 +98,16 @@ export default function ResetPassword() {
             Password
           </Label>
           <div className="relative">
-            <Input
+            <Password
               value={password}
               onChange={(event) => setPassword(event.target.value)}
               type="password"
-              placeholder="New password"
-              className="lg:min-w-100 rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-stroke dark dark:bg-form-input dark:text-white dark:focus:border-primary"
+              className="w-full"
+              pt={{ input: () => 'pr-10' }}
+              placeholder="Password"
             />
 
-            <span className="absolute right-4 top-4">
+            <span className="absolute right-4 top-3.5">
               <svg
                 className="fill-current"
                 width="22"
@@ -129,14 +135,13 @@ export default function ResetPassword() {
             Confirm Password
           </Label>
           <div className="relative">
-            <Input
+            <InputText
               value={confirmPassword}
               onChange={(event) => setConfirmPassword(event.target.value)}
               type="password"
-              placeholder="Re-enter new password"
-              className="lg:min-w-100 rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-stroke dark dark:bg-form-input dark:text-white dark:focus:border-primary"
+              placeholder="Re-enter Password"
+              className="w-full pr-10"
             />
-
             <span className="absolute right-4 top-4">
               <svg
                 className="fill-current"
@@ -160,9 +165,19 @@ export default function ResetPassword() {
             </span>
           </div>
         </Field>
+        <PasswordChecklist
+          className={clsx(
+            'transition-all  duration-300 transition-discrete ease-in-out',
+            confirmPassword || password ? 'block' : 'hidden',
+          )}
+          rules={['minLength', 'letter', 'number', 'match']}
+          minLength={8}
+          value={password}
+          valueAgain={confirmPassword}
+        />
 
         <Button
-          className="flex justify-center rounded bg-primary py-2 px-6 font-medium text-gray hover:bg-opacity-90"
+          className="flex justify-center bg-primary py-2 font-medium hover:bg-opacity-90"
           type="submit"
         >
           Submit

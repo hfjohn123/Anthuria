@@ -86,7 +86,7 @@ const KeywordForm = forwardRef<
     callback?: () => void;
     isNew?: boolean;
     setSelfDefinedKeywordsState?: React.Dispatch<
-      React.SetStateAction<selfDefinedKeyword[]>
+      React.SetStateAction<selfDefinedKeyword[] | undefined>
     >;
     resetTableFilters?: () => void;
   }
@@ -151,7 +151,9 @@ const KeywordForm = forwardRef<
           queryKey: ['trigger_word_view_trigger_word_detail_final'],
         });
         setSelfDefinedKeywordsState?.((prev) => [
-          ...prev.filter((d) => d.group_name !== initialNewTrigger.group_name),
+          ...(prev ?? []).filter(
+            (d) => d.group_name !== initialNewTrigger.group_name,
+          ),
           {
             group_name: newTriggerWord.group_name,
             trigger_word: newTriggerWord.trigger_word,
@@ -183,7 +185,9 @@ const KeywordForm = forwardRef<
           queryKey: ['trigger_word_view_trigger_word_detail_final'],
         });
         setSelfDefinedKeywordsState?.((prev) => [
-          ...prev.filter((d) => d.group_name !== initialNewTrigger.group_name),
+          ...(prev ?? []).filter(
+            (d) => d.group_name !== initialNewTrigger.group_name,
+          ),
         ]);
       },
       onSettled: () => {

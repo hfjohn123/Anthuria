@@ -32,7 +32,7 @@ export default function UpdateKeywordModal({
   };
   header: string;
   setSelfDefinedKeywordsState?: React.Dispatch<
-    React.SetStateAction<selfDefinedKeyword[]>
+    React.SetStateAction<selfDefinedKeyword[] | undefined>
   >;
   resetTableFilters?: () => void;
   tooltip?: string;

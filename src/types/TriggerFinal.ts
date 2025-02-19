@@ -26,11 +26,7 @@ export type TriggerFinal = {
 
 export type TriggerAPI = {
   data: TriggerFinal[];
-  keywords: {
-    trigger_word: string;
-    key_word: string;
-  }[];
-  self_defined_keywords?: selfDefinedKeyword[] | null;
+  self_defined_keywords: selfDefinedKeyword[];
 };
 
 export type selfDefinedKeyword = {

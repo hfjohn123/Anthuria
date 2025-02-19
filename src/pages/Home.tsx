@@ -2,11 +2,11 @@ import NoSidebar from '../layout/NoSideBar';
 import { AppTile } from '../components/Cards/AppTile';
 import axios from 'axios';
 import { useContext } from 'react';
-import { createToast } from '../hooks/fireToast';
 import { usePrefetchQuery, useQuery } from '@tanstack/react-query';
 import Loader from '../common/Loader';
 import { AuthContext } from '../components/AuthWrapper';
 import { fetchTriggerWord } from './TriggerWords/ReviewTriggers/ReviewTriggers.tsx';
+import ErrorPage from '../common/ErrorPage.tsx';
 
 export default function Home() {
   const recent = JSON.parse(localStorage.getItem('recent') || '[]');
@@ -53,7 +53,7 @@ export default function Home() {
     return <Loader />;
   }
   if (isError) {
-    createToast('Error', error.message, 3, error.message);
+    return <ErrorPage error={error.message} />;
   }
 
   return (

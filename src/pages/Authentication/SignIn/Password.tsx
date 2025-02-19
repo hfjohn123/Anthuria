@@ -3,6 +3,7 @@ import {
   doesEmailExist,
   signIn,
 } from 'supertokens-web-js/recipe/emailpassword';
+import { doesEmailExist as PasswordlessDoesEmailExist } from 'supertokens-web-js/recipe/passwordless';
 import { createToast } from '../../../hooks/fireToast.tsx';
 import Modal from '../../../components/Modal/Modal.tsx';
 import sendEmailClicked from '../../../common/sendEmailClicked.ts';
@@ -66,13 +67,25 @@ async function signInClicked(
         }
       });
     } else if (response.status === 'WRONG_CREDENTIALS_ERROR') {
-      const checkEmail = await doesEmailExist({ email });
+      const checkEmail = await PasswordlessDoesEmailExist({ email });
       if (!checkEmail.doesExist) {
         setInvalidEmail(true);
         toast?.show({
           severity: 'error',
           summary: 'Login Failed',
           detail: 'Email does not match any user',
+          life: 3000,
+        });
+        return;
+      }
+      const checkPassword = await doesEmailExist({ email });
+      if (!checkPassword.doesExist) {
+        setInvalidEmail(true);
+        toast?.show({
+          severity: 'error',
+          summary: 'Login Failed',
+          detail:
+            'The User have not set a password. Please log in with one time password.',
           life: 3000,
         });
         return;

@@ -88,16 +88,14 @@ SuperTokens.init({
 });
 const rootRoute = createRootRoute({
   component: () => (
-    <>
+    <ToastProvider>
       <AuthWrapper>
         <>
           <Toaster position="bottom-center" />
-          <ToastProvider>
-            <Outlet />
-          </ToastProvider>
+          <Outlet />
         </>
       </AuthWrapper>
-    </>
+    </ToastProvider>
   ),
 });
 
