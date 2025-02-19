@@ -85,7 +85,7 @@ async function signInClicked(
           severity: 'error',
           summary: 'Login Failed',
           detail:
-            'The User have not set a password. Please log in with one time password.',
+            'The User have not set a password. Please login with one time password.',
           life: 3000,
         });
         return;
