@@ -224,7 +224,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                       'transition-all ease-in-out duration-300 overflow-x-hidden whitespace-nowrap',
                     )}
                   >
-                    Clinical Pulse
+                    Pulse
                   </span>
                 </Link>
               </li>

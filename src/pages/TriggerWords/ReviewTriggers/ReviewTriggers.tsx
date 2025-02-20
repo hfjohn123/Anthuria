@@ -807,7 +807,7 @@ export default function ReviewTriggers() {
           <div className="flex flex-col gap-5 my-3 sm:my-5 max-w-screen-3xl sm:px-5 mx-auto ">
             <div className="w-full bg-white dark:bg-boxdark rounded-[30px] p-7.5 flex justify-between items-center flex-wrap gap-5">
               <div className="flex flex-col gap-3">
-                <h1 className="font-semibold text-2xl">Clinical Pulse</h1>
+                <h1 className="font-semibold text-2xl">Pulse</h1>
                 <p className="text-sm	text-gray-500 ">
                   {table.getFilteredRowModel().rows.length} of {total_count}{' '}
                   {total_count >= 1 ? `progress notes` : 'progress note'},
@@ -1081,7 +1081,7 @@ export default function ReviewTriggers() {
               />
             </div>
             <TableWrapper
-              title="Clinical Pulse"
+              title="Pulse"
               table={table}
               tableState={tableState}
               setTableState={setTableState}
