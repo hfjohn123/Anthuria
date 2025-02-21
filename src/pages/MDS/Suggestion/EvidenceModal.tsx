@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect, useContext, useCallback, memo } from 'react';
-import _ from 'lodash';
 import { SuggestedICD10 } from '../../../types/MDSFinal.ts';
 import { CaretUp, CaretDown } from '@phosphor-icons/react';
 import NTAProgressNote from './NTATable/NTAProgressNote.tsx';
