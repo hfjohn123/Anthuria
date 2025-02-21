@@ -254,7 +254,7 @@ export default function ClinicalCategory({
         type !== 'Behavioral symptoms'
           ? 'Clinical Category'
           : type}
-        : {data ? 'At least one' : 'None'}
+        :
       </p>
       <NursingTableWrapper data={_.values(joined)} />
     </div>
