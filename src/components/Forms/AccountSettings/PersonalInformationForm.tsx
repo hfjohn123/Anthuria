@@ -1,10 +1,10 @@
-import { Button, Field, Input, Label } from '@headlessui/react';
+import { Field, Input, Label } from '@headlessui/react';
+import { Button } from 'primereact/button';
 import UserName from '../../../images/icon/UserName.tsx';
 import EmailIcon from '../../../images/icon/EmailIcon.tsx';
 import sendEmailClicked from '../../../common/sendEmailClicked.ts';
 import { useContext, useState } from 'react';
 import { AuthContext } from '../../AuthWrapper.tsx';
-import PrimaryButton from '../../Basic/PrimaryButton.tsx';
 
 export default function PersonalInformationForm({
   setLoading,
@@ -92,7 +92,7 @@ export default function PersonalInformationForm({
                     placeholder={'**********'}
                   />
                   <Button
-                    className="md:absolute md:right-2 text-primary"
+                    className="md:absolute md:right-2 bg-transparent"
                     onClick={() => {
                       setLoading(true);
                       sendEmailClicked(user_data.email, setIsSent).finally(
@@ -101,9 +101,11 @@ export default function PersonalInformationForm({
                         },
                       );
                     }}
-                  >
-                    Request to Change
-                  </Button>
+                    label={'Request to Change'}
+                    pt={{
+                      label: () => 'no-underline',
+                    }}
+                  />
                 </div>
               </div>
             </Field>
@@ -116,9 +118,9 @@ export default function PersonalInformationForm({
               >
                 Reset
               </button>
-              <PrimaryButton className="py-2 px-6 font-medium " type="submit">
+              <Button className="py-2 px-6 font-medium " type="submit">
                 Save
-              </PrimaryButton>
+              </Button>
             </div>
           </form>
         </div>

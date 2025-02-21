@@ -1,10 +1,9 @@
 import Loader from '../common/Loader';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { createContext, useEffect } from 'react';
 import ErrorPage from '../common/ErrorPage.tsx';
 import axios from 'axios';
 import Session from 'supertokens-auth-react/recipe/session';
-import { signOut } from 'supertokens-auth-react/recipe/passwordless';
 import { datadogRum } from '@datadog/browser-rum';
 import Intercom from '@intercom/messenger-js-sdk';
 import { Navigate, useLocation } from '@tanstack/react-router';
@@ -32,6 +31,12 @@ export const AuthContext = createContext({
   route: '',
 });
 
+async function onLogout() {
+  await Session.signOut();
+  sessionStorage.clear();
+  localStorage.clear();
+}
+
 export function getRoute() {
   if (window.location.origin === 'http://localhost') {
     return 'http://localhost:3009';
@@ -48,7 +53,6 @@ export default function AuthWrapper({
 }: {
   children: React.ReactNode;
 }) {
-  const queryClient = useQueryClient();
   const sessionContext = Session.useSessionContext();
 
   const route = getRoute();
@@ -57,10 +61,6 @@ export default function AuthWrapper({
   const pathname = useLocation({
     select: (location) => location.pathname,
   });
-
-  async function onLogout() {
-    await signOut();
-  }
 
   const {
     isPending,
@@ -72,6 +72,7 @@ export default function AuthWrapper({
     queryFn: () => axios.get(`${route}/user`).then((res) => res.data),
     enabled: !sessionContext.loading && sessionContext.doesSessionExist,
     retryDelay: 3000,
+    staleTime: Infinity,
   });
 
   const {
@@ -85,61 +86,38 @@ export default function AuthWrapper({
       axios.get(`${route}/user_applications_locations`).then((res) => res.data),
     enabled: !sessionContext.loading && sessionContext.doesSessionExist,
     retryDelay: 3000,
+    staleTime: Infinity,
   });
 
   useEffect(() => {
-    if (user_data) {
+    if (!isPending && user_data && user_data['email']) {
+      console.log(user_data);
       // @ts-expect-error Pendo Integration
       pendo.initialize({
         visitor: {
-          id: user_data.email,
-          email: user_data.email,
-          full_name: user_data.name,
+          id: user_data['email'],
+          email: user_data['email'],
+          full_name: user_data['name'],
         },
         account: {
-          id: user_data.organization_id,
-          name: user_data.organization_name,
+          id: user_data['organization_id'],
+          name: user_data['organization_name'],
         },
       });
-    }
-    datadogRum.setUser({
-      id: user_data?.email,
-      name: user_data?.name,
-      email: user_data?.email,
-    });
-  }, [user_data]);
-
-  useEffect(() => {
-    user_data &&
+      datadogRum.setUser({
+        id: user_data['email'],
+        name: user_data['name'],
+        email: user_data['email'],
+      });
       Intercom({
         app_id: 'x02d82le',
-        user_id: user_data.email, // IMPORTANT: Replace "user.id" with the variable you use to capture the user's ID
-        name: user_data.name, // IMPORTANT: Replace "user.name" with the variable you use to capture the user's name
-        email: user_data.email, // IMPORTANT: Replace "user.email" with the variable you use to capture the user's email
+        user_id: user_data['email'], // IMPORTANT: Replace "user.id" with the variable you use to capture the user's ID
+        name: user_data['name'], // IMPORTANT: Replace "user.name" with the variable you use to capture the user's name
+        email: user_data['email'], // IMPORTANT: Replace "user.email" with the variable you use to capture the user's email
       });
-  }, [user_data]);
-
-  useEffect(() => {
-    if (queryClient && user_applications_locations && user_data) {
-      // setFrontendCookie('email', user_data?.email || '', '\\');
-      const ws_route = route.replace('https', 'wss').replace('http', 'ws');
-      const websocket = new WebSocket(`${ws_route}/ws/${user_data?.email}`);
-      websocket.onopen = () => {
-        console.log('connected');
-      };
-      websocket.onmessage = (event) => {
-        console.log(event.data);
-        queryClient.invalidateQueries({ queryKey: [event.data, route] });
-      };
-      return () => {
-        websocket.close();
-      };
     }
-  }, [queryClient, user_applications_locations, user_data]);
-
-  if (sessionContext.loading) {
-    return <Loader />;
-  }
+  }, [isPending, user_data]);
+  if (sessionContext.loading) return <Loader />;
   if (
     !sessionContext.loading &&
     sessionContext.doesSessionExist &&
@@ -200,6 +178,6 @@ export default function AuthWrapper({
       </AuthContext.Provider>
     );
   } else {
-    return children;
+    return <Navigate to={'/auth'} />;
   }
 }

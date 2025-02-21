@@ -1,4 +1,4 @@
-import { Button, Input } from '@headlessui/react';
+import { Input } from '@headlessui/react';
 import { useContext, useState } from 'react';
 import { AuthContext } from '../../components/AuthWrapper.tsx';
 import UpLoadIcon from '../../images/icon/UpLoadIcon.tsx';
@@ -7,7 +7,7 @@ import getCroppedImg from '../../common/cropImage.ts';
 import axios from 'axios';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createToast } from '../../hooks/fireToast.tsx';
-import PrimaryButton from '../../components/Basic/PrimaryButton.tsx';
+import { Button } from 'primereact/button';
 
 export default function UserPhoto() {
   const queryClient = useQueryClient();
@@ -147,7 +147,7 @@ export default function UserPhoto() {
             )}
 
             <div className="flex justify-end gap-4.5">
-              <Button
+              <button
                 className="flex justify-center rounded border border-stroke py-2 px-6 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white"
                 onClick={() => {
                   setFile(undefined);
@@ -157,8 +157,8 @@ export default function UserPhoto() {
                 }}
               >
                 Reset
-              </Button>
-              <PrimaryButton
+              </button>
+              <Button
                 className=" py-2 px-6 font-medium"
                 onClick={async () => {
                   if (file) {
@@ -175,7 +175,7 @@ export default function UserPhoto() {
                 }}
               >
                 Save
-              </PrimaryButton>
+              </Button>
             </div>
           </form>
         </div>

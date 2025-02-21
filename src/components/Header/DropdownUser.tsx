@@ -1,14 +1,16 @@
 import { useContext, useEffect, useRef, useState } from 'react';
 import { Link } from '@tanstack/react-router';
 import { AuthContext } from '../AuthWrapper.tsx';
-import { signOut } from 'supertokens-auth-react/recipe/passwordless';
+import Session from 'supertokens-auth-react/recipe/session';
 import { Button } from '@headlessui/react';
+import { useQueryClient } from '@tanstack/react-query';
 
 const DropdownUser = () => {
   const { user_data, route } = useContext(AuthContext);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const trigger = useRef<HTMLAnchorElement>(null);
   const dropdown = useRef<HTMLDivElement>(null);
+  const queryClient = useQueryClient();
 
   // close on click outside
   useEffect(() => {
@@ -38,12 +40,11 @@ const DropdownUser = () => {
   }, [dropdownOpen]);
 
   async function onLogout() {
-    await signOut();
+    await Session.signOut();
     sessionStorage.clear();
-    // localStorage.clear();
     localStorage.clear();
-
-    // window.location.href = '/auth'; // or to wherever your logic page is
+    // window.location.href = '/';
+    // or to wherever your logic page is
   }
 
   return (
@@ -126,7 +127,10 @@ const DropdownUser = () => {
         </Link>
         <Button
           className="flex items-center gap-3.5 px-6 py-4 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base"
-          onClick={onLogout}
+          onClick={() => {
+            onLogout();
+            queryClient.clear();
+          }}
         >
           <svg
             className="fill-current"

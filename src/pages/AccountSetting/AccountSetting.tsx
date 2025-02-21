@@ -19,7 +19,6 @@ const AccountSetting = () => {
   const isAdmin = user_applications_locations.some(
     (d) => d['id'] === 'access_management',
   );
-
   const modifyUser = useUpdateUser(route, queryClient);
 
   if (loading) {

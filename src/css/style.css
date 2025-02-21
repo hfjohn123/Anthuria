@@ -43,7 +43,10 @@
     }
 
     .bg-transparent.p-button > .p-button-label {
-        @apply text-base font-normal underline ;
+        @apply text-base font-normal underline text-primary ;
+    }
+    .bg-transparent.p-button{
+        @apply border-0;
     }
 
     .p-datepicker-inline {

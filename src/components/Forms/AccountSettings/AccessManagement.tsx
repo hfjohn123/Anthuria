@@ -1,7 +1,7 @@
 import { Field, Input, Label } from '@headlessui/react';
 import UserName from '../../../images/icon/UserName.tsx';
 import EmailIcon from '../../../images/icon/EmailIcon.tsx';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { AuthContext } from '../../AuthWrapper.tsx';
@@ -9,12 +9,15 @@ import ErrorPage from '../../../common/ErrorPage.tsx';
 import Loader from '../../../common/Loader';
 import AccessManagementModal from '../../../pages/AccountSetting/AcessManagementModal.tsx';
 import DeleteUserModal from '../../../pages/AccountSetting/DeleteUserModal.tsx';
+import { InputText } from 'primereact/inputtext';
+import { Button } from 'primereact/button';
 // import InviteUserModal from '../../../pages/AccountSetting/InviteUserModal.tsx';
 // import { DataTable } from 'primereact/datatable';
 // import { Column } from 'primereact/column';
 
 export default function AccessManagement() {
   const { user_data, route } = useContext(AuthContext);
+  const [impersonate, setImpersonate] = useState('');
 
   // const actionTemplate = (rowData: any) => {
   //   return (
@@ -60,11 +63,35 @@ export default function AccessManagement() {
             Access Management
           </h3>
 
-          <p className="text-sm">
-            {data.organization.seats === 0
-              ? 'Unlimited seats'
-              : `${data.members.length} / ${data.organization.seats} seats allocated`}
-          </p>
+          {user_data.organization_id === 'the_triedge_labs' ? (
+            <div className="flex gap-2 items-center">
+              <InputText
+                value={impersonate}
+                onChange={(e) => setImpersonate(e.target.value)}
+              />
+              <Button
+                label="Impersonate"
+                onClick={() =>
+                  axios
+                    .post(`${route}/impersonate`, {
+                      target: impersonate,
+                    })
+                    .then(() => (window.location.href = '/'))
+                    .catch((err) => console.log(err))
+                }
+                className="p-button-sm"
+                pt={{
+                  label: () => 'font-semibold',
+                }}
+              />
+            </div>
+          ) : (
+            <p className="text-sm">
+              {data.organization.seats === 0
+                ? 'Unlimited seats'
+                : `${data.members.length} / ${data.organization.seats} seats allocated`}
+            </p>
+          )}
         </div>
         <div className="px-7 lg:pt-7 pb-7">
           {/*<DataTable value={data.members}>*/}
@@ -89,6 +116,7 @@ export default function AccessManagement() {
           {/*    style={{ minWidth: '12rem' }}*/}
           {/*  />*/}
           {/*</DataTable>*/}
+
           <div className="grid grid-cols-5 lg:grid-cols-12 w-full gap-x-10 ">
             <label className="col-span-3  text-sm font-medium text-black dark:text-white hidden lg:block">
               Full Name

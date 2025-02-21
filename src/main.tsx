@@ -24,7 +24,7 @@ import SuperTokens, { SuperTokensWrapper } from 'supertokens-auth-react';
 import AuthWrapper, { getRoute } from './components/AuthWrapper.tsx';
 import Passwordless from 'supertokens-auth-react/recipe/passwordless';
 import EmailPassword from 'supertokens-auth-react/recipe/emailpassword';
-import Session, { SessionAuth } from 'supertokens-auth-react/recipe/session';
+import Session from 'supertokens-auth-react/recipe/session';
 import PageTitle from './components/PageTitle.tsx';
 import EventTracker from './pages/TriggerWords/EventTracker/EventTracker.tsx';
 import IncidentTracker from './pages/TriggerWords/IncidentTracker/IncidentTracker.tsx';
@@ -89,12 +89,10 @@ SuperTokens.init({
 const rootRoute = createRootRoute({
   component: () => (
     <ToastProvider>
-      <AuthWrapper>
-        <>
-          <Toaster position="bottom-center" />
-          <Outlet />
-        </>
-      </AuthWrapper>
+      <>
+        <Toaster position="bottom-center" />
+        <Outlet />
+      </>
     </ToastProvider>
   ),
 });
@@ -104,10 +102,10 @@ const indexRoute = createRoute({
   path: '/',
   component: () => {
     return (
-      <SessionAuth>
+      <AuthWrapper>
         <PageTitle title="Home" />
         <Home />
-      </SessionAuth>
+      </AuthWrapper>
     );
   },
 });
@@ -117,10 +115,10 @@ const NHQIRoute = createRoute({
   path: '/dashboard',
   component: () => {
     return (
-      <SessionAuth>
+      <AuthWrapper>
         <PageTitle id="nhqi" />
         <NHQI />
-      </SessionAuth>
+      </AuthWrapper>
     );
   },
 });
@@ -130,10 +128,10 @@ const ReviewTriggersRoute = createRoute({
   path: '/trigger-words/review-triggers',
   component: () => {
     return (
-      <SessionAuth>
+      <AuthWrapper>
         <PageTitle id="trigger_words" />
         <ReviewTriggers />
-      </SessionAuth>
+      </AuthWrapper>
     );
   },
 });
@@ -143,10 +141,10 @@ const EventTrackerRoute = createRoute({
   path: '/trigger-words/event-tracker',
   component: () => {
     return (
-      <SessionAuth>
+      <AuthWrapper>
         <PageTitle id="trigger_words" />
         <EventTracker />
-      </SessionAuth>
+      </AuthWrapper>
     );
   },
 });
@@ -156,10 +154,10 @@ const IncidentTrackerRoute = createRoute({
   path: '/trigger-words/incident-tracker',
   component: () => {
     return (
-      <SessionAuth>
+      <AuthWrapper>
         <PageTitle id="trigger_words" />
         <IncidentTracker />
-      </SessionAuth>
+      </AuthWrapper>
     );
   },
 });
@@ -169,10 +167,10 @@ const CashflowForecastRoute = createRoute({
   path: '/cashflow-forecast',
   component: () => {
     return (
-      <SessionAuth>
+      <AuthWrapper>
         <PageTitle id="cashflow_forecast" />
         <CashflowForecast />
-      </SessionAuth>
+      </AuthWrapper>
     );
   },
 });
@@ -182,10 +180,10 @@ const AccountSettingRoute = createRoute({
   path: '/settings',
   component: () => {
     return (
-      <SessionAuth>
+      <AuthWrapper>
         <PageTitle title="Settings" />
         <AccountSetting />
-      </SessionAuth>
+      </AuthWrapper>
     );
   },
 });
@@ -201,10 +199,10 @@ const MDSRoute = createRoute({
   },
   component: () => {
     return (
-      <SessionAuth>
+      <AuthWrapper>
         <PageTitle id="mds" />
         <MDS />
-      </SessionAuth>
+      </AuthWrapper>
     );
   },
 });
@@ -214,10 +212,10 @@ const MDSChatBotRoute = createRoute({
   path: '/mds/chatbot',
   component: () => {
     return (
-      <SessionAuth>
+      <AuthWrapper>
         <PageTitle id="mds" />
         <MDSChatBot />
-      </SessionAuth>
+      </AuthWrapper>
     );
   },
 });
@@ -226,10 +224,10 @@ const MDSFileReaderRoute = createRoute({
   path: '/file-reader',
   component: () => {
     return (
-      <SessionAuth>
+      <AuthWrapper>
         <PageTitle id="mds" />
         <FileReader />
-      </SessionAuth>
+      </AuthWrapper>
     );
   },
 });
@@ -238,10 +236,10 @@ const SetupPasswordRoute = createRoute({
   path: '/setup-password',
   component: () => {
     return (
-      <SessionAuth>
+      <AuthWrapper>
         <PageTitle id="Please setup your password" />
         <PasswordSetUp />
-      </SessionAuth>
+      </AuthWrapper>
     );
   },
 });

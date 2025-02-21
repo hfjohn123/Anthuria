@@ -59,6 +59,7 @@
     "react-tooltip": "^5.28.0",
     "stemmer": "^2.0.1",
     "supertokens-auth-react": "^0.48.0",
+    "supertokens-web-js": "^0.14.0",
     "uuid": "^11.0.5"
   },
   "devDependencies": {

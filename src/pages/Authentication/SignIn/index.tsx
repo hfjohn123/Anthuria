@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
 import NoBar from '../../../layout/NoBar';
 import Loader from '../../../common/Loader';
-import { createToast } from '../../../hooks/fireToast';
-import Session from 'supertokens-auth-react/recipe/session';
+import Session from 'supertokens-web-js/recipe/session';
 import { useQuery } from '@tanstack/react-query';
 import { getRoute } from '../../../components/AuthWrapper.tsx';
 import Passwordless from './Passwordless.tsx';
 import Password from './Password.tsx';
 import Logo from '../../../images/logo/logo_dark.png';
 import { Navigate, useNavigate, useSearch } from '@tanstack/react-router';
+import { useToast } from '../../../components/ToastProvider.tsx';
 
 function SignIn() {
   const [isLoading, setIsLoading] = useState(false);
@@ -16,7 +16,7 @@ function SignIn() {
   const navigate = useNavigate();
   const otp = !!searchParams.otp;
   const [isPasswordless, setIsPasswordless] = useState(otp);
-
+  const toast = useToast();
   const route = getRoute();
   const {
     isPending: isSessionPending,
@@ -28,7 +28,12 @@ function SignIn() {
     queryFn: async () => await Session.doesSessionExist(),
   });
   if (isSessionError) {
-    createToast('Login Failed', sessionError.message, 3, 'Login Failed');
+    toast?.show({
+      severity: 'error',
+      summary: 'Error',
+      detail: sessionError?.message,
+      life: 3000,
+    });
   }
   useEffect(() => {
     navigate({
