@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useContext, useCallback, memo } from 'react';
+import _ from 'lodash';
 import { SuggestedICD10 } from '../../../types/MDSFinal.ts';
 import { CaretUp, CaretDown } from '@phosphor-icons/react';
 import NTAProgressNote from './NTATable/NTAProgressNote.tsx';
@@ -179,45 +180,51 @@ function EvidenceModal({
 
   const handleScroll = useCallback(() => {
     const scrollContainer = scrollContainerRef.current;
-    if (!scrollContainer) return;
-
-    const containerRect = scrollContainer.getBoundingClientRect();
-    const containerCenter = containerRect.top + containerRect.height / 2;
-
-    let closestItem = null;
-    let closestDistance = Infinity;
-    let closestIndex = 0;
-
-    itemRefs.current.forEach((item, index) => {
-      if (!item) return;
-      
-      const itemRect = item.getBoundingClientRect();
-      const itemCenter = itemRect.top + itemRect.height / 2;
-      const distance = Math.abs(containerCenter - itemCenter);
-
-      if (distance < closestDistance) {
-        closestDistance = distance;
-        closestItem = item;
-        closestIndex = index;
-      }
-    });
-
-    if (closestIndex !== currentIndex) {
-      setCurrentIndex(closestIndex);
+    if (scrollContainer) {
+      const currentScrollTop = scrollContainer.scrollTop;
+      scrollDirection.current = currentScrollTop > lastScrollTop.current ? 'down' : 'up';
+      lastScrollTop.current = currentScrollTop;
     }
-  }, [currentIndex]);
+  }, []);
 
   useEffect(() => {
     const scrollContainer = scrollContainerRef.current;
-    if (scrollContainer && open) {
-      const throttledScroll = _.throttle(handleScroll, 100);
-      scrollContainer.addEventListener('scroll', throttledScroll);
-      return () => {
-        scrollContainer.removeEventListener('scroll', throttledScroll);
-        throttledScroll.cancel();
-      };
+    if (scrollContainer) {
+      scrollContainer.addEventListener('scroll', handleScroll);
+      return () => scrollContainer.removeEventListener('scroll', handleScroll);
     }
-  }, [handleScroll, open]);
+  }, [handleScroll]);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (scrollContainerRef.current && open) {
+        observerRef.current = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                const index = itemRefs.current.findIndex((ref) => ref === entry.target);
+                if (index !== -1) setCurrentIndex(index);
+              }
+            });
+          },
+          {
+            threshold: 0,
+            root: scrollContainerRef.current,
+            rootMargin: scrollDirection.current === 'down' ? '-100% 0px 0px 0px' : '0px 0px -100% 0px',
+          }
+        );
+
+        itemRefs.current.forEach((ref) => {
+          if (ref) observerRef.current?.observe(ref);
+        });
+      }
+    }, 0);
+
+    return () => {
+      clearTimeout(timeout);
+      observerRef.current?.disconnect();
+    };
+  }, [icd10.progress_note, open]);
 
   const scrollToItem = useCallback((direction: 'next' | 'prev') => {
     const totalItems = icd10.progress_note.length;
