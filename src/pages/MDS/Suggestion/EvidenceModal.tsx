@@ -178,53 +178,33 @@ function EvidenceModal({
   const scrollDirection = useRef<'up' | 'down'>('down');
   const patientInfo = useContext(MDSPatientContext);
 
-  const handleScroll = useCallback(() => {
-    const scrollContainer = scrollContainerRef.current;
-    if (scrollContainer) {
-      const currentScrollTop = scrollContainer.scrollTop;
-      scrollDirection.current = currentScrollTop > lastScrollTop.current ? 'down' : 'up';
-      lastScrollTop.current = currentScrollTop;
-    }
-  }, []);
 
   useEffect(() => {
-    const scrollContainer = scrollContainerRef.current;
-    if (scrollContainer) {
-      scrollContainer.addEventListener('scroll', handleScroll);
-      return () => scrollContainer.removeEventListener('scroll', handleScroll);
-    }
-  }, [handleScroll]);
+    if (!scrollContainerRef.current || !open) return;
 
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      if (scrollContainerRef.current && open) {
-        observerRef.current = new IntersectionObserver(
-          (entries) => {
-            entries.forEach((entry) => {
-              if (entry.isIntersecting) {
-                const index = itemRefs.current.findIndex((ref) => ref === entry.target);
-                if (index !== -1) setCurrentIndex(index);
-              }
-            });
-          },
-          {
-            threshold: 0,
-            root: scrollContainerRef.current,
-            rootMargin: scrollDirection.current === 'down' ? '-100% 0px 0px 0px' : '0px 0px -100% 0px',
-          }
-        );
-
-        itemRefs.current.forEach((ref) => {
-          if (ref) observerRef.current?.observe(ref);
-        });
-      }
-    }, 0);
-
-    return () => {
-      clearTimeout(timeout);
-      observerRef.current?.disconnect();
+    const options = {
+      root: scrollContainerRef.current,
+      threshold: [0.5],
+      rootMargin: "0px"
     };
-  }, [icd10.progress_note, open]);
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const index = itemRefs.current.findIndex(ref => ref === entry.target);
+          if (index !== -1) {
+            setCurrentIndex(index);
+          }
+        }
+      });
+    }, options);
+
+    itemRefs.current.forEach(ref => {
+      if (ref) observer.observe(ref);
+    });
+
+    return () => observer.disconnect();
+  }, [open, itemRefs.current.length]);
 
   const scrollToItem = useCallback((direction: 'next' | 'prev') => {
     const totalItems = icd10.progress_note.length;
